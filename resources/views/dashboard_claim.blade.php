@@ -1,6 +1,90 @@
 @extends('layouts.app')
 
 <style>
+  /* === Table Styling === */
+  .custom-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  }
+  .custom-table thead th {
+    font-weight: 700 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    border: 1px solid #eee !important;
+    padding: 10px 8px !important;
+    font-size: 0.85rem !important;
+  }
+  .custom-table tbody td {
+    border: 1px solid #f5f5f5 !important;
+    padding: 8px !important;
+    font-size: 0.85rem !important;
+    color: #444 !important;
+  }
+  .custom-table tbody tr:hover {
+    background-color: #f8fbff !important;
+  }
+  
+  /* Header Color Groups */
+  .th-blue { background: #e3f2fd !important; color: #0d47a1 !important; }
+  .th-green { background: #e8f5e9 !important; color: #1b5e20 !important; }
+  .th-orange { background: #fff3e0 !important; color: #e65100 !important; }
+  .th-purple { background: #f3e5f5 !important; color: #4a148c !important; }
+  .th-red { background: #ffebee !important; color: #b71c1c !important; }
+  .th-cyan { background: #e0f7fa !important; color: #006064 !important; }
+  .th-grey { background: #f5f5f5 !important; color: #424242 !important; }
+  
+  .tr-total {
+    background: #f8f9fa !important;
+    font-weight: 700 !important;
+    border-top: 2px solid #dee2e6 !important;
+  }
+  .tr-total td {
+    color: #000 !important;
+    font-size: 0.9rem !important;
+    padding: 10px 8px !important;
+    text-align: right !important;
+    border-top: 2px solid #dee2e6 !important;
+  }
+
+  /* Glassmorphism Containers */
+  .glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .excel-container {
+    display: inline-block !important;
+  }
+  .dt-buttons {
+    display: inline-flex !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+    float: none !important;
+  }
+  .btn-container-contents {
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  
+  .btn-excel {
+    background-color: #18a573 !important;
+    border-color: #18a573 !important;
+    color: white !important;
+    transition: all 0.3s ease;
+  }
+  .btn-excel:hover {
+    background-color: #148c61 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(24, 165, 115, 0.2);
+  }
+
   .card-claim {
     border: none;
     backdrop-filter: blur(10px);
@@ -15,13 +99,6 @@
   /* 💸  Claim (เหลืองทองพาสเทล) */
   .card-claim.card {
     background: linear-gradient(135deg, #dcedc8, #ffffff);
-  }
-  .text-card {
-    color: #b2dfdb !important;
-  }
-  tr.table-claim td,
-  tr.table-claim th {
-    background: linear-gradient(135deg, #e8f6d6, #f6fcef) !important;   
   }
 </style>
 
@@ -443,40 +520,44 @@
         <!-- 10985 -->
         <div class="tab-pane fade show active" id="pane-10985" role="tabpanel" aria-labelledby="tab-10985" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6>[10985] ข้อมูลจัดเก็บรายได้ โรงพยาชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
-              <span class="text-secondary small">Update {{$update_at10985}}</span>              
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10985] ข้อมูลจัดเก็บรายได้ โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
+                <span class="text-secondary small">Update {{$update_at10985}}</span>
+                <div id="btn-10985" class="btn-container-contents"></div>
+              </div>
             </div>
             <div class="table-responsive">
-              <table id="table10985" class="table table-bordered table-striped my-3" width ="100%">
-                <thead class="table-light">
-                  <tr class="table-claim">
-                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>                   
-                    <th class="text-center" colspan="5">PP Fee Schedule</th> 
-                    <th class="text-center" colspan="5">UCS - บริการเฉพาะ (CR)</th>
-                    <th class="text-center" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
+              <table id="table10985" class="table custom-table table-hover align-middle my-3" width ="100%">
+                <thead>
+                  <tr>
+                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>                   
+                    <th class="th-blue" colspan="5">PP Fee Schedule</th> 
+                    <th class="th-green" colspan="5">UCS - บริการเฉพาะ (CR)</th>
+                    <th class="th-orange" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
                   </tr>    
-                  <tr class="table-claim"> 
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>                    
+                  <tr> 
+                    <th class="th-blue">Visit</th>
+                    <th class="th-blue">Claim</th>
+                    <th class="th-blue">ค่าบริการ</th>                    
+                    <th class="th-blue">เรียกเก็บ</th>
+                    <th class="th-blue">ชดเชย</th>   
+                    <th class="th-green">Visit</th>
+                    <th class="th-green">Claim</th>
+                    <th class="th-green">ค่าบริการ</th>                    
+                    <th class="th-green">เรียกเก็บ</th>
+                    <th class="th-green">ชดเชย</th>   
+                    <th class="th-orange">Visit</th>
+                    <th class="th-orange">Claim</th>
+                    <th class="th-orange">ค่าบริการ</th>                    
+                    <th class="th-orange">เรียกเก็บ</th>
+                    <th class="th-orange">ชดเชย</th>                    
                   </tr>    
                 </thead>           
+                <tbody>
                   @foreach($total_10985 as $row) 
                   <tr>
-                    <td align="center"width ="4%">{{ $row->month }}</td>
+                    <td align="center" width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs) }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs_claim) }}</td>
                     <td align="right">{{ number_format($row->inc_ppfs,2) }}</td>                    
@@ -494,25 +575,27 @@
                     <td align="right">{{ number_format($row->inc_herb_receive,2) }}</td>                     
                   </tr>             
                   @endforeach    
-                  <tr>
-                    <td align="right"><strong>รวม</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('visit_ppfs'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('visit_ppfs_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_ppfs'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_ppfs_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_ppfs_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('visit_ucs_cr'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('visit_ucs_cr_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_uccr'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_uccr_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_uccr_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('visit_ucs_herb'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('visit_ucs_herb_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_herb'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_herb_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10985->sum('inc_herb_receive'),2)}}</strong></td>
-                  </tr>   
                 </tbody>
+                <tfoot>
+                  <tr class="tr-total">
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right">{{number_format($total_10985->sum('visit_ppfs'))}}</td>
+                    <td align="right">{{number_format($total_10985->sum('visit_ppfs_claim'))}}</td>
+                    <td align="right">{{number_format($total_10985->sum('inc_ppfs'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10985->sum('inc_ppfs_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10985->sum('inc_ppfs_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10985->sum('visit_ucs_cr'))}}</td>
+                    <td align="right">{{number_format($total_10985->sum('visit_ucs_cr_claim'))}}</td>
+                    <td align="right">{{number_format($total_10985->sum('inc_uccr'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10985->sum('inc_uccr_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10985->sum('inc_uccr_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10985->sum('visit_ucs_herb'))}}</td>
+                    <td align="right">{{number_format($total_10985->sum('visit_ucs_herb_claim'))}}</td>
+                    <td align="right">{{number_format($total_10985->sum('inc_herb'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10985->sum('inc_herb_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10985->sum('inc_herb_receive'),2)}}</td>
+                  </tr>   
+                </tfoot>
               </table>
             </div>
           </div>                   
@@ -522,40 +605,44 @@
         <!-- 10986 -->
         <div class="tab-pane fade" id="pane-10986" role="tabpanel" aria-labelledby="tab-10986" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6>[10986] ข้อมูลจัดเก็บรายได้ โรงพยาปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
-              <span class="text-secondary small">Update {{$update_at10986}}</span>            
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10986] ข้อมูลจัดเก็บรายได้ โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
+                <span class="text-secondary small">Update {{$update_at10986}}</span>
+                <div id="btn-10986" class="btn-container-contents"></div>
+              </div>
             </div>
             <div class="table-responsive">
-              <table id="table10986" class="table table-bordered table-striped my-3" width ="100%">
-                <thead class="table-light">
-                  <tr class="table-claim">
-                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>                   
-                    <th class="text-center" colspan="5">PP Fee Schedule</th> 
-                    <th class="text-center" colspan="5">UCS - บริการเฉพาะ (CR)</th>
-                    <th class="text-center" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
+              <table id="table10986" class="table custom-table table-hover align-middle my-3" width ="100%">
+                <thead>
+                  <tr>
+                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>                   
+                    <th class="th-blue" colspan="5">PP Fee Schedule</th> 
+                    <th class="th-green" colspan="5">UCS - บริการเฉพาะ (CR)</th>
+                    <th class="th-orange" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
                   </tr>    
-                  <tr class="table-claim"> 
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>                    
+                  <tr> 
+                    <th class="th-blue">Visit</th>
+                    <th class="th-blue">Claim</th>
+                    <th class="th-blue">ค่าบริการ</th>                    
+                    <th class="th-blue">เรียกเก็บ</th>
+                    <th class="th-blue">ชดเชย</th>   
+                    <th class="th-green">Visit</th>
+                    <th class="th-green">Claim</th>
+                    <th class="th-green">ค่าบริการ</th>                    
+                    <th class="th-green">เรียกเก็บ</th>
+                    <th class="th-green">ชดเชย</th>   
+                    <th class="th-orange">Visit</th>
+                    <th class="th-orange">Claim</th>
+                    <th class="th-orange">ค่าบริการ</th>                    
+                    <th class="th-orange">เรียกเก็บ</th>
+                    <th class="th-orange">ชดเชย</th>                    
                   </tr>    
                 </thead>           
+                <tbody>
                   @foreach($total_10986 as $row) 
                   <tr>
-                    <td align="center"width ="4%">{{ $row->month }}</td>
+                    <td align="center" width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs) }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs_claim) }}</td>
                     <td align="right">{{ number_format($row->inc_ppfs,2) }}</td>                    
@@ -573,25 +660,27 @@
                     <td align="right">{{ number_format($row->inc_herb_receive,2) }}</td>                     
                   </tr>             
                   @endforeach    
-                  <tr>
-                    <td align="right"><strong>รวม</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('visit_ppfs'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('visit_ppfs_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_ppfs'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_ppfs_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_ppfs_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('visit_ucs_cr'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('visit_ucs_cr_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_uccr'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_uccr_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_uccr_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('visit_ucs_herb'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('visit_ucs_herb_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_herb'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_herb_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10986->sum('inc_herb_receive'),2)}}</strong></td>
-                  </tr>   
                 </tbody>
+                <tfoot>
+                  <tr class="tr-total">
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right">{{number_format($total_10986->sum('visit_ppfs'))}}</td>
+                    <td align="right">{{number_format($total_10986->sum('visit_ppfs_claim'))}}</td>
+                    <td align="right">{{number_format($total_10986->sum('inc_ppfs'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10986->sum('inc_ppfs_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10986->sum('inc_ppfs_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10986->sum('visit_ucs_cr'))}}</td>
+                    <td align="right">{{number_format($total_10986->sum('visit_ucs_cr_claim'))}}</td>
+                    <td align="right">{{number_format($total_10986->sum('inc_uccr'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10986->sum('inc_uccr_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10986->sum('inc_uccr_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10986->sum('visit_ucs_herb'))}}</td>
+                    <td align="right">{{number_format($total_10986->sum('visit_ucs_herb_claim'))}}</td>
+                    <td align="right">{{number_format($total_10986->sum('inc_herb'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10986->sum('inc_herb_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10986->sum('inc_herb_receive'),2)}}</td>
+                  </tr>   
+                </tfoot>
               </table>
             </div>
           </div> 
@@ -601,40 +690,44 @@
         <!-- 10987 -->
         <div class="tab-pane fade" id="pane-10987" role="tabpanel" aria-labelledby="tab-10987" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6>[10987] ข้อมูลจัดเก็บรายได้ โรงพยาพนา ปีงบประมาณ {{$budget_year}}</h6>
-              <span class="text-secondary small">Update {{$update_at10987}}</span>   
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10987] ข้อมูลจัดเก็บรายได้ โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
+                <span class="text-secondary small">Update {{$update_at10987}}</span>
+                <div id="btn-10987" class="btn-container-contents"></div>
+              </div>
             </div>
             <div class="table-responsive">
-              <table id="table10987" class="table table-bordered table-striped my-3" width ="100%">
-                <thead class="table-light">
-                  <tr class="table-claim">
-                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>                   
-                    <th class="text-center" colspan="5">PP Fee Schedule</th> 
-                    <th class="text-center" colspan="5">UCS - บริการเฉพาะ (CR)</th>
-                    <th class="text-center" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
+              <table id="table10987" class="table custom-table table-hover align-middle my-3" width ="100%">
+                <thead>
+                  <tr>
+                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>                   
+                    <th class="th-blue" colspan="5">PP Fee Schedule</th> 
+                    <th class="th-green" colspan="5">UCS - บริการเฉพาะ (CR)</th>
+                    <th class="th-orange" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
                   </tr>    
-                  <tr class="table-claim"> 
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>                    
+                  <tr> 
+                    <th class="th-blue">Visit</th>
+                    <th class="th-blue">Claim</th>
+                    <th class="th-blue">ค่าบริการ</th>                    
+                    <th class="th-blue">เรียกเก็บ</th>
+                    <th class="th-blue">ชดเชย</th>   
+                    <th class="th-green">Visit</th>
+                    <th class="th-green">Claim</th>
+                    <th class="th-green">ค่าบริการ</th>                    
+                    <th class="th-green">เรียกเก็บ</th>
+                    <th class="th-green">ชดเชย</th>   
+                    <th class="th-orange">Visit</th>
+                    <th class="th-orange">Claim</th>
+                    <th class="th-orange">ค่าบริการ</th>                    
+                    <th class="th-orange">เรียกเก็บ</th>
+                    <th class="th-orange">ชดเชย</th>                    
                   </tr>    
                 </thead>           
+                <tbody>
                   @foreach($total_10987 as $row) 
                   <tr>
-                    <td align="center"width ="4%">{{ $row->month }}</td>
+                    <td align="center" width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs) }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs_claim) }}</td>
                     <td align="right">{{ number_format($row->inc_ppfs,2) }}</td>                    
@@ -652,68 +745,72 @@
                     <td align="right">{{ number_format($row->inc_herb_receive,2) }}</td>                     
                   </tr>             
                   @endforeach    
-                  <tr>
-                    <td align="right"><strong>รวม</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('visit_ppfs'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('visit_ppfs_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_ppfs'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_ppfs_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_ppfs_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('visit_ucs_cr'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('visit_ucs_cr_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_uccr'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_uccr_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_uccr_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('visit_ucs_herb'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('visit_ucs_herb_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_herb'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_herb_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10987->sum('inc_herb_receive'),2)}}</strong></td>
-                  </tr>   
                 </tbody>
+                <tfoot>
+                  <tr class="tr-total">
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right">{{number_format($total_10987->sum('visit_ppfs'))}}</td>
+                    <td align="right">{{number_format($total_10987->sum('visit_ppfs_claim'))}}</td>
+                    <td align="right">{{number_format($total_10987->sum('inc_ppfs'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10987->sum('inc_ppfs_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10987->sum('inc_ppfs_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10987->sum('visit_ucs_cr'))}}</td>
+                    <td align="right">{{number_format($total_10987->sum('visit_ucs_cr_claim'))}}</td>
+                    <td align="right">{{number_format($total_10987->sum('inc_uccr'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10987->sum('inc_uccr_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10987->sum('inc_uccr_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10987->sum('visit_ucs_herb'))}}</td>
+                    <td align="right">{{number_format($total_10987->sum('visit_ucs_herb_claim'))}}</td>
+                    <td align="right">{{number_format($total_10987->sum('inc_herb'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10987->sum('inc_herb_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10987->sum('inc_herb_receive'),2)}}</td>
+                  </tr>   
+                </tfoot>
               </table>
             </div>
           </div> 
-          <!-- END 10987 -->         
         </div>
-
-        <!-- 10988 OPD -->
+        <!-- 10988 -->
         <div class="tab-pane fade" id="pane-10988" role="tabpanel" aria-labelledby="tab-10988" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6>[10988] ข้อมูลจัดเก็บรายได้ โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
-              <span class="text-secondary small">Update {{$update_at10988}}</span>   
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10988] ข้อมูลจัดเก็บรายได้ โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
+                <span class="text-secondary small">Update {{$update_at10988}}</span>
+                <div id="btn-10988" class="btn-container-contents"></div>
+              </div>
             </div>
             <div class="table-responsive">
-              <table id="table10988" class="table table-bordered table-striped my-3" width ="100%">
-                <thead class="table-light">
-                  <tr class="table-claim">
-                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>                   
-                    <th class="text-center" colspan="5">PP Fee Schedule</th> 
-                    <th class="text-center" colspan="5">UCS - บริการเฉพาะ (CR)</th>
-                    <th class="text-center" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
+              <table id="table10988" class="table custom-table table-hover align-middle my-3" width ="100%">
+                <thead>
+                  <tr>
+                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>                   
+                    <th class="th-blue" colspan="5">PP Fee Schedule</th> 
+                    <th class="th-green" colspan="5">UCS - บริการเฉพาะ (CR)</th>
+                    <th class="th-orange" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
                   </tr>    
-                  <tr class="table-claim"> 
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>                    
+                  <tr> 
+                    <th class="th-blue">Visit</th>
+                    <th class="th-blue">Claim</th>
+                    <th class="th-blue">ค่าบริการ</th>                    
+                    <th class="th-blue">เรียกเก็บ</th>
+                    <th class="th-blue">ชดเชย</th>   
+                    <th class="th-green">Visit</th>
+                    <th class="th-green">Claim</th>
+                    <th class="th-green">ค่าบริการ</th>                    
+                    <th class="th-green">เรียกเก็บ</th>
+                    <th class="th-green">ชดเชย</th>   
+                    <th class="th-orange">Visit</th>
+                    <th class="th-orange">Claim</th>
+                    <th class="th-orange">ค่าบริการ</th>                    
+                    <th class="th-orange">เรียกเก็บ</th>
+                    <th class="th-orange">ชดเชย</th>                    
                   </tr>    
                 </thead>           
+                <tbody>
                   @foreach($total_10988 as $row) 
                   <tr>
-                    <td align="center"width ="4%">{{ $row->month }}</td>
+                    <td align="center" width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs) }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs_claim) }}</td>
                     <td align="right">{{ number_format($row->inc_ppfs,2) }}</td>                    
@@ -731,25 +828,27 @@
                     <td align="right">{{ number_format($row->inc_herb_receive,2) }}</td>                     
                   </tr>             
                   @endforeach    
-                  <tr>
-                    <td align="right"><strong>รวม</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('visit_ppfs'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('visit_ppfs_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_ppfs'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_ppfs_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_ppfs_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('visit_ucs_cr'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('visit_ucs_cr_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_uccr'),2)}}</strong></td>                   
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_uccr_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_uccr_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('visit_ucs_herb'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('visit_ucs_herb_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_herb'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_herb_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10988->sum('inc_herb_receive'),2)}}</strong></td>
-                  </tr>   
                 </tbody>
+                <tfoot>
+                  <tr class="tr-total">
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right">{{number_format($total_10988->sum('visit_ppfs'))}}</td>
+                    <td align="right">{{number_format($total_10988->sum('visit_ppfs_claim'))}}</td>
+                    <td align="right">{{number_format($total_10988->sum('inc_ppfs'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10988->sum('inc_ppfs_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10988->sum('inc_ppfs_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10988->sum('visit_ucs_cr'))}}</td>
+                    <td align="right">{{number_format($total_10988->sum('visit_ucs_cr_claim'))}}</td>
+                    <td align="right">{{number_format($total_10988->sum('inc_uccr'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10988->sum('inc_uccr_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10988->sum('inc_uccr_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10988->sum('visit_ucs_herb'))}}</td>
+                    <td align="right">{{number_format($total_10988->sum('visit_ucs_herb_claim'))}}</td>
+                    <td align="right">{{number_format($total_10988->sum('inc_herb'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10988->sum('inc_herb_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10988->sum('inc_herb_receive'),2)}}</td>
+                  </tr>   
+                </tfoot>
               </table>
             </div>
           </div>
@@ -759,40 +858,44 @@
         <!-- 10989 -->
         <div class="tab-pane fade" id="pane-10989" role="tabpanel" aria-labelledby="tab-10989" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6>[10989] ข้อมูลจัดเก็บรายได้ โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
-              <span class="text-secondary small">Update {{$update_at10989}}</span>   
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10989] ข้อมูลจัดเก็บรายได้ โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
+                <span class="text-secondary small">Update {{$update_at10989}}</span>
+                <div id="btn-10989" class="btn-container-contents"></div>
+              </div>
             </div>
             <div class="table-responsive">
-              <table id="table10989" class="table table-bordered table-striped my-3" width ="100%">
-                <thead class="table-light">
-                  <tr class="table-claim">
-                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>                   
-                    <th class="text-center" colspan="5">PP Fee Schedule</th> 
-                    <th class="text-center" colspan="5">UCS - บริการเฉพาะ (CR)</th>
-                    <th class="text-center" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
+              <table id="table10989" class="table custom-table table-hover align-middle my-3" width ="100%">
+                <thead>
+                  <tr>
+                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>                   
+                    <th class="th-blue" colspan="5">PP Fee Schedule</th> 
+                    <th class="th-green" colspan="5">UCS - บริการเฉพาะ (CR)</th>
+                    <th class="th-orange" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
                   </tr>    
-                  <tr class="table-claim"> 
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>                    
+                  <tr> 
+                    <th class="th-blue">Visit</th>
+                    <th class="th-blue">Claim</th>
+                    <th class="th-blue">ค่าบริการ</th>                    
+                    <th class="th-blue">เรียกเก็บ</th>
+                    <th class="th-blue">ชดเชย</th>   
+                    <th class="th-green">Visit</th>
+                    <th class="th-green">Claim</th>
+                    <th class="th-green">ค่าบริการ</th>                    
+                    <th class="th-green">เรียกเก็บ</th>
+                    <th class="th-green">ชดเชย</th>   
+                    <th class="th-orange">Visit</th>
+                    <th class="th-orange">Claim</th>
+                    <th class="th-orange">ค่าบริการ</th>                    
+                    <th class="th-orange">เรียกเก็บ</th>
+                    <th class="th-orange">ชดเชย</th>                    
                   </tr>    
                 </thead>           
+                <tbody>
                   @foreach($total_10989 as $row) 
                   <tr>
-                    <td align="center"width ="4%">{{ $row->month }}</td>
+                    <td align="center" width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs) }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs_claim) }}</td>
                     <td align="right">{{ number_format($row->inc_ppfs,2) }}</td>                    
@@ -810,68 +913,74 @@
                     <td align="right">{{ number_format($row->inc_herb_receive,2) }}</td>                     
                   </tr>             
                   @endforeach    
-                  <tr>
-                    <td align="right"><strong>รวม</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('visit_ppfs'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('visit_ppfs_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_ppfs'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_ppfs_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_ppfs_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('visit_ucs_cr'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('visit_ucs_cr_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_uccr'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_uccr_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_uccr_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('visit_ucs_herb'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('visit_ucs_herb_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_herb'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_herb_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10989->sum('inc_herb_receive'),2)}}</strong></td>
-                  </tr>   
                 </tbody>
+                <tfoot>
+                  <tr class="tr-total">
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right">{{number_format($total_10989->sum('visit_ppfs'))}}</td>
+                    <td align="right">{{number_format($total_10989->sum('visit_ppfs_claim'))}}</td>
+                    <td align="right">{{number_format($total_10989->sum('inc_ppfs'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10989->sum('inc_ppfs_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10989->sum('inc_ppfs_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10989->sum('visit_ucs_cr'))}}</td>
+                    <td align="right">{{number_format($total_10989->sum('visit_ucs_cr_claim'))}}</td>
+                    <td align="right">{{number_format($total_10989->sum('inc_uccr'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10989->sum('inc_uccr_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10989->sum('inc_uccr_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10989->sum('visit_ucs_herb'))}}</td>
+                    <td align="right">{{number_format($total_10989->sum('visit_ucs_herb_claim'))}}</td>
+                    <td align="right">{{number_format($total_10989->sum('inc_herb'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10989->sum('inc_herb_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10989->sum('inc_herb_receive'),2)}}</td>
+                  </tr>   
+                </tfoot>
               </table>
             </div>
           </div> 
         <!-- END 10989 -->          
         </div>
 
-        <!-- 10990 OPD -->
+        <!-- 10990 -->
         <div class="tab-pane fade" id="pane-10990" role="tabpanel" aria-labelledby="tab-10990" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6>[10990] ข้อมูลจัดเก็บรายได้ โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
-              <span class="text-secondary small">Update {{$update_at10990}}</span>   
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10990] ข้อมูลจัดเก็บรายได้ โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
+                <span class="text-secondary small">Update {{$update_at10990}}</span>
+                <div id="btn-10990" class="btn-container-contents"></div>
+              </div>
             </div>
             <div class="table-responsive">
-              <table id="table10990" class="table table-bordered table-striped my-3" width ="100%">
-                <thead class="table-light">
-                  <tr class="table-claim">
-                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>                   
-                    <th class="text-center" colspan="5">PP Fee Schedule</th> 
-                    <th class="text-center" colspan="5">UCS - บริการเฉพาะ (CR)</th>
-                    <th class="text-center" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
+              <table id="table10990" class="table custom-table table-hover align-middle my-3" width ="100%">
+                <thead>
+                  <tr>
+                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>                   
+                    <th class="th-blue" colspan="5">PP Fee Schedule</th> 
+                    <th class="th-green" colspan="5">UCS - บริการเฉพาะ (CR)</th>
+                    <th class="th-orange" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
                   </tr>    
-                  <tr class="table-claim"> 
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>                    
+                  <tr> 
+                    <th class="th-blue">Visit</th>
+                    <th class="th-blue">Claim</th>
+                    <th class="th-blue">ค่าบริการ</th>                    
+                    <th class="th-blue">เรียกเก็บ</th>
+                    <th class="th-blue">ชดเชย</th>   
+                    <th class="th-green">Visit</th>
+                    <th class="th-green">Claim</th>
+                    <th class="th-green">ค่าบริการ</th>                    
+                    <th class="th-green">เรียกเก็บ</th>
+                    <th class="th-green">ชดเชย</th>   
+                    <th class="th-orange">Visit</th>
+                    <th class="th-orange">Claim</th>
+                    <th class="th-orange">ค่าบริการ</th>                    
+                    <th class="th-orange">เรียกเก็บ</th>
+                    <th class="th-orange">ชดเชย</th>                    
                   </tr>    
                 </thead>           
+                <tbody>
                   @foreach($total_10990 as $row) 
                   <tr>
-                    <td align="center"width ="4%">{{ $row->month }}</td>
+                    <td align="center" width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs) }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs_claim) }}</td>
                     <td align="right">{{ number_format($row->inc_ppfs,2) }}</td>                    
@@ -889,25 +998,27 @@
                     <td align="right">{{ number_format($row->inc_herb_receive,2) }}</td>                     
                   </tr>             
                   @endforeach    
-                  <tr>
-                    <td align="right"><strong>รวม</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('visit_ppfs'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('visit_ppfs_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_ppfs'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_ppfs_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_ppfs_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('visit_ucs_cr'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('visit_ucs_cr_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_uccr'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_uccr_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_uccr_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('visit_ucs_herb'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('visit_ucs_herb_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_herb'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_herb_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10990->sum('inc_herb_receive'),2)}}</strong></td>
-                  </tr>   
                 </tbody>
+                <tfoot>
+                  <tr class="tr-total">
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right">{{number_format($total_10990->sum('visit_ppfs'))}}</td>
+                    <td align="right">{{number_format($total_10990->sum('visit_ppfs_claim'))}}</td>
+                    <td align="right">{{number_format($total_10990->sum('inc_ppfs'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10990->sum('inc_ppfs_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10990->sum('inc_ppfs_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10990->sum('visit_ucs_cr'))}}</td>
+                    <td align="right">{{number_format($total_10990->sum('visit_ucs_cr_claim'))}}</td>
+                    <td align="right">{{number_format($total_10990->sum('inc_uccr'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10990->sum('inc_uccr_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10990->sum('inc_uccr_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10990->sum('visit_ucs_herb'))}}</td>
+                    <td align="right">{{number_format($total_10990->sum('visit_ucs_herb_claim'))}}</td>
+                    <td align="right">{{number_format($total_10990->sum('inc_herb'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10990->sum('inc_herb_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10990->sum('inc_herb_receive'),2)}}</td>
+                  </tr>   
+                </tfoot>
               </table>
             </div>
           </div>
@@ -917,40 +1028,44 @@
         <!-- 10703  -->
         <div class="tab-pane fade" id="pane-10703" role="tabpanel" aria-labelledby="tab-10703" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6>[10703] ข้อมูลจัดเก็บรายได้ โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
-              <span class="text-secondary small">Update {{$update_at10703}}</span>   
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10703] ข้อมูลจัดเก็บรายได้ โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
+                <span class="text-secondary small">Update {{$update_at10703}}</span>
+                <div id="btn-10703" class="btn-container-contents"></div>
+              </div>
             </div>
             <div class="table-responsive">
-              <table id="table10703" class="table table-bordered table-striped my-3" width ="100%">
-                <thead class="table-light">
-                  <tr class="table-claim">
-                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>                   
-                    <th class="text-center" colspan="5">PP Fee Schedule</th> 
-                    <th class="text-center" colspan="5">UCS - บริการเฉพาะ (CR)</th>
-                    <th class="text-center" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
+              <table id="table10703" class="table custom-table table-hover align-middle my-3" width ="100%">
+                <thead>
+                  <tr>
+                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>                   
+                    <th class="th-blue" colspan="5">PP Fee Schedule</th> 
+                    <th class="th-green" colspan="5">UCS - บริการเฉพาะ (CR)</th>
+                    <th class="th-orange" colspan="5">UCS - สมุนไพร 32 รายการ</th>  
                   </tr>    
-                  <tr class="table-claim"> 
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>   
-                    <td class="text-center text-primary">Visit</td>
-                    <td class="text-center text-primary">Claim</td>
-                    <td class="text-center text-primary">ค่าบริการ</td>                    
-                    <td class="text-center text-primary">เรียกเก็บ</td>
-                    <td class="text-center text-primary">ชดเชย</td>                    
+                  <tr> 
+                    <th class="th-blue">Visit</th>
+                    <th class="th-blue">Claim</th>
+                    <th class="th-blue">ค่าบริการ</th>                    
+                    <th class="th-blue">เรียกเก็บ</th>
+                    <th class="th-blue">ชดเชย</th>   
+                    <th class="th-green">Visit</th>
+                    <th class="th-green">Claim</th>
+                    <th class="th-green">ค่าบริการ</th>                    
+                    <th class="th-green">เรียกเก็บ</th>
+                    <th class="th-green">ชดเชย</th>   
+                    <th class="th-orange">Visit</th>
+                    <th class="th-orange">Claim</th>
+                    <th class="th-orange">ค่าบริการ</th>                    
+                    <th class="th-orange">เรียกเก็บ</th>
+                    <th class="th-orange">ชดเชย</th>                    
                   </tr>    
                 </thead>           
+                <tbody>
                   @foreach($total_10703 as $row) 
                   <tr>
-                    <td align="center"width ="4%">{{ $row->month }}</td>
+                    <td align="center" width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs) }}</td>
                     <td align="right">{{ number_format($row->visit_ppfs_claim) }}</td>
                     <td align="right">{{ number_format($row->inc_ppfs,2) }}</td>                    
@@ -968,25 +1083,27 @@
                     <td align="right">{{ number_format($row->inc_herb_receive,2) }}</td>                     
                   </tr>             
                   @endforeach    
-                  <tr>
-                    <td align="right"><strong>รวม</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('visit_ppfs'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('visit_ppfs_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_ppfs'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_ppfs_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_ppfs_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('visit_ucs_cr'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('visit_ucs_cr_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_uccr'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_uccr_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_uccr_receive'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('visit_ucs_herb'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('visit_ucs_herb_claim'))}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_herb'),2)}}</strong></td>                    
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_herb_claim'),2)}}</strong></td>
-                    <td align="right"><strong>{{number_format($total_10703->sum('inc_herb_receive'),2)}}</strong></td>
-                  </tr>   
                 </tbody>
+                <tfoot>
+                  <tr class="tr-total">
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right">{{number_format($total_10703->sum('visit_ppfs'))}}</td>
+                    <td align="right">{{number_format($total_10703->sum('visit_ppfs_claim'))}}</td>
+                    <td align="right">{{number_format($total_10703->sum('inc_ppfs'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10703->sum('inc_ppfs_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10703->sum('inc_ppfs_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10703->sum('visit_ucs_cr'))}}</td>
+                    <td align="right">{{number_format($total_10703->sum('visit_ucs_cr_claim'))}}</td>
+                    <td align="right">{{number_format($total_10703->sum('inc_uccr'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10703->sum('inc_uccr_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10703->sum('inc_uccr_receive'),2)}}</td>
+                    <td align="right">{{number_format($total_10703->sum('visit_ucs_herb'))}}</td>
+                    <td align="right">{{number_format($total_10703->sum('visit_ucs_herb_claim'))}}</td>
+                    <td align="right">{{number_format($total_10703->sum('inc_herb'),2)}}</td>                    
+                    <td align="right">{{number_format($total_10703->sum('inc_herb_claim'),2)}}</td>
+                    <td align="right">{{number_format($total_10703->sum('inc_herb_receive'),2)}}</td>
+                  </tr>   
+                </tfoot>
               </table>
             </div>
           </div>
@@ -1015,141 +1132,43 @@
 @push('scripts')
   <script>
     $(function () {
-      $('#table10985').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
-            className: 'btn btn-success btn-sm',
-            title: 'ข้อมูลจัดเก็บรายได้ โรงพยาบาลชานุมาน {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10986').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
-            className: 'btn btn-success btn-sm',
-            title: 'ข้อมูลจัดเก็บรายได้ โรงพยาบาลปทุมราชวงศา {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10987').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
-            className: 'btn btn-success btn-sm',
-            title: 'ข้อมูลจัดเก็บรายได้ โรงพยาบาลพนา {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10988').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
-            className: 'btn btn-success btn-sm',
-            title: 'ข้อมูลจัดเก็บรายได้ โรงพยาบาลเสนางคนิคม {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10989').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
-            className: 'btn btn-success btn-sm',
-            title: 'ข้อมูลจัดเก็บรายได้ โรงพยาบาลหัวตะพาน {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10990').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
-            className: 'btn btn-success btn-sm',
-            title: 'ข้อมูลจัดเก็บรายได้ โรงพยาบาลลืออำนาจ {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10703').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
-            className: 'btn btn-success btn-sm',
-            title: 'ข้อมูลจัดเก็บรายได้ โรงพยาบาลอำนาจเจริญ {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
+      const hospitals = [
+        { id: '10985', name: 'โรงพยาบาลชานุมาน' },
+        { id: '10986', name: 'โรงพยาบาลปทุมราชวงศา' },
+        { id: '10987', name: 'โรงพยาบาลพนา' },
+        { id: '10988', name: 'โรงพยาบาลเสนางคนิคม' },
+        { id: '10989', name: 'โรงพยาบาลหัวตะพาน' },
+        { id: '10990', name: 'โรงพยาบาลลืออำนาจ' },
+        { id: '10703', name: 'โรงพยาบาลอำนาจเจริญ' }
+      ];
+
+      hospitals.forEach(hosp => {
+        const table = $(`#table${hosp.id}`).DataTable({
+          "dom": "Brt",
+          "destroy": true,
+          "responsive": false,
+          "autoWidth": false,
+          "pageLength": 13,
+          "lengthChange": false,
+          "searching": false,
+          "ordering": false,
+          "info": false,
+          "paging": false,
+          "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json"
+          },
+          "buttons": [
+            {
+              extend: 'excelHtml5',
+              text: '<i class="bi bi-file-earmark-excel me-1"></i> Excel',
+              className: 'btn btn-excel btn-sm rounded-pill px-3 shadow-sm',
+              title: `ข้อมูลจัดเก็บรายได้_${hosp.name}_${hosp.id}_{{$budget_year}}`
+            }
+          ]
+        });
+        setTimeout(() => {
+          table.buttons().container().detach().appendTo($(`#btn-${hosp.id}`));
+        }, 10);
       });
     });
   </script>
