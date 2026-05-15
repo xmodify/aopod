@@ -975,6 +975,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10985] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10985}}</span>
+                <div id="btn-10985-ipd"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1056,6 +1057,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10985] ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10985}}</span>
+                <div id="btn-10985-refer"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1099,6 +1101,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10986] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10986}}</span>
+                <div id="btn-10986-ipd"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1175,6 +1178,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10986] ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10986}}</span>
+                <div id="btn-10986-refer"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1219,6 +1223,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10987] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10987}}</span>
+                <div id="btn-10987-ipd"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1295,6 +1300,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10987] ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10987}}</span>
+                <div id="btn-10987-refer"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1339,6 +1345,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10988] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10988}}</span>
+                <div id="btn-10988-ipd"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1415,6 +1422,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10988] ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10988}}</span>
+                <div id="btn-10988-refer"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1459,6 +1467,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10989] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10989}}</span>
+                <div id="btn-10989-ipd"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1535,6 +1544,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10989] ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10989}}</span>
+                <div id="btn-10989-refer"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1579,6 +1589,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10990] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10990}}</span>
+                <div id="btn-10990-ipd"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1655,6 +1666,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10990] ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10990}}</span>
+                <div id="btn-10990-refer"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1699,6 +1711,7 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10703] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10703}}</span>
+                <div id="btn-10703-ipd"></div>
               </div>
             </div>
             <div class="table-responsive">
@@ -1843,289 +1856,7 @@
 
 @endsection
 
-<!-- script datatable  ---------------------------------------------------------------------------------------->
-@push('scripts')
-  <script>
-    $(function () {
-      $('#table10985_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10985_refer').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10986_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10986_refer').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10987_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10987_refer').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10988_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10988_refer').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10989_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10989_refer').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10990_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10990_refer').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10703_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10703_refer').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-@endpush
+
 
 <!-- script กราฟ  ---------------------------------------------------------------------------------------->
 @push('scripts')
@@ -2752,4 +2483,59 @@
       cmiChart.render();
 
     });
-  </script>@endpush
+  </script>
+  <script>
+    $(function () {
+      const config = {
+        dom: 'rt',
+        ordering: false,
+        paging: false,
+        info: false,
+        lengthChange: false,
+        language: { search: "ค้นหา:" }
+      };
+
+      // 10985
+      var t10985_ipd = $('#table10985_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน'}]});
+      t10985_ipd.buttons().container().appendTo('#btn-10985-ipd');
+      var t10985_ref = $('#table10985_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน'}]});
+      t10985_ref.buttons().container().appendTo('#btn-10985-refer');
+
+      // 10986
+      var t10986_ipd = $('#table10986_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา'}]});
+      t10986_ipd.buttons().container().appendTo('#btn-10986-ipd');
+      var t10986_ref = $('#table10986_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา'}]});
+      t10986_ref.buttons().container().appendTo('#btn-10986-refer');
+
+      // 10987
+      var t10987_ipd = $('#table10987_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา'}]});
+      t10987_ipd.buttons().container().appendTo('#btn-10987-ipd');
+      var t10987_ref = $('#table10987_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา'}]});
+      t10987_ref.buttons().container().appendTo('#btn-10987-refer');
+
+      // 10988
+      var t10988_ipd = $('#table10988_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม'}]});
+      t10988_ipd.buttons().container().appendTo('#btn-10988-ipd');
+      var t10988_ref = $('#table10988_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม'}]});
+      t10988_ref.buttons().container().appendTo('#btn-10988-refer');
+
+      // 10989
+      var t10989_ipd = $('#table10989_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน'}]});
+      t10989_ipd.buttons().container().appendTo('#btn-10989-ipd');
+      var t10989_ref = $('#table10989_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน'}]});
+      t10989_ref.buttons().container().appendTo('#btn-10989-refer');
+
+      // 10990
+      var t10990_ipd = $('#table10990_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ'}]});
+      t10990_ipd.buttons().container().appendTo('#btn-10990-ipd');
+      var t10990_ref = $('#table10990_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ'}]});
+      t10990_ref.buttons().container().appendTo('#btn-10990-refer');
+
+      // 10703
+      var t10703_ipd = $('#table10703_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ'}]});
+      t10703_ipd.buttons().container().appendTo('#btn-10703-ipd');
+      var t10703_ref = $('#table10703_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ'}]});
+      t10703_ref.buttons().container().appendTo('#btn-10703-refer');
+    });
+  </script>
+@endpush
