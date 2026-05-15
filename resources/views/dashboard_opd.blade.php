@@ -51,6 +51,56 @@
     border-radius: 16px;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
   }
+
+  .card-hover {
+    transition: all 0.3s ease-in-out;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Theme Specific Cards */
+  .card-theme-opd {
+    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+    border: 1px solid #1976d2 !important;
+    border-left: 6px solid #1976d2 !important;
+  }
+  .card-theme-chart {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #6c757d !important;
+    border-left: 6px solid #6c757d !important;
+  }
+  .card-theme-dent {
+    background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%);
+    border: 1px solid #ab47bc !important;
+    border-left: 6px solid #ab47bc !important;
+  }
+  .card-theme-phy {
+    background: linear-gradient(135deg, #fbe9e7 0%, #ffffff 100%);
+    border: 1px solid #ff7043 !important;
+    border-left: 6px solid #ff7043 !important;
+  }
+  .card-theme-anc {
+    background: linear-gradient(135deg, #fce4ec 0%, #ffffff 100%);
+    border: 1px solid #ec407a !important;
+    border-left: 6px solid #ec407a !important;
+  }
+  .card-theme-hm {
+    background: linear-gradient(135deg, #e0f2f1 0%, #ffffff 100%);
+    border: 1px solid #26a69a !important;
+    border-left: 6px solid #26a69a !important;
+  }
+  .card-theme-tele {
+    background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%);
+    border: 1px solid #26c6da !important;
+    border-left: 6px solid #26c6da !important;
+  }
+  .card-theme-oapp {
+    background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+    border: 1px solid #66bb6a !important;
+    border-left: 6px solid #66bb6a !important;
+  }
 </style>
 
 @section('title', 'Dashboard | AOPOD')
@@ -90,11 +140,13 @@
         {{--  ผู้ป่วยนอก ----------------------------------------------------------------------------------------------- --}}
         <div class="col-12 col-sm-6 col-xl-4">
           <a href="#" data-bs-toggle="modal" data-bs-target="#VisitDetailModal" class="text-decoration-none text-dark">
-            <div class="card-opd card glass p-3 h-100" style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div class="card-opd card card-theme-opd card-hover glass p-3 h-100">
               <!-- Header -->
               <div class="d-flex align-items-center justify-content-between mb-3">
-                <h6 class="mb-0 text-primary fw-semibold">ผู้ป่วยนอก OPD วันนี้</h6>
-                <i class="bi bi-person-heart fs-4 text-primary"></i>
+                <h6 class="mb-0 text-primary fw-bold">ผู้ป่วยนอก OPD วันนี้</h6>
+                <div class="bg-primary bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                  <i class="bi bi-person-heart fs-4 text-primary"></i>
+                </div>
               </div>
               <!-- Body Numbers -->
               <div class="d-flex justify-content-between align-items-center text-center">
@@ -182,7 +234,7 @@
 
         {{--  กราฟแยกสิทธิ------------------------------------------------------------------------------------------------ --}}
         <div class="col-12 col-sm-6 col-xl-8">
-          <div class="card-opd card glass p-3 h-100" style="background: linear-gradient(145deg, #effdff, #ffffff); border:1px solid #b3e5fc;">
+          <div class="card-opd card card-theme-chart glass p-3 h-100">
             <canvas id="visitRightsChart" height="200"></canvas>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -267,12 +319,13 @@
         {{--  ทันตกรรม วันนี้ -------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-2">
           <a href="#" data-bs-toggle="modal" data-bs-target="#DentDetailModal" class="text-decoration-none text-dark">
-            <div class="card-opd card glass p-3 h-100"
-                style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div class="card-opd card card-theme-dent card-hover glass p-3 h-100">
               <!-- หัวข้อซ้าย + ไอคอนขวา -->
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0" style="color:#D946EF;"><strong>ทันตกรรม วันนี้</strong></h6>
-                <i class="fa-solid fa-tooth fs-4" style="color:#D946EF;"></i>
+                <h6 class="mb-0 fw-bold" style="color:#ab47bc;">ทันตกรรม วันนี้</h6>
+                <div class="bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(171, 71, 188, 0.1);">
+                  <i class="fa-solid fa-tooth fs-4" style="color:#ab47bc;"></i>
+                </div>
               </div>
               <!-- เนื้อหาตรงกลาง -->
               <div class="text-center mt-3">                
@@ -338,12 +391,13 @@
         {{--  กายภาพบำบัด วันนี้ -------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-2">
           <a href="#" data-bs-toggle="modal" data-bs-target="#PhyDetailModal" class="text-decoration-none text-dark">
-            <div class="card-opd card glass p-3 h-100"
-                style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div class="card-opd card card-theme-phy card-hover glass p-3 h-100">
               <!-- หัวข้อซ้าย + ไอคอนขวา -->
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0" style="color:#ff8a65;"><strong>กายภาพบำบัด วันนี้</strong></h6>
-                 <i class="fa-solid fa-person-walking fs-4" style="color:#ff8a65;"></i>
+                <h6 class="mb-0 fw-bold" style="color:#ff7043;">กายภาพบำบัด วันนี้</h6>
+                <div class="bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(255, 112, 67, 0.1);">
+                  <i class="fa-solid fa-person-walking fs-4" style="color:#ff7043;"></i>
+                </div>
               </div>
               <!-- เนื้อหาตรงกลาง -->
               <div class="text-center mt-3">                
@@ -409,12 +463,13 @@
         {{-- ฝากครรภ์ วันนี้ -------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-2">
           <a href="#" data-bs-toggle="modal" data-bs-target="#AncDetailModal" class="text-decoration-none text-dark">
-            <div class="card-opd card glass p-3 h-100"
-                style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div class="card-opd card card-theme-anc card-hover glass p-3 h-100">
               <!-- หัวข้อซ้าย + ไอคอนขวา -->
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0" style="color:#F06292;"><strong>ฝากครรภ์ วันนี้</strong></h6>
-                <i class="fa-solid fa-person-pregnant fs-4" style="color:#F06292;"></i>
+                <h6 class="mb-0 fw-bold" style="color:#ec407a;">ฝากครรภ์ วันนี้</h6>
+                <div class="bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(236, 64, 122, 0.1);">
+                  <i class="fa-solid fa-person-pregnant fs-4" style="color:#ec407a;"></i>
+                </div>
               </div>
               <!-- เนื้อหาตรงกลาง -->
               <div class="text-center mt-3">                
@@ -480,12 +535,13 @@
         {{--  บริการแพทย์แผนไทย -------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-2">
           <a href="#" data-bs-toggle="modal" data-bs-target="#HMDetailModal" class="text-decoration-none text-dark">
-            <div class="card-opd card glass p-3 h-100"
-                style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div class="card-opd card card-theme-hm card-hover glass p-3 h-100">
               <!-- หัวข้อซ้าย + ไอคอนขวา -->
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0" style="color:#009688;"><strong>แพทย์แผนไทย วันนี้</strong></h6>
-                <i class="bi bi-person-arms-up fs-4" style="color:#009688;"></i>
+                <h6 class="mb-0 fw-bold" style="color:#26a69a;">แพทย์แผนไทย วันนี้</h6>
+                <div class="bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(38, 166, 154, 0.1);">
+                  <i class="bi bi-person-arms-up fs-4" style="color:#26a69a;"></i>
+                </div>
               </div>
               <!-- เนื้อหาตรงกลาง -->
               <div class="text-center mt-3">                
@@ -551,12 +607,13 @@
         {{-- การแพทย์ทางไกล วันนี้ -------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-2">
           <a href="#" data-bs-toggle="modal" data-bs-target="#TeleDetailModal" class="text-decoration-none text-dark">
-            <div class="card-opd card glass p-3 h-100"
-                style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div class="card-opd card card-theme-tele card-hover glass p-3 h-100">
               <!-- หัวข้อซ้าย + ไอคอนขวา -->
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0" style="color:#00bcd4;"><strong>การแพทย์ทางไกล วันนี้</strong></h6>
-                <i class="fa-solid fa-video fs-4" style="color:#00bcd4;"></i>
+                <h6 class="mb-0 fw-bold" style="color:#26c6da;">การแพทย์ทางไกล วันนี้</h6>
+                <div class="bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(38, 198, 218, 0.1);">
+                  <i class="fa-solid fa-video fs-4" style="color:#26c6da;"></i>
+                </div>
               </div>
               <!-- เนื้อหาตรงกลาง -->
               <div class="text-center mt-3">                
@@ -622,12 +679,13 @@
         {{-- นัดหมายออนไลน์ วันนี้ -------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-2">
           <a href="#" data-bs-toggle="modal" data-bs-target="#OappDetailModal" class="text-decoration-none text-dark">
-            <div class="card-opd card glass p-3 h-100"
-                style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div class="card-opd card card-theme-oapp card-hover glass p-3 h-100">
               <!-- หัวข้อ -->
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0" style="color:#42bd41;"><strong>นัดหมายออนไลน์ วันนี้</strong></h6>
-                <i class="fa-solid fa-calendar-days" style="color:#42bd41;"></i>
+                <h6 class="mb-0 fw-bold" style="color:#66bb6a;">นัดหมายออนไลน์ วันนี้</h6>
+                <div class="bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(102, 187, 106, 0.1);">
+                  <i class="fa-solid fa-calendar-days fs-4" style="color:#66bb6a;"></i>
+                </div>
               </div>
               <!-- เนื้อหา -->
               <div class="text-center mt-3">

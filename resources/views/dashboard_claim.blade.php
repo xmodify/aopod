@@ -96,9 +96,18 @@
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
-  /* 💸  Claim (เหลืองทองพาสเทล) */
-  .card-claim.card {
-    background: linear-gradient(135deg, #dcedc8, #ffffff);
+  /* Theme Specific Cards */
+  .card-theme-ppfs {
+    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+    border-left: 6px solid #1976d2 !important;
+  }
+  .card-theme-cr {
+    background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+    border-left: 6px solid #388e3c !important;
+  }
+  .card-theme-herb {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffffff 100%);
+    border-left: 6px solid #f57c00 !important;
   }
 </style>
 
@@ -139,10 +148,12 @@
         {{--  PP Fee Schedule : ครั้ง -------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-4">
           <a href="#" data-bs-toggle="modal" data-bs-target="#PPFSDetailModal" class="text-decoration-none text-dark">
-            <div class="card-claim card glass p-3 h-100">   <!-- 👈 เพิ่มตรงนี้ -->
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0 text-primary"><strong>PP Fee Schedule</strong></h6>
-                <span><i class="bi bi-coin fs-5 text-warning"></i></span>
+            <div class="card-claim card-theme-ppfs card glass p-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="mb-0 text-primary fw-bold">PP Fee Schedule</h6>
+                <div class="bg-primary bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                  <i class="bi bi-file-earmark-medical fs-4 text-primary"></i>
+                </div>
               </div>
               <div class="d-flex align-items-end gap-4">
                 <div class="text-end">
@@ -238,10 +249,12 @@
         {{-- UC-บริการเฉพาะ CR : ครั้ง | บาท ---------------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-4">
           <a href="#" data-bs-toggle="modal" data-bs-target="#CrDetailModal" class="text-decoration-none text-dark">
-            <div class="card-claim card glass p-3 h-100">   <!-- 👈 เพิ่มตรงนี้ -->
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0 text-primary"><strong>UC-บริการเฉพาะ CR </strong></h6>
-                <span><i class="bi bi-coin fs-5 text-warning"></i> </span>
+            <div class="card-claim card-theme-cr card glass p-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="mb-0 text-success fw-bold">UC - บริการเฉพาะ CR</h6>
+                <div class="bg-success bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                  <i class="bi bi-clipboard2-pulse fs-4 text-success"></i>
+                </div>
               </div>
               <div class="d-flex align-items-end gap-4">
                 <div class="text-end">
@@ -337,10 +350,12 @@
         {{-- UC-สมุนไพร 32 รายการ : ครั้ง | บาท -----------------------------------------------------------------------------------}}
         <div class="col-12 col-sm-6 col-xl-4">
           <a href="#" data-bs-toggle="modal" data-bs-target="#HerbDetailModal" class="text-decoration-none text-dark">
-            <div class="card-claim card glass p-3 h-100">   <!-- 👈 เพิ่มตรงนี้ -->
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0 text-primary"><strong>UC-สมุนไพร 32 รายการ</strong></h6>
-                <span><i class="bi bi-coin fs-5 text-warning"></i></span></span>
+            <div class="card-claim card-theme-herb card glass p-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="mb-0 text-warning fw-bold">UC - สมุนไพร 32 รายการ</h6>
+                <div class="bg-warning bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                  <i class="fa-solid fa-leaf fs-4 text-warning"></i>
+                </div>
               </div>
               <div class="d-flex align-items-end gap-4">
                 <div class="text-end">

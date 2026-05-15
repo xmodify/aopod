@@ -98,6 +98,25 @@
     margin-top: 6px;
     text-align: center;
   }
+
+  .card-hover {
+    transition: all 0.3s ease-in-out;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-theme-admit {
+    background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%);
+    border: 1px solid #e53935 !important;
+    border-left: 6px solid #e53935 !important;
+  }
+  .card-theme-bed {
+    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+    border: 1px solid #1976d2 !important;
+    border-left: 6px solid #1976d2 !important;
+  }
 </style>
 <style>
   /* ================================
@@ -109,6 +128,7 @@
                 rgba(0,180,90,0.28));
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.35);
+    border-left: 6px solid #007832 !important;
     box-shadow: 0 6px 18px rgba(0,0,0,0.15);
     color: #ffffff;
   }
@@ -127,6 +147,7 @@
                 rgba(255,115,195,0.25));
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.35);
+    border-left: 6px solid #b428a0 !important;
     box-shadow: 0 6px 18px rgba(0,0,0,0.15);
     color: #fff0ff;
   }
@@ -144,6 +165,7 @@
                 rgba(255,130,160,0.28));
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.35);
+    border-left: 6px solid #dc285a !important;
     box-shadow: 0 6px 18px rgba(0,0,0,0.15);
     color: #ffe6ea;
   }
@@ -162,6 +184,7 @@
                 rgba(255,225,120,0.28));
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.35);
+    border-left: 6px solid #ffb43c !important;
     box-shadow: 0 6px 18px rgba(0,0,0,0.15);
     color: #5e4800;
   }
@@ -207,15 +230,13 @@
           <a href="#" data-bs-toggle="modal" data-bs-target="#AdmiitDetailModal"
             class="text-decoration-none text-dark">
 
-            <div class="p-3 h-100 rounded-4 shadow-sm"
-                style="background: linear-gradient(135deg, #ffe6e9, #ffffff); border:1px solid #ffd1d7; border-radius:20px;">
+            <div class="card card-theme-admit card-hover glass p-3 h-100">
 
               <!-- ส่วนหัว -->
               <div class="d-flex align-items-center justify-content-between mb-3">
                 <h6 class="mb-0 text-danger fw-bold">กำลังรักษาอยู่</h6>
 
-                <div class="p-2 rounded-circle shadow-sm"
-                    style="background:white; border:1px solid #ffccd2;">
+                <div class="bg-danger bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
                   <i class="fa-solid fa-hospital-user text-danger fs-4"></i>
                 </div>
               </div>
@@ -474,13 +495,14 @@
       <!-- Block แยกแต่ละ รพ --------------------------------------------------------------------------------------------->
         @foreach($bedData as $hospcode => $data)
         <div class="col-12 col-sm-6 col-xl-3" >
-            <div  class="card p-3 h-100 rounded-3 shadow-sm"
-                  style="background: linear-gradient(145deg, #e0f7fa, #ffffff); border:1px solid #b3e5fc;">
+            <div  class="card card-theme-bed card-hover glass p-3 h-100">
 
                 <!-- หัวข้อ Card -->
                 <h6 class="mb-3 fw-bold text-primary d-flex justify-content-between align-items-center">
                     <span>ข้อมูลเตียง{{ $data['hospname'] }}</span>
-                    <i class="fa-solid fa-bed-pulse text-danger fs-5"></i>
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                      <i class="fa-solid fa-bed-pulse text-danger fs-5"></i>
+                    </div>
                 </h6>
                 <!-- Header -->
                 <div class="row mb-1">
@@ -538,7 +560,7 @@
         <!-- ผ่าตัด Operation  --------------------------------------------------------------------------------------------->
         <div class="col-12 col-sm-6 col-xl-3">
           <a href="#" data-bs-toggle="modal" data-bs-target="#OperationDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-op">
+            <div class="glass-card glass-op card-hover border-0">
               <div class="glass-icon"><i class="fa-solid fa-kit-medical"></i></div>
               <div class="glass-title"><h6>ผ่าตัด วันนี้</h6></div>
               <div class="glass-number fs-2">
@@ -607,7 +629,7 @@
         <!-- Refer Out ------------------------------------------------------------------------------------------>
         <div class="col-12 col-sm-6 col-xl-3">
           <a href="#" data-bs-toggle="modal" data-bs-target="#ReferOutDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-referout">
+            <div class="glass-card glass-referout card-hover border-0">
               <div class="glass-icon"><i class="fa-solid fa-truck-medical"></i></div>
               <div class="glass-title"><h6>Refer Out วันนี้</h6></div>
               <div class="d-flex justify-content-between text-center mt-1">
@@ -705,7 +727,7 @@
         <!-- Refer In  --------------------------------------------------------------------------------------->
         <div class="col-12 col-sm-6 col-xl-3">
           <a href="#" data-bs-toggle="modal" data-bs-target="#ReferInDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-referin">
+            <div class="glass-card glass-referin card-hover border-0">
               <div class="glass-icon"><i class="fa-solid fa-truck-medical"></i></div>
               <div class="glass-title"><h6>Refer In วันนี้</h6></div>
               <div class="d-flex justify-content-between text-center mt-1">
@@ -804,7 +826,7 @@
         <!-- Refer Back  --------------------------------------------------------------------------------------------->
         <div class="col-12 col-sm-6 col-xl-3">
           <a href="#" data-bs-toggle="modal" data-bs-target="#ReferBackDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-referback">
+            <div class="glass-card glass-referback card-hover border-0">
               <div class="glass-icon"><i class="fa-solid fa-truck-medical"></i></div>
               <div class="glass-title"><h6>Refer Back วันนี้</h6></div>
               <div class="d-flex justify-content-between text-center mt-1">
