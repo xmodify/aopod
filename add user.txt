@@ -1,0 +1,13 @@
+ใช้ Tinker หรือ seeder
+
+php artisan tinker
+
+แล้วรัน
+
+use App\Models\User;
+User::create([
+    'name' => 'Admin@Amnatcharoen',
+    'email' => 'admin@amno.com',
+    'password' => bcrypt('123456'),
+]);
+exit;
