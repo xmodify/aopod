@@ -12,46 +12,13 @@
   .text-purple {
     color: #8b5cf6 !important;
   }
-  
-  /* === Table Styling สวยๆ === */
-  .custom-table {
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    border: 1px solid #e0e0e0 !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  tr.table-ipd td,
+  tr.table-ipd th {
+    background: linear-gradient(135deg, #f3e5f5, #fbf6fc) !important; 
   }
-  .custom-table thead th {
-    font-weight: 700 !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    border: 1px solid #eee !important;
-    padding: 10px 8px !important;
-    font-size: 0.85rem !important;
-  }
-  .custom-table tbody td {
-    border: 1px solid #f5f5f5 !important;
-    padding: 8px !important;
-    font-size: 0.85rem !important;
-    color: #444 !important;
-  }
-  .custom-table tbody tr:hover {
-    background-color: #f8fbff !important;
-  }
-  
-  /* Header Color Groups */
-  .th-blue { background: #e3f2fd !important; color: #0d47a1 !important; }
-  .th-green { background: #e8f5e9 !important; color: #1b5e20 !important; }
-  .th-orange { background: #fff3e0 !important; color: #e65100 !important; }
-  .th-purple { background: #f3e5f5 !important; color: #4a148c !important; }
-  .th-red { background: #ffebee !important; color: #b71c1c !important; }
-  .th-grey { background: #f5f5f5 !important; color: #424242 !important; }
-  
-  .tr-total {
-    background: #f1f8ff !important;
-    font-weight: 800 !important;
-    border-top: 2px solid #0d47a1 !important;
+  tr.table-refer td,
+  tr.table-refer th {
+    background: linear-gradient(135deg, #ceebfa, #e8f6fc) !important;   
   }
 </style>
 <style>
@@ -972,28 +939,26 @@
           <!-- IPD -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10985] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10985}}</span>
-              </div>
+              <h6>[10985] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>              
             </div>
             <div class="table-responsive">
-              <table id="table10985_ipd" class="table custom-table my-3" width ="100%">
-                <thead>
-                  <tr>
-                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>
-                    <th class="th-blue" rowspan="2">จำนวน AN</th>
-                    <th class="th-blue" rowspan="2">วันนอนรวม</th> 
-                    <th class="th-green" rowspan="2">อัตราครองเตียง (%)</th>
-                    <th class="th-green" rowspan="2">Active Base (เตียง)</th>       
-                    <th class="th-orange" rowspan="2">AdjRW</th>  
-                    <th class="th-orange" rowspan="2">CMI</th>
-                    <th class="th-purple" colspan="3">ค่ารักษาพยาบาล</th>                
+              <table id="table10985_ipd" class="table table-bordered table-striped my-3" width ="100%">
+                <thead class="table-light">
+                  <tr class="table-ipd">
+                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>
+                    <th class="text-center" rowspan="2">จำนวน AN</th>
+                    <th class="text-center" rowspan="2">วันนอนรวม</th> 
+                    <th class="text-center" rowspan="2">อัตราครองเตียง (%)</th>
+                    <th class="text-center" rowspan="2">Active Base (เตียง)</th>       
+                    <th class="text-center" rowspan="2">AdjRW</th>  
+                    <th class="text-center" rowspan="2">CMI</th>
+                    <th class="text-center" colspan="3">ค่ารักษาพยาบาล</th>                
                   </tr>    
-                  <tr> 
-                    <th class="th-purple">ค่ารักษารวม</th>
-                    <th class="th-purple">ค่า Lab</th>
-                    <th class="th-purple">ค่า ยา</th>                 
+                  <tr class="table-ipd"> 
+                    <td class="text-center text-primary">ค่ารักษารวม</td>
+                    <td class="text-center text-primary">ค่า Lab</td>
+                    <td class="text-center text-primary">ค่า ยา</td>                 
                   </tr>    
                 </thead>
                 <tbody>
@@ -1008,163 +973,253 @@
                   ?>  
                   @foreach($ipd_10985 as $row) 
                   <tr>
-                    <td align="center">{{ $row->month }}</td>
+                    <td align="center"width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->an_total) }}</td>
                     <td align="right">{{ number_format($row->admdate) }}</td>
-                    <td align="right" class="fw-bold text-success">{{ number_format($row->bed_occupancy,2) }}%</td>
+                    <td align="right">{{ number_format($row->bed_occupancy,2) }}</td>
                     <td align="right">{{ number_format($row->active_bed,2) }}</td>
                     <td align="right">{{ number_format($row->adjrw,5) }}</td>
-                    <td align="right" class="text-primary">{{ number_format($row->cmi,2) }}</td>
+                    <td align="right">{{ number_format($row->cmi,2) }}</td>
                     <td align="right">{{ number_format($row->inc_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_lab_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_drug_total,2) }}</td>
                   </tr>
                   <?php 
-                    $sum_an_total += $row->an_total; $sum_admdate += $row->admdate; $sum_adjrw += $row->adjrw;
-                    $sum_inc_total += $row->inc_total; $sum_inc_lab_total += $row->inc_lab_total; $sum_inc_drug_total += $row->inc_drug_total;
+                    $sum_an_total += $row->an_total;
+                    $sum_admdate += $row->admdate;
+                    $sum_adjrw += $row->adjrw;
+                    $sum_inc_total += $row->inc_total;
+                    $sum_inc_lab_total += $row->inc_lab_total;
+                    $sum_inc_drug_total += $row->inc_drug_total;
                   ?>
                   @endforeach 
                   <?php                   
+                  // ✅ จำนวนเตียง
+                    $bed_report = 30;
+                  // ✅ อัตราครองเตียงรวม
                     $sum_bed_occupancy = ($sum_admdate > 0 && $bed_report > 0) ? round(($sum_admdate * 100) / ($bed_report * $diff_days), 2) : 0;  
+                  // ✅ Active Bed = วันนอนรวม ÷ จำนวนวัน
                     $sum_active_bed = ($sum_admdate > 0 && $diff_days > 0) ? round($sum_admdate / $diff_days, 2) : 0;
+                  // ✅ CMI รวม
                     $sum_cmi = ($sum_an_total > 0) ? round($sum_adjrw / $sum_an_total, 2) : 0; 
                   ?>   
-                  <tr class="tr-total">
-                    <td align="center">รวม</td>
-                    <td align="right">{{number_format($sum_an_total)}}</td>
-                    <td align="right">{{number_format($sum_admdate)}}</td>
-                    <td align="right">{{number_format($sum_bed_occupancy,2)}}%</td>     
-                    <td align="right">{{number_format($sum_active_bed,2)}}</td>   
-                    <td align="right">{{number_format($sum_adjrw,4)}}</td>  
-                    <td align="right" class="text-primary">{{number_format($sum_cmi,2)}}</td> 
-                    <td align="right">{{number_format($sum_inc_total,2)}}</td>
-                    <td align="right">{{number_format($sum_inc_lab_total)}}</td>
-                    <td align="right">{{number_format($sum_inc_drug_total,2)}}</td>
+                  <tr>
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right"><strong>{{number_format($sum_an_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_admdate)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_bed_occupancy,2)}}</td>     
+                    <td align="right"><strong>{{number_format($sum_active_bed,2)}}</td>   
+                    <td align="right"><strong>{{number_format($sum_adjrw,4)}}</strong></td>  
+                    <td align="right"><strong>{{number_format($sum_cmi,2)}}</strong></td> 
+                    <td align="right"><strong>{{number_format($sum_inc_total,2)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_lab_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_drug_total,2)}}</strong></td>
                   </tr>   
                 </tbody>
               </table>
+              <!-- กราฟ -->
               <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10985"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10985"></div></div></div></div>
+                <!-- กราฟอัตราครองเตียง -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-primary mb-1">
+                        📈 อัตราครองเตียง (%)
+                      </h6>
+                      <div id="bed_occupancy_10985"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- กราฟ CMI -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-danger mb-1">
+                        📊 CMI
+                      </h6>
+                      <div id="cmi_chart_10985"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </div>   
           <br>
           <!-- Refer -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10985] ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10985}}</span>
-              </div>
+              <h6>[10985] ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>
             </div>
             <div class="table-responsive">
-              <table id="table10985_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
+              <table id="table10985_refer" class="table table-bordered table-striped my-3" width="100%">
+                <thead class="table-light">
+                  <tr class="table-refer">
+                      <th class="text-center" rowspan="2" width="8%">เดือน</th>
+                      <th class="text-center" colspan="4">Refer Out</th>
+                      <th class="text-center" colspan="4">Refer In</th>
+                      <th class="text-center" colspan="2">Refer Back</th>
+                  </tr>
+                  <tr class="table-refer">
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">ในจังหวัด</th>
+                      <th class="text-center">ต่างจังหวัด</th>
+                  </tr>
                 </thead>
                 <tbody>
                 @foreach($refer_10985 as $row)
                   <tr>
                     <td class="text-center">{{ $row->month }}</td>
+                    <!-- Refer Out -->
                     <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <!-- Refer In -->
                     <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <!-- Refer Back -->
                     <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
                   </tr>
                 @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10985->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10985->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10985->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10985->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10985->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10985->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10985->sum('visit_referback_outprov')) }}</td>
+                  <!-- รวม -->
+                  <tr class="table-secondary fw-bold">
+                    <td class="text-end">รวม</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referout_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referout_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referout_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referout_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referin_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referin_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referin_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referin_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referback_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referback_outprov')) }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>    
+        <!-- END 10985 -->
         </div>
-                      <!-- 10986 -->
+
+        <!-- 10986 -->
         <div class="tab-pane fade" id="pane-10986" role="tabpanel" aria-labelledby="tab-10986" tabindex="0">          
           <!-- IPD -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10986] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10986}}</span>
-              </div>
+              <h6>[10986] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10986}}</span>              
             </div>
             <div class="table-responsive">
-              <table id="table10986_ipd" class="table custom-table my-3" width ="100%">
-                <thead>
-                  <tr>
-                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>
-                    <th class="th-blue" rowspan="2">จำนวน AN</th>
-                    <th class="th-blue" rowspan="2">วันนอนรวม</th> 
-                    <th class="th-green" rowspan="2">อัตราครองเตียง (%)</th>
-                    <th class="th-green" rowspan="2">Active Base (เตียง)</th>       
-                    <th class="th-orange" rowspan="2">AdjRW</th>  
-                    <th class="th-orange" rowspan="2">CMI</th>
-                    <th class="th-purple" colspan="3">ค่ารักษาพยาบาล</th>                
+              <table id="table10986_ipd" class="table table-bordered table-striped my-3" width ="100%">
+                <thead class="table-light">
+                  <tr class="table-ipd">
+                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>
+                    <th class="text-center" rowspan="2">จำนวน AN</th>
+                    <th class="text-center" rowspan="2">วันนอนรวม</th> 
+                    <th class="text-center" rowspan="2">อัตราครองเตียง (%)</th>
+                    <th class="text-center" rowspan="2">Active Base (เตียง)</th>       
+                    <th class="text-center" rowspan="2">AdjRW</th>  
+                    <th class="text-center" rowspan="2">CMI</th>
+                    <th class="text-center" colspan="3">ค่ารักษาพยาบาล</th>                
                   </tr>    
-                  <tr> 
-                    <th class="th-purple">ค่ารักษารวม</th>
-                    <th class="th-purple">ค่า Lab</th>
-                    <th class="th-purple">ค่า ยา</th>                 
+                  <tr class="table-ipd"> 
+                    <td class="text-center text-primary">ค่ารักษารวม</td>
+                    <td class="text-center text-primary">ค่า Lab</td>
+                    <td class="text-center text-primary">ค่า ยา</td>                 
                   </tr>    
                 </thead>
                 <tbody>
                   <?php 
-                    $sum_an_total = 0; $sum_admdate = 0; $sum_adjrw = 0; $sum_inc_total = 0; $sum_inc_lab_total = 0; $sum_inc_drug_total = 0;
-                    $bed_report = $ipd_10986[0]->bed_report ?? 30;
+                    $sum_an_total = 0; 
+                    $sum_admdate = 0;   
+                    $sum_adjrw = 0; 
+                    $sum_inc_total = 0;  
+                    $sum_inc_lab_total = 0;
+                    $sum_inc_drug_total = 0;
+                    $bed_report = $ipd_10986[0]->bed_report ?? 30; // ค่าเตียงจาก hospital_config
                   ?>  
                   @foreach($ipd_10986 as $row) 
                   <tr>
-                    <td align="center">{{ $row->month }}</td>
+                    <td align="center"width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->an_total) }}</td>
                     <td align="right">{{ number_format($row->admdate) }}</td>
-                    <td align="right" class="fw-bold text-success">{{ number_format($row->bed_occupancy,2) }}%</td>
+                    <td align="right">{{ number_format($row->bed_occupancy,2) }}</td>
                     <td align="right">{{ number_format($row->active_bed,2) }}</td>
                     <td align="right">{{ number_format($row->adjrw,5) }}</td>
-                    <td align="right" class="text-primary">{{ number_format($row->cmi,2) }}</td>
+                    <td align="right">{{ number_format($row->cmi,2) }}</td>
                     <td align="right">{{ number_format($row->inc_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_lab_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_drug_total,2) }}</td>
                   </tr>
                   <?php 
-                    $sum_an_total += $row->an_total; $sum_admdate += $row->admdate; $sum_adjrw += $row->adjrw;
-                    $sum_inc_total += $row->inc_total; $sum_inc_lab_total += $row->inc_lab_total; $sum_inc_drug_total += $row->inc_drug_total;
+                    $sum_an_total += $row->an_total;
+                    $sum_admdate += $row->admdate;
+                    $sum_adjrw += $row->adjrw;
+                    $sum_inc_total += $row->inc_total;
+                    $sum_inc_lab_total += $row->inc_lab_total;
+                    $sum_inc_drug_total += $row->inc_drug_total;
                   ?>
                   @endforeach 
                   <?php                   
+                  // ✅ จำนวนเตียง
+                    $bed_report = 50;
+                  // ✅ อัตราครองเตียงรวม
                     $sum_bed_occupancy = ($sum_admdate > 0 && $bed_report > 0) ? round(($sum_admdate * 100) / ($bed_report * $diff_days), 2) : 0;  
+                  // ✅ Active Bed = วันนอนรวม ÷ จำนวนวัน
                     $sum_active_bed = ($sum_admdate > 0 && $diff_days > 0) ? round($sum_admdate / $diff_days, 2) : 0;
+                  // ✅ CMI รวม
                     $sum_cmi = ($sum_an_total > 0) ? round($sum_adjrw / $sum_an_total, 2) : 0; 
                   ?>   
-                  <tr class="tr-total">
-                    <td align="center">รวม</td>
-                    <td align="right">{{number_format($sum_an_total)}}</td>
-                    <td align="right">{{number_format($sum_admdate)}}</td>
-                    <td align="right">{{number_format($sum_bed_occupancy,2)}}%</td>     
-                    <td align="right">{{number_format($sum_active_bed,2)}}</td>   
-                    <td align="right">{{number_format($sum_adjrw,4)}}</td>  
-                    <td align="right" class="text-primary">{{number_format($sum_cmi,2)}}</td> 
-                    <td align="right">{{number_format($sum_inc_total,2)}}</td>
-                    <td align="right">{{number_format($sum_inc_lab_total)}}</td>
-                    <td align="right">{{number_format($sum_inc_drug_total,2)}}</td>
+                  <tr>
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right"><strong>{{number_format($sum_an_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_admdate)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_bed_occupancy,2)}}</td>     
+                    <td align="right"><strong>{{number_format($sum_active_bed,2)}}</td>   
+                    <td align="right"><strong>{{number_format($sum_adjrw,4)}}</strong></td>  
+                    <td align="right"><strong>{{number_format($sum_cmi,2)}}</strong></td> 
+                    <td align="right"><strong>{{number_format($sum_inc_total,2)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_lab_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_drug_total,2)}}</strong></td>
                   </tr>   
                 </tbody>
               </table>
+              <!-- กราฟ -->
               <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10986"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10986"></div></div></div></div>
+                <!-- กราฟอัตราครองเตียง -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-primary mb-1">
+                        📈 อัตราครองเตียง (%)
+                      </h6>
+                      <div id="bed_occupancy_10986"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- กราฟ CMI -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-danger mb-1">
+                        📊 CMI
+                      </h6>
+                      <div id="cmi_chart_10986"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1172,119 +1227,178 @@
           <!-- Refer -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10986] ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10986}}</span>
-              </div>
+              <h6>[10986] ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>
             </div>
             <div class="table-responsive">
-              <table id="table10986_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
+              <table id="table10986_refer" class="table table-bordered table-striped my-3" width="100%">
+                <thead class="table-light">
+                  <tr class="table-refer">
+                      <th class="text-center" rowspan="2" width="8%">เดือน</th>
+                      <th class="text-center" colspan="4">Refer Out</th>
+                      <th class="text-center" colspan="4">Refer In</th>
+                      <th class="text-center" colspan="2">Refer Back</th>
+                  </tr>
+                  <tr class="table-refer">
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">ในจังหวัด</th>
+                      <th class="text-center">ต่างจังหวัด</th>
+                  </tr>
                 </thead>
                 <tbody>
                 @foreach($refer_10986 as $row)
                   <tr>
                     <td class="text-center">{{ $row->month }}</td>
+                    <!-- Refer Out -->
                     <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <!-- Refer In -->
                     <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <!-- Refer Back -->
                     <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
                   </tr>
                 @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10986->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10986->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10986->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10986->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10986->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10986->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10986->sum('visit_referback_outprov')) }}</td>
+                  <!-- รวม -->
+                  <tr class="table-secondary fw-bold">
+                    <td class="text-end">รวม</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referout_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referout_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referout_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referout_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referin_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referin_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referin_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referin_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referback_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referback_outprov')) }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>   
+        <!-- END 10986-->
         </div>
 
-        <!-- 10987 -->
-        <div class="tab-pane fade" id="pane-10987" role="tabpanel" aria-labelledby="tab-10987" tabindex="0">          
-          <!-- IPD -->
+        <!-- 10987-->
+        <div class="tab-pane fade" id="pane-10987" role="tabpanel" aria-labelledby="tab-10987" tabindex="0">
+          <!-- IPD-->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10987] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10987}}</span>
-              </div>
+              <h6>[10987] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10987}}</span>              
             </div>
             <div class="table-responsive">
-              <table id="table10987_ipd" class="table custom-table my-3" width ="100%">
-                <thead>
-                  <tr>
-                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>
-                    <th class="th-blue" rowspan="2">จำนวน AN</th>
-                    <th class="th-blue" rowspan="2">วันนอนรวม</th> 
-                    <th class="th-green" rowspan="2">อัตราครองเตียง (%)</th>
-                    <th class="th-green" rowspan="2">Active Base (เตียง)</th>       
-                    <th class="th-orange" rowspan="2">AdjRW</th>  
-                    <th class="th-orange" rowspan="2">CMI</th>
-                    <th class="th-purple" colspan="3">ค่ารักษาพยาบาล</th>                
+              <table id="table10987_ipd" class="table table-bordered table-striped my-3" width ="100%">
+                <thead class="table-light">
+                  <tr class="table-ipd">
+                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>
+                    <th class="text-center" rowspan="2">จำนวน AN</th>
+                    <th class="text-center" rowspan="2">วันนอนรวม</th> 
+                    <th class="text-center" rowspan="2">อัตราครองเตียง (%)</th>
+                    <th class="text-center" rowspan="2">Active Base (เตียง)</th>        
+                    <th class="text-center" rowspan="2">AdjRW</th>  
+                    <th class="text-center" rowspan="2">CMI</th>
+                    <th class="text-center" colspan="3">ค่ารักษาพยาบาล</th>                
                   </tr>    
-                  <tr> 
-                    <th class="th-purple">ค่ารักษารวม</th>
-                    <th class="th-purple">ค่า Lab</th>
-                    <th class="th-purple">ค่า ยา</th>                 
+                  <tr class="table-ipd"> 
+                    <td class="text-center text-primary">ค่ารักษารวม</td>
+                    <td class="text-center text-primary">ค่า Lab</td>
+                    <td class="text-center text-primary">ค่า ยา</td>                 
                   </tr>    
                 </thead>
                 <tbody>
                   <?php 
-                    $sum_an_total = 0; $sum_admdate = 0; $sum_adjrw = 0; $sum_inc_total = 0; $sum_inc_lab_total = 0; $sum_inc_drug_total = 0;
-                    $bed_report = $ipd_10987[0]->bed_report ?? 30;
+                    $sum_an_total = 0; 
+                    $sum_admdate = 0;   
+                    $sum_adjrw = 0; 
+                    $sum_inc_total = 0;  
+                    $sum_inc_lab_total = 0;
+                    $sum_inc_drug_total = 0;
+                    $bed_report = $ipd_10987[0]->bed_report ?? 30; // ค่าเตียงจาก hospital_config
                   ?>  
                   @foreach($ipd_10987 as $row) 
                   <tr>
-                    <td align="center">{{ $row->month }}</td>
+                    <td align="center"width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->an_total) }}</td>
                     <td align="right">{{ number_format($row->admdate) }}</td>
-                    <td align="right" class="fw-bold text-success">{{ number_format($row->bed_occupancy,2) }}%</td>
+                    <td align="right">{{ number_format($row->bed_occupancy,2) }}</td>
                     <td align="right">{{ number_format($row->active_bed,2) }}</td>
                     <td align="right">{{ number_format($row->adjrw,5) }}</td>
-                    <td align="right" class="text-primary">{{ number_format($row->cmi,2) }}</td>
+                    <td align="right">{{ number_format($row->cmi,2) }}</td>
                     <td align="right">{{ number_format($row->inc_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_lab_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_drug_total,2) }}</td>
                   </tr>
                   <?php 
-                    $sum_an_total += $row->an_total; $sum_admdate += $row->admdate; $sum_adjrw += $row->adjrw;
-                    $sum_inc_total += $row->inc_total; $sum_inc_lab_total += $row->inc_lab_total; $sum_inc_drug_total += $row->inc_drug_total;
+                    $sum_an_total += $row->an_total;
+                    $sum_admdate += $row->admdate;
+                    $sum_adjrw += $row->adjrw;
+                    $sum_inc_total += $row->inc_total;
+                    $sum_inc_lab_total += $row->inc_lab_total;
+                    $sum_inc_drug_total += $row->inc_drug_total;
                   ?>
                   @endforeach 
                   <?php                   
+                  // ✅ จำนวนเตียง
+                    $bed_report = 30;
+                  // ✅ อัตราครองเตียงรวม
                     $sum_bed_occupancy = ($sum_admdate > 0 && $bed_report > 0) ? round(($sum_admdate * 100) / ($bed_report * $diff_days), 2) : 0;  
+                  // ✅ Active Bed = วันนอนรวม ÷ จำนวนวัน
                     $sum_active_bed = ($sum_admdate > 0 && $diff_days > 0) ? round($sum_admdate / $diff_days, 2) : 0;
+                  // ✅ CMI รวม
                     $sum_cmi = ($sum_an_total > 0) ? round($sum_adjrw / $sum_an_total, 2) : 0; 
                   ?>   
-                  <tr class="tr-total">
-                    <td align="center">รวม</td>
-                    <td align="right">{{number_format($sum_an_total)}}</td>
-                    <td align="right">{{number_format($sum_admdate)}}</td>
-                    <td align="right">{{number_format($sum_bed_occupancy,2)}}%</td>     
-                    <td align="right">{{number_format($sum_active_bed,2)}}</td>   
-                    <td align="right">{{number_format($sum_adjrw,4)}}</td>  
-                    <td align="right" class="text-primary">{{number_format($sum_cmi,2)}}</td> 
-                    <td align="right">{{number_format($sum_inc_total,2)}}</td>
-                    <td align="right">{{number_format($sum_inc_lab_total)}}</td>
-                    <td align="right">{{number_format($sum_inc_drug_total,2)}}</td>
+                  <tr>
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right"><strong>{{number_format($sum_an_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_admdate)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_bed_occupancy,2)}}</td>     
+                    <td align="right"><strong>{{number_format($sum_active_bed,2)}}</td>   
+                    <td align="right"><strong>{{number_format($sum_adjrw,4)}}</strong></td>  
+                    <td align="right"><strong>{{number_format($sum_cmi,2)}}</strong></td> 
+                    <td align="right"><strong>{{number_format($sum_inc_total,2)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_lab_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_drug_total,2)}}</strong></td>
                   </tr>   
                 </tbody>
               </table>
+              <!-- กราฟ -->
               <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10987"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10987"></div></div></div></div>
+                <!-- กราฟอัตราครองเตียง -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-primary mb-1">
+                        📈 อัตราครองเตียง (%)
+                      </h6>
+                      <div id="bed_occupancy_10987"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- กราฟ CMI -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-danger mb-1">
+                        📊 CMI
+                      </h6>
+                      <div id="cmi_chart_10987"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1292,239 +1406,357 @@
           <!-- Refer -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10987] ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10987}}</span>
-              </div>
+              <h6>[10987] ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>
             </div>
             <div class="table-responsive">
-              <table id="table10987_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
+              <table id="table10987_refer" class="table table-bordered table-striped my-3" width="100%">
+                <thead class="table-light">
+                  <tr class="table-refer text-center">
+                      <th class="text-center" rowspan="2" width="8%">เดือน</th>
+                      <th class="text-center" colspan="4">Refer Out</th>
+                      <th class="text-center" colspan="4">Refer In</th>
+                      <th class="text-center" colspan="2">Refer Back</th>
+                  </tr>
+                  <tr class="table-refer text-center">
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">ในจังหวัด</th>
+                      <th class="text-center">ต่างจังหวัด</th>
+                  </tr>
                 </thead>
                 <tbody>
                 @foreach($refer_10987 as $row)
                   <tr>
                     <td class="text-center">{{ $row->month }}</td>
+                    <!-- Refer Out -->
                     <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <!-- Refer In -->
                     <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <!-- Refer Back -->
                     <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
                   </tr>
                 @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10987->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10987->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10987->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10987->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10987->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10987->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10987->sum('visit_referback_outprov')) }}</td>
+                  <!-- รวม -->
+                  <tr class="table-secondary fw-bold">
+                    <td class="text-end">รวม</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referout_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referout_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referout_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referout_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referin_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referin_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referin_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referin_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referback_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referback_outprov')) }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>   
+        <!-- END 10987 -->
         </div>
 
         <!-- 10988 -->
-        <div class="tab-pane fade" id="pane-10988" role="tabpanel" aria-labelledby="tab-10988" tabindex="0">          
-          <!-- IPD -->
+        <div class="tab-pane fade" id="pane-10988" role="tabpanel" aria-labelledby="tab-10988" tabindex="0">
+          <!-- IPD -->          
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10988] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10988}}</span>
-              </div>
+              <h6>[10988] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10988}}</span>              
             </div>
             <div class="table-responsive">
-              <table id="table10988_ipd" class="table custom-table my-3" width ="100%">
-                <thead>
-                  <tr>
-                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>
-                    <th class="th-blue" rowspan="2">จำนวน AN</th>
-                    <th class="th-blue" rowspan="2">วันนอนรวม</th> 
-                    <th class="th-green" rowspan="2">อัตราครองเตียง (%)</th>
-                    <th class="th-green" rowspan="2">Active Base (เตียง)</th>       
-                    <th class="th-orange" rowspan="2">AdjRW</th>  
-                    <th class="th-orange" rowspan="2">CMI</th>
-                    <th class="th-purple" colspan="3">ค่ารักษาพยาบาล</th>                
+              <table id="table10988_ipd" class="table table-bordered table-striped my-3" width ="100%">
+                <thead class="table-light">
+                  <tr class="table-ipd">
+                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>
+                    <th class="text-center" rowspan="2">จำนวน AN</th>
+                    <th class="text-center" rowspan="2">วันนอนรวม</th> 
+                    <th class="text-center" rowspan="2">อัตราครองเตียง (%)</th>
+                    <th class="text-center" rowspan="2">Active Base (เตียง)</th>     
+                    <th class="text-center" rowspan="2">AdjRW</th>  
+                    <th class="text-center" rowspan="2">CMI</th>
+                    <th class="text-center" colspan="3">ค่ารักษาพยาบาล</th>                
                   </tr>    
-                  <tr> 
-                    <th class="th-purple">ค่ารักษารวม</th>
-                    <th class="th-purple">ค่า Lab</th>
-                    <th class="th-purple">ค่า ยา</th>                 
+                  <tr class="table-ipd"> 
+                    <td class="text-center text-primary">ค่ารักษารวม</td>
+                    <td class="text-center text-primary">ค่า Lab</td>
+                    <td class="text-center text-primary">ค่า ยา</td>                 
                   </tr>    
                 </thead>
                 <tbody>
                   <?php 
-                    $sum_an_total = 0; $sum_admdate = 0; $sum_adjrw = 0; $sum_inc_total = 0; $sum_inc_lab_total = 0; $sum_inc_drug_total = 0;
-                    $bed_report = $ipd_10988[0]->bed_report ?? 30;
+                    $sum_an_total = 0; 
+                    $sum_admdate = 0;   
+                    $sum_adjrw = 0; 
+                    $sum_inc_total = 0;  
+                    $sum_inc_lab_total = 0;
+                    $sum_inc_drug_total = 0;
+                    $bed_report = $ipd_10988[0]->bed_report ?? 30; // ค่าเตียงจาก hospital_config
                   ?>  
                   @foreach($ipd_10988 as $row) 
                   <tr>
-                    <td align="center">{{ $row->month }}</td>
+                    <td align="center"width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->an_total) }}</td>
                     <td align="right">{{ number_format($row->admdate) }}</td>
-                    <td align="right" class="fw-bold text-success">{{ number_format($row->bed_occupancy,2) }}%</td>
+                    <td align="right">{{ number_format($row->bed_occupancy,2) }}</td>
                     <td align="right">{{ number_format($row->active_bed,2) }}</td>
                     <td align="right">{{ number_format($row->adjrw,5) }}</td>
-                    <td align="right" class="text-primary">{{ number_format($row->cmi,2) }}</td>
+                    <td align="right">{{ number_format($row->cmi,2) }}</td>
                     <td align="right">{{ number_format($row->inc_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_lab_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_drug_total,2) }}</td>
                   </tr>
                   <?php 
-                    $sum_an_total += $row->an_total; $sum_admdate += $row->admdate; $sum_adjrw += $row->adjrw;
-                    $sum_inc_total += $row->inc_total; $sum_inc_lab_total += $row->inc_lab_total; $sum_inc_drug_total += $row->inc_drug_total;
+                    $sum_an_total += $row->an_total;
+                    $sum_admdate += $row->admdate;
+                    $sum_adjrw += $row->adjrw;
+                    $sum_inc_total += $row->inc_total;
+                    $sum_inc_lab_total += $row->inc_lab_total;
+                    $sum_inc_drug_total += $row->inc_drug_total;
                   ?>
                   @endforeach 
                   <?php                   
+                  // ✅ จำนวนเตียง
+                    $bed_report = 30;
+                  // ✅ อัตราครองเตียงรวม
                     $sum_bed_occupancy = ($sum_admdate > 0 && $bed_report > 0) ? round(($sum_admdate * 100) / ($bed_report * $diff_days), 2) : 0;  
+                  // ✅ Active Bed = วันนอนรวม ÷ จำนวนวัน
                     $sum_active_bed = ($sum_admdate > 0 && $diff_days > 0) ? round($sum_admdate / $diff_days, 2) : 0;
+                  // ✅ CMI รวม
                     $sum_cmi = ($sum_an_total > 0) ? round($sum_adjrw / $sum_an_total, 2) : 0; 
                   ?>   
-                  <tr class="tr-total">
-                    <td align="center">รวม</td>
-                    <td align="right">{{number_format($sum_an_total)}}</td>
-                    <td align="right">{{number_format($sum_admdate)}}</td>
-                    <td align="right">{{number_format($sum_bed_occupancy,2)}}%</td>     
-                    <td align="right">{{number_format($sum_active_bed,2)}}</td>   
-                    <td align="right">{{number_format($sum_adjrw,4)}}</td>  
-                    <td align="right" class="text-primary">{{number_format($sum_cmi,2)}}</td> 
-                    <td align="right">{{number_format($sum_inc_total,2)}}</td>
-                    <td align="right">{{number_format($sum_inc_lab_total)}}</td>
-                    <td align="right">{{number_format($sum_inc_drug_total,2)}}</td>
+                  <tr>
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right"><strong>{{number_format($sum_an_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_admdate)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_bed_occupancy,2)}}</td>     
+                    <td align="right"><strong>{{number_format($sum_active_bed,2)}}</td>   
+                    <td align="right"><strong>{{number_format($sum_adjrw,4)}}</strong></td>  
+                    <td align="right"><strong>{{number_format($sum_cmi,2)}}</strong></td> 
+                    <td align="right"><strong>{{number_format($sum_inc_total,2)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_lab_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_drug_total,2)}}</strong></td>
                   </tr>   
                 </tbody>
               </table>
+              <!-- กราฟ -->
               <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10988"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10988"></div></div></div></div>
+                <!-- กราฟอัตราครองเตียง -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-primary mb-1">
+                        📈 อัตราครองเตียง (%)
+                      </h6>
+                      <div id="bed_occupancy_10988"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- กราฟ CMI -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-danger mb-1">
+                        📊 CMI
+                      </h6>
+                      <div id="cmi_chart_10988"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </div> 
           <br>
           <!-- Refer -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10988] ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10988}}</span>
-              </div>
+              <h6>[10988] ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>
             </div>
             <div class="table-responsive">
-              <table id="table10988_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
+              <table id="table10988_refer" class="table table-bordered table-striped my-3" width="100%">
+                <thead class="table-light">
+                  <tr class="table-refer text-center">
+                      <th class="text-center" rowspan="2" width="8%">เดือน</th>
+                      <th class="text-center" colspan="4">Refer Out</th>
+                      <th class="text-center" colspan="4">Refer In</th>
+                      <th class="text-center" colspan="2">Refer Back</th>
+                  </tr>
+                  <tr class="table-refer text-center">
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">ในจังหวัด</th>
+                      <th class="text-center">ต่างจังหวัด</th>
+                  </tr>
                 </thead>
                 <tbody>
                 @foreach($refer_10988 as $row)
                   <tr>
                     <td class="text-center">{{ $row->month }}</td>
+                    <!-- Refer Out -->
                     <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <!-- Refer In -->
                     <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <!-- Refer Back -->
                     <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
                   </tr>
                 @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10988->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10988->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10988->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10988->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10988->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10988->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10988->sum('visit_referback_outprov')) }}</td>
+                  <!-- รวม -->
+                  <tr class="table-secondary fw-bold">
+                    <td class="text-end">รวม</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referout_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referout_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referout_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referout_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referin_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referin_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referin_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referin_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referback_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referback_outprov')) }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>   
+        <!-- END 10988 -->       
         </div>
 
         <!-- 10989 -->
-        <div class="tab-pane fade" id="pane-10989" role="tabpanel" aria-labelledby="tab-10989" tabindex="0">          
-          <!-- IPD -->
+        <div class="tab-pane fade" id="pane-10989" role="tabpanel" aria-labelledby="tab-10989" tabindex="0">
+          <!-- IPD -->          
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10989] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10989}}</span>
-              </div>
+              <h6>[10989] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10989}}</span>              
             </div>
             <div class="table-responsive">
-              <table id="table10989_ipd" class="table custom-table my-3" width ="100%">
-                <thead>
-                  <tr>
-                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>
-                    <th class="th-blue" rowspan="2">จำนวน AN</th>
-                    <th class="th-blue" rowspan="2">วันนอนรวม</th> 
-                    <th class="th-green" rowspan="2">อัตราครองเตียง (%)</th>
-                    <th class="th-green" rowspan="2">Active Base (เตียง)</th>       
-                    <th class="th-orange" rowspan="2">AdjRW</th>  
-                    <th class="th-orange" rowspan="2">CMI</th>
-                    <th class="th-purple" colspan="3">ค่ารักษาพยาบาล</th>                
+              <table id="table10989_ipd" class="table table-bordered table-striped my-3" width ="100%">
+                <thead class="table-light">
+                  <tr class="table-ipd">
+                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>
+                    <th class="text-center" rowspan="2">จำนวน AN</th>
+                    <th class="text-center" rowspan="2">วันนอนรวม</th> 
+                    <th class="text-center" rowspan="2">อัตราครองเตียง (%)</th>
+                    <th class="text-center" rowspan="2">Active Base (เตียง)</th>       
+                    <th class="text-center" rowspan="2">AdjRW</th>  
+                    <th class="text-center" rowspan="2">CMI</th>
+                    <th class="text-center" colspan="3">ค่ารักษาพยาบาล</th>                
                   </tr>    
-                  <tr> 
-                    <th class="th-purple">ค่ารักษารวม</th>
-                    <th class="th-purple">ค่า Lab</th>
-                    <th class="th-purple">ค่า ยา</th>                 
+                  <tr class="table-ipd"> 
+                    <td class="text-center text-primary">ค่ารักษารวม</td>
+                    <td class="text-center text-primary">ค่า Lab</td>
+                    <td class="text-center text-primary">ค่า ยา</td>                 
                   </tr>    
                 </thead>
                 <tbody>
                   <?php 
-                    $sum_an_total = 0; $sum_admdate = 0; $sum_adjrw = 0; $sum_inc_total = 0; $sum_inc_lab_total = 0; $sum_inc_drug_total = 0;
-                    $bed_report = $ipd_10989[0]->bed_report ?? 30;
+                    $sum_an_total = 0; 
+                    $sum_admdate = 0;   
+                    $sum_adjrw = 0; 
+                    $sum_inc_total = 0;  
+                    $sum_inc_lab_total = 0;
+                    $sum_inc_drug_total = 0;
+                    $bed_report = $ipd_10989[0]->bed_report ?? 30; // ค่าเตียงจาก hospital_config
                   ?>  
                   @foreach($ipd_10989 as $row) 
                   <tr>
-                    <td align="center">{{ $row->month }}</td>
+                    <td align="center"width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->an_total) }}</td>
                     <td align="right">{{ number_format($row->admdate) }}</td>
-                    <td align="right" class="fw-bold text-success">{{ number_format($row->bed_occupancy,2) }}%</td>
+                    <td align="right">{{ number_format($row->bed_occupancy,2) }}</td>
                     <td align="right">{{ number_format($row->active_bed,2) }}</td>
                     <td align="right">{{ number_format($row->adjrw,5) }}</td>
-                    <td align="right" class="text-primary">{{ number_format($row->cmi,2) }}</td>
+                    <td align="right">{{ number_format($row->cmi,2) }}</td>
                     <td align="right">{{ number_format($row->inc_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_lab_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_drug_total,2) }}</td>
                   </tr>
                   <?php 
-                    $sum_an_total += $row->an_total; $sum_admdate += $row->admdate; $sum_adjrw += $row->adjrw;
-                    $sum_inc_total += $row->inc_total; $sum_inc_lab_total += $row->inc_lab_total; $sum_inc_drug_total += $row->inc_drug_total;
+                    $sum_an_total += $row->an_total;
+                    $sum_admdate += $row->admdate;
+                    $sum_adjrw += $row->adjrw;
+                    $sum_inc_total += $row->inc_total;
+                    $sum_inc_lab_total += $row->inc_lab_total;
+                    $sum_inc_drug_total += $row->inc_drug_total;
                   ?>
                   @endforeach 
                   <?php                   
+                  // ✅ จำนวนเตียง
+                    $bed_report = 60;
+                  // ✅ อัตราครองเตียงรวม
                     $sum_bed_occupancy = ($sum_admdate > 0 && $bed_report > 0) ? round(($sum_admdate * 100) / ($bed_report * $diff_days), 2) : 0;  
+                  // ✅ Active Bed = วันนอนรวม ÷ จำนวนวัน
                     $sum_active_bed = ($sum_admdate > 0 && $diff_days > 0) ? round($sum_admdate / $diff_days, 2) : 0;
+                  // ✅ CMI รวม
                     $sum_cmi = ($sum_an_total > 0) ? round($sum_adjrw / $sum_an_total, 2) : 0; 
                   ?>   
-                  <tr class="tr-total">
-                    <td align="center">รวม</td>
-                    <td align="right">{{number_format($sum_an_total)}}</td>
-                    <td align="right">{{number_format($sum_admdate)}}</td>
-                    <td align="right">{{number_format($sum_bed_occupancy,2)}}%</td>     
-                    <td align="right">{{number_format($sum_active_bed,2)}}</td>   
-                    <td align="right">{{number_format($sum_adjrw,4)}}</td>  
-                    <td align="right" class="text-primary">{{number_format($sum_cmi,2)}}</td> 
-                    <td align="right">{{number_format($sum_inc_total,2)}}</td>
-                    <td align="right">{{number_format($sum_inc_lab_total)}}</td>
-                    <td align="right">{{number_format($sum_inc_drug_total,2)}}</td>
+                  <tr>
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right"><strong>{{number_format($sum_an_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_admdate)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_bed_occupancy,2)}}</td>     
+                    <td align="right"><strong>{{number_format($sum_active_bed,2)}}</td>   
+                    <td align="right"><strong>{{number_format($sum_adjrw,4)}}</strong></td>  
+                    <td align="right"><strong>{{number_format($sum_cmi,2)}}</strong></td> 
+                    <td align="right"><strong>{{number_format($sum_inc_total,2)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_lab_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_drug_total,2)}}</strong></td>
                   </tr>   
                 </tbody>
               </table>
+              <!-- กราฟ -->
               <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10989"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10989"></div></div></div></div>
+                <!-- กราฟอัตราครองเตียง -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-primary mb-1">
+                        📈 อัตราครองเตียง (%)
+                      </h6>
+                      <div id="bed_occupancy_10989"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- กราฟ CMI -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-danger mb-1">
+                        📊 CMI
+                      </h6>
+                      <div id="cmi_chart_10989"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1532,119 +1764,178 @@
           <!-- Refer -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10989] ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10989}}</span>
-              </div>
+              <h6>[10989] ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>
             </div>
             <div class="table-responsive">
-              <table id="table10989_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
+              <table id="table10989_refer" class="table table-bordered table-striped my-3" width="100%">
+                <thead class="table-light">
+                  <tr class="table-refer">
+                      <th class="text-center" rowspan="2" width="8%">เดือน</th>
+                      <th class="text-center" colspan="4">Refer Out</th>
+                      <th class="text-center" colspan="4">Refer In</th>
+                      <th class="text-center" colspan="2">Refer Back</th>
+                  </tr>
+                  <tr class="table-refer">
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">ในจังหวัด</th>
+                      <th class="text-center">ต่างจังหวัด</th>
+                  </tr>
                 </thead>
                 <tbody>
                 @foreach($refer_10989 as $row)
                   <tr>
                     <td class="text-center">{{ $row->month }}</td>
+                    <!-- Refer Out -->
                     <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <!-- Refer In -->
                     <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <!-- Refer Back -->
                     <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
                   </tr>
                 @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10989->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10989->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10989->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10989->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10989->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10989->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10989->sum('visit_referback_outprov')) }}</td>
+                  <!-- รวม -->
+                  <tr class="table-secondary fw-bold">
+                    <td class="text-end">รวม</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referout_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referout_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referout_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referout_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referin_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referin_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referin_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referin_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referback_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referback_outprov')) }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>   
+        <!-- END 10989 --> 
         </div>
 
         <!-- 10990 -->
-        <div class="tab-pane fade" id="pane-10990" role="tabpanel" aria-labelledby="tab-10990" tabindex="0">          
-          <!-- IPD -->
+        <div class="tab-pane fade" id="pane-10990" role="tabpanel" aria-labelledby="tab-10990" tabindex="0">
+          <!-- IPD -->          
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10990] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10990}}</span>
-              </div>
+              <h6>[10990] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10990}}</span>              
             </div>
             <div class="table-responsive">
-              <table id="table10990_ipd" class="table custom-table my-3" width ="100%">
-                <thead>
-                  <tr>
-                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>
-                    <th class="th-blue" rowspan="2">จำนวน AN</th>
-                    <th class="th-blue" rowspan="2">วันนอนรวม</th> 
-                    <th class="th-green" rowspan="2">อัตราครองเตียง (%)</th>
-                    <th class="th-green" rowspan="2">Active Base (เตียง)</th>       
-                    <th class="th-orange" rowspan="2">AdjRW</th>  
-                    <th class="th-orange" rowspan="2">CMI</th>
-                    <th class="th-purple" colspan="3">ค่ารักษาพยาบาล</th>                
+              <table id="table10990_ipd" class="table table-bordered table-striped my-3" width ="100%">
+                <thead class="table-light">
+                  <tr class="table-ipd">
+                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>
+                    <th class="text-center" rowspan="2">จำนวน AN</th>
+                    <th class="text-center" rowspan="2">วันนอนรวม</th> 
+                    <th class="text-center" rowspan="2">อัตราครองเตียง (%)</th>
+                    <th class="text-center" rowspan="2">Active Base (เตียง)</th>      
+                    <th class="text-center" rowspan="2">AdjRW</th>  
+                    <th class="text-center" rowspan="2">CMI</th>
+                    <th class="text-center" colspan="3">ค่ารักษาพยาบาล</th>                
                   </tr>    
-                  <tr> 
-                    <th class="th-purple">ค่ารักษารวม</th>
-                    <th class="th-purple">ค่า Lab</th>
-                    <th class="th-purple">ค่า ยา</th>                 
+                  <tr class="table-ipd"> 
+                    <td class="text-center text-primary">ค่ารักษารวม</td>
+                    <td class="text-center text-primary">ค่า Lab</td>
+                    <td class="text-center text-primary">ค่า ยา</td>                 
                   </tr>    
                 </thead>
                 <tbody>
                   <?php 
-                    $sum_an_total = 0; $sum_admdate = 0; $sum_adjrw = 0; $sum_inc_total = 0; $sum_inc_lab_total = 0; $sum_inc_drug_total = 0;
-                    $bed_report = $ipd_10990[0]->bed_report ?? 30;
+                    $sum_an_total = 0; 
+                    $sum_admdate = 0;   
+                    $sum_adjrw = 0; 
+                    $sum_inc_total = 0;  
+                    $sum_inc_lab_total = 0;
+                    $sum_inc_drug_total = 0;
+                    $bed_report = $ipd_10990[0]->bed_report ?? 30; // ค่าเตียงจาก hospital_config
                   ?>  
                   @foreach($ipd_10990 as $row) 
                   <tr>
-                    <td align="center">{{ $row->month }}</td>
+                    <td align="center"width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->an_total) }}</td>
                     <td align="right">{{ number_format($row->admdate) }}</td>
-                    <td align="right" class="fw-bold text-success">{{ number_format($row->bed_occupancy,2) }}%</td>
+                    <td align="right">{{ number_format($row->bed_occupancy,2) }}</td>
                     <td align="right">{{ number_format($row->active_bed,2) }}</td>
                     <td align="right">{{ number_format($row->adjrw,5) }}</td>
-                    <td align="right" class="text-primary">{{ number_format($row->cmi,2) }}</td>
+                    <td align="right">{{ number_format($row->cmi,2) }}</td>
                     <td align="right">{{ number_format($row->inc_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_lab_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_drug_total,2) }}</td>
                   </tr>
                   <?php 
-                    $sum_an_total += $row->an_total; $sum_admdate += $row->admdate; $sum_adjrw += $row->adjrw;
-                    $sum_inc_total += $row->inc_total; $sum_inc_lab_total += $row->inc_lab_total; $sum_inc_drug_total += $row->inc_drug_total;
+                    $sum_an_total += $row->an_total;
+                    $sum_admdate += $row->admdate;
+                    $sum_adjrw += $row->adjrw;
+                    $sum_inc_total += $row->inc_total;
+                    $sum_inc_lab_total += $row->inc_lab_total;
+                    $sum_inc_drug_total += $row->inc_drug_total;
                   ?>
                   @endforeach 
                   <?php                   
+                  // ✅ จำนวนเตียง
+                    $bed_report = 30;
+                  // ✅ อัตราครองเตียงรวม
                     $sum_bed_occupancy = ($sum_admdate > 0 && $bed_report > 0) ? round(($sum_admdate * 100) / ($bed_report * $diff_days), 2) : 0;  
+                  // ✅ Active Bed = วันนอนรวม ÷ จำนวนวัน
                     $sum_active_bed = ($sum_admdate > 0 && $diff_days > 0) ? round($sum_admdate / $diff_days, 2) : 0;
+                  // ✅ CMI รวม
                     $sum_cmi = ($sum_an_total > 0) ? round($sum_adjrw / $sum_an_total, 2) : 0; 
                   ?>   
-                  <tr class="tr-total">
-                    <td align="center">รวม</td>
-                    <td align="right">{{number_format($sum_an_total)}}</td>
-                    <td align="right">{{number_format($sum_admdate)}}</td>
-                    <td align="right">{{number_format($sum_bed_occupancy,2)}}%</td>     
-                    <td align="right">{{number_format($sum_active_bed,2)}}</td>   
-                    <td align="right">{{number_format($sum_adjrw,4)}}</td>  
-                    <td align="right" class="text-primary">{{number_format($sum_cmi,2)}}</td> 
-                    <td align="right">{{number_format($sum_inc_total,2)}}</td>
-                    <td align="right">{{number_format($sum_inc_lab_total)}}</td>
-                    <td align="right">{{number_format($sum_inc_drug_total,2)}}</td>
+                  <tr>
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right"><strong>{{number_format($sum_an_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_admdate)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_bed_occupancy,2)}}</td>     
+                    <td align="right"><strong>{{number_format($sum_active_bed,2)}}</td>   
+                    <td align="right"><strong>{{number_format($sum_adjrw,4)}}</strong></td>  
+                    <td align="right"><strong>{{number_format($sum_cmi,2)}}</strong></td> 
+                    <td align="right"><strong>{{number_format($sum_inc_total,2)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_lab_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_drug_total,2)}}</strong></td>
                   </tr>   
                 </tbody>
               </table>
+              <!-- กราฟ -->
               <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10990"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10990"></div></div></div></div>
+                <!-- กราฟอัตราครองเตียง -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-primary mb-1">
+                        📈 อัตราครองเตียง (%)
+                      </h6>
+                      <div id="bed_occupancy_10990"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- กราฟ CMI -->
+                <div class="col-md-6 mb-4">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h6 class="text-center text-danger mb-1">
+                        📊 CMI
+                      </h6>
+                      <div id="cmi_chart_10990"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1652,129 +1943,174 @@
           <!-- Refer -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10990] ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10990}}</span>
-              </div>
+              <h6>[10990] ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>
             </div>
             <div class="table-responsive">
-              <table id="table10990_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
+              <table id="table10990_refer" class="table table-bordered table-striped my-3" width="100%">
+                <thead class="table-light">
+                  <tr class="table-refer">
+                      <th class="text-center" rowspan="2" width="8%">เดือน</th>
+                      <th class="text-center" colspan="4">Refer Out</th>
+                      <th class="text-center" colspan="4">Refer In</th>
+                      <th class="text-center" colspan="2">Refer Back</th>
+                  </tr>
+                  <tr class="table-refer">
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">ในจังหวัด</th>
+                      <th class="text-center">ต่างจังหวัด</th>
+                  </tr>
                 </thead>
                 <tbody>
                 @foreach($refer_10990 as $row)
                   <tr>
                     <td class="text-center">{{ $row->month }}</td>
+                    <!-- Refer Out -->
                     <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <!-- Refer In -->
                     <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <!-- Refer Back -->
                     <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
                   </tr>
                 @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10990->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10990->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10990->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10990->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10990->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10990->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10990->sum('visit_referback_outprov')) }}</td>
+                  <!-- รวม -->
+                  <tr class="table-secondary fw-bold">
+                    <td class="text-end">รวม</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referout_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referout_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referout_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referout_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referin_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referin_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referin_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referin_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referback_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referback_outprov')) }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>   
+        <!-- END 10990 --> 
         </div>
 
         <!-- 10703 -->
-        <div class="tab-pane fade" id="pane-10703" role="tabpanel" aria-labelledby="tab-10703" tabindex="0">          
-          <!-- IPD -->
+        <div class="tab-pane fade" id="pane-10703" role="tabpanel" aria-labelledby="tab-10703" tabindex="0">
+          <!-- IPD -->          
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10703] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10703}}</span>
-              </div>
+              <h6>[10703] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10990}}</span>              
             </div>
             <div class="table-responsive">
-              <table id="table10703_ipd" class="table custom-table my-3" width ="100%">
-                <thead>
-                  <tr>
-                    <th class="th-grey" rowspan="2" width ="4%">เดือน</th>
-                    <th class="th-blue" rowspan="2">จำนวน AN</th>
-                    <th class="th-blue" rowspan="2">วันนอนรวม</th> 
-                    <th class="th-green" rowspan="2">อัตราครองเตียง (%)</th>
-                    <th class="th-green" rowspan="2">Active Base (เตียง)</th>       
-                    <th class="th-orange" rowspan="2">AdjRW</th>  
-                    <th class="th-orange" rowspan="2">CMI</th>
-                    <th class="th-purple" colspan="3">ค่ารักษาพยาบาล</th>                
+              <table id="table10703_ipd" class="table table-bordered table-striped my-3" width ="100%">
+                <thead class="table-light">
+                  <tr class="table-ipd">
+                    <th class="text-center" rowspan="2" width ="4%">เดือน</th>
+                    <th class="text-center" rowspan="2">จำนวน AN</th>
+                    <th class="text-center" rowspan="2">วันนอนรวม</th> 
+                    <th class="text-center" rowspan="2">อัตราครองเตียง (%)</th>
+                    <th class="text-center" rowspan="2">Active Base (เตียง)</th>      
+                    <th class="text-center" rowspan="2">AdjRW</th>  
+                    <th class="text-center" rowspan="2">CMI</th>
+                    <th class="text-center" colspan="3">ค่ารักษาพยาบาล</th>                
                   </tr>    
-                  <tr> 
-                    <th class="th-purple">ค่ารักษารวม</th>
-                    <th class="th-purple">ค่า Lab</th>
-                    <th class="th-purple">ค่า ยา</th>                 
+                  <tr class="table-ipd"> 
+                    <td class="text-center text-primary">ค่ารักษารวม</td>
+                    <td class="text-center text-primary">ค่า Lab</td>
+                    <td class="text-center text-primary">ค่า ยา</td>                 
                   </tr>    
                 </thead>
                 <tbody>
                   <?php 
-                    $sum_an_total = 0; $sum_admdate = 0; $sum_adjrw = 0; $sum_inc_total = 0; $sum_inc_lab_total = 0; $sum_inc_drug_total = 0;
-                    $bed_report = $ipd_10703[0]->bed_report ?? 432;
+                    $sum_an_total = 0; 
+                    $sum_admdate = 0;   
+                    $sum_adjrw = 0; 
+                    $sum_inc_total = 0;  
+                    $sum_inc_lab_total = 0;
+                    $sum_inc_drug_total = 0;
+                    $bed_report = $ipd_10703[0]->bed_report ?? 432; // ค่าเตียงจาก hospital_config
                   ?>  
                   @foreach($ipd_10703 as $row) 
                   <tr>
-                    <td align="center">{{ $row->month }}</td>
+                    <td align="center"width ="4%">{{ $row->month }}</td>
                     <td align="right">{{ number_format($row->an_total) }}</td>
                     <td align="right">{{ number_format($row->admdate) }}</td>
-                    <td align="right" class="fw-bold text-success">{{ number_format($row->bed_occupancy,2) }}%</td>
+                    <td align="right">{{ number_format($row->bed_occupancy,2) }}</td>
                     <td align="right">{{ number_format($row->active_bed,2) }}</td>
                     <td align="right">{{ number_format($row->adjrw,5) }}</td>
-                    <td align="right" class="text-primary">{{ number_format($row->cmi,2) }}</td>
+                    <td align="right">{{ number_format($row->cmi,2) }}</td>
                     <td align="right">{{ number_format($row->inc_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_lab_total,2) }}</td>
                     <td align="right">{{ number_format($row->inc_drug_total,2) }}</td>
                   </tr>
                   <?php 
-                    $sum_an_total += $row->an_total; $sum_admdate += $row->admdate; $sum_adjrw += $row->adjrw;
-                    $sum_inc_total += $row->inc_total; $sum_inc_lab_total += $row->inc_lab_total; $sum_inc_drug_total += $row->inc_drug_total;
+                    $sum_an_total += $row->an_total;
+                    $sum_admdate += $row->admdate;
+                    $sum_adjrw += $row->adjrw;
+                    $sum_inc_total += $row->inc_total;
+                    $sum_inc_lab_total += $row->inc_lab_total;
+                    $sum_inc_drug_total += $row->inc_drug_total;
                   ?>
                   @endforeach 
                   <?php                   
+                  // ✅ จำนวนเตียง
+                    $bed_report = 432;
+                  // ✅ อัตราครองเตียงรวม
                     $sum_bed_occupancy = ($sum_admdate > 0 && $bed_report > 0) ? round(($sum_admdate * 100) / ($bed_report * $diff_days), 2) : 0;  
+                  // ✅ Active Bed = วันนอนรวม ÷ จำนวนวัน
                     $sum_active_bed = ($sum_admdate > 0 && $diff_days > 0) ? round($sum_admdate / $diff_days, 2) : 0;
+                  // ✅ CMI รวม
                     $sum_cmi = ($sum_an_total > 0) ? round($sum_adjrw / $sum_an_total, 2) : 0; 
                   ?>   
-                  <tr class="tr-total">
-                    <td align="center">รวม</td>
-                    <td align="right">{{number_format($sum_an_total)}}</td>
-                    <td align="right">{{number_format($sum_admdate)}}</td>
-                    <td align="right">{{number_format($sum_bed_occupancy,2)}}%</td>     
-                    <td align="right">{{number_format($sum_active_bed,2)}}</td>   
-                    <td align="right">{{number_format($sum_adjrw,4)}}</td>  
-                    <td align="right" class="text-primary">{{number_format($sum_cmi,2)}}</td> 
-                    <td align="right">{{number_format($sum_inc_total,2)}}</td>
-                    <td align="right">{{number_format($sum_inc_lab_total)}}</td>
-                    <td align="right">{{number_format($sum_inc_drug_total,2)}}</td>
+                  <tr>
+                    <td align="right"><strong>รวม</strong></td>
+                    <td align="right"><strong>{{number_format($sum_an_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_admdate)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_bed_occupancy,2)}}</td>     
+                    <td align="right"><strong>{{number_format($sum_active_bed,2)}}</td>   
+                    <td align="right"><strong>{{number_format($sum_adjrw,4)}}</strong></td>  
+                    <td align="right"><strong>{{number_format($sum_cmi,2)}}</strong></td> 
+                    <td align="right"><strong>{{number_format($sum_inc_total,2)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_lab_total)}}</strong></td>
+                    <td align="right"><strong>{{number_format($sum_inc_drug_total,2)}}</strong></td>
                   </tr>   
                 </tbody>
               </table>
+              <!-- กราฟ -->
               <div class="row mt-4">
+                <!-- กราฟอัตราครองเตียง -->
                 <div class="col-md-6 mb-4">
-                  <div class="card shadow-sm border-0 rounded-4">
+                  <div class="card shadow-sm">
                     <div class="card-body">
-                      <h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6>
+                      <h6 class="text-center text-primary mb-1">
+                        📈 อัตราครองเตียง (%)
+                      </h6>
                       <div id="bed_occupancy_10703"></div>
                     </div>
                   </div>
                 </div>
+                <!-- กราฟ CMI -->
                 <div class="col-md-6 mb-4">
-                  <div class="card shadow-sm border-0 rounded-4">
+                  <div class="card shadow-sm">
                     <div class="card-body">
-                      <h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6>
+                      <h6 class="text-center text-danger mb-1">
+                        📊 CMI
+                      </h6>
                       <div id="cmi_chart_10703"></div>
                     </div>
                   </div>
@@ -1786,36 +2122,63 @@
           <!-- Refer -->
           <div class="glass p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10703] ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ</h6>
-              <span class="text-secondary small">Update {{$update_at10703}}</span>
+              <h6>[10703] ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
+              <span class="text-secondary small">Update {{$update_at10985}}</span>
             </div>
             <div class="table-responsive">
-              <table id="table10703_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
+              <table id="table10703_refer" class="table table-bordered table-striped my-3" width="100%">
+                <thead class="table-light">
+                  <tr class="table-refer">
+                      <th class="text-center" rowspan="2" width="8%">เดือน</th>
+                      <th class="text-center" colspan="4">Refer Out</th>
+                      <th class="text-center" colspan="4">Refer In</th>
+                      <th class="text-center" colspan="2">Refer Back</th>
+                  </tr>
+                  <tr class="table-refer">
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">OPD ในจังหวัด</th>
+                      <th class="text-center">OPD ต่างจังหวัด</th>
+                      <th class="text-center">IPD ในจังหวัด</th>
+                      <th class="text-center">IPD ต่างจังหวัด</th>
+                      <th class="text-center">ในจังหวัด</th>
+                      <th class="text-center">ต่างจังหวัด</th>
+                  </tr>
                 </thead>
                 <tbody>
                 @foreach($refer_10703 as $row)
                   <tr>
                     <td class="text-center">{{ $row->month }}</td>
+                    <!-- Refer Out -->
                     <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
+                    <!-- Refer In -->
                     <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
+                    <td class="text-end">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
+                    <!-- Refer Back -->
                     <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
                     <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
                   </tr>
                 @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10703->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10703->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10703->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10703->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10703->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10703->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10703->sum('visit_referback_outprov')) }}</td>
+                  <!-- รวม -->
+                  <tr class="table-secondary fw-bold">
+                    <td class="text-end">รวม</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referout_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referout_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referout_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referout_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referin_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referin_outprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referin_inprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referin_outprov_ipd')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referback_inprov')) }}</td>
+                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referback_outprov')) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -1852,8 +2215,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน {{ $budget_year ?? "" }}'
           }
         ],
@@ -1872,8 +2235,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน {{ $budget_year ?? "" }}'
           }
         ],
@@ -1892,8 +2255,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา {{ $budget_year ?? "" }}'
           }
         ],
@@ -1912,8 +2275,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา {{ $budget_year ?? "" }}'
           }
         ],
@@ -1932,8 +2295,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา {{ $budget_year ?? "" }}'
           }
         ],
@@ -1952,29 +2315,9 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา {{ $budget_year ?? "" }}'
-          }
-        ],
-        ordering: false,
-        paging: false,
-        info: false,
-        lengthChange: false,
-        language: { search: "ค้นหา:" }
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#table10988_ipd').DataTable({
-        dom: '<"d-flex justify-content-end mb-2"B>rt',
-        buttons: [
-          {
-            extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
-            title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม {{ $budget_year ?? "" }}'
           }
         ],
         ordering: false,
@@ -1992,8 +2335,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม {{ $budget_year ?? "" }}'
           }
         ],
@@ -2012,8 +2355,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน {{ $budget_year ?? "" }}'
           }
         ],
@@ -2032,8 +2375,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน {{ $budget_year ?? "" }}'
           }
         ],
@@ -2052,8 +2395,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ {{ $budget_year ?? "" }}'
           }
         ],
@@ -2072,8 +2415,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ {{ $budget_year ?? "" }}'
           }
         ],
@@ -2092,8 +2435,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ {{ $budget_year ?? "" }}'
           }
         ],
@@ -2112,8 +2455,8 @@
         buttons: [
           {
             extend: 'excelHtml5',
-            text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
-            className: 'btn btn-success btn-sm rounded-pill px-3',
+            text: '<i class="bi bi-file-earmark-excel"></i> ส่งออก Excel',
+            className: 'btn btn-success btn-sm',
             title: 'ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ {{ $budget_year ?? "" }}'
           }
         ],
@@ -2128,7 +2471,6 @@
 @endpush
 
 <!-- script กราฟ  ---------------------------------------------------------------------------------------->
-@push('scripts')
 <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -2752,4 +3094,4 @@
       cmiChart.render();
 
     });
-  </script>@endpush
+  </script>
