@@ -491,40 +491,40 @@
     <div class="container-fluid">
     
       <!-- NAV PILLS -->
-      <ul class="nav nav-pills overflow-auto flex-nowrap" id="hospPills" role="tablist">
+      <ul class="nav nav-pills overflow-auto flex-nowrap pb-1" id="hospPills" role="tablist">
         <li class="nav-item me-2" role="presentation">
           <button class="nav-link active" id="tab-10985" data-bs-toggle="pill" data-bs-target="#pane-10985" type="button" role="tab" aria-controls="pane-10985" aria-selected="true">
-            รพ.ชานุมาน
+            <i class="fa-solid fa-hospital me-1"></i> รพ.ชานุมาน
           </button>
         </li>
         <li class="nav-item me-2" role="presentation">
           <button class="nav-link" id="tab-10986" data-bs-toggle="pill" data-bs-target="#pane-10986" type="button" role="tab" aria-controls="pane-10986" aria-selected="false">
-            รพ.ปทุมราชวงศา
+            <i class="fa-solid fa-hospital me-1"></i> รพ.ปทุมราชวงศา
           </button>
         </li>
         <li class="nav-item me-2" role="presentation">
           <button class="nav-link" id="tab-10987" data-bs-toggle="pill" data-bs-target="#pane-10987" type="button" role="tab" aria-controls="pane-10987" aria-selected="false">
-            รพ.พนา
+            <i class="fa-solid fa-hospital me-1"></i> รพ.พนา
           </button>
         </li>
         <li class="nav-item me-2" role="presentation">
           <button class="nav-link" id="tab-10988" data-bs-toggle="pill" data-bs-target="#pane-10988" type="button" role="tab" aria-controls="pane-10988" aria-selected="false">
-            รพ.เสนางคนิคม
+            <i class="fa-solid fa-hospital me-1"></i> รพ.เสนางคนิคม
           </button>
         </li>
         <li class="nav-item me-2" role="presentation">
           <button class="nav-link" id="tab-10989" data-bs-toggle="pill" data-bs-target="#pane-10989" type="button" role="tab" aria-controls="pane-10989" aria-selected="false">
-            รพ.หัวตะพาน
+            <i class="fa-solid fa-hospital me-1"></i> รพ.หัวตะพาน
           </button>
         </li>
         <li class="nav-item me-2" role="presentation">
           <button class="nav-link" id="tab-10990" data-bs-toggle="pill" data-bs-target="#pane-10990" type="button" role="tab" aria-controls="pane-10990" aria-selected="false">
-            รพ.ลืออำนาจ
+            <i class="fa-solid fa-hospital me-1"></i> รพ.ลืออำนาจ
           </button>
         </li>
         <li class="nav-item me-2" role="presentation">
           <button class="nav-link" id="tab-10703" data-bs-toggle="pill" data-bs-target="#pane-10703" type="button" role="tab" aria-controls="pane-10703" aria-selected="false">
-            รพ.อำนาจเจริญ
+            <i class="fa-solid fa-hospital-user me-1"></i> รพ.อำนาจเจริญ
           </button>
         </li>
       </ul>

@@ -43,7 +43,93 @@
     .brand-title,h1,h2,h3,h4,.nav-link,.table thead th{color:var(--blue);}
     .glass{background:var(--glass-bg);border:1px solid var(--glass-bd);backdrop-filter:blur(10px);border-radius:var(--radius);box-shadow:var(--shadow);}
     .text-green{color:var(--green)!important;}
-    
+
+    /* === Modern Premium Tab Pills Style (Global) === */
+    .nav-pills .nav-link {
+      background: rgba(255, 255, 255, 0.4) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      border-radius: 14px !important;
+      padding: 10px 18px !important;
+      color: #475569 !important;
+      font-weight: 600 !important;
+      transition: all 0.25s ease-in-out !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .nav-pills .nav-link:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.8) !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    }
+
+    /* Hospital-specific Active Tab Styling */
+    #tab-10985.active {
+      background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%) !important;
+      border-left: 5px solid #8b5cf6 !important;
+      border-top: 1px solid rgba(139, 92, 246, 0.15) !important;
+      border-right: 1px solid rgba(139, 92, 246, 0.15) !important;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.15) !important;
+      color: #7c3aed !important;
+      box-shadow: 0 6px 15px rgba(139, 92, 246, 0.12) !important;
+    }
+    #tab-10986.active {
+      background: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%) !important;
+      border-left: 5px solid #06b6d4 !important;
+      border-top: 1px solid rgba(6, 182, 212, 0.15) !important;
+      border-right: 1px solid rgba(6, 182, 212, 0.15) !important;
+      border-bottom: 1px solid rgba(6, 182, 212, 0.15) !important;
+      color: #0891b2 !important;
+      box-shadow: 0 6px 15px rgba(6, 182, 212, 0.12) !important;
+    }
+    #tab-10987.active {
+      background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 100%) !important;
+      border-left: 5px solid #ec4899 !important;
+      border-top: 1px solid rgba(236, 72, 153, 0.15) !important;
+      border-right: 1px solid rgba(236, 72, 153, 0.15) !important;
+      border-bottom: 1px solid rgba(236, 72, 153, 0.15) !important;
+      color: #db2777 !important;
+      box-shadow: 0 6px 15px rgba(236, 72, 153, 0.12) !important;
+    }
+    #tab-10988.active {
+      background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%) !important;
+      border-left: 5px solid #f59e0b !important;
+      border-top: 1px solid rgba(245, 158, 11, 0.15) !important;
+      border-right: 1px solid rgba(245, 158, 11, 0.15) !important;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.15) !important;
+      color: #d97706 !important;
+      box-shadow: 0 6px 15px rgba(245, 158, 11, 0.12) !important;
+    }
+    #tab-10989.active {
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%) !important;
+      border-left: 5px solid #3b82f6 !important;
+      border-top: 1px solid rgba(59, 130, 246, 0.15) !important;
+      border-right: 1px solid rgba(59, 130, 246, 0.15) !important;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+      color: #2563eb !important;
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.12) !important;
+    }
+    #tab-10990.active {
+      background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%) !important;
+      border-left: 5px solid #10b981 !important;
+      border-top: 1px solid rgba(16, 185, 129, 0.15) !important;
+      border-right: 1px solid rgba(16, 185, 129, 0.15) !important;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.15) !important;
+      color: #059669 !important;
+      box-shadow: 0 6px 15px rgba(16, 185, 129, 0.12) !important;
+    }
+    #tab-10703.active {
+      background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%) !important;
+      border-left: 5px solid #f43f5e !important;
+      border-top: 1px solid rgba(244, 63, 94, 0.15) !important;
+      border-right: 1px solid rgba(244, 63, 94, 0.15) !important;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.15) !important;
+      color: #e11d48 !important;
+      box-shadow: 0 6px 15px rgba(244, 63, 94, 0.12) !important;
+    }
   </style>
 
   @stack('styles')
