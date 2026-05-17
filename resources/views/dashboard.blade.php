@@ -120,77 +120,39 @@
 </style>
 <style>
   /* ================================
-    1) Operation – Deep Green Glass
+    1) Operation – Green
   =================================*/
-  .glass-op {
-    background: linear-gradient(135deg,
-                rgba(0,120,50,0.55),
-                rgba(0,180,90,0.28));
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.35);
-    border-left: 6px solid #007832 !important;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    color: #ffffff;
-  }
-
-  .glass-op .glass-title,
-  .glass-op .glass-number {
-    color: #ffffff !important;
+  .card-theme-op {
+    background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+    border: 1px solid #2e7d32 !important;
+    border-left: 6px solid #2e7d32 !important;
   }
 
   /* ================================
-    2) Refer Out – Magenta Glass
+    2) Refer Out – Magenta
   =================================*/
-  .glass-referout {
-    background: linear-gradient(135deg,
-                rgba(180,40,160,0.55),
-                rgba(255,115,195,0.25));
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.35);
-    border-left: 6px solid #b428a0 !important;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    color: #fff0ff;
-  }
-  .glass-referout .glass-title,
-  .glass-referout .glass-number {
-    color: #fff0ff !important;
+  .card-theme-referout {
+    background: linear-gradient(135deg, #fce4ec 0%, #ffffff 100%);
+    border: 1px solid #c2185b !important;
+    border-left: 6px solid #c2185b !important;
   }
 
   /* ================================
-    3) Refer In – Pink Red Glass
+    3) Refer In – Pink/Red
   =================================*/
-  .glass-referin {
-    background: linear-gradient(135deg,
-                rgba(220,40,90,0.55),
-                rgba(255,130,160,0.28));
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.35);
-    border-left: 6px solid #dc285a !important;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    color: #ffe6ea;
+  .card-theme-referin {
+    background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%);
+    border: 1px solid #d32f2f !important;
+    border-left: 6px solid #d32f2f !important;
   }
-  .glass-referin .glass-title,
-  .glass-referin .glass-number {
-    color: #ffffff !important;
-  }
-
 
   /* ================================
-    4) Refer Back – Warm Yellow Glass
+    4) Refer Back – Orange/Yellow
   =================================*/
-  .glass-referback {
-    background: linear-gradient(135deg,
-                rgba(255,180,60,0.55),
-                rgba(255,225,120,0.28));
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.35);
-    border-left: 6px solid #ffb43c !important;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    color: #5e4800;
-  }
-  .glass-referback .glass-title,
-  .glass-referback .glass-number {
-    color: #5e4800 !important;
+  .card-theme-referback {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+    border: 1px solid #f57f17 !important;
+    border-left: 6px solid #f57f17 !important;
   }
 </style>
 
@@ -559,12 +521,20 @@
         
         <!-- ผ่าตัด Operation  --------------------------------------------------------------------------------------------->
         <div class="col-12 col-sm-6 col-xl-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#OperationDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-op card-hover border-0">
-              <div class="glass-icon"><i class="fa-solid fa-kit-medical"></i></div>
-              <div class="glass-title"><h6>ผ่าตัด วันนี้</h6></div>
-              <div class="glass-number fs-2">
-                {{ $fmtInt($visit_operation) }}
+          <a href="#" data-bs-toggle="modal" data-bs-target="#OperationDetailModal" class="text-decoration-none text-dark d-block">
+            <div class="card card-theme-op card-hover glass py-2 px-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h6 class="mb-0 text-success fw-bold">ผ่าตัด วันนี้</h6>
+                <div class="bg-success bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                  <i class="fa-solid fa-kit-medical text-success fs-5"></i>
+                </div>
+              </div>
+              <div class="d-flex justify-content-center text-center">
+                <div class="flex-fill px-1 mt-3">
+                  <div class="fw-bold text-success" style="font-size:1.6rem; line-height: 1;">
+                    {{ $fmtInt($visit_operation) }}
+                  </div>
+                </div>
               </div>
             </div>
           </a>
@@ -628,21 +598,25 @@
 
         <!-- Refer Out ------------------------------------------------------------------------------------------>
         <div class="col-12 col-sm-6 col-xl-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferOutDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-referout card-hover border-0">
-              <div class="glass-icon"><i class="fa-solid fa-truck-medical"></i></div>
-              <div class="glass-title"><h6>Refer Out วันนี้</h6></div>
-              <div class="d-flex justify-content-between text-center mt-1">
-                <div class="flex-fill">
-                  <div class="small">OPD</div>
-                  <div class="glass-number fs-4">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferOutDetailModal" class="text-decoration-none text-dark d-block">
+            <div class="card card-theme-referout card-hover glass py-2 px-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h6 class="mb-0 fw-bold" style="color: #c2185b;">Refer Out วันนี้</h6>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: rgba(194, 24, 91, 0.1);">
+                  <i class="fa-solid fa-truck-medical fs-5" style="color: #c2185b;"></i>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between text-center">
+                <div class="flex-fill px-1">
+                  <div class="small text-secondary">OPD</div>
+                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #c2185b;">
                     {{ $fmtInt($visit_referout_inprov + $visit_referout_outprov) }}
                   </div>
                 </div>
-                <div class="vr mx-2 d-none d-sm-block" style="opacity:0.4;"></div>
-                <div class="flex-fill">
-                  <div class="small">IPD</div>
-                  <div class="glass-number fs-4">
+                <div class="vr mx-2 d-none d-sm-block"></div>
+                <div class="flex-fill px-1">
+                  <div class="small text-secondary">IPD</div>
+                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #c2185b;">
                     {{ $fmtInt($visit_referout_inprov_ipd + $visit_referout_outprov_ipd) }}
                   </div>
                 </div>
@@ -726,21 +700,25 @@
 
         <!-- Refer In  --------------------------------------------------------------------------------------->
         <div class="col-12 col-sm-6 col-xl-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferInDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-referin card-hover border-0">
-              <div class="glass-icon"><i class="fa-solid fa-truck-medical"></i></div>
-              <div class="glass-title"><h6>Refer In วันนี้</h6></div>
-              <div class="d-flex justify-content-between text-center mt-1">
-                <div class="flex-fill">
-                  <div class="small">OPD</div>
-                  <div class="glass-number fs-4">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferInDetailModal" class="text-decoration-none text-dark d-block">
+            <div class="card card-theme-referin card-hover glass py-2 px-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h6 class="mb-0 text-danger fw-bold">Refer In วันนี้</h6>
+                <div class="bg-danger bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                  <i class="fa-solid fa-truck-medical text-danger fs-5"></i>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between text-center">
+                <div class="flex-fill px-1">
+                  <div class="small text-secondary">OPD</div>
+                  <div class="fw-bold text-danger" style="font-size:1.6rem; line-height: 1;">
                     {{ $fmtInt($visit_referin_inprov + $visit_referin_outprov) }}
                   </div>
                 </div>
-                <div class="vr mx-2 d-none d-sm-block" style="opacity:0.4;"></div>
-                <div class="flex-fill">
-                  <div class="small">IPD</div>
-                  <div class="glass-number fs-4">
+                <div class="vr mx-2 d-none d-sm-block"></div>
+                <div class="flex-fill px-1">
+                  <div class="small text-secondary">IPD</div>
+                  <div class="fw-bold text-danger" style="font-size:1.6rem; line-height: 1;">
                     {{ $fmtInt($visit_referin_inprov_ipd + $visit_referin_outprov_ipd) }}
                   </div>
                 </div>
@@ -825,21 +803,25 @@
 
         <!-- Refer Back  --------------------------------------------------------------------------------------------->
         <div class="col-12 col-sm-6 col-xl-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferBackDetailModal" class="text-decoration-none text-dark">
-            <div class="glass-card glass-referback card-hover border-0">
-              <div class="glass-icon"><i class="fa-solid fa-truck-medical"></i></div>
-              <div class="glass-title"><h6>Refer Back วันนี้</h6></div>
-              <div class="d-flex justify-content-between text-center mt-1">
-                <div class="flex-fill">
-                  <div class="small">ในจังหวัด</div>
-                  <div class="glass-number fs-4">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferBackDetailModal" class="text-decoration-none text-dark d-block">
+            <div class="card card-theme-referback card-hover glass py-2 px-3 h-100">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h6 class="mb-0 fw-bold" style="color: #f57f17;">Refer Back วันนี้</h6>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: rgba(245, 127, 23, 0.1);">
+                  <i class="fa-solid fa-truck-medical fs-5" style="color: #f57f17;"></i>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between text-center">
+                <div class="flex-fill px-1">
+                  <div class="small text-secondary">ในจังหวัด</div>
+                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #f57f17;">
                     {{ $fmtInt($visit_referback_inprov) }}
                   </div>
                 </div>
-                <div class="vr mx-2 d-none d-sm-block" style="opacity:0.4;"></div>
-                <div class="flex-fill">
-                  <div class="small">ต่างจังหวัด</div>
-                  <div class="glass-number fs-4">
+                <div class="vr mx-2 d-none d-sm-block"></div>
+                <div class="flex-fill px-1">
+                  <div class="small text-secondary">ต่างจังหวัด</div>
+                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #f57f17;">
                     {{ $fmtInt($visit_referback_outprov) }}
                   </div>
                 </div>
