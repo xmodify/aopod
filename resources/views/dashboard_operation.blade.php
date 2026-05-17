@@ -219,7 +219,7 @@
   <header class="py-4">
     <div class="container-fluid">      
         <div class="row g-4 align-items-center">
-          <div class="col-lg-9">          
+          <div class="col-lg-7">          
             <div class="d-flex align-items-center gap-3">
               <div class="bg-purple bg-opacity-10 rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: 1px solid rgba(139, 92, 246, 0.2); background-color: rgba(139, 92, 246, 0.08);">
                 <i class="fa-solid fa-heart-pulse fs-4 text-purple" style="color: #8b5cf6;"></i>
@@ -230,11 +230,11 @@
               </div>
             </div>          
           </div>
-          <div class="col-lg-3 d-flex justify-content-lg-end align-items-center">
-            <span class="text-secondary my-1 me-3">
+          <div class="col-lg-5 d-flex justify-content-lg-end align-items-center gap-3">
+            <span class="text-secondary small fw-medium">
                 วันที่ {{ \Carbon\Carbon::now()->locale('th')->isoFormat('D MMM YYYY เวลา H:mm') }} น.
             </span>
-            <button type="button" class="btn btn-sm btn-outline-success" onclick="location.reload();">
+            <button type="button" class="btn btn-sm btn-glass-action" onclick="location.reload();">
               <i class="bi bi-arrow-clockwise"></i> โหลดใหม่
             </button>
           </div>

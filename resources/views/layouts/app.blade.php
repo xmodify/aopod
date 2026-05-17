@@ -118,6 +118,33 @@
       border: 1px solid rgba(245, 158, 11, 0.15) !important;
     }
 
+    /* === Premium Glassmorphic Action Button === */
+    .btn-glass-action {
+      background: rgba(33, 192, 139, 0.06) !important;
+      color: var(--green-2) !important;
+      border: 1px solid rgba(33, 192, 139, 0.18) !important;
+      font-weight: 600 !important;
+      font-size: 0.85rem !important;
+      padding: 0.4rem 0.85rem !important;
+      border-radius: 12px !important;
+      backdrop-filter: blur(5px) !important;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      text-decoration: none !important;
+    }
+    .btn-glass-action:hover {
+      background: rgba(33, 192, 139, 0.12) !important;
+      color: var(--green-2) !important;
+      border-color: rgba(33, 192, 139, 0.3) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(33, 192, 139, 0.1) !important;
+    }
+    .btn-glass-action:active {
+      transform: translateY(0) !important;
+    }
+
     /* === Modern Premium Tab Pills Style (Global) === */
     .nav-pills .nav-link {
       background: rgba(255, 255, 255, 0.4) !important;

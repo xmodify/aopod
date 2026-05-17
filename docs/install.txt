@@ -1,0 +1,222 @@
+================================================================================
+📄 คู่มือการติดตั้งระบบ AOPOD บน Server AlmaLinux 9 (Apache, PHP 8.2, Composer, Git)
+================================================================================
+
+คู่มือนี้สำหรับติดตั้งและตั้งค่าระบบ Laravel (AOPOD) บนระบบปฏิบัติการ AlmaLinux 9 
+พร้อมขั้นตอนการตั้งค่า Apache Web Server, PHP 8.2, Git, Composer และการตั้งค่าความปลอดภัย (SELinux & Firewall)
+
+--------------------------------------------------------------------------------
+📌 สารบัญขั้นตอนการติดตั้ง:
+--------------------------------------------------------------------------------
+1. อัปเดตระบบและเปิดใช้งาน EPEL / REMI Repository (สำหรับติดตั้ง PHP 8.2+)
+2. ติดตั้ง Git และเครื่องมือจำเป็น
+3. ติดตั้ง Apache Web Server (httpd) และตั้งค่า Firewall
+4. ติดตั้ง PHP 8.2 และส่วนขยายที่จำเป็นสำหรับ Laravel
+5. ติดตั้ง Composer (Global)
+6. ดาวน์โหลดโปรเจกต์และติดตั้ง Laravel Application
+7. ตั้งค่าสิทธิ์โฟลเดอร์ (Permissions) และ SELinux
+8. ตั้งค่า Apache Virtual Host
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 1: อัปเดตระบบและเปิดใช้งาน Repository พิเศษ
+--------------------------------------------------------------------------------
+AlmaLinux 9 มาพร้อม PHP 8.0 ในระบบเริ่มต้น ซึ่งเวอร์ชันต่ำไปสำหรับ Laravel
+เราจะใช้ REMI Repository เพื่อติดตั้ง PHP 8.2 (หรือ 8.3)
+
+# อัปเดตแพ็คเกจในระบบให้เป็นเวอร์ชันล่าสุด
+sudo dnf update -y
+
+# ติดตั้ง EPEL Repository
+sudo dnf install -y epel-release
+
+# ติดตั้ง REMI Repository สำหรับระบบ Enterprise Linux 9
+sudo dnf install -y https://rpms.remirepo.net/enterprise/remi-release-9.rpm
+
+# อัปเดตแคช DNF
+sudo dnf makecache -y
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 2: ติดตั้ง Git และเครื่องมือพื้นฐาน
+--------------------------------------------------------------------------------
+ติดตั้ง Git เพื่อใช้ในการโคลนและดึงซอร์สโค้ดจาก Repository
+
+# ติดตั้ง Git, unzip และเครื่องมือช่วยเหลือ
+sudo dnf install -y git unzip zip wget curl
+
+# ตรวจสอบเวอร์ชัน Git หลังติดตั้งสำเร็จ
+git --version
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 3: ติดตั้ง Apache Web Server (httpd)
+--------------------------------------------------------------------------------
+ติดตั้ง Apache Web Server ตั้งค่าให้ทำงานตอนบูตระบบ และเปิดพอร์ตในระบบ Firewall
+
+# ติดตั้ง Apache (httpd)
+sudo dnf install -y httpd
+
+# เริ่มต้นระบบ Apache และตั้งค่าให้เริ่มทำงานอัตโนมัติเมื่อเปิดเครื่อง (Enable on Boot)
+sudo systemctl start httpd
+sudo systemctl enable httpd
+
+# ตรวจสอบสถานะการทำงานของ Apache
+sudo systemctl status httpd
+
+# ตั้งค่า Firewall เพื่ออนุญาตให้เปิดเข้าชมผ่านเว็บพอร์ต HTTP (80) และ HTTPS (443)
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 4: ติดตั้ง PHP 8.2 และ Laravel Extensions
+--------------------------------------------------------------------------------
+เปิดใช้งานโมดูล PHP 8.2 จาก REMI และติดตั้ง PHP ร่วมกับไลบรารีที่จำเป็นทั้งหมด
+
+# รีเซ็ตค่าโมดูล PHP เริ่มต้นของระบบ
+sudo dnf module reset php -y
+
+# เปิดใช้งานโมดูล PHP 8.2 จาก REMI Repository
+sudo dnf module enable php:remi-8.2 -y
+
+# ติดตั้ง PHP 8.2 พร้อมส่วนขยาย (Extensions) ที่ Laravel จำเป็นต้องใช้งาน
+sudo dnf install -y php php-cli php-common php-fpm php-mbstring php-xml \
+                    php-zip php-gd php-mysqlnd php-bcmath php-curl \
+                    php-intl php-opcache php-json php-soap php-pdo
+
+# เริ่มต้นและตั้งค่าบริการ PHP-FPM ให้เริ่มทำงานอัตโนมัติ
+sudo systemctl start php-fpm
+sudo systemctl enable php-fpm
+
+# ตรวจสอบเวอร์ชัน PHP ที่ติดตั้งสำเร็จ
+php -version
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 5: ติดตั้ง Composer (Global)
+--------------------------------------------------------------------------------
+ดาวน์โหลดและติดตั้ง Composer ตัวจัดการแพ็คเกจของ PHP ไว้ในส่วนกลางเพื่อให้เรียกใช้ได้ทุกที่
+
+# ดาวน์โหลดไฟล์ติดตั้ง Composer
+curl -sS https://getcomposer.org/installer | php
+
+# ย้ายไฟล์ composer.phar ไปยังไดเรกทอรีส่วนกลาง
+sudo mv composer.phar /usr/local/bin/composer
+
+# ให้สิทธิ์การรันไฟล์
+sudo chmod +x /usr/local/bin/composer
+
+# ตรวจสอบการใช้งาน
+composer --version
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 6: ดาวน์โหลดโปรเจกต์และติดตั้ง Laravel Application
+--------------------------------------------------------------------------------
+ทำการโคลนซอร์สโค้ดโปรเจกต์ AOPOD ไปยังโฟลเดอร์เก็บเว็บของ Apache (`/var/www/html/aopod`)
+
+# ไปยังโฟลเดอร์เว็บของระบบ
+cd /var/www/html
+
+# โคลนโปรเจกต์ AOPOD มาจาก GitHub
+sudo git clone https://github.com/xmodify/aopod aopod
+
+# เข้าไปยังโฟลเดอร์โปรเจกต์
+cd aopod
+
+# ติดตั้ง Dependencies ของ PHP โดยละเว้น Dev package เพื่อความเร็วและปลอดภัย
+composer install --no-dev --optimize-autoloader
+
+# คัดลอกไฟล์ตั้งค่า Environment (.env)
+cp .env.example .env
+
+# แก้ไขไฟล์ .env เพื่อตั้งค่าฐานข้อมูลและ URL ของระบบ
+# (ใช้ nano หรือ vi ในการแก้ไขรายละเอียด DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD)
+nano .env
+
+# สร้าง Application Key สำหรับความปลอดภัยของ Laravel
+php artisan key:generate
+
+# ลิงก์ที่เก็บไฟล์ Storage เข้ากับส่วนเข้าถึงหลักของเว็บไซต์
+php artisan storage:link
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 7: ตั้งค่าสิทธิ์โฟลเดอร์ (Permissions) และ SELinux (สำคัญมากสำหรับ AlmaLinux!)
+--------------------------------------------------------------------------------
+AlmaLinux มีระบบความปลอดภัย SELinux และระบบสิทธิ์ไฟล์ที่เข้มงวด
+ต้องให้สิทธิ์ผู้ใช้ `apache` สามารถเขียนไฟล์ลงในโฟลเดอร์ `storage` และ `bootstrap/cache` ได้
+
+# 1. เปลี่ยนผู้ครอบครองโฟลเดอร์เป็นกลุ่มผู้ใช้ของ Apache
+sudo chown -R apache:apache /var/www/html/aopod
+sudo find /var/www/html/aopod -type f -exec chmod 664 {} \;
+sudo find /var/www/html/aopod -type d -exec chmod 775 {} \;
+
+# 2. ตั้งค่าสิทธิ์เขียนไฟล์ให้กับโฟลเดอร์เก็บข้อมูลหลัก
+sudo chmod -R 775 /var/www/html/aopod/storage
+sudo chmod -R 775 /var/www/html/aopod/bootstrap/cache
+
+# 3. ตั้งค่า SELinux Context เพื่ออนุญาตให้ Apache สามารถเขียนลงในโฟลเดอร์ที่จำเป็นได้
+sudo semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/html/aopod/storage(/.*)?"
+sudo semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/html/aopod/bootstrap/cache(/.*)?"
+sudo restorecon -Rv /var/www/html/aopod
+
+# 4. อนุญาตให้ Apache เชื่อมต่อกับฐานข้อมูลหรือเครือข่ายภายนอก (สำหรับเรียก API หรือ DB นอกโฮสต์)
+sudo setsebool -P httpd_can_network_connect 1
+sudo setsebool -P httpd_can_network_connect_db 1
+
+---
+
+--------------------------------------------------------------------------------
+🛠️ ขั้นตอนที่ 8: ตั้งค่า Apache Virtual Host สำหรับชี้ไปยังโฟลเดอร์ public
+--------------------------------------------------------------------------------
+การรัน Laravel จะต้องตั้งค่าให้ DocumentRoot ชี้ตรงไปยังโฟลเดอร์ `public` ในโปรเจกต์เท่านั้น
+
+# สร้างไฟล์ตั้งค่า Virtual Host ของโปรเจกต์ AOPOD
+sudo nano /etc/httpd/conf.d/aopod.conf
+
+------------------------------------------------------------
+วางค่าคอนฟิกดังต่อไปนี้ลงในไฟล์ (แก้ไข ServerName ตามโดเมนของคุณ):
+------------------------------------------------------------
+<VirtualHost *:80>
+    ServerName aopod.yourdomain.com
+    DocumentRoot /var/www/html/aopod/public
+
+    <Directory /var/www/html/aopod/public>
+        # ปิดการแสดงรายชื่อไฟล์ในโฟลเดอร์ (Directory Listing) ป้องกัน VA Scan แจ้งเตือนเรื่องข้อมูลรั่วไหล
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # เพิ่ม Security Headers เพื่อผ่านการตรวจสอบความปลอดภัยของ VA Scan
+    <IfModule mod_headers.c>
+        Header always set X-Frame-Options "SAMEORIGIN"
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set X-XSS-Protection "1; mode=block"
+        Header always set Referrer-Policy "no-referrer-when-downgrade"
+    </IfModule>
+
+    ErrorLog /var/log/httpd/aopod_error.log
+    CustomLog /var/log/httpd/aopod_access.log combined
+</VirtualHost>
+------------------------------------------------------------
+
+# ตรวจสอบความถูกต้องของไวยากรณ์คอนฟิกูเรชัน Apache
+sudo apachectl configtest
+
+# หากขึ้นสถานะ "Syntax OK" ให้รีสตาร์ทเซิร์ฟเวอร์ Apache เพื่อเริ่มใช้งานระบบ!
+sudo systemctl restart httpd
+
+================================================================================
+🎉 สิ้นสุดการติดตั้ง! ตอนนี้คุณสามารถเข้าใช้งานระบบ AOPOD ผ่าน Web Browser ได้แล้วครับ
+================================================================================
