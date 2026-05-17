@@ -43,6 +43,11 @@
     .brand-title,h1,h2,h3,h4,.nav-link,.table thead th{color:var(--blue);}
     .glass{background:var(--glass-bg);border:1px solid var(--glass-bd);backdrop-filter:blur(10px);border-radius:var(--radius);box-shadow:var(--shadow);}
     .text-green{color:var(--green)!important;}
+    hr {
+      border-top: 1px solid var(--glass-bd) !important;
+      opacity: 0.55 !important;
+      margin: 2rem 0 !important;
+    }
 
     /* === Modern Premium Tab Pills Style (Global) === */
     .nav-pills .nav-link {
@@ -129,6 +134,77 @@
       border-bottom: 1px solid rgba(244, 63, 94, 0.15) !important;
       color: #e11d48 !important;
       box-shadow: 0 6px 15px rgba(244, 63, 94, 0.12) !important;
+    }
+
+    /* === Hospital-specific Table Icon & Header Custom Colors === */
+    #pane-10985 h6.fw-bold, #pane-10985 i.text-primary, #pane-10985 .text-primary, #pane-10985 .text-purple {
+      color: #8b5cf6 !important;
+    }
+    #pane-10985 .tr-total {
+      border-top: 2px solid #8b5cf6 !important;
+    }
+    #pane-10985 .tr-total td.text-primary {
+      color: #8b5cf6 !important;
+    }
+
+    #pane-10986 h6.fw-bold, #pane-10986 i.text-primary, #pane-10986 .text-primary {
+      color: #06b6d4 !important;
+    }
+    #pane-10986 .tr-total {
+      border-top: 2px solid #06b6d4 !important;
+    }
+    #pane-10986 .tr-total td.text-primary {
+      color: #06b6d4 !important;
+    }
+
+    #pane-10987 h6.fw-bold, #pane-10987 i.text-primary, #pane-10987 .text-primary {
+      color: #ec4899 !important;
+    }
+    #pane-10987 .tr-total {
+      border-top: 2px solid #ec4899 !important;
+    }
+    #pane-10987 .tr-total td.text-primary {
+      color: #ec4899 !important;
+    }
+
+    #pane-10988 h6.fw-bold, #pane-10988 i.text-primary, #pane-10988 .text-primary {
+      color: #f59e0b !important;
+    }
+    #pane-10988 .tr-total {
+      border-top: 2px solid #f59e0b !important;
+    }
+    #pane-10988 .tr-total td.text-primary {
+      color: #f59e0b !important;
+    }
+
+    #pane-10989 h6.fw-bold, #pane-10989 i.text-primary, #pane-10989 .text-primary {
+      color: #3b82f6 !important;
+    }
+    #pane-10989 .tr-total {
+      border-top: 2px solid #3b82f6 !important;
+    }
+    #pane-10989 .tr-total td.text-primary {
+      color: #3b82f6 !important;
+    }
+
+    #pane-10990 h6.fw-bold, #pane-10990 i.text-primary, #pane-10990 .text-primary {
+      color: #10b981 !important;
+    }
+    #pane-10990 .tr-total {
+      border-top: 2px solid #10b981 !important;
+    }
+    #pane-10990 .tr-total td.text-primary {
+      color: #10b981 !important;
+    }
+
+    #pane-10703 h6.fw-bold, #pane-10703 i.text-primary, #pane-10703 .text-primary {
+      color: #f43f5e !important;
+    }
+    #pane-10703 .tr-total {
+      border-top: 2px solid #f43f5e !important;
+    }
+    #pane-10703 .tr-total td.text-primary {
+      color: #f43f5e !important;
     }
   </style>
 

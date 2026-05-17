@@ -105,8 +105,10 @@
   }
 
   .card-theme-admit {
-    background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%);
-    border-left: 6px solid #e53935 !important;
+    background: #ffffff !important;
+    border: 1px solid var(--glass-bd) !important;
+    border-left: 6px solid #475569 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
   }
   .card-theme-bed {
     background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
@@ -187,10 +189,10 @@
 
               <!-- ส่วนหัว -->
               <div class="d-flex align-items-center justify-content-between mb-3">
-                <h6 class="mb-0 text-danger fw-bold">กำลังรักษาอยู่</h6>
+                <h6 class="mb-0 fw-bold" style="color: #475569;">กำลังรักษาอยู่</h6>
 
-                <div class="bg-danger bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                  <i class="fa-solid fa-hospital-user text-danger fs-4"></i>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(71, 85, 105, 0.1);">
+                  <i class="fa-solid fa-hospital-user fs-4" style="color: #475569;"></i>
                 </div>
               </div>
 
@@ -447,14 +449,66 @@
         </script>
       <!-- Block แยกแต่ละ รพ --------------------------------------------------------------------------------------------->
         @foreach($bedData as $hospcode => $data)
-        <div class="col-12 col-sm-6 col-xl-3" >
-            <div  class="card card-theme-bed card-hover glass p-3 h-100">
+        @php
+          $hospColors = [
+            '10985' => [
+              'border' => '#8b5cf6',
+              'bg_light' => '#f5f3ff',
+              'text' => '#7c3aed',
+              'icon_bg' => 'rgba(139, 92, 246, 0.12)'
+            ],
+            '10986' => [
+              'border' => '#06b6d4',
+              'bg_light' => '#ecfeff',
+              'text' => '#0891b2',
+              'icon_bg' => 'rgba(6, 182, 212, 0.12)'
+            ],
+            '10987' => [
+              'border' => '#ec4899',
+              'bg_light' => '#fdf2f8',
+              'text' => '#db2777',
+              'icon_bg' => 'rgba(236, 72, 153, 0.12)'
+            ],
+            '10988' => [
+              'border' => '#f59e0b',
+              'bg_light' => '#fef3c7',
+              'text' => '#d97706',
+              'icon_bg' => 'rgba(245, 158, 11, 0.12)'
+            ],
+            '10989' => [
+              'border' => '#3b82f6',
+              'bg_light' => '#eff6ff',
+              'text' => '#2563eb',
+              'icon_bg' => 'rgba(59, 130, 246, 0.12)'
+            ],
+            '10990' => [
+              'border' => '#10b981',
+              'bg_light' => '#ecfdf5',
+              'text' => '#059669',
+              'icon_bg' => 'rgba(16, 185, 129, 0.12)'
+            ],
+            '10703' => [
+              'border' => '#f43f5e',
+              'bg_light' => '#fff1f2',
+              'text' => '#e11d48',
+              'icon_bg' => 'rgba(244, 63, 94, 0.12)'
+            ],
+          ];
+          $c = $hospColors[$hospcode] ?? [
+            'border' => '#1976d2',
+            'bg_light' => '#e3f2fd',
+            'text' => '#0d47a1',
+            'icon_bg' => 'rgba(25, 118, 210, 0.12)'
+          ];
+        @endphp
+         <div class="col-12 col-sm-6 col-xl-3" >
+            <div class="card card-hover glass p-3 h-100" style="background: #ffffff !important; border: 1px solid var(--glass-bd) !important; border-left: 6px solid {{ $c['border'] }} !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;">
 
                 <!-- หัวข้อ Card -->
-                <h6 class="mb-3 fw-bold text-primary d-flex justify-content-between align-items-center">
+                <h6 class="mb-3 fw-bold d-flex justify-content-between align-items-center" style="color: {{ $c['text'] }};">
                     <span>ข้อมูลเตียง{{ $data['hospname'] }}</span>
-                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                      <i class="fa-solid fa-bed-pulse text-danger fs-5"></i>
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: {{ $c['icon_bg'] }};">
+                      <i class="fa-solid fa-bed-pulse fs-5" style="color: {{ $c['border'] }} !important;"></i>
                     </div>
                 </h6>
                 <!-- Header -->
@@ -465,7 +519,7 @@
                     <div class="col-2 small text-secondary text-center">เตียงว่าง</div>
                     <div class="col-2 small text-secondary text-center">อัตราใช้เตียง</div>
                 </div>
-                <hr class="my-1">
+                <hr class="my-2" style="border-top: 1px solid rgba(0,0,0,0.15); opacity: 1; margin: 6px 0;">
                 <!-- รายการเตียงแต่ละแผนก -->
                 @foreach($data['beds'] as $b)
                     @php 
@@ -487,11 +541,11 @@
                         <!-- อัตราครองเตียงพร้อมสี (เขียว / ส้ม / แดง) -->
                         <div class="col-2 text-center fw-bold"
                             @if($b->bed_rate >= 80)
-                                style="color:#d32f2f;"      {{-- แดงเข้ม --}}
+                                style="color:#f43f5e;"      {{-- แดง (สูง) --}}
                             @elseif($b->bed_rate >= 60)
-                                style="color:#ffc107;"      {{-- เหลือง --}}
+                                style="color:#f59e0b;"      {{-- ส้ม (ปานกลาง) --}}
                             @else
-                                style="color:#1976d2;"      {{-- น้ำเงิน --}}
+                                style="color:#10b981;"      {{-- เขียว (ปกติ) --}}
                             @endif
                         >
                             {{ $b->bed_rate }}%
@@ -504,6 +558,8 @@
       </div>
     </div>
   </section>
+
+  <hr>
 
   {{-- เลือกปีงบประมาณ ----------------------------------------------------------------------------------------------------------}}
   <section id="summary" class="pb-2">
