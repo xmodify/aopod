@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DashboardOPDController;
 use App\Http\Controllers\Web\DashboardClaimController;
 use App\Http\Controllers\Web\DashboardReferController;
+use App\Http\Controllers\Web\DashboardOperationController;
 
 // หน้าแรก redirect ไป web
 Route::get('/', function () {
@@ -19,6 +20,7 @@ Route::get('web/bed_dep/{hospcode}', [DashboardController::class, 'bed_dep']);
 Route::match(['get','post'],'web/opd', [DashboardOPDController::class, 'index']);
 Route::match(['get','post'],'web/claim', [DashboardClaimController::class, 'index']);
 Route::match(['get','post'],'web/refer', [DashboardReferController::class, 'index']);
+Route::match(['get','post'],'web/operation', [DashboardOperationController::class, 'index']);
 
 // Login (สำหรับ Modal login)
 Route::post('/login', [LoginController::class, 'login'])->name('login');

@@ -65,8 +65,12 @@
               <i class="fa-solid fa-truck-medical text-danger fs-5 me-2"></i> Refer
           </a>
 
+          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/operation') }}">
+              <i class="fa-solid fa-heart-pulse text-purple fs-5 me-2" style="color:#8b5cf6;"></i> ผ่าตัด
+          </a>
+
           <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/claim') }}">
-              <i class="bi bi-coin fs-5 text-warning me-2"></i></i> Claim
+              <i class="bi bi-coin fs-5 text-warning me-2"></i> Claim
           </a>
 
           <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" 

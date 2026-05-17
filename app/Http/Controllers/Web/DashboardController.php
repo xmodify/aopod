@@ -49,30 +49,6 @@ class DashboardController extends Controller
         $update_at10990 = DB::table('ipd')->where('hospcode', '10990')->max('updated_at');
         $update_at10703 = DB::table('ipd')->where('hospcode', '10703')->max('updated_at');
 
-        $total = DB::table('opd')
-            ->whereBetween('vstdate', [$today, $today])
-            ->selectRaw("                
-                COALESCE(SUM(visit_operation),0)                AS visit_operation          
-            ")->first();
-
-        // ส่งเป็น array ใช้ง่าย ๆ ใน Blade
-        $card = [           
-            'visit_operation'               => (int)$total->visit_operation,              
-        ];
-
-        $hospitalSummary = DB::table('opd')
-            ->join('hospital_config', 'opd.hospcode', '=', 'hospital_config.hospcode')
-            ->whereBetween('vstdate', [$today, $today])
-            ->select(
-                'opd.hospcode',
-                'hospital_config.hospname',
-                DB::raw('MAX(opd.updated_at) AS last_updated_at'),                
-                DB::raw('COALESCE(SUM(visit_operation),0) AS visit_operation')              
-            )
-            ->groupBy('opd.hospcode', 'hospital_config.hospname')
-            ->orderBy('opd.hospcode')
-            ->get();
-
         // ดึงข้อมูลโรงพยาบาลทั้งหมด-----------------------------------------------------------------------------------
         $hospitals = DB::table('hospital_config')
             ->select('hospcode', 'hospname', 'bed_qty', 'bed_use','updated_at')
@@ -196,9 +172,7 @@ class DashboardController extends Controller
 
 
 
-        return view('dashboard', array_merge(
-            $card,
-            compact(
+        return view('dashboard', compact(
             'budget_year_select',
             'budget_year',
             'diff_days',
@@ -214,10 +188,9 @@ class DashboardController extends Controller
             'total_bed_use',
             'total_bed_empty',
             'hospitals',
-            'hospitalSummary',
             'bedData'
             )
-        ));
+        );
     }
 //###############################################################################################################################
     public function bed_dep($hospcode)
