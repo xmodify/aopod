@@ -81,31 +81,33 @@ class DashboardClaimController extends Controller
             'inc_herb_receive'      => (int)$total->inc_herb_receive,           
         ];
 
-        $hospitalSummary = DB::table('opd')
-            ->join('hospital_config', 'opd.hospcode', '=', 'hospital_config.hospcode')
-            ->whereBetween('vstdate', [$today, $today])
+        $hospitalSummary = DB::table('hospital_config')
+            ->leftJoin('opd', function($join) use ($today) {
+                $join->on('hospital_config.hospcode', '=', 'opd.hospcode')
+                     ->whereBetween('opd.vstdate', [$today, $today]);
+            })
             ->select(
-                'opd.hospcode',
+                'hospital_config.hospcode',
                 'hospital_config.hospname',
-                DB::raw('MAX(opd.updated_at) AS last_updated_at'),
-                DB::raw('COALESCE(SUM(visit_ppfs),0) AS visit_ppfs'),
-                DB::raw('COALESCE(SUM(inc_ppfs),0) AS inc_ppfs'),
-                DB::raw('COALESCE(SUM(visit_ppfs_claim),0) AS visit_ppfs_claim'),
-                DB::raw('COALESCE(SUM(inc_ppfs_claim),0) AS inc_ppfs_claim'),
-                DB::raw('COALESCE(SUM(inc_ppfs_receive),0) AS inc_ppfs_receive'),
-                DB::raw('COALESCE(SUM(visit_ucs_cr),0) AS visit_ucs_cr'),
-                DB::raw('COALESCE(SUM(inc_uccr),0) AS inc_uccr'),
-                DB::raw('COALESCE(SUM(visit_ucs_cr_claim),0) AS visit_ucs_cr_claim'),
-                DB::raw('COALESCE(SUM(inc_uccr_claim),0) AS inc_uccr_claim'),
-                DB::raw('COALESCE(SUM(inc_uccr_receive),0) AS inc_uccr_receive'),
-                DB::raw('COALESCE(SUM(visit_ucs_herb),0) AS visit_ucs_herb'),
-                DB::raw('COALESCE(SUM(inc_herb),0) AS inc_herb'),
-                DB::raw('COALESCE(SUM(visit_ucs_herb_claim),0) AS visit_ucs_herb_claim'),
-                DB::raw('COALESCE(SUM(inc_herb_claim),0) AS inc_herb_claim'),
-                DB::raw('COALESCE(SUM(inc_herb_receive),0) AS inc_herb_receive'),
+                DB::raw('(SELECT MAX(updated_at) FROM opd WHERE opd.hospcode = hospital_config.hospcode) AS last_updated_at'),
+                DB::raw('COALESCE(SUM(opd.visit_ppfs),0) AS visit_ppfs'),
+                DB::raw('COALESCE(SUM(opd.inc_ppfs),0) AS inc_ppfs'),
+                DB::raw('COALESCE(SUM(opd.visit_ppfs_claim),0) AS visit_ppfs_claim'),
+                DB::raw('COALESCE(SUM(opd.inc_ppfs_claim),0) AS inc_ppfs_claim'),
+                DB::raw('COALESCE(SUM(opd.inc_ppfs_receive),0) AS inc_ppfs_receive'),
+                DB::raw('COALESCE(SUM(opd.visit_ucs_cr),0) AS visit_ucs_cr'),
+                DB::raw('COALESCE(SUM(opd.inc_uccr),0) AS inc_uccr'),
+                DB::raw('COALESCE(SUM(opd.visit_ucs_cr_claim),0) AS visit_ucs_cr_claim'),
+                DB::raw('COALESCE(SUM(opd.inc_uccr_claim),0) AS inc_uccr_claim'),
+                DB::raw('COALESCE(SUM(opd.inc_uccr_receive),0) AS inc_uccr_receive'),
+                DB::raw('COALESCE(SUM(opd.visit_ucs_herb),0) AS visit_ucs_herb'),
+                DB::raw('COALESCE(SUM(opd.inc_herb),0) AS inc_herb'),
+                DB::raw('COALESCE(SUM(opd.visit_ucs_herb_claim),0) AS visit_ucs_herb_claim'),
+                DB::raw('COALESCE(SUM(opd.inc_herb_claim),0) AS inc_herb_claim'),
+                DB::raw('COALESCE(SUM(opd.inc_herb_receive),0) AS inc_herb_receive')
             )
-            ->groupBy('opd.hospcode', 'hospital_config.hospname')
-            ->orderBy('opd.hospcode')
+            ->groupBy('hospital_config.hospcode', 'hospital_config.hospname')
+            ->orderBy('hospital_config.hospcode')
             ->get();
 
         $update_at10985 = DB::table('opd')->where('hospcode', '10985')->max('updated_at');

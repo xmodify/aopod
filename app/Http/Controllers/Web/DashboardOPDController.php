@@ -84,41 +84,43 @@ class DashboardOPDController extends Controller
             'visit_pay'                     => (int)$total->visit_pay,          
         ];
 
-        $hospitalSummary = DB::table('opd')
-            ->join('hospital_config', 'opd.hospcode', '=', 'hospital_config.hospcode')
-            ->whereBetween('vstdate', [$today, $today])
+        $hospitalSummary = DB::table('hospital_config')
+            ->leftJoin('opd', function($join) use ($today) {
+                $join->on('hospital_config.hospcode', '=', 'opd.hospcode')
+                     ->whereBetween('opd.vstdate', [$today, $today]);
+            })
             ->select(
-                'opd.hospcode',
+                'hospital_config.hospcode',
                 'hospital_config.hospname',
-                DB::raw('MAX(opd.updated_at) AS last_updated_at'),
-                DB::raw('COALESCE(SUM(visit_total),0) AS visit_total'),
-                DB::raw('COALESCE(SUM(visit_total_op),0) AS visit_total_op'),
-                DB::raw('COALESCE(SUM(visit_total_pp),0) AS visit_total_pp'),
-                DB::raw('COALESCE(SUM(visit_endpoint),0) AS visit_endpoint'),   
-                DB::raw('COALESCE(SUM(visit_healthmed),0) AS visit_healthmed'),   
-                DB::raw('COALESCE(SUM(visit_dent),0) AS visit_dent'),   
-                DB::raw('COALESCE(SUM(visit_physic),0) AS visit_physic'),   
-                DB::raw('COALESCE(SUM(visit_anc),0) AS visit_anc'),   
-                DB::raw('COALESCE(SUM(visit_telehealth),0) AS visit_telehealth'),
-                DB::raw('COALESCE(SUM(visit_moph_oapp_booking),0) AS visit_moph_oapp_booking'), 
-                DB::raw('COALESCE(SUM(visit_moph_oapp),0) AS visit_moph_oapp'), 
-                DB::raw('COALESCE(SUM(visit_ucs_incup),0)+COALESCE(SUM(visit_ucs_inprov),0)+COALESCE(SUM(visit_ucs_outprov),0) AS visit_ucs'),
-                DB::raw('COALESCE(SUM(inc_ucs_incup),0)+COALESCE(SUM(inc_ucs_inprov),0)+COALESCE(SUM(inc_ucs_outprov),0) AS inc_ucs'),
-                DB::raw('COALESCE(SUM(visit_ucs_incup),0) AS visit_ucs_incup'),
-                DB::raw('COALESCE(SUM(inc_ucs_incup),0) AS inc_ucs_incup'),
-                DB::raw('COALESCE(SUM(visit_ucs_inprov),0) AS visit_ucs_inprov'),
-                DB::raw('COALESCE(SUM(inc_ucs_inprov),0) AS inc_ucs_inprov'),
-                DB::raw('COALESCE(SUM(visit_ofc),0) AS visit_ofc'),
-                DB::raw('COALESCE(SUM(inc_ofc),0) AS inc_ofc'),
-                DB::raw('COALESCE(SUM(visit_lgo),0) AS visit_lgo'),
-                DB::raw('COALESCE(SUM(inc_lgo),0) AS inc_lgo'),
-                DB::raw('COALESCE(SUM(visit_sss),0) AS visit_sss'),
-                DB::raw('COALESCE(SUM(inc_sss),0) AS inc_sss'),
-                DB::raw('COALESCE(SUM(visit_pay),0) AS visit_pay'),
-                DB::raw('COALESCE(SUM(inc_pay),0) AS inc_pay')
+                DB::raw('(SELECT MAX(updated_at) FROM opd WHERE opd.hospcode = hospital_config.hospcode) AS last_updated_at'),
+                DB::raw('COALESCE(SUM(opd.visit_total),0) AS visit_total'),
+                DB::raw('COALESCE(SUM(opd.visit_total_op),0) AS visit_total_op'),
+                DB::raw('COALESCE(SUM(opd.visit_total_pp),0) AS visit_total_pp'),
+                DB::raw('COALESCE(SUM(opd.visit_endpoint),0) AS visit_endpoint'),   
+                DB::raw('COALESCE(SUM(opd.visit_healthmed),0) AS visit_healthmed'),   
+                DB::raw('COALESCE(SUM(opd.visit_dent),0) AS visit_dent'),   
+                DB::raw('COALESCE(SUM(opd.visit_physic),0) AS visit_physic'),   
+                DB::raw('COALESCE(SUM(opd.visit_anc),0) AS visit_anc'),   
+                DB::raw('COALESCE(SUM(opd.visit_telehealth),0) AS visit_telehealth'),
+                DB::raw('COALESCE(SUM(opd.visit_moph_oapp_booking),0) AS visit_moph_oapp_booking'), 
+                DB::raw('COALESCE(SUM(opd.visit_moph_oapp),0) AS visit_moph_oapp'), 
+                DB::raw('COALESCE(SUM(opd.visit_ucs_incup),0)+COALESCE(SUM(opd.visit_ucs_inprov),0)+COALESCE(SUM(opd.visit_ucs_outprov),0) AS visit_ucs'),
+                DB::raw('COALESCE(SUM(opd.inc_ucs_incup),0)+COALESCE(SUM(opd.inc_ucs_inprov),0)+COALESCE(SUM(opd.inc_ucs_outprov),0) AS inc_ucs'),
+                DB::raw('COALESCE(SUM(opd.visit_ucs_incup),0) AS visit_ucs_incup'),
+                DB::raw('COALESCE(SUM(opd.inc_ucs_incup),0) AS inc_ucs_incup'),
+                DB::raw('COALESCE(SUM(opd.visit_ucs_inprov),0) AS visit_ucs_inprov'),
+                DB::raw('COALESCE(SUM(opd.inc_ucs_inprov),0) AS inc_ucs_inprov'),
+                DB::raw('COALESCE(SUM(opd.visit_ofc),0) AS visit_ofc'),
+                DB::raw('COALESCE(SUM(opd.inc_ofc),0) AS inc_ofc'),
+                DB::raw('COALESCE(SUM(opd.visit_lgo),0) AS visit_lgo'),
+                DB::raw('COALESCE(SUM(opd.inc_lgo),0) AS inc_lgo'),
+                DB::raw('COALESCE(SUM(opd.visit_sss),0) AS visit_sss'),
+                DB::raw('COALESCE(SUM(opd.inc_sss),0) AS inc_sss'),
+                DB::raw('COALESCE(SUM(opd.visit_pay),0) AS visit_pay'),
+                DB::raw('COALESCE(SUM(opd.inc_pay),0) AS inc_pay')
             )
-            ->groupBy('opd.hospcode', 'hospital_config.hospname')
-            ->orderBy('opd.hospcode')
+            ->groupBy('hospital_config.hospcode', 'hospital_config.hospname')
+            ->orderBy('hospital_config.hospcode')
             ->get();
 
         $update_at10985 = DB::table('opd')->where('hospcode', '10985')->max('updated_at');

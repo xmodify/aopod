@@ -63,10 +63,10 @@ class DashboardOperationController extends Controller
             ->select(
                 'hospital_config.hospcode',
                 'hospital_config.hospname',
-                DB::raw('COALESCE(MAX(opd.updated_at), hospital_config.updated_at) AS last_updated_at'),                
+                DB::raw('(SELECT MAX(updated_at) FROM opd WHERE opd.hospcode = hospital_config.hospcode) AS last_updated_at'),                
                 DB::raw('COALESCE(SUM(opd.visit_operation), 0) AS visit_operation')
             )
-            ->groupBy('hospital_config.hospcode', 'hospital_config.hospname', 'hospital_config.updated_at')
+            ->groupBy('hospital_config.hospcode', 'hospital_config.hospname')
             ->orderBy('hospital_config.hospcode')
             ->get();
 

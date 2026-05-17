@@ -290,7 +290,7 @@
               <div class="text-end">
                 <small class="text-muted" style="font-size: 0.75rem;">
                   Update:<br>
-                  {{ \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
+                  {{ $h->last_updated_at ? \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') . ' น.' : 'ยังไม่มีข้อมูลส่ง' }}
                 </small>
               </div>
             </div>

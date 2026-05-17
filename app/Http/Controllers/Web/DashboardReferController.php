@@ -74,26 +74,28 @@ class DashboardReferController extends Controller
             'visit_referback_outprov'       => (int)$total->visit_referback_outprov,
         ];
 
-        $hospitalSummary = DB::table('opd')
-            ->join('hospital_config', 'opd.hospcode', '=', 'hospital_config.hospcode')
-            ->whereBetween('vstdate', [$today, $today])
+        $hospitalSummary = DB::table('hospital_config')
+            ->leftJoin('opd', function($join) use ($today) {
+                $join->on('hospital_config.hospcode', '=', 'opd.hospcode')
+                     ->whereBetween('opd.vstdate', [$today, $today]);
+            })
             ->select(
-                'opd.hospcode',
+                'hospital_config.hospcode',
                 'hospital_config.hospname',
-                DB::raw('MAX(opd.updated_at) AS last_updated_at'),                
-                DB::raw('COALESCE(SUM(visit_referout_inprov),0) AS visit_referout_inprov'),
-                DB::raw('COALESCE(SUM(visit_referout_outprov),0) AS visit_referout_outprov'),
-                DB::raw('COALESCE(SUM(visit_referout_inprov_ipd),0) AS visit_referout_inprov_ipd'),                
-                DB::raw('COALESCE(SUM(visit_referout_outprov_ipd),0) AS visit_referout_outprov_ipd'),
-                DB::raw('COALESCE(SUM(visit_referin_inprov),0) AS visit_referin_inprov'),
-                DB::raw('COALESCE(SUM(visit_referin_outprov),0) AS visit_referin_outprov'),
-                DB::raw('COALESCE(SUM(visit_referin_inprov_ipd),0) AS visit_referin_inprov_ipd'),
-                DB::raw('COALESCE(SUM(visit_referin_outprov_ipd),0) AS visit_referin_outprov_ipd'),
-                DB::raw('COALESCE(SUM(visit_referback_inprov),0) AS visit_referback_inprov'),
-                DB::raw('COALESCE(SUM(visit_referback_outprov),0) AS visit_referback_outprov')            
+                DB::raw('(SELECT MAX(updated_at) FROM opd WHERE opd.hospcode = hospital_config.hospcode) AS last_updated_at'),                
+                DB::raw('COALESCE(SUM(opd.visit_referout_inprov),0) AS visit_referout_inprov'),
+                DB::raw('COALESCE(SUM(opd.visit_referout_outprov),0) AS visit_referout_outprov'),
+                DB::raw('COALESCE(SUM(opd.visit_referout_inprov_ipd),0) AS visit_referout_inprov_ipd'),                
+                DB::raw('COALESCE(SUM(opd.visit_referout_outprov_ipd),0) AS visit_referout_outprov_ipd'),
+                DB::raw('COALESCE(SUM(opd.visit_referin_inprov),0) AS visit_referin_inprov'),
+                DB::raw('COALESCE(SUM(opd.visit_referin_outprov),0) AS visit_referin_outprov'),
+                DB::raw('COALESCE(SUM(opd.visit_referin_inprov_ipd),0) AS visit_referin_inprov_ipd'),
+                DB::raw('COALESCE(SUM(opd.visit_referin_outprov_ipd),0) AS visit_referin_outprov_ipd'),
+                DB::raw('COALESCE(SUM(opd.visit_referback_inprov),0) AS visit_referback_inprov'),
+                DB::raw('COALESCE(SUM(opd.visit_referback_outprov),0) AS visit_referback_outprov')            
             )
-            ->groupBy('opd.hospcode', 'hospital_config.hospname')
-            ->orderBy('opd.hospcode')
+            ->groupBy('hospital_config.hospcode', 'hospital_config.hospname')
+            ->orderBy('hospital_config.hospcode')
             ->get();
 
         function getReferSummary($hospcode, $start_date, $end_date)

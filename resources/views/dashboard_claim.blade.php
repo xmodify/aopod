@@ -230,7 +230,7 @@
                         <td>
                           <span class="fw-semibold text-dark">{{ $h->hospname }}</span><br>
                           <small class="text-muted">
-                            {{ \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
+                            {{ $h->last_updated_at ? \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') . ' น.' : 'ยังไม่มีข้อมูลส่ง' }}
                           </small>
                         </td>
                         <td align="right" class="text-primary">{{ number_format($h->visit_ppfs) }}</td>
@@ -331,7 +331,7 @@
                         <td>
                           <span class="fw-semibold text-dark">{{ $h->hospname }}</span><br>
                           <small class="text-muted">
-                            {{ \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
+                            {{ $h->last_updated_at ? \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') . ' น.' : 'ยังไม่มีข้อมูลส่ง' }}
                           </small>
                         </td>
                         <td align="right" class="text-primary">{{ number_format($h->visit_ucs_cr) }}</td>
@@ -432,7 +432,7 @@
                         <td>
                           <span class="fw-semibold text-dark">{{ $h->hospname }}</span><br>
                           <small class="text-muted">
-                            {{ \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
+                            {{ $h->last_updated_at ? \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') . ' น.' : 'ยังไม่มีข้อมูลส่ง' }}
                           </small>
                         </td>
                         <td align="right" class="text-primary">{{ number_format($h->visit_ucs_herb) }}</td>
