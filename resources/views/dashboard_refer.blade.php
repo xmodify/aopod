@@ -160,7 +160,15 @@
     <div class="container-fluid">      
         <div class="row g-4 align-items-center">
           <div class="col-lg-9">          
-            <h4 class="text-success mb-2"><strong>Amnatcharoen One Province One Data : AOPOD</strong></h4>          
+            <div class="d-flex align-items-center gap-3">
+              <div class="bg-danger bg-opacity-10 rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                <i class="fa-solid fa-truck-medical fs-4 text-danger"></i>
+              </div>
+              <div>
+                <h4 class="fw-bold mb-1" style="color: #1e293b;">ข้อมูลส่งต่อผู้ป่วย (Refer)</h4>
+                <p class="text-secondary small mb-0"><i class="fa-solid fa-square-poll-vertical text-green me-1"></i>Amnatcharoen One Province One Data</p>
+              </div>
+            </div>          
           </div>
           {{-- ขวาสุด: select + ปุ่ม ติดกันและชิดขวา --}}
           <div class="col-lg-3 d-flex justify-content-lg-end">

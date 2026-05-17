@@ -49,6 +49,75 @@
       margin: 2rem 0 !important;
     }
 
+    /* === Premium Full-Width Bottom-Rounded Glassmorphic Navbar === */
+    .navbar-glass-container {
+      margin: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: 0 0 24px 24px !important;
+      background: rgba(255, 255, 255, 0.85) !important;
+      backdrop-filter: blur(15px) !important;
+      border-bottom: 1px solid var(--glass-bd) !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-top: none !important;
+      box-shadow: 0 8px 32px 0 rgba(24, 165, 115, 0.05) !important;
+      transition: all 0.3s ease-in-out !important;
+      padding: 0.5rem 2.5rem !important;
+    }
+    
+    .nav-menu-link {
+      color: #475569 !important;
+      font-weight: 600 !important;
+      font-size: 0.92rem !important;
+      padding: 0.5rem 1rem !important;
+      border-radius: 12px !important;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      border: 1px solid transparent !important;
+      text-decoration: none !important;
+    }
+    
+    .nav-menu-link:hover {
+      color: var(--green-2) !important;
+      background: rgba(33, 192, 139, 0.08) !important;
+      transform: translateY(-1.5px);
+    }
+    
+    /* Dynamic active states for each module */
+    .nav-menu-link.active-ipd {
+      background: rgba(244, 63, 94, 0.08) !important;
+      color: #e11d48 !important;
+      border: 1px solid rgba(244, 63, 94, 0.15) !important;
+    }
+    .nav-menu-link.active-opd {
+      background: rgba(16, 185, 129, 0.08) !important;
+      color: #059669 !important;
+      border: 1px solid rgba(16, 185, 129, 0.15) !important;
+    }
+    .nav-menu-link.active-refer {
+      background: rgba( red, 0.08) !important; /* using red from theme */
+      color: #dc2626 !important;
+      border: 1px solid rgba(239, 68, 68, 0.15) !important;
+    }
+    .nav-menu-link.active-refer-cust {
+      background: rgba(239, 68, 68, 0.08) !important;
+      color: #dc2626 !important;
+      border: 1px solid rgba(239, 68, 68, 0.15) !important;
+    }
+    .nav-menu-link.active-op {
+      background: rgba(139, 92, 246, 0.08) !important;
+      color: #7c3aed !important;
+      border: 1px solid rgba(139, 92, 246, 0.15) !important;
+    }
+    .nav-menu-link.active-claim {
+      background: rgba(245, 158, 11, 0.08) !important;
+      color: #d97706 !important;
+      border: 1px solid rgba(245, 158, 11, 0.15) !important;
+    }
+
     /* === Modern Premium Tab Pills Style (Global) === */
     .nav-pills .nav-link {
       background: rgba(255, 255, 255, 0.4) !important;
@@ -213,67 +282,75 @@
 
 <body>
   {{-- NAVBAR --}}
-  <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 border-bottom sticky-top glass" style="border-radius:0">
-      <div class="container-fluid">
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/') }}">
-              <i class="fa-solid fa-bed-pulse text-danger fs-5 me-2"></i> IPD
+  <nav class="navbar navbar-expand-xl sticky-top navbar-glass-container">
+      <div class="container-fluid px-0">
+          <!-- Logo Brand -->
+          <a class="navbar-brand d-flex align-items-center me-4" href="{{ url('web/') }}">
+              <!-- SVG Logo -->
+              <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 4px 8px rgba(33, 192, 139, 0.25));">
+                <defs>
+                  <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#0d6efd" />
+                    <stop offset="100%" stop-color="#21c08b" />
+                  </linearGradient>
+                  <linearGradient id="logoGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#21c08b" />
+                    <stop offset="100%" stop-color="#18a573" />
+                  </linearGradient>
+                </defs>
+                <path d="M100 15 L173 57 L173 143 L100 185 L27 143 L27 57 Z" stroke="url(#logoGrad)" stroke-width="12" stroke-linejoin="round" fill="rgba(255,255,255,0.75)"/>
+                <path d="M55 100 L80 100 L93 65 L107 135 L120 85 L128 100 L145 100" stroke="url(#logoGrad2)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="93" cy="65" r="8" fill="#0d6efd" />
+                <circle cx="107" cy="135" r="8" fill="#21c08b" />
+                <circle cx="120" cy="85" r="8" fill="#18a573" />
+              </svg>
+              <!-- Logo Typography -->
+              <div class="d-flex flex-column ms-2">
+                <span class="fs-5 fw-bold leading-tight" style="background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; line-height: 1.1;">AOPOD</span>
+                <span class="text-secondary" style="font-size: 0.65rem; font-weight: 600; letter-spacing: 0.2px; line-height: 1;">One Province One Data</span>
+              </div>
           </a>
 
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/opd') }}">
-              <i class="bi bi-person-vcard text-green me-2"></i> OPD
-          </a>
-
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/refer') }}">
-              <i class="fa-solid fa-truck-medical text-danger fs-5 me-2"></i> Refer
-          </a>
-
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/operation') }}">
-              <i class="fa-solid fa-heart-pulse text-purple fs-5 me-2" style="color:#8b5cf6;"></i> ผ่าตัด
-          </a>
-
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/claim') }}">
-              <i class="bi bi-coin fs-5 text-warning me-2"></i> Claim
-          </a>
-
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" 
-              href="https://apps-amno.moph.go.th/hdcamnat/reports/insurance/report_summary2.php" target="_blank">
-              <i class="fa-solid fa-money-bill-wave fs-5 me-2" style="color:#7e57c2;"></i></i> AIM
-          </a>
-
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold ms-3"  
-              href="https://hosoffice-chanuman.moph.go.th/inventory" target="_blank">
-              <i class="bi bi-box-seam text-info me-2"></i> Inventory
-          </a>
-          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold ms-3"
-            href="https://hosoffice-chanuman.moph.go.th/pharmacy" target="_blank">
-            <i class="bi bi-capsule-pill text-success me-2"></i> One Province One Formula
-          </a>
-
-          {{-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
+          <!-- Collapse button for mobile -->
+          <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#topnav" aria-controls="topnav" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
-          </button> --}}
+          </button>
 
+          <!-- Navigation Links -->
           <div class="collapse navbar-collapse" id="topnav">
-              {{-- <ul class="navbar-nav ms-auto">
-                  @auth
-                      <li class="nav-item dropdown">
-                          <a class="nav-link dropdown-toggle text-primary" href="#" id="userDropdown" role="button"
-                             data-bs-toggle="dropdown">{{ Auth::user()->name }}</a>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                              <li>
-                                  <form action="{{ route('logout') }}" method="POST">@csrf
-                                      <button type="submit" class="dropdown-item text-primary">Logout</button>
-                                  </form>
-                              </li>
-                          </ul>
-                      </li>
-                  @else
-                      <li class="nav-item">
-                          <a class="nav-link text-primary" href="#" data-bs-toggle="modal"
-                             data-bs-target="#loginModal"><strong>Login</strong></a>
-                      </li>
-                  @endauth
-              </ul> --}}
+              <div class="navbar-nav me-auto d-flex flex-wrap gap-2 py-2 py-xl-0">
+                  <a class="nav-menu-link {{ Request::is('web') || Request::is('web/') ? 'active-ipd' : '' }}" href="{{ url('web/') }}">
+                      <i class="fa-solid fa-bed-pulse fs-5" style="color: #f43f5e;"></i> IPD
+                  </a>
+        
+                  <a class="nav-menu-link {{ Request::is('web/opd') ? 'active-opd' : '' }}" href="{{ url('web/opd') }}">
+                      <i class="bi bi-person-vcard fs-5" style="color: #10b981;"></i> OPD
+                  </a>
+        
+                  <a class="nav-menu-link {{ Request::is('web/refer') ? 'active-refer-cust' : '' }}" href="{{ url('web/refer') }}">
+                      <i class="fa-solid fa-truck-medical fs-5" style="color: #ef4444;"></i> Refer
+                  </a>
+        
+                  <a class="nav-menu-link {{ Request::is('web/operation') ? 'active-op' : '' }}" href="{{ url('web/operation') }}">
+                      <i class="fa-solid fa-heart-pulse fs-5" style="color: #8b5cf6;"></i> ผ่าตัด
+                  </a>
+        
+                  <a class="nav-menu-link {{ Request::is('web/claim') ? 'active-claim' : '' }}" href="{{ url('web/claim') }}">
+                      <i class="bi bi-coin fs-5" style="color: #f59e0b;"></i> Claim
+                  </a>
+        
+                  <a class="nav-menu-link" href="https://apps-amno.moph.go.th/hdcamnat/reports/insurance/report_summary2.php" target="_blank">
+                      <i class="fa-solid fa-money-bill-wave fs-5" style="color: #7e57c2;"></i> AIM
+                  </a>
+        
+                  <a class="nav-menu-link" href="https://hosoffice-chanuman.moph.go.th/inventory" target="_blank">
+                      <i class="bi bi-box-seam fs-5" style="color: #06b6d4;"></i> Inventory
+                  </a>
+                  
+                  <a class="nav-menu-link" href="https://hosoffice-chanuman.moph.go.th/pharmacy" target="_blank">
+                      <i class="bi bi-capsule-pill fs-5" style="color: #10b981;"></i> One Province One Formula
+                  </a>
+              </div>
           </div>
       </div>
   </nav>
