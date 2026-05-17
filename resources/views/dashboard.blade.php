@@ -17,7 +17,6 @@
   .custom-table {
     border-collapse: separate !important;
     border-spacing: 0 !important;
-    border: 1px solid #e0e0e0 !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
@@ -26,12 +25,10 @@
     font-weight: 700 !important;
     text-align: center !important;
     vertical-align: middle !important;
-    border: 1px solid #eee !important;
     padding: 10px 8px !important;
     font-size: 0.85rem !important;
   }
   .custom-table tbody td {
-    border: 1px solid #f5f5f5 !important;
     padding: 8px !important;
     font-size: 0.85rem !important;
     color: #444 !important;
@@ -109,12 +106,10 @@
 
   .card-theme-admit {
     background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%);
-    border: 1px solid #e53935 !important;
     border-left: 6px solid #e53935 !important;
   }
   .card-theme-bed {
     background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
-    border: 1px solid #1976d2 !important;
     border-left: 6px solid #1976d2 !important;
   }
 </style>
@@ -124,7 +119,6 @@
   =================================*/
   .card-theme-op {
     background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
-    border: 1px solid #2e7d32 !important;
     border-left: 6px solid #2e7d32 !important;
   }
 
@@ -133,7 +127,6 @@
   =================================*/
   .card-theme-referout {
     background: linear-gradient(135deg, #fce4ec 0%, #ffffff 100%);
-    border: 1px solid #c2185b !important;
     border-left: 6px solid #c2185b !important;
   }
 
@@ -142,7 +135,6 @@
   =================================*/
   .card-theme-referin {
     background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%);
-    border: 1px solid #d32f2f !important;
     border-left: 6px solid #d32f2f !important;
   }
 
@@ -151,7 +143,6 @@
   =================================*/
   .card-theme-referback {
     background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
-    border: 1px solid #f57f17 !important;
     border-left: 6px solid #f57f17 !important;
   }
 </style>
@@ -595,302 +586,7 @@
             </div>
           </div>
         </div> 
-
-        <!-- Refer Out ------------------------------------------------------------------------------------------>
-        <div class="col-12 col-sm-6 col-xl-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferOutDetailModal" class="text-decoration-none text-dark d-block">
-            <div class="card card-theme-referout card-hover glass py-2 px-3 h-100">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <h6 class="mb-0 fw-bold" style="color: #c2185b;">Refer Out วันนี้</h6>
-                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: rgba(194, 24, 91, 0.1);">
-                  <i class="fa-solid fa-truck-medical fs-5" style="color: #c2185b;"></i>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between text-center">
-                <div class="flex-fill px-1">
-                  <div class="small text-secondary">OPD</div>
-                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #c2185b;">
-                    {{ $fmtInt($visit_referout_inprov + $visit_referout_outprov) }}
-                  </div>
-                </div>
-                <div class="vr mx-2 d-none d-sm-block"></div>
-                <div class="flex-fill px-1">
-                  <div class="small text-secondary">IPD</div>
-                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #c2185b;">
-                    {{ $fmtInt($visit_referout_inprov_ipd + $visit_referout_outprov_ipd) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        {{-- Modal แสดงรายละเอียด รพ. (โทนน้ำเงินพาสเทลเข้ม / modal-lg) --}}
-        <div class="modal fade" id="ReferOutDetailModal" tabindex="-1" aria-labelledby="hospitalDetailLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg rounded-3" style="background-color:#f5f8fc;">
-              <!-- Header -->
-              <div class="modal-header text-white rounded-top-3"
-                  style="background: linear-gradient(135deg, #2f6fb6, #4b8edc);">
-                <h5 class="modal-title fw-bold" id="hospitalDetailLabel">
-                  <i class="bi bi-arrow-left-right me-2"></i> Refer Out วันนี้
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <!-- Body -->
-              <div class="modal-body py-3">
-                <table class="table table-hover align-middle shadow-sm rounded-3 overflow-hidden mb-0"
-                      style="background-color: #ffffff; border-radius: 0.75rem;">
-                  <thead style="background-color:#d9e8fb;">
-                    <tr class="text-center text-primary fw-semibold">
-                      <th rowspan="2" class="text-center align-middle">รหัส</th>
-                      <th rowspan="2" class="text-center align-middle">ชื่อโรงพยาบาล</th>
-                      <th colspan="2" style="border-right:1px solid #aac6ec;">OPD</th>
-                      <th colspan="2">IPD</th>
-                    </tr>
-                    <tr class="text-center text-primary fw-semibold">
-                      <th>ในจังหวัด</th>
-                      <th style="border-right:1px solid #aac6ec;">ต่างจังหวัด</th>
-                      <th>ในจังหวัด</th>
-                      <th>ต่างจังหวัด</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    @foreach($hospitalSummary as $h)
-                      <tr>
-                        <td align="right" class="text-secondary">{{ $h->hospcode }}</td>
-                        <td>
-                          <span class="fw-semibold text-dark">{{ $h->hospname }}</span><br>
-                          <small class="text-muted">
-                            {{ \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
-                          </small>
-                        </td>
-                        <td align="right" class="text-primary">{{ number_format($h->visit_referout_inprov) }}</td>
-                        <td align="right" class="text-success">
-                          {{ number_format($h->visit_referout_outprov) }}
-                        </td>
-                        <td align="right" class="text-primary">{{ number_format($h->visit_referout_inprov_ipd) }}</td>
-                        <td align="right" class="fw-bold text-success">{{ number_format($h->visit_referout_outprov_ipd) }}</td>
-                      </tr>
-                    @endforeach
-                    {{-- แถวผลรวม --}}
-                    <tr style="background-color:#eef4fb;" class="fw-bold text-end">
-                      <td colspan="2" class="text-center text-dark">รวมทั้งหมด</td>
-                      <td class="text-primary">{{ number_format($hospitalSummary->sum('visit_referout_inprov')) }}</td>
-                      <td class="text-success">
-                        {{ number_format($hospitalSummary->sum('visit_referout_outprov')) }}
-                      </td>
-                      <td class="text-primary">{{ number_format($hospitalSummary->sum('visit_referout_inprov_ipd')) }}</td>
-                      <td class="text-success">{{ number_format($hospitalSummary->sum('visit_referout_outprov_ipd')) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- Footer -->
-              <div class="modal-footer" style="background-color:#eef4fb;">
-                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm"
-                        style="background-color:#3e7cc1; border-color:#3e7cc1;"
-                        data-bs-dismiss="modal">
-                  ปิด
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>        
-
-        <!-- Refer In  --------------------------------------------------------------------------------------->
-        <div class="col-12 col-sm-6 col-xl-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferInDetailModal" class="text-decoration-none text-dark d-block">
-            <div class="card card-theme-referin card-hover glass py-2 px-3 h-100">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <h6 class="mb-0 text-danger fw-bold">Refer In วันนี้</h6>
-                <div class="bg-danger bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                  <i class="fa-solid fa-truck-medical text-danger fs-5"></i>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between text-center">
-                <div class="flex-fill px-1">
-                  <div class="small text-secondary">OPD</div>
-                  <div class="fw-bold text-danger" style="font-size:1.6rem; line-height: 1;">
-                    {{ $fmtInt($visit_referin_inprov + $visit_referin_outprov) }}
-                  </div>
-                </div>
-                <div class="vr mx-2 d-none d-sm-block"></div>
-                <div class="flex-fill px-1">
-                  <div class="small text-secondary">IPD</div>
-                  <div class="fw-bold text-danger" style="font-size:1.6rem; line-height: 1;">
-                    {{ $fmtInt($visit_referin_inprov_ipd + $visit_referin_outprov_ipd) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        {{-- Modal แสดงรายละเอียด รพ. (โทนน้ำเงินพาสเทลเข้ม / modal-lg) --}}
-        <div class="modal fade" id="ReferInDetailModal" tabindex="-1" aria-labelledby="hospitalDetailLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg rounded-3" style="background-color:#f5f8fc;">
-              <!-- Header -->
-              <div class="modal-header text-white rounded-top-3"
-                  style="background: linear-gradient(135deg, #2f6fb6, #4b8edc);">
-                <h5 class="modal-title fw-bold" id="hospitalDetailLabel">
-                  <i class="bi bi-arrow-left-right me-2"></i>Refer IN วันนี้
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <!-- Body -->
-              <div class="modal-body py-3">
-                <table class="table table-hover align-middle shadow-sm rounded-3 overflow-hidden mb-0"
-                      style="background-color: #ffffff; border-radius: 0.75rem;">
-                  <thead style="background-color:#d9e8fb;">
-                    <tr class="text-center text-primary fw-semibold">
-                      <th rowspan="2" class="align-middle">รหัส</th>
-                      <th rowspan="2" class="align-middle">ชื่อโรงพยาบาล</th>
-                      <th colspan="2" style="border-right:1px solid #aac6ec;">OPD</th>
-                      <th colspan="2">IPD</th>
-                    </tr>
-                    <tr class="text-center text-primary fw-semibold">
-                      <th>ในจังหวัด</th>
-                      <th style="border-right:1px solid #aac6ec;">ต่างจังหวัด</th>
-                      <th>ในจังหวัด</th>
-                      <th>ต่างจังหวัด</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach($hospitalSummary as $h)
-                      <tr>
-                        <td align="right" class="text-secondary">{{ $h->hospcode }}</td>
-                        <td>
-                          <span class="fw-semibold text-dark">{{ $h->hospname }}</span><br>
-                          <small class="text-muted">
-                            {{ \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
-                          </small>
-                        </td>
-                        <!-- OPD -->
-                        <td align="right" class="text-primary">{{ number_format($h->visit_referin_inprov) }}</td>
-                        <td align="right" class="text-success">
-                          {{ number_format($h->visit_referin_outprov) }}
-                        </td>
-                        <!-- IPD -->
-                        <td align="right" class="text-primary">{{ number_format($h->visit_referin_inprov_ipd) }}</td>
-                        <td align="right" class="fw-bold text-success">{{ number_format($h->visit_referin_outprov_ipd) }}</td>
-                      </tr>
-                    @endforeach
-                    {{-- แถวผลรวม --}}
-                    <tr style="background-color:#eef4fb;" class="fw-bold text-end">
-                      <td colspan="2" class="text-center text-dark">รวมทั้งหมด</td>
-                      <td class="text-primary">{{ number_format($hospitalSummary->sum('visit_referin_inprov')) }}</td>
-                      <td class="text-success">
-                        {{ number_format($hospitalSummary->sum('visit_referin_outprov')) }}
-                      </td>
-                      <td class="text-primary">{{ number_format($hospitalSummary->sum('visit_referin_inprov_ipd')) }}</td>
-                      <td class="text-success">{{ number_format($hospitalSummary->sum('visit_referin_outprov_ipd')) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- Footer -->
-              <div class="modal-footer" style="background-color:#eef4fb;">
-                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm"
-                        style="background-color:#3e7cc1; border-color:#3e7cc1;"
-                        data-bs-dismiss="modal">
-                  ปิด
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>     
-
-        <!-- Refer Back  --------------------------------------------------------------------------------------------->
-        <div class="col-12 col-sm-6 col-xl-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#ReferBackDetailModal" class="text-decoration-none text-dark d-block">
-            <div class="card card-theme-referback card-hover glass py-2 px-3 h-100">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <h6 class="mb-0 fw-bold" style="color: #f57f17;">Refer Back วันนี้</h6>
-                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: rgba(245, 127, 23, 0.1);">
-                  <i class="fa-solid fa-truck-medical fs-5" style="color: #f57f17;"></i>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between text-center">
-                <div class="flex-fill px-1">
-                  <div class="small text-secondary">ในจังหวัด</div>
-                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #f57f17;">
-                    {{ $fmtInt($visit_referback_inprov) }}
-                  </div>
-                </div>
-                <div class="vr mx-2 d-none d-sm-block"></div>
-                <div class="flex-fill px-1">
-                  <div class="small text-secondary">ต่างจังหวัด</div>
-                  <div class="fw-bold" style="font-size:1.6rem; line-height: 1; color: #f57f17;">
-                    {{ $fmtInt($visit_referback_outprov) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        {{-- Modal แสดงรายละเอียด รพ. (โทนน้ำเงินพาสเทลเข้ม / modal-lg) --}}
-        <div class="modal fade" id="ReferBackDetailModal" tabindex="-1" aria-labelledby="hospitalDetailLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg rounded-3" style="background-color:#f5f8fc;">
-              <!-- Header -->
-              <div class="modal-header text-white rounded-top-3"
-                  style="background: linear-gradient(135deg, #2f6fb6, #4b8edc);">
-                <h5 class="modal-title fw-bold" id="hospitalDetailLabel">
-                  <i class="bi bi-arrow-left-right me-2"></i>Refer Back วันนี้
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-
-              <!-- Body -->
-              <div class="modal-body py-3">
-                <table class="table table-hover align-middle shadow-sm rounded-3 overflow-hidden mb-0"
-                      style="background-color: #ffffff; border-radius: 0.75rem;">
-                  <thead style="background-color:#d9e8fb;">
-                    <tr class="text-center text-primary fw-semibold">
-                      <th class="text-center">รหัส</th>
-                      <th class="text-center">ชื่อโรงพยาบาล</th>
-                      <th>ในจังหวัด</th>
-                      <th>ต่างจังหวัด</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach($hospitalSummary as $h)
-                      <tr>
-                        <td align="right" class="text-secondary">{{ $h->hospcode }}</td>
-                        <td>
-                          <span class="fw-semibold text-dark">{{ $h->hospname }}</span><br>
-                          <small class="text-muted">
-                            {{ \Carbon\Carbon::parse($h->last_updated_at)->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
-                          </small>
-                        </td>
-                        <td align="right" class="text-primary">{{ number_format($h->visit_referback_inprov) }}</td>
-                        <td align="right" class="fw-bold text-success">{{ number_format($h->visit_referback_outprov) }}</td>
-                      </tr>
-                    @endforeach
-
-                    {{-- แถวผลรวม --}}
-                    <tr style="background-color:#eef4fb;" class="fw-bold text-end">
-                      <td colspan="2" class="text-center text-dark">รวมทั้งหมด</td>
-                      <td class="text-primary">{{ number_format($hospitalSummary->sum('visit_referback_inprov')) }}</td>
-                      <td class="text-success">{{ number_format($hospitalSummary->sum('visit_referback_outprov')) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- Footer -->
-              <div class="modal-footer" style="background-color:#eef4fb;">
-                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm"
-                        style="background-color:#3e7cc1; border-color:#3e7cc1;"
-                        data-bs-dismiss="modal">
-                  ปิด
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>      
-
-        {{-- -------------------------------------------------------------------------------------------------------------- --}}
+{{-- -------------------------------------------------------------------------------------------------------------- --}}
       </div>
     </div>  
   </section>
@@ -1055,47 +751,6 @@
             </div>
           </div>
           <br>
-          <!-- Refer -->
-          <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10985] ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10985}}</span>
-                <div id="btn-10985-refer"></div>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="table10985_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
-                </thead>
-                <tbody>
-                @foreach($refer_10985 as $row)
-                  <tr>
-                    <td class="text-center">{{ $row->month }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
-                  </tr>
-                @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10985->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10985->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10985->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10985->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10985->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10985->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10985->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10985->sum('visit_referback_outprov')) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
                       <!-- 10986 -->
         <div class="tab-pane fade" id="pane-10986" role="tabpanel" aria-labelledby="tab-10986" tabindex="0">          
@@ -1176,47 +831,6 @@
             </div>
           </div>
           <br>
-          <!-- Refer -->
-          <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10986] ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10986}}</span>
-                <div id="btn-10986-refer"></div>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="table10986_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
-                </thead>
-                <tbody>
-                @foreach($refer_10986 as $row)
-                  <tr>
-                    <td class="text-center">{{ $row->month }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
-                  </tr>
-                @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10986->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10986->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10986->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10986->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10986->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10986->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10986->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10986->sum('visit_referback_outprov')) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
 
         <!-- 10987 -->
@@ -1298,47 +912,6 @@
             </div>
           </div>
           <br>
-          <!-- Refer -->
-          <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10987] ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10987}}</span>
-                <div id="btn-10987-refer"></div>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="table10987_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
-                </thead>
-                <tbody>
-                @foreach($refer_10987 as $row)
-                  <tr>
-                    <td class="text-center">{{ $row->month }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
-                  </tr>
-                @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10987->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10987->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10987->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10987->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10987->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10987->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10987->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10987->sum('visit_referback_outprov')) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
 
         <!-- 10988 -->
@@ -1420,47 +993,6 @@
             </div>
           </div>
           <br>
-          <!-- Refer -->
-          <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10988] ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10988}}</span>
-                <div id="btn-10988-refer"></div>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="table10988_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
-                </thead>
-                <tbody>
-                @foreach($refer_10988 as $row)
-                  <tr>
-                    <td class="text-center">{{ $row->month }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
-                  </tr>
-                @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10988->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10988->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10988->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10988->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10988->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10988->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10988->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10988->sum('visit_referback_outprov')) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
 
         <!-- 10989 -->
@@ -1542,47 +1074,6 @@
             </div>
           </div>
           <br>
-          <!-- Refer -->
-          <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10989] ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10989}}</span>
-                <div id="btn-10989-refer"></div>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="table10989_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
-                </thead>
-                <tbody>
-                @foreach($refer_10989 as $row)
-                  <tr>
-                    <td class="text-center">{{ $row->month }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
-                  </tr>
-                @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10989->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10989->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10989->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10989->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10989->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10989->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10989->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10989->sum('visit_referback_outprov')) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
 
         <!-- 10990 -->
@@ -1664,47 +1155,6 @@
             </div>
           </div>
           <br>
-          <!-- Refer -->
-          <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10990] ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ</h6>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10990}}</span>
-                <div id="btn-10990-refer"></div>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="table10990_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
-                </thead>
-                <tbody>
-                @foreach($refer_10990 as $row)
-                  <tr>
-                    <td class="text-center">{{ $row->month }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
-                  </tr>
-                @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10990->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10990->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10990->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10990->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10990->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10990->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10990->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10990->sum('visit_referback_outprov')) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
 
         <!-- 10703 -->
@@ -1799,45 +1249,7 @@
               </div>
             </div>
           </div>
-          <br>
-          <!-- Refer -->
-          <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10703] ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ</h6>
-              <span class="text-secondary small">Update {{$update_at10703}}</span>
-            </div>
-            <div class="table-responsive">
-              <table id="table10703_refer" class="table custom-table my-3" width="100%">
-                <thead>
-                  <tr><th class="th-grey" rowspan="2" width="8%">เดือน</th><th class="th-blue" colspan="4">Refer Out</th><th class="th-green" colspan="4">Refer In</th><th class="th-orange" colspan="2">Refer Back</th></tr>
-                  <tr><th class="th-blue">OPD ในจังหวัด</th><th class="th-blue">OPD ต่างจังหวัด</th><th class="th-blue">IPD ในจังหวัด</th><th class="th-blue">IPD ต่างจังหวัด</th><th class="th-green">OPD ในจังหวัด</th><th class="th-green">OPD ต่างจังหวัด</th><th class="th-green">IPD ในจังหวัด</th><th class="th-green">IPD ต่างจังหวัด</th><th class="th-orange">ในจังหวัด</th><th class="th-orange">ต่างจังหวัด</th></tr>
-                </thead>
-                <tbody>
-                @foreach($refer_10703 as $row)
-                  <tr>
-                    <td class="text-center">{{ $row->month }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referout_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referout_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referout_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referin_outprov) }}</td>
-                    <td class="text-end text-primary fw-bold">{{ number_format($row->visit_referin_inprov_ipd) }}</td>
-                    <td class="text-end text-danger fw-bold">{{ number_format($row->visit_referin_outprov_ipd) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_inprov) }}</td>
-                    <td class="text-end">{{ number_format($row->visit_referback_outprov) }}</td>
-                  </tr>
-                @endforeach
-                  <tr class="tr-total">
-                    <td class="text-center">รวม</td>
-                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referout_inprov')) }}</td><td class="text-end">{{ number_format($refer_10703->sum('visit_referout_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10703->sum('visit_referout_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10703->sum('visit_referout_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referin_inprov')) }}</td><td class="text-end">{{ number_format($refer_10703->sum('visit_referin_outprov')) }}</td><td class="text-end text-primary">{{ number_format($refer_10703->sum('visit_referin_inprov_ipd')) }}</td><td class="text-end text-danger">{{ number_format($refer_10703->sum('visit_referin_outprov_ipd')) }}</td>
-                    <td class="text-end">{{ number_format($refer_10703->sum('visit_referback_inprov')) }}</td><td class="text-end">{{ number_format($refer_10703->sum('visit_referback_outprov')) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>   
+          <br>   
         <!-- END 10703 --> 
         </div>
 
@@ -2502,44 +1914,37 @@
       // 10985
       var t10985_ipd = $('#table10985_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน'}]});
       t10985_ipd.buttons().container().appendTo('#btn-10985-ipd');
-      var t10985_ref = $('#table10985_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน'}]});
-      t10985_ref.buttons().container().appendTo('#btn-10985-refer');
+
 
       // 10986
       var t10986_ipd = $('#table10986_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา'}]});
       t10986_ipd.buttons().container().appendTo('#btn-10986-ipd');
-      var t10986_ref = $('#table10986_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา'}]});
-      t10986_ref.buttons().container().appendTo('#btn-10986-refer');
+
 
       // 10987
       var t10987_ipd = $('#table10987_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา'}]});
       t10987_ipd.buttons().container().appendTo('#btn-10987-ipd');
-      var t10987_ref = $('#table10987_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา'}]});
-      t10987_ref.buttons().container().appendTo('#btn-10987-refer');
+
 
       // 10988
       var t10988_ipd = $('#table10988_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม'}]});
       t10988_ipd.buttons().container().appendTo('#btn-10988-ipd');
-      var t10988_ref = $('#table10988_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม'}]});
-      t10988_ref.buttons().container().appendTo('#btn-10988-refer');
+
 
       // 10989
       var t10989_ipd = $('#table10989_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน'}]});
       t10989_ipd.buttons().container().appendTo('#btn-10989-ipd');
-      var t10989_ref = $('#table10989_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน'}]});
-      t10989_ref.buttons().container().appendTo('#btn-10989-refer');
+
 
       // 10990
       var t10990_ipd = $('#table10990_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ'}]});
       t10990_ipd.buttons().container().appendTo('#btn-10990-ipd');
-      var t10990_ref = $('#table10990_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ'}]});
-      t10990_ref.buttons().container().appendTo('#btn-10990-refer');
+
 
       // 10703
       var t10703_ipd = $('#table10703_ipd').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ'}]});
       t10703_ipd.buttons().container().appendTo('#btn-10703-ipd');
-      var t10703_ref = $('#table10703_refer').DataTable({...config, buttons: [{extend:'excelHtml5', text:'<i class="bi bi-file-earmark-excel"></i> Excel', className:'btn btn-success btn-sm rounded-pill px-3', title:'ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ'}]});
-      t10703_ref.buttons().container().appendTo('#btn-10703-refer');
+
     });
   </script>
 @endpush

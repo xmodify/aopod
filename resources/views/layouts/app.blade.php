@@ -61,6 +61,10 @@
               <i class="bi bi-person-vcard text-green me-2"></i> OPD
           </a>
 
+          <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/refer') }}">
+              <i class="fa-solid fa-truck-medical text-danger fs-5 me-2"></i> Refer
+          </a>
+
           <a class="navbar-brand d-flex align-items-center text-primary brand-title fw-bold" href="{{ url('web/claim') }}">
               <i class="bi bi-coin fs-5 text-warning me-2"></i></i> Claim
           </a>

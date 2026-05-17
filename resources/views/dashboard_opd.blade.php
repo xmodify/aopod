@@ -5,7 +5,6 @@
   .custom-table {
     border-collapse: separate !important;
     border-spacing: 0 !important;
-    border: 1px solid #e0e0e0 !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
@@ -14,12 +13,10 @@
     font-weight: 700 !important;
     text-align: center !important;
     vertical-align: middle !important;
-    border: 1px solid #eee !important;
     padding: 10px 8px !important;
     font-size: 0.85rem !important;
   }
   .custom-table tbody td {
-    border: 1px solid #f5f5f5 !important;
     padding: 8px !important;
     font-size: 0.85rem !important;
     color: #444 !important;
@@ -63,42 +60,34 @@
   /* Theme Specific Cards */
   .card-theme-opd {
     background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
-    border: 1px solid #1976d2 !important;
     border-left: 6px solid #1976d2 !important;
   }
   .card-theme-chart {
     background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 1px solid #6c757d !important;
     border-left: 6px solid #6c757d !important;
   }
   .card-theme-dent {
     background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%);
-    border: 1px solid #ab47bc !important;
     border-left: 6px solid #ab47bc !important;
   }
   .card-theme-phy {
     background: linear-gradient(135deg, #fbe9e7 0%, #ffffff 100%);
-    border: 1px solid #ff7043 !important;
     border-left: 6px solid #ff7043 !important;
   }
   .card-theme-anc {
     background: linear-gradient(135deg, #fce4ec 0%, #ffffff 100%);
-    border: 1px solid #ec407a !important;
     border-left: 6px solid #ec407a !important;
   }
   .card-theme-hm {
     background: linear-gradient(135deg, #e0f2f1 0%, #ffffff 100%);
-    border: 1px solid #26a69a !important;
     border-left: 6px solid #26a69a !important;
   }
   .card-theme-tele {
     background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%);
-    border: 1px solid #26c6da !important;
     border-left: 6px solid #26c6da !important;
   }
   .card-theme-oapp {
     background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
-    border: 1px solid #66bb6a !important;
     border-left: 6px solid #66bb6a !important;
   }
 </style>

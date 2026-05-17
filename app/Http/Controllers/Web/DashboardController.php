@@ -52,31 +52,11 @@ class DashboardController extends Controller
         $total = DB::table('opd')
             ->whereBetween('vstdate', [$today, $today])
             ->selectRaw("                
-                COALESCE(SUM(visit_referout_inprov),0)          AS visit_referout_inprov,
-                COALESCE(SUM(visit_referout_inprov_ipd),0)      AS visit_referout_inprov_ipd,
-                COALESCE(SUM(visit_referout_outprov),0)         AS visit_referout_outprov,
-                COALESCE(SUM(visit_referout_outprov_ipd),0)     AS visit_referout_outprov_ipd,
-                COALESCE(SUM(visit_referin_inprov),0)           AS visit_referin_inprov,
-                COALESCE(SUM(visit_referin_outprov),0)          AS visit_referin_outprov,
-                COALESCE(SUM(visit_referin_inprov_ipd),0)       AS visit_referin_inprov_ipd,
-                COALESCE(SUM(visit_referin_outprov_ipd),0)      AS visit_referin_outprov_ipd,
-                COALESCE(SUM(visit_referback_inprov),0)         AS visit_referback_inprov,
-                COALESCE(SUM(visit_referback_outprov),0)        AS visit_referback_outprov, 
                 COALESCE(SUM(visit_operation),0)                AS visit_operation          
             ")->first();
 
         // ส่งเป็น array ใช้ง่าย ๆ ใน Blade
         $card = [           
-            'visit_referout_inprov'         => (int)$total->visit_referout_inprov, 
-            'visit_referout_inprov_ipd'     => (int)$total->visit_referout_inprov_ipd, 
-            'visit_referout_outprov'        => (int)$total->visit_referout_outprov, 
-            'visit_referout_outprov_ipd'    => (int)$total->visit_referout_outprov_ipd, 
-            'visit_referin_inprov'          => (int)$total->visit_referin_inprov, 
-            'visit_referin_outprov'         => (int)$total->visit_referin_outprov, 
-            'visit_referin_inprov_ipd'      => (int)$total->visit_referin_inprov_ipd, 
-            'visit_referin_outprov_ipd'     => (int)$total->visit_referin_outprov_ipd, 
-            'visit_referback_inprov'        => (int)$total->visit_referback_inprov, 
-            'visit_referback_outprov'       => (int)$total->visit_referback_outprov,
             'visit_operation'               => (int)$total->visit_operation,              
         ];
 
@@ -87,17 +67,7 @@ class DashboardController extends Controller
                 'opd.hospcode',
                 'hospital_config.hospname',
                 DB::raw('MAX(opd.updated_at) AS last_updated_at'),                
-                DB::raw('COALESCE(SUM(visit_referout_inprov),0) AS visit_referout_inprov'),
-                DB::raw('COALESCE(SUM(visit_referout_outprov),0) AS visit_referout_outprov'),
-                DB::raw('COALESCE(SUM(visit_referout_inprov_ipd),0) AS visit_referout_inprov_ipd'),                
-                DB::raw('COALESCE(SUM(visit_referout_outprov_ipd),0) AS visit_referout_outprov_ipd'),
-                DB::raw('COALESCE(SUM(visit_referin_inprov),0) AS visit_referin_inprov'),
-                DB::raw('COALESCE(SUM(visit_referin_outprov),0) AS visit_referin_outprov'),
-                DB::raw('COALESCE(SUM(visit_referin_inprov_ipd),0) AS visit_referin_inprov_ipd'),
-                DB::raw('COALESCE(SUM(visit_referin_outprov_ipd),0) AS visit_referin_outprov_ipd'),
-                DB::raw('COALESCE(SUM(visit_referback_inprov),0) AS visit_referback_inprov'),
-                DB::raw('COALESCE(SUM(visit_referback_outprov),0) AS visit_referback_outprov'), 
-                DB::raw('COALESCE(SUM(visit_operation),0) AS visit_operation'),              
+                DB::raw('COALESCE(SUM(visit_operation),0) AS visit_operation')              
             )
             ->groupBy('opd.hospcode', 'hospital_config.hospname')
             ->orderBy('opd.hospcode')
@@ -224,51 +194,7 @@ class DashboardController extends Controller
         $ipd_10703 = getIpdSummary(10703, $start_date, $end_date);
         // END ----------------------------------------------------------------------------------------------
 
-        // ดึงข้อมูลสรุป Refer แบบรายเดือน ตาม hospcode ที่กำหนด----------------------------------------------------
-        function getReferSummary($hospcode, $start_date, $end_date)
-        {
-            $sql = "
-                SELECT MIN(CASE
-                    WHEN MONTH(vstdate)=10 THEN CONCAT('ต.ค. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=11 THEN CONCAT('พ.ย. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=12 THEN CONCAT('ธ.ค. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=1  THEN CONCAT('ม.ค. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=2  THEN CONCAT('ก.พ. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=3  THEN CONCAT('มี.ค. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=4  THEN CONCAT('เม.ย. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=5  THEN CONCAT('พ.ค. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=6  THEN CONCAT('มิ.ย. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=7  THEN CONCAT('ก.ค. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=8  THEN CONCAT('ส.ค. ', RIGHT(YEAR(vstdate)+543, 2))
-                    WHEN MONTH(vstdate)=9  THEN CONCAT('ก.ย. ', RIGHT(YEAR(vstdate)+543, 2))
-                END) AS month, 
-                SUM(visit_referout_inprov)          AS visit_referout_inprov,
-                SUM(visit_referout_outprov)         AS visit_referout_outprov,
-                SUM(visit_referout_inprov_ipd)      AS visit_referout_inprov_ipd,
-                SUM(visit_referout_outprov_ipd)     AS visit_referout_outprov_ipd,
-                SUM(visit_referin_inprov)           AS visit_referin_inprov,
-                SUM(visit_referin_outprov)          AS visit_referin_outprov,
-                SUM(visit_referin_inprov_ipd)       AS visit_referin_inprov_ipd,
-                SUM(visit_referin_outprov_ipd)      AS visit_referin_outprov_ipd,
-                SUM(visit_referback_inprov)         AS visit_referback_inprov,
-                SUM(visit_referback_outprov)        AS visit_referback_outprov
-                FROM opd
-                WHERE vstdate BETWEEN ? AND ?
-                AND hospcode = ?
-                GROUP BY YEAR(vstdate), MONTH(vstdate)
-                ORDER BY YEAR(vstdate), MONTH(vstdate)
-            ";
-             return collect(DB::select($sql, [$start_date, $end_date, $hospcode]));
-        }
-        // ✅ เรียกใช้ฟังก์ชัน (พร้อม collect() ครอบทุกตัว)
-        $refer_10985 = getReferSummary(10985, $start_date, $end_date);
-        $refer_10986 = getReferSummary(10986, $start_date, $end_date);
-        $refer_10987 = getReferSummary(10987, $start_date, $end_date);
-        $refer_10988 = getReferSummary(10988, $start_date, $end_date);
-        $refer_10989 = getReferSummary(10989, $start_date, $end_date);
-        $refer_10990 = getReferSummary(10990, $start_date, $end_date);
-        $refer_10703 = getReferSummary(10703, $start_date, $end_date);
-        // END -------------------------------------------------------------------------------------------
+
 
         return view('dashboard', array_merge(
             $card,
@@ -276,13 +202,13 @@ class DashboardController extends Controller
             'budget_year_select',
             'budget_year',
             'diff_days',
-            'update_at10985','ipd_10985','refer_10985',
-            'update_at10986','ipd_10986','refer_10986',
-            'update_at10987','ipd_10987','refer_10987',
-            'update_at10988','ipd_10988','refer_10988',
-            'update_at10989','ipd_10989','refer_10989',
-            'update_at10990','ipd_10990','refer_10990',
-            'update_at10703','ipd_10703','refer_10703',
+            'update_at10985','ipd_10985',
+            'update_at10986','ipd_10986',
+            'update_at10987','ipd_10987',
+            'update_at10988','ipd_10988',
+            'update_at10989','ipd_10989',
+            'update_at10990','ipd_10990',
+            'update_at10703','ipd_10703',
             'ipd_bed_dep',
             'total_bed_qty',
             'total_bed_use',
