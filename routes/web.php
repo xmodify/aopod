@@ -11,7 +11,7 @@ use App\Http\Controllers\Web\DashboardOperationController;
 // หน้าแรก redirect ไป web
 Route::get('/', function () {
     // return view('dashboard');
-     return redirect()->to('web/'); 
+     return redirect()->to(url('web')); 
 });
 
 // หน้า web หลัก
@@ -31,6 +31,6 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // ถ้าคุณต้องการ page /dashboard ให้ล็อกอินก่อน
 Route::middleware('auth:web')->group(function () {
     Route::get('/dashboard', function () {
-        return redirect()->to('web/'); 
+        return redirect()->to(url('web')); 
     });
 });
