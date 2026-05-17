@@ -1156,7 +1156,7 @@
       ];
 
       hospitals.forEach(hosp => {
-        const table = $(`#table${hosp.id}`).DataTable({
+        $(`#table${hosp.id}`).DataTable({
           "dom": "Brt",
           "destroy": true,
           "responsive": false,
@@ -1177,11 +1177,11 @@
               className: 'btn btn-excel btn-sm rounded-pill px-3 shadow-sm',
               title: `ข้อมูลจัดเก็บรายได้_${hosp.name}_${hosp.id}_{{$budget_year}}`
             }
-          ]
+          ],
+          "initComplete": function() {
+            this.api().buttons().container().detach().appendTo($(`#btn-${hosp.id}`));
+          }
         });
-        setTimeout(() => {
-          table.buttons().container().detach().appendTo($(`#btn-${hosp.id}`));
-        }, 10);
       });
     });
   </script>
