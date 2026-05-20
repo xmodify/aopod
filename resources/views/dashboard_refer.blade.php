@@ -53,6 +53,16 @@
     font-weight: 800 !important;
     border-top: 2px solid #0d47a1 !important;
   }
+
+  /* Hospital Brand Colors & Themes */
+  .text-10985 { color: #8b5cf6 !important; }
+  .text-10986 { color: #06b6d4 !important; }
+  .text-10987 { color: #ec4899 !important; }
+  .text-10988 { color: #f59e0b !important; }
+  .text-10989 { color: #3b82f6 !important; }
+  .text-10990 { color: #10b981 !important; }
+  .text-10703 { color: #f43f5e !important; }
+
 </style>
 <style>
   /* === BASE GLASS CARD (ใช้ร่วมกันทุก block) === */
@@ -129,27 +139,47 @@
   }
 
   /* ================================
-    2) Refer Out – Magenta
+    2) Refer Out – Red
   =================================*/
   .card-theme-referout {
-    background: linear-gradient(135deg, #fce4ec 0%, #ffffff 100%);
-    border-left: 6px solid #c2185b !important;
-  }
-
-  /* ================================
-    3) Refer In – Pink/Red
-  =================================*/
-  .card-theme-referin {
     background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%);
     border-left: 6px solid #d32f2f !important;
   }
 
   /* ================================
-    4) Refer Back – Orange/Yellow
+    3) Refer In – Blue
+  =================================*/
+  .card-theme-referin {
+    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+    border-left: 6px solid #0d47a1 !important;
+  }
+
+  /* ================================
+    4) Refer Back – Green
   =================================*/
   .card-theme-referback {
-    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
-    border-left: 6px solid #f57f17 !important;
+    background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+    border-left: 6px solid #1b5e20 !important;
+  }
+
+  /* Hospital Monthly Chart Card Styles (Red, Blue, Green) */
+  .card.card-chart-referout {
+    border-top: 4px solid #d32f2f !important;
+  }
+  .card-chart-referout h6 {
+    color: #d32f2f !important;
+  }
+  .card.card-chart-referin {
+    border-top: 4px solid #0d47a1 !important;
+  }
+  .card-chart-referin h6 {
+    color: #0d47a1 !important;
+  }
+  .card.card-chart-referback {
+    border-top: 4px solid #1b5e20 !important;
+  }
+  .card-chart-referback h6 {
+    color: #1b5e20 !important;
   }
 </style>
 
@@ -197,22 +227,22 @@
           <a href="#" data-bs-toggle="modal" data-bs-target="#ReferOutDetailModal" class="text-decoration-none text-dark d-block">
             <div class="card card-theme-referout card-hover glass p-3 h-100">
               <div class="d-flex align-items-center justify-content-between mb-3">
-                <h6 class="mb-0 fw-bold" style="color: #c2185b;">Refer Out วันนี้</h6>
-                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(194, 24, 91, 0.1);">
-                  <i class="fa-solid fa-truck-medical fs-4" style="color: #c2185b;"></i>
+                <h6 class="mb-0 fw-bold" style="color: #d32f2f;">Refer Out วันนี้</h6>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(211, 47, 47, 0.1);">
+                  <i class="fa-solid fa-truck-medical fs-4" style="color: #d32f2f;"></i>
                 </div>
               </div>
               <div class="d-flex align-items-end gap-5">
                 <div class="text-center">
                   <div class="small text-secondary">OPD</div>
-                  <div class="fw-bold" style="font-size:1.5rem; color: #c2185b;">
+                  <div class="fw-bold" style="font-size:1.5rem; color: #d32f2f;">
                     {{ $fmtInt($visit_referout_inprov + $visit_referout_outprov) }}
                   </div>
                 </div>
                 <div class="vr d-none d-sm-block"></div>
                 <div class="text-center">
                   <div class="small text-secondary">IPD</div>
-                  <div class="fw-bold" style="font-size:1.5rem; color: #c2185b;">
+                  <div class="fw-bold" style="font-size:1.5rem; color: #d32f2f;">
                     {{ $fmtInt($visit_referout_inprov_ipd + $visit_referout_outprov_ipd) }}
                   </div>
                 </div>
@@ -299,22 +329,22 @@
           <a href="#" data-bs-toggle="modal" data-bs-target="#ReferInDetailModal" class="text-decoration-none text-dark d-block">
             <div class="card card-theme-referin card-hover glass p-3 h-100">
               <div class="d-flex align-items-center justify-content-between mb-3">
-                <h6 class="mb-0 text-danger fw-bold">Refer In วันนี้</h6>
-                <div class="bg-danger bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                  <i class="fa-solid fa-truck-medical text-danger fs-4"></i>
+                <h6 class="mb-0 fw-bold" style="color: #0d47a1;">Refer In วันนี้</h6>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(13, 71, 161, 0.1);">
+                  <i class="fa-solid fa-truck-medical fs-4" style="color: #0d47a1;"></i>
                 </div>
               </div>
               <div class="d-flex align-items-end gap-5">
                 <div class="text-center">
                   <div class="small text-secondary">OPD</div>
-                  <div class="fw-bold text-danger" style="font-size:1.5rem;">
+                  <div class="fw-bold" style="font-size:1.5rem; color: #0d47a1;">
                     {{ $fmtInt($visit_referin_inprov + $visit_referin_outprov) }}
                   </div>
                 </div>
                 <div class="vr d-none d-sm-block"></div>
                 <div class="text-center">
                   <div class="small text-secondary">IPD</div>
-                  <div class="fw-bold text-danger" style="font-size:1.5rem;">
+                  <div class="fw-bold" style="font-size:1.5rem; color: #0d47a1;">
                     {{ $fmtInt($visit_referin_inprov_ipd + $visit_referin_outprov_ipd) }}
                   </div>
                 </div>
@@ -400,22 +430,22 @@
           <a href="#" data-bs-toggle="modal" data-bs-target="#ReferBackDetailModal" class="text-decoration-none text-dark d-block">
             <div class="card card-theme-referback card-hover glass p-3 h-100">
               <div class="d-flex align-items-center justify-content-between mb-3">
-                <h6 class="mb-0 fw-bold" style="color: #f57f17;">Refer Back วันนี้</h6>
-                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(245, 127, 23, 0.1);">
-                  <i class="fa-solid fa-truck-medical fs-4" style="color: #f57f17;"></i>
+                <h6 class="mb-0 fw-bold" style="color: #1b5e20;">Refer Back วันนี้</h6>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: rgba(27, 94, 32, 0.1);">
+                  <i class="fa-solid fa-truck-medical fs-4" style="color: #1b5e20;"></i>
                 </div>
               </div>
               <div class="d-flex align-items-end gap-5">
                 <div class="text-center">
                   <div class="small text-secondary">ในจังหวัด</div>
-                  <div class="fw-bold" style="font-size:1.5rem; color: #f57f17;">
+                  <div class="fw-bold" style="font-size:1.5rem; color: #1b5e20;">
                     {{ $fmtInt($visit_referback_inprov) }}
                   </div>
                 </div>
                 <div class="vr d-none d-sm-block"></div>
                 <div class="text-center">
                   <div class="small text-secondary">ต่างจังหวัด</div>
-                  <div class="fw-bold" style="font-size:1.5rem; color: #f57f17;">
+                  <div class="fw-bold" style="font-size:1.5rem; color: #1b5e20;">
                     {{ $fmtInt($visit_referback_outprov) }}
                   </div>
                 </div>
@@ -562,13 +592,36 @@
         <div class="tab-pane fade show active" id="pane-10985" role="tabpanel" aria-labelledby="tab-10985" tabindex="0">          
           <!-- Refer -->
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10985] ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <h6 class="fw-bold m-0 text-10985"><i class="fa-solid fa-truck-arrow-right text-10985 me-2"></i>[10985] ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน</h6>
               <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10985}}</span>
+                <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10985}}</span>
                 <div id="btn-10985-refer"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card card-chart-referout border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Out</h6>
+                  <div id="chart_10985_referout" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referin border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer In</h6>
+                  <div id="chart_10985_referin" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referback border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Back</h6>
+                  <div id="chart_10985_referback" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10985_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -607,13 +660,36 @@
         <div class="tab-pane fade " id="pane-10986" role="tabpanel" aria-labelledby="tab-10986" tabindex="0">          
           <!-- Refer -->
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10986] ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <h6 class="fw-bold m-0 text-10986"><i class="fa-solid fa-truck-arrow-right text-10986 me-2"></i>[10986] ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา</h6>
               <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10986}}</span>
+                <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10986}}</span>
                 <div id="btn-10986-refer"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card card-chart-referout border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Out</h6>
+                  <div id="chart_10986_referout" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referin border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer In</h6>
+                  <div id="chart_10986_referin" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referback border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Back</h6>
+                  <div id="chart_10986_referback" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10986_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -652,13 +728,36 @@
         <div class="tab-pane fade " id="pane-10987" role="tabpanel" aria-labelledby="tab-10987" tabindex="0">          
           <!-- Refer -->
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10987] ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <h6 class="fw-bold m-0 text-10987"><i class="fa-solid fa-truck-arrow-right text-10987 me-2"></i>[10987] ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา</h6>
               <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10987}}</span>
+                <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10987}}</span>
                 <div id="btn-10987-refer"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card card-chart-referout border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Out</h6>
+                  <div id="chart_10987_referout" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referin border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer In</h6>
+                  <div id="chart_10987_referin" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referback border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Back</h6>
+                  <div id="chart_10987_referback" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10987_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -697,13 +796,36 @@
         <div class="tab-pane fade " id="pane-10988" role="tabpanel" aria-labelledby="tab-10988" tabindex="0">          
           <!-- Refer -->
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10988] ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <h6 class="fw-bold m-0 text-10988"><i class="fa-solid fa-truck-arrow-right text-10988 me-2"></i>[10988] ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม</h6>
               <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10988}}</span>
+                <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10988}}</span>
                 <div id="btn-10988-refer"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card card-chart-referout border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Out</h6>
+                  <div id="chart_10988_referout" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referin border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer In</h6>
+                  <div id="chart_10988_referin" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referback border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Back</h6>
+                  <div id="chart_10988_referback" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10988_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -742,13 +864,36 @@
         <div class="tab-pane fade " id="pane-10989" role="tabpanel" aria-labelledby="tab-10989" tabindex="0">          
           <!-- Refer -->
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10989] ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <h6 class="fw-bold m-0 text-10989"><i class="fa-solid fa-truck-arrow-right text-10989 me-2"></i>[10989] ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน</h6>
               <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10989}}</span>
+                <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10989}}</span>
                 <div id="btn-10989-refer"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card card-chart-referout border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Out</h6>
+                  <div id="chart_10989_referout" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referin border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer In</h6>
+                  <div id="chart_10989_referin" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referback border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Back</h6>
+                  <div id="chart_10989_referback" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10989_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -787,13 +932,36 @@
         <div class="tab-pane fade " id="pane-10990" role="tabpanel" aria-labelledby="tab-10990" tabindex="0">          
           <!-- Refer -->
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10990] ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <h6 class="fw-bold m-0 text-10990"><i class="fa-solid fa-truck-arrow-right text-10990 me-2"></i>[10990] ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ</h6>
               <div class="d-flex align-items-center gap-2">
-                <span class="text-secondary small">Update {{$update_at10990}}</span>
+                <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10990}}</span>
                 <div id="btn-10990-refer"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card card-chart-referout border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Out</h6>
+                  <div id="chart_10990_referout" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referin border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer In</h6>
+                  <div id="chart_10990_referin" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referback border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Back</h6>
+                  <div id="chart_10990_referback" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10990_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -832,10 +1000,36 @@
         <div class="tab-pane fade " id="pane-10703" role="tabpanel" aria-labelledby="tab-10703" tabindex="0">          
           <!-- Refer -->
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold"><i class="fa-solid fa-truck-arrow-right text-success me-2"></i>[10703] ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ</h6>
-              <span class="text-secondary small">Update {{$update_at10703}}</span>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <h6 class="fw-bold m-0 text-10703"><i class="fa-solid fa-truck-arrow-right text-10703 me-2"></i>[10703] ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ</h6>
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10703}}</span>
+                <div id="btn-10703-refer"></div>
+              </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card card-chart-referout border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Out</h6>
+                  <div id="chart_10703_referout" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referin border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer In</h6>
+                  <div id="chart_10703_referin" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-chart-referback border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>Refer Back</h6>
+                  <div id="chart_10703_referback" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10703_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -888,8 +1082,150 @@
 @endsection
 
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script>
     $(function () {
+      // 1. Prepare JSON monthly data for all hospitals
+      const referData = {
+        '10985': @json($refer_10985),
+        '10986': @json($refer_10986),
+        '10987': @json($refer_10987),
+        '10988': @json($refer_10988),
+        '10989': @json($refer_10989),
+        '10990': @json($refer_10990),
+        '10703': @json($refer_10703)
+      };
+
+      const hospColors = {
+        '10985': { primary: '#8b5cf6', secondary: '#10b981' }, // Purple vs Emerald
+        '10986': { primary: '#06b6d4', secondary: '#f59e0b' }, // Teal vs Amber
+        '10987': { primary: '#ec4899', secondary: '#3b82f6' }, // Pink vs Blue
+        '10988': { primary: '#f59e0b', secondary: '#8b5cf6' }, // Amber vs Purple
+        '10989': { primary: '#3b82f6', secondary: '#ec4899' }, // Blue vs Pink
+        '10990': { primary: '#10b981', secondary: '#f43f5e' }, // Emerald vs Rose
+        '10703': { primary: '#f43f5e', secondary: '#06b6d4' }  // Rose vs Teal
+      };
+
+      function createReferChart(containerId, months, seriesData, themeColors) {
+        const options = {
+          series: seriesData,
+          chart: {
+            type: 'area',
+            height: 220,
+            toolbar: { show: false },
+            sparkline: { enabled: false },
+            fontFamily: 'Sarabun, sans-serif'
+          },
+          colors: [themeColors.primary, themeColors.secondary],
+          stroke: {
+            curve: 'smooth',
+            width: 2.5
+          },
+          markers: {
+            size: 4,
+            strokeWidth: 2,
+            hover: {
+              size: 6
+            }
+          },
+          fill: {
+            type: 'gradient',
+            gradient: {
+              shadeIntensity: 1,
+              opacityFrom: 0.3,
+              opacityTo: 0.02,
+              stops: [0, 90, 100]
+            }
+          },
+          dataLabels: { enabled: false },
+          xaxis: {
+            categories: months,
+            labels: {
+              style: {
+                colors: '#64748b',
+                fontSize: '11px'
+              }
+            },
+            axisBorder: { show: false },
+            axisTicks: { show: false }
+          },
+          yaxis: {
+            labels: {
+              formatter: function (value) {
+                return value.toLocaleString('th-TH', { maximumFractionDigits: 0 });
+              },
+              style: {
+                colors: '#64748b',
+                fontSize: '10px'
+              }
+            }
+          },
+          grid: {
+            borderColor: '#f1f5f9',
+            strokeDashArray: 4,
+            padding: {
+              left: 5,
+              right: 5,
+              bottom: 0
+            }
+          },
+          legend: {
+            show: true,
+            position: 'top',
+            horizontalAlign: 'center',
+            fontSize: '11px',
+            markers: {
+              radius: 12
+            }
+          },
+          tooltip: {
+            theme: 'light',
+            y: {
+              formatter: function (val) {
+                return val.toLocaleString('th-TH', { maximumFractionDigits: 0 }) + ' ราย';
+              }
+            }
+          }
+        };
+
+        const chart = new ApexCharts(document.querySelector(`#${containerId}`), options);
+        chart.render();
+      }
+
+      // Initialize all charts for each hospital
+      const hospitalIds = ['10985', '10986', '10987', '10988', '10989', '10990', '10703'];
+      hospitalIds.forEach(hospId => {
+        const data = referData[hospId];
+        if (data && data.length > 0) {
+          const months = data.map(item => item.month);
+          const colors = hospColors[hospId] || { primary: '#3b82f6', secondary: '#60a5fa' };
+
+          // 1. Refer Out (OPD vs IPD)
+          const referOutOpd = data.map(item => (parseFloat(item.visit_referout_inprov) || 0) + (parseFloat(item.visit_referout_outprov) || 0));
+          const referOutIpd = data.map(item => (parseFloat(item.visit_referout_inprov_ipd) || 0) + (parseFloat(item.visit_referout_outprov_ipd) || 0));
+          createReferChart(`chart_${hospId}_referout`, months, [
+            { name: 'OPD Refer Out', data: referOutOpd },
+            { name: 'IPD Refer Out', data: referOutIpd }
+          ], colors);
+
+          // 2. Refer In (OPD vs IPD)
+          const referInOpd = data.map(item => (parseFloat(item.visit_referin_inprov) || 0) + (parseFloat(item.visit_referin_outprov) || 0));
+          const referInIpd = data.map(item => (parseFloat(item.visit_referin_inprov_ipd) || 0) + (parseFloat(item.visit_referin_outprov_ipd) || 0));
+          createReferChart(`chart_${hospId}_referin`, months, [
+            { name: 'OPD Refer In', data: referInOpd },
+            { name: 'IPD Refer In', data: referInIpd }
+          ], colors);
+
+          // 3. Refer Back (ในจังหวัด vs ต่างจังหวัด)
+          const referBackIn = data.map(item => parseFloat(item.visit_referback_inprov) || 0);
+          const referBackOut = data.map(item => parseFloat(item.visit_referback_outprov) || 0);
+          createReferChart(`chart_${hospId}_referback`, months, [
+            { name: 'ในจังหวัด', data: referBackIn },
+            { name: 'ต่างจังหวัด', data: referBackOut }
+          ], colors);
+        }
+      });
+
       const config = {
         dom: 'rt',
         ordering: false,
