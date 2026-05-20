@@ -44,11 +44,53 @@
   .th-purple { background: #f3e5f5 !important; color: #4a148c !important; }
   .th-red { background: #ffebee !important; color: #b71c1c !important; }
   .th-grey { background: #f5f5f5 !important; color: #424242 !important; }
-  
   .tr-total {
     background: #f1f8ff !important;
     font-weight: 800 !important;
     border-top: 2px solid #0d47a1 !important;
+  }
+  .text-orange { color: #e65100 !important; }
+  
+  /* === Premium Chart Cards (Refer-like minimal style) === */
+  .card.card-chart-blue {
+    border-top: 4px solid #2563eb !important;
+  }
+  .card.card-chart-blue .card-header {
+    background: transparent !important;
+    border-bottom: none !important;
+    color: #2563eb !important;
+    padding-top: 15px !important;
+    padding-bottom: 2px !important;
+  }
+  .card.card-chart-orange {
+    border-top: 4px solid #d97706 !important;
+  }
+  .card.card-chart-orange .card-header {
+    background: transparent !important;
+    border-bottom: none !important;
+    color: #d97706 !important;
+    padding-top: 15px !important;
+    padding-bottom: 2px !important;
+  }
+  .card.card-chart-green {
+    border-top: 4px solid #10b981 !important;
+  }
+  .card.card-chart-green .card-header {
+    background: transparent !important;
+    border-bottom: none !important;
+    color: #10b981 !important;
+    padding-top: 15px !important;
+    padding-bottom: 2px !important;
+  }
+  .card.card-chart-red {
+    border-top: 4px solid #ef4444 !important;
+  }
+  .card.card-chart-red .card-header {
+    background: transparent !important;
+    border-bottom: none !important;
+    color: #ef4444 !important;
+    padding-top: 15px !important;
+    padding-bottom: 2px !important;
   }
 </style>
 <style>
@@ -651,8 +693,55 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10985] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลชานุมาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10985}}</span>
-                <div id="btn-10985-ipd"></div>
               </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-blue">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 จำนวน AN</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="an_chart_10985"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-green">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 อัตราครองเตียง (%)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="bed_occupancy_10985"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-orange">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 AdjRW</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="adjrw_chart_10985"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-red">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 CMI</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="cmi_chart_10985"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10985-ipd"></div>
             </div>
             <div class="table-responsive">
               <table id="table10985_ipd" class="table custom-table my-3" width ="100%">
@@ -720,10 +809,6 @@
                   </tr>   
                 </tbody>
               </table>
-              <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10985"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10985"></div></div></div></div>
-              </div>
             </div>
           </div>
           <br>
@@ -736,8 +821,55 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10986] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลปทุมราชวงศา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10986}}</span>
-                <div id="btn-10986-ipd"></div>
               </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-blue">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 จำนวน AN</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="an_chart_10986"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-green">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 อัตราครองเตียง (%)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="bed_occupancy_10986"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-orange">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 AdjRW</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="adjrw_chart_10986"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-red">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 CMI</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="cmi_chart_10986"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10986-ipd"></div>
             </div>
             <div class="table-responsive">
               <table id="table10986_ipd" class="table custom-table my-3" width ="100%">
@@ -800,10 +932,6 @@
                   </tr>   
                 </tbody>
               </table>
-              <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10986"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10986"></div></div></div></div>
-              </div>
             </div>
           </div>
           <br>
@@ -817,8 +945,55 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10987] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลพนา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10987}}</span>
-                <div id="btn-10987-ipd"></div>
               </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-blue">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 จำนวน AN</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="an_chart_10987"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-green">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 อัตราครองเตียง (%)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="bed_occupancy_10987"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-orange">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 AdjRW</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="adjrw_chart_10987"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-red">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 CMI</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="cmi_chart_10987"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10987-ipd"></div>
             </div>
             <div class="table-responsive">
               <table id="table10987_ipd" class="table custom-table my-3" width ="100%">
@@ -881,10 +1056,6 @@
                   </tr>   
                 </tbody>
               </table>
-              <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10987"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10987"></div></div></div></div>
-              </div>
             </div>
           </div>
           <br>
@@ -898,8 +1069,55 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10988] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลเสนางคนิคม</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10988}}</span>
-                <div id="btn-10988-ipd"></div>
               </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-blue">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 จำนวน AN</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="an_chart_10988"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-green">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 อัตราครองเตียง (%)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="bed_occupancy_10988"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-orange">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 AdjRW</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="adjrw_chart_10988"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-red">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 CMI</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="cmi_chart_10988"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10988-ipd"></div>
             </div>
             <div class="table-responsive">
               <table id="table10988_ipd" class="table custom-table my-3" width ="100%">
@@ -962,10 +1180,6 @@
                   </tr>   
                 </tbody>
               </table>
-              <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10988"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10988"></div></div></div></div>
-              </div>
             </div>
           </div>
           <br>
@@ -979,8 +1193,55 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10989] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลหัวตะพาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10989}}</span>
-                <div id="btn-10989-ipd"></div>
               </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-blue">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 จำนวน AN</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="an_chart_10989"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-green">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 อัตราครองเตียง (%)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="bed_occupancy_10989"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-orange">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 AdjRW</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="adjrw_chart_10989"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-red">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 CMI</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="cmi_chart_10989"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10989-ipd"></div>
             </div>
             <div class="table-responsive">
               <table id="table10989_ipd" class="table custom-table my-3" width ="100%">
@@ -1043,10 +1304,6 @@
                   </tr>   
                 </tbody>
               </table>
-              <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10989"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10989"></div></div></div></div>
-              </div>
             </div>
           </div>
           <br>
@@ -1060,8 +1317,55 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10990] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลลืออำนาจ</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10990}}</span>
-                <div id="btn-10990-ipd"></div>
               </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-blue">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 จำนวน AN</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="an_chart_10990"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-green">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 อัตราครองเตียง (%)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="bed_occupancy_10990"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-orange">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 AdjRW</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="adjrw_chart_10990"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-red">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 CMI</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="cmi_chart_10990"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10990-ipd"></div>
             </div>
             <div class="table-responsive">
               <table id="table10990_ipd" class="table custom-table my-3" width ="100%">
@@ -1124,10 +1428,6 @@
                   </tr>   
                 </tbody>
               </table>
-              <div class="row mt-4">
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6><div id="bed_occupancy_10990"></div></div></div></div>
-                <div class="col-md-6 mb-4"><div class="card shadow-sm border-0 rounded-4"><div class="card-body"><h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6><div id="cmi_chart_10990"></div></div></div></div>
-              </div>
             </div>
           </div>
           <br>
@@ -1141,8 +1441,55 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10703] ข้อมูลบริการผู้ป่วยใน IPD โรงพยาบาลอำนาจเจริญ</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10703}}</span>
-                <div id="btn-10703-ipd"></div>
               </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-blue">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 จำนวน AN</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="an_chart_10703"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-green">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📈 อัตราครองเตียง (%)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="bed_occupancy_10703"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-orange">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 AdjRW</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="adjrw_chart_10703"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-chart-red">
+                  <div class="card-header py-2">
+                    <h6 class="text-center fw-bold mb-0">📊 CMI</h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="cmi_chart_10703"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10703-ipd"></div>
             </div>
             <div class="table-responsive">
               <table id="table10703_ipd" class="table custom-table my-3" width ="100%">
@@ -1205,24 +1552,6 @@
                   </tr>   
                 </tbody>
               </table>
-              <div class="row mt-4">
-                <div class="col-md-6 mb-4">
-                  <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body">
-                      <h6 class="text-center text-primary fw-bold mb-3">📈 อัตราครองเตียง (%)</h6>
-                      <div id="bed_occupancy_10703"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6 mb-4">
-                  <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body">
-                      <h6 class="text-center text-danger fw-bold mb-3">📊 CMI</h6>
-                      <div id="cmi_chart_10703"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           <br>   
@@ -1257,9 +1586,94 @@
     document.addEventListener("DOMContentLoaded", () => {
       // ✅ ดึงข้อมูลจาก PHP
       const months = {!! json_encode($ipd_10985->pluck('month')) !!};
+      const an_total = {!! json_encode($ipd_10985->pluck('an_total')) !!};
+      const adjrw = {!! json_encode($ipd_10985->pluck('adjrw')) !!};
       const bed_occupancy = {!! json_encode($ipd_10985->pluck('bed_occupancy')) !!};
       const cmi = {!! json_encode($ipd_10985->pluck('cmi')) !!};
-      // 🩵 กราฟอัตราครองเตียง
+
+      // 💙 กราฟจำนวน AN
+      const anChart = new ApexCharts(document.querySelector("#an_chart_10985"), {
+        series: [{
+          name: 'จำนวน AN',
+          data: an_total
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#2563eb'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? Math.round(val).toLocaleString('th-TH') : '',
+          style: { fontSize: '11px', colors: ['#2563eb'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'ราย' },
+          labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+        }
+      });
+      anChart.render();
+
+      // 🧡 กราฟ AdjRW
+      const adjrwChart = new ApexCharts(document.querySelector("#adjrw_chart_10985"), {
+        series: [{
+          name: 'AdjRW',
+          data: adjrw
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#d97706'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#d97706'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'AdjRW' },
+          labels: { formatter: val => parseFloat(val).toFixed(2) }
+        }
+      });
+      adjrwChart.render();
+
+      // 💚 กราฟอัตราครองเตียง
       const bedChart = new ApexCharts(document.querySelector("#bed_occupancy_10985"), {
         series: [{
           name: 'อัตราครองเตียง (%)',
@@ -1271,7 +1685,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#4154f1'],
+        colors: ['#10b981'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1285,7 +1699,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#4154f1'] },
+          formatter: val => val ? parseFloat(val).toFixed(1) + '%' : '',
+          style: { fontSize: '11px', colors: ['#10b981'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1299,11 +1714,10 @@
       });
       bedChart.render();
 
-
       // ❤️ กราฟ CMI
       const cmiChart = new ApexCharts(document.querySelector("#cmi_chart_10985"), {
         series: [{
-          name: 'อัตราครองเตียง (%)',
+          name: 'CMI',
           data: cmi
         }],
         chart: {
@@ -1312,7 +1726,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#ff6384'],
+        colors: ['#ef4444'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1326,7 +1740,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#ff6384'] },
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#ef4444'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1334,8 +1749,8 @@
           labels: { style: { fontSize: '13px' } }
         },
         yaxis: {
-          title: { text: 'ร้อยละ (%)' },
-          labels: { formatter: val => val.toFixed(1) }
+          title: { text: 'ค่า CMI' },
+          labels: { formatter: val => val.toFixed(2) }
         }
       });
       cmiChart.render();
@@ -1346,9 +1761,94 @@
     document.addEventListener("DOMContentLoaded", () => {
       // ✅ ดึงข้อมูลจาก PHP
       const months = {!! json_encode($ipd_10986->pluck('month')) !!};
+      const an_total = {!! json_encode($ipd_10986->pluck('an_total')) !!};
+      const adjrw = {!! json_encode($ipd_10986->pluck('adjrw')) !!};
       const bed_occupancy = {!! json_encode($ipd_10986->pluck('bed_occupancy')) !!};
       const cmi = {!! json_encode($ipd_10986->pluck('cmi')) !!};
-      // 🩵 กราฟอัตราครองเตียง
+
+      // 💙 กราฟจำนวน AN
+      const anChart = new ApexCharts(document.querySelector("#an_chart_10986"), {
+        series: [{
+          name: 'จำนวน AN',
+          data: an_total
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#2563eb'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? Math.round(val).toLocaleString('th-TH') : '',
+          style: { fontSize: '11px', colors: ['#2563eb'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'ราย' },
+          labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+        }
+      });
+      anChart.render();
+
+      // 🧡 กราฟ AdjRW
+      const adjrwChart = new ApexCharts(document.querySelector("#adjrw_chart_10986"), {
+        series: [{
+          name: 'AdjRW',
+          data: adjrw
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#d97706'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#d97706'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'AdjRW' },
+          labels: { formatter: val => parseFloat(val).toFixed(2) }
+        }
+      });
+      adjrwChart.render();
+
+      // 💚 กราฟอัตราครองเตียง
       const bedChart = new ApexCharts(document.querySelector("#bed_occupancy_10986"), {
         series: [{
           name: 'อัตราครองเตียง (%)',
@@ -1360,7 +1860,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#4154f1'],
+        colors: ['#10b981'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1374,7 +1874,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#4154f1'] },
+          formatter: val => val ? parseFloat(val).toFixed(1) + '%' : '',
+          style: { fontSize: '11px', colors: ['#10b981'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1388,11 +1889,10 @@
       });
       bedChart.render();
 
-
       // ❤️ กราฟ CMI
       const cmiChart = new ApexCharts(document.querySelector("#cmi_chart_10986"), {
         series: [{
-          name: 'อัตราครองเตียง (%)',
+          name: 'CMI',
           data: cmi
         }],
         chart: {
@@ -1401,7 +1901,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#ff6384'],
+        colors: ['#ef4444'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1415,7 +1915,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#ff6384'] },
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#ef4444'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1423,8 +1924,8 @@
           labels: { style: { fontSize: '13px' } }
         },
         yaxis: {
-          title: { text: 'ร้อยละ (%)' },
-          labels: { formatter: val => val.toFixed(1) }
+          title: { text: 'ค่า CMI' },
+          labels: { formatter: val => val.toFixed(2) }
         }
       });
       cmiChart.render();
@@ -1435,9 +1936,94 @@
     document.addEventListener("DOMContentLoaded", () => {
       // ✅ ดึงข้อมูลจาก PHP
       const months = {!! json_encode($ipd_10987->pluck('month')) !!};
+      const an_total = {!! json_encode($ipd_10987->pluck('an_total')) !!};
+      const adjrw = {!! json_encode($ipd_10987->pluck('adjrw')) !!};
       const bed_occupancy = {!! json_encode($ipd_10987->pluck('bed_occupancy')) !!};
       const cmi = {!! json_encode($ipd_10987->pluck('cmi')) !!};
-      // 🩵 กราฟอัตราครองเตียง
+
+      // 💙 กราฟจำนวน AN
+      const anChart = new ApexCharts(document.querySelector("#an_chart_10987"), {
+        series: [{
+          name: 'จำนวน AN',
+          data: an_total
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#2563eb'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? Math.round(val).toLocaleString('th-TH') : '',
+          style: { fontSize: '11px', colors: ['#2563eb'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'ราย' },
+          labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+        }
+      });
+      anChart.render();
+
+      // 🧡 กราฟ AdjRW
+      const adjrwChart = new ApexCharts(document.querySelector("#adjrw_chart_10987"), {
+        series: [{
+          name: 'AdjRW',
+          data: adjrw
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#d97706'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#d97706'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'AdjRW' },
+          labels: { formatter: val => parseFloat(val).toFixed(2) }
+        }
+      });
+      adjrwChart.render();
+
+      // 💚 กราฟอัตราครองเตียง
       const bedChart = new ApexCharts(document.querySelector("#bed_occupancy_10987"), {
         series: [{
           name: 'อัตราครองเตียง (%)',
@@ -1449,7 +2035,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#4154f1'],
+        colors: ['#10b981'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1463,7 +2049,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#4154f1'] },
+          formatter: val => val ? parseFloat(val).toFixed(1) + '%' : '',
+          style: { fontSize: '11px', colors: ['#10b981'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1477,11 +2064,10 @@
       });
       bedChart.render();
 
-
       // ❤️ กราฟ CMI
       const cmiChart = new ApexCharts(document.querySelector("#cmi_chart_10987"), {
         series: [{
-          name: 'อัตราครองเตียง (%)',
+          name: 'CMI',
           data: cmi
         }],
         chart: {
@@ -1490,7 +2076,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#ff6384'],
+        colors: ['#ef4444'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1504,7 +2090,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#ff6384'] },
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#ef4444'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1512,8 +2099,8 @@
           labels: { style: { fontSize: '13px' } }
         },
         yaxis: {
-          title: { text: 'ร้อยละ (%)' },
-          labels: { formatter: val => val.toFixed(1) }
+          title: { text: 'ค่า CMI' },
+          labels: { formatter: val => val.toFixed(2) }
         }
       });
       cmiChart.render();
@@ -1524,9 +2111,94 @@
     document.addEventListener("DOMContentLoaded", () => {
       // ✅ ดึงข้อมูลจาก PHP
       const months = {!! json_encode($ipd_10988->pluck('month')) !!};
+      const an_total = {!! json_encode($ipd_10988->pluck('an_total')) !!};
+      const adjrw = {!! json_encode($ipd_10988->pluck('adjrw')) !!};
       const bed_occupancy = {!! json_encode($ipd_10988->pluck('bed_occupancy')) !!};
       const cmi = {!! json_encode($ipd_10988->pluck('cmi')) !!};
-      // 🩵 กราฟอัตราครองเตียง
+
+      // 💙 กราฟจำนวน AN
+      const anChart = new ApexCharts(document.querySelector("#an_chart_10988"), {
+        series: [{
+          name: 'จำนวน AN',
+          data: an_total
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#2563eb'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? Math.round(val).toLocaleString('th-TH') : '',
+          style: { fontSize: '11px', colors: ['#2563eb'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'ราย' },
+          labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+        }
+      });
+      anChart.render();
+
+      // 🧡 กราฟ AdjRW
+      const adjrwChart = new ApexCharts(document.querySelector("#adjrw_chart_10988"), {
+        series: [{
+          name: 'AdjRW',
+          data: adjrw
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#d97706'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#d97706'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'AdjRW' },
+          labels: { formatter: val => parseFloat(val).toFixed(2) }
+        }
+      });
+      adjrwChart.render();
+
+      // 💚 กราฟอัตราครองเตียง
       const bedChart = new ApexCharts(document.querySelector("#bed_occupancy_10988"), {
         series: [{
           name: 'อัตราครองเตียง (%)',
@@ -1538,7 +2210,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#4154f1'],
+        colors: ['#10b981'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1552,7 +2224,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#4154f1'] },
+          formatter: val => val ? parseFloat(val).toFixed(1) + '%' : '',
+          style: { fontSize: '11px', colors: ['#10b981'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1566,11 +2239,10 @@
       });
       bedChart.render();
 
-
       // ❤️ กราฟ CMI
       const cmiChart = new ApexCharts(document.querySelector("#cmi_chart_10988"), {
         series: [{
-          name: 'อัตราครองเตียง (%)',
+          name: 'CMI',
           data: cmi
         }],
         chart: {
@@ -1579,7 +2251,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#ff6384'],
+        colors: ['#ef4444'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1593,7 +2265,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#ff6384'] },
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#ef4444'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1601,8 +2274,8 @@
           labels: { style: { fontSize: '13px' } }
         },
         yaxis: {
-          title: { text: 'ร้อยละ (%)' },
-          labels: { formatter: val => val.toFixed(1) }
+          title: { text: 'ค่า CMI' },
+          labels: { formatter: val => val.toFixed(2) }
         }
       });
       cmiChart.render();
@@ -1613,9 +2286,94 @@
     document.addEventListener("DOMContentLoaded", () => {
       // ✅ ดึงข้อมูลจาก PHP
       const months = {!! json_encode($ipd_10989->pluck('month')) !!};
+      const an_total = {!! json_encode($ipd_10989->pluck('an_total')) !!};
+      const adjrw = {!! json_encode($ipd_10989->pluck('adjrw')) !!};
       const bed_occupancy = {!! json_encode($ipd_10989->pluck('bed_occupancy')) !!};
       const cmi = {!! json_encode($ipd_10989->pluck('cmi')) !!};
-      // 🩵 กราฟอัตราครองเตียง
+
+      // 💙 กราฟจำนวน AN
+      const anChart = new ApexCharts(document.querySelector("#an_chart_10989"), {
+        series: [{
+          name: 'จำนวน AN',
+          data: an_total
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#2563eb'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? Math.round(val).toLocaleString('th-TH') : '',
+          style: { fontSize: '11px', colors: ['#2563eb'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'ราย' },
+          labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+        }
+      });
+      anChart.render();
+
+      // 🧡 กราฟ AdjRW
+      const adjrwChart = new ApexCharts(document.querySelector("#adjrw_chart_10989"), {
+        series: [{
+          name: 'AdjRW',
+          data: adjrw
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#d97706'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#d97706'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'AdjRW' },
+          labels: { formatter: val => parseFloat(val).toFixed(2) }
+        }
+      });
+      adjrwChart.render();
+
+      // 💚 กราฟอัตราครองเตียง
       const bedChart = new ApexCharts(document.querySelector("#bed_occupancy_10989"), {
         series: [{
           name: 'อัตราครองเตียง (%)',
@@ -1627,7 +2385,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#4154f1'],
+        colors: ['#10b981'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1641,7 +2399,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#4154f1'] },
+          formatter: val => val ? parseFloat(val).toFixed(1) + '%' : '',
+          style: { fontSize: '11px', colors: ['#10b981'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1655,11 +2414,10 @@
       });
       bedChart.render();
 
-
       // ❤️ กราฟ CMI
       const cmiChart = new ApexCharts(document.querySelector("#cmi_chart_10989"), {
         series: [{
-          name: 'อัตราครองเตียง (%)',
+          name: 'CMI',
           data: cmi
         }],
         chart: {
@@ -1668,7 +2426,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#ff6384'],
+        colors: ['#ef4444'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1682,7 +2440,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#ff6384'] },
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#ef4444'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1690,8 +2449,8 @@
           labels: { style: { fontSize: '13px' } }
         },
         yaxis: {
-          title: { text: 'ร้อยละ (%)' },
-          labels: { formatter: val => val.toFixed(1) }
+          title: { text: 'ค่า CMI' },
+          labels: { formatter: val => val.toFixed(2) }
         }
       });
       cmiChart.render();
@@ -1702,9 +2461,94 @@
     document.addEventListener("DOMContentLoaded", () => {
       // ✅ ดึงข้อมูลจาก PHP
       const months = {!! json_encode($ipd_10990->pluck('month')) !!};
+      const an_total = {!! json_encode($ipd_10990->pluck('an_total')) !!};
+      const adjrw = {!! json_encode($ipd_10990->pluck('adjrw')) !!};
       const bed_occupancy = {!! json_encode($ipd_10990->pluck('bed_occupancy')) !!};
       const cmi = {!! json_encode($ipd_10990->pluck('cmi')) !!};
-      // 🩵 กราฟอัตราครองเตียง
+
+      // 💙 กราฟจำนวน AN
+      const anChart = new ApexCharts(document.querySelector("#an_chart_10990"), {
+        series: [{
+          name: 'จำนวน AN',
+          data: an_total
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#2563eb'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? Math.round(val).toLocaleString('th-TH') : '',
+          style: { fontSize: '11px', colors: ['#2563eb'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'ราย' },
+          labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+        }
+      });
+      anChart.render();
+
+      // 🧡 กราฟ AdjRW
+      const adjrwChart = new ApexCharts(document.querySelector("#adjrw_chart_10990"), {
+        series: [{
+          name: 'AdjRW',
+          data: adjrw
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#d97706'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#d97706'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'AdjRW' },
+          labels: { formatter: val => parseFloat(val).toFixed(2) }
+        }
+      });
+      adjrwChart.render();
+
+      // 💚 กราฟอัตราครองเตียง
       const bedChart = new ApexCharts(document.querySelector("#bed_occupancy_10990"), {
         series: [{
           name: 'อัตราครองเตียง (%)',
@@ -1716,7 +2560,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#4154f1'],
+        colors: ['#10b981'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1730,7 +2574,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#4154f1'] },
+          formatter: val => val ? parseFloat(val).toFixed(1) + '%' : '',
+          style: { fontSize: '11px', colors: ['#10b981'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1744,11 +2589,10 @@
       });
       bedChart.render();
 
-
       // ❤️ กราฟ CMI
       const cmiChart = new ApexCharts(document.querySelector("#cmi_chart_10990"), {
         series: [{
-          name: 'อัตราครองเตียง (%)',
+          name: 'CMI',
           data: cmi
         }],
         chart: {
@@ -1757,7 +2601,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#ff6384'],
+        colors: ['#ef4444'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1771,7 +2615,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#ff6384'] },
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#ef4444'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1779,8 +2624,8 @@
           labels: { style: { fontSize: '13px' } }
         },
         yaxis: {
-          title: { text: 'ร้อยละ (%)' },
-          labels: { formatter: val => val.toFixed(1) }
+          title: { text: 'ค่า CMI' },
+          labels: { formatter: val => val.toFixed(2) }
         }
       });
       cmiChart.render();
@@ -1791,9 +2636,94 @@
     document.addEventListener("DOMContentLoaded", () => {
       // ✅ ดึงข้อมูลจาก PHP
       const months = {!! json_encode($ipd_10703->pluck('month')) !!};
+      const an_total = {!! json_encode($ipd_10703->pluck('an_total')) !!};
+      const adjrw = {!! json_encode($ipd_10703->pluck('adjrw')) !!};
       const bed_occupancy = {!! json_encode($ipd_10703->pluck('bed_occupancy')) !!};
       const cmi = {!! json_encode($ipd_10703->pluck('cmi')) !!};
-      // 🩵 กราฟอัตราครองเตียง
+
+      // 💙 กราฟจำนวน AN
+      const anChart = new ApexCharts(document.querySelector("#an_chart_10703"), {
+        series: [{
+          name: 'จำนวน AN',
+          data: an_total
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#2563eb'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? Math.round(val).toLocaleString('th-TH') : '',
+          style: { fontSize: '11px', colors: ['#2563eb'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'ราย' },
+          labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+        }
+      });
+      anChart.render();
+
+      // 🧡 กราฟ AdjRW
+      const adjrwChart = new ApexCharts(document.querySelector("#adjrw_chart_10703"), {
+        series: [{
+          name: 'AdjRW',
+          data: adjrw
+        }],
+        chart: {
+          height: 250,
+          type: 'area',
+          toolbar: { show: false },
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+        },
+        colors: ['#d97706'],
+        markers: { size: 4 },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.4,
+            stops: [0, 90, 100]
+          }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {
+          enabled: true,
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#d97706'] },
+          background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
+        },
+        xaxis: {
+          categories: months,
+          labels: { style: { fontSize: '13px' } }
+        },
+        yaxis: {
+          title: { text: 'AdjRW' },
+          labels: { formatter: val => parseFloat(val).toFixed(2) }
+        }
+      });
+      adjrwChart.render();
+
+      // 💚 กราฟอัตราครองเตียง
       const bedChart = new ApexCharts(document.querySelector("#bed_occupancy_10703"), {
         series: [{
           name: 'อัตราครองเตียง (%)',
@@ -1805,7 +2735,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#4154f1'],
+        colors: ['#10b981'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1819,7 +2749,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#4154f1'] },
+          formatter: val => val ? parseFloat(val).toFixed(1) + '%' : '',
+          style: { fontSize: '11px', colors: ['#10b981'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1833,11 +2764,10 @@
       });
       bedChart.render();
 
-
       // ❤️ กราฟ CMI
       const cmiChart = new ApexCharts(document.querySelector("#cmi_chart_10703"), {
         series: [{
-          name: 'อัตราครองเตียง (%)',
+          name: 'CMI',
           data: cmi
         }],
         chart: {
@@ -1846,7 +2776,7 @@
           toolbar: { show: false },
           animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
-        colors: ['#ff6384'],
+        colors: ['#ef4444'],
         markers: { size: 4 },
         fill: {
           type: "gradient",
@@ -1860,7 +2790,8 @@
         stroke: { curve: 'smooth', width: 2 },
         dataLabels: {
           enabled: true,
-          style: { fontSize: '12px', colors: ['#ff6384'] },
+          formatter: val => val ? parseFloat(val).toFixed(2) : '',
+          style: { fontSize: '11px', colors: ['#ef4444'] },
           background: { enabled: true, foreColor: '#fff', borderRadius: 2 }
         },
         xaxis: {
@@ -1868,8 +2799,8 @@
           labels: { style: { fontSize: '13px' } }
         },
         yaxis: {
-          title: { text: 'ร้อยละ (%)' },
-          labels: { formatter: val => val.toFixed(1) }
+          title: { text: 'ค่า CMI' },
+          labels: { formatter: val => val.toFixed(2) }
         }
       });
       cmiChart.render();

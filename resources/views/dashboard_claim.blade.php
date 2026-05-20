@@ -651,7 +651,6 @@
               <h6 class="fw-bold m-0 text-truncate text-10985"><i class="fa-solid fa-hospital-user text-10985 me-2"></i>[10985] ข้อมูลจัดเก็บรายได้ โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
                 <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10985}}</span>
-                <div id="btn-10985" class="btn-container-contents"></div>
               </div>
             </div>
             
@@ -677,6 +676,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10985"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10985" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -759,7 +761,6 @@
               <h6 class="fw-bold m-0 text-truncate text-10986"><i class="fa-solid fa-hospital-user text-10986 me-2"></i>[10986] ข้อมูลจัดเก็บรายได้ โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
                 <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10986}}</span>
-                <div id="btn-10986" class="btn-container-contents"></div>
               </div>
             </div>
 
@@ -785,6 +786,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10986"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10986" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -867,7 +871,6 @@
               <h6 class="fw-bold m-0 text-truncate text-10987"><i class="fa-solid fa-hospital-user text-10987 me-2"></i>[10987] ข้อมูลจัดเก็บรายได้ โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
                 <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10987}}</span>
-                <div id="btn-10987" class="btn-container-contents"></div>
               </div>
             </div>
 
@@ -893,6 +896,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10987"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10987" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -973,7 +979,6 @@
               <h6 class="fw-bold m-0 text-truncate text-10988"><i class="fa-solid fa-hospital-user text-10988 me-2"></i>[10988] ข้อมูลจัดเก็บรายได้ โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
                 <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10988}}</span>
-                <div id="btn-10988" class="btn-container-contents"></div>
               </div>
             </div>
 
@@ -999,6 +1004,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10988"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10988" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -1081,7 +1089,6 @@
               <h6 class="fw-bold m-0 text-truncate text-10989"><i class="fa-solid fa-hospital-user text-10989 me-2"></i>[10989] ข้อมูลจัดเก็บรายได้ โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
                 <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10989}}</span>
-                <div id="btn-10989" class="btn-container-contents"></div>
               </div>
             </div>
 
@@ -1107,6 +1114,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10989"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10989" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -1189,7 +1199,6 @@
               <h6 class="fw-bold m-0 text-truncate text-10990"><i class="fa-solid fa-hospital-user text-10990 me-2"></i>[10990] ข้อมูลจัดเก็บรายได้ โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
                 <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10990}}</span>
-                <div id="btn-10990" class="btn-container-contents"></div>
               </div>
             </div>
 
@@ -1215,6 +1224,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10990"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10990" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -1297,7 +1309,6 @@
               <h6 class="fw-bold m-0 text-truncate text-10703"><i class="fa-solid fa-hospital-user text-10703 me-2"></i>[10703] ข้อมูลจัดเก็บรายได้ โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
                 <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10703}}</span>
-                <div id="btn-10703" class="btn-container-contents"></div>
               </div>
             </div>
 
@@ -1323,6 +1334,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10703"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10703" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>

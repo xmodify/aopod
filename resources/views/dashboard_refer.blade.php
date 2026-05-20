@@ -596,7 +596,6 @@
               <h6 class="fw-bold m-0 text-10985"><i class="fa-solid fa-truck-arrow-right text-10985 me-2"></i>[10985] ข้อมูลการส่งต่อ Refer โรงพยาบาลชานุมาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10985}}</span>
-                <div id="btn-10985-refer"></div>
               </div>
             </div>
 
@@ -622,6 +621,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10985-refer"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10985_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -664,7 +666,6 @@
               <h6 class="fw-bold m-0 text-10986"><i class="fa-solid fa-truck-arrow-right text-10986 me-2"></i>[10986] ข้อมูลการส่งต่อ Refer โรงพยาบาลปทุมราชวงศา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10986}}</span>
-                <div id="btn-10986-refer"></div>
               </div>
             </div>
 
@@ -690,6 +691,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10986-refer"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10986_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -732,7 +736,6 @@
               <h6 class="fw-bold m-0 text-10987"><i class="fa-solid fa-truck-arrow-right text-10987 me-2"></i>[10987] ข้อมูลการส่งต่อ Refer โรงพยาบาลพนา</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10987}}</span>
-                <div id="btn-10987-refer"></div>
               </div>
             </div>
 
@@ -758,6 +761,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10987-refer"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10987_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -800,7 +806,6 @@
               <h6 class="fw-bold m-0 text-10988"><i class="fa-solid fa-truck-arrow-right text-10988 me-2"></i>[10988] ข้อมูลการส่งต่อ Refer โรงพยาบาลเสนางคนิคม</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10988}}</span>
-                <div id="btn-10988-refer"></div>
               </div>
             </div>
 
@@ -826,6 +831,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10988-refer"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10988_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -868,7 +876,6 @@
               <h6 class="fw-bold m-0 text-10989"><i class="fa-solid fa-truck-arrow-right text-10989 me-2"></i>[10989] ข้อมูลการส่งต่อ Refer โรงพยาบาลหัวตะพาน</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10989}}</span>
-                <div id="btn-10989-refer"></div>
               </div>
             </div>
 
@@ -894,6 +901,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10989-refer"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10989_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -936,7 +946,6 @@
               <h6 class="fw-bold m-0 text-10990"><i class="fa-solid fa-truck-arrow-right text-10990 me-2"></i>[10990] ข้อมูลการส่งต่อ Refer โรงพยาบาลลืออำนาจ</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10990}}</span>
-                <div id="btn-10990-refer"></div>
               </div>
             </div>
 
@@ -962,6 +971,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10990-refer"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10990_refer" class="table custom-table my-3" width="100%">
                 <thead>
@@ -1004,7 +1016,6 @@
               <h6 class="fw-bold m-0 text-10703"><i class="fa-solid fa-truck-arrow-right text-10703 me-2"></i>[10703] ข้อมูลการส่งต่อ Refer โรงพยาบาลอำนาจเจริญ</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small bg-white px-2 py-1 rounded-pill border">Update {{$update_at10703}}</span>
-                <div id="btn-10703-refer"></div>
               </div>
             </div>
 
@@ -1030,6 +1041,9 @@
               </div>
             </div>
 
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10703-refer"></div>
+            </div>
             <div class="table-responsive">
               <table id="table10703_refer" class="table custom-table my-3" width="100%">
                 <thead>
