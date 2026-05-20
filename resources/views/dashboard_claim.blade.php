@@ -109,6 +109,92 @@
     background: linear-gradient(135deg, #fff3e0 0%, #ffffff 100%);
     border-left: 6px solid #f57c00 !important;
   }
+
+  /* === Modern Premium Tab Pills Style === */
+  .nav-pills .nav-link {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 10px 18px !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    transition: all 0.25s ease-in-out !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .nav-pills .nav-link:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+  }
+
+  /* Hospital Brand Colors & Tab Actives */
+  /* 10985 Chanuman (Purple) */
+  .text-10985 { color: #8b5cf6 !important; }
+  #tab-10985.active {
+    background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%) !important;
+    border-left: 5px solid #8b5cf6 !important;
+    color: #7c3aed !important;
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.12) !important;
+  }
+  
+  /* 10986 Pathum (Teal) */
+  .text-10986 { color: #06b6d4 !important; }
+  #tab-10986.active {
+    background: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%) !important;
+    border-left: 5px solid #06b6d4 !important;
+    color: #0891b2 !important;
+    box-shadow: 0 6px 15px rgba(6, 182, 212, 0.12) !important;
+  }
+
+  /* 10987 Phana (Pink) */
+  .text-10987 { color: #ec4899 !important; }
+  #tab-10987.active {
+    background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 100%) !important;
+    border-left: 5px solid #ec4899 !important;
+    color: #db2777 !important;
+    box-shadow: 0 6px 15px rgba(236, 72, 153, 0.12) !important;
+  }
+
+  /* 10988 Senang (Amber) */
+  .text-10988 { color: #f59e0b !important; }
+  #tab-10988.active {
+    background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%) !important;
+    border-left: 5px solid #f59e0b !important;
+    color: #d97706 !important;
+    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.12) !important;
+  }
+
+  /* 10989 Hua Taphan (Blue) */
+  .text-10989 { color: #3b82f6 !important; }
+  #tab-10989.active {
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%) !important;
+    border-left: 5px solid #3b82f6 !important;
+    color: #2563eb !important;
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.12) !important;
+  }
+
+  /* 10990 Lue Amnat (Emerald) */
+  .text-10990 { color: #10b981 !important; }
+  #tab-10990.active {
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%) !important;
+    border-left: 5px solid #10b981 !important;
+    color: #059669 !important;
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.12) !important;
+  }
+
+  /* 10703 Amnat Charoen (Rose) */
+  .text-10703 { color: #f43f5e !important; }
+  #tab-10703.active {
+    background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%) !important;
+    border-left: 5px solid #f43f5e !important;
+    color: #e11d48 !important;
+    box-shadow: 0 6px 15px rgba(244, 63, 94, 0.12) !important;
+  }
 </style>
 
 @section('title', 'Dashboard | AOPOD')
@@ -541,13 +627,36 @@
         <!-- 10985 -->
         <div class="tab-pane fade show active" id="pane-10985" role="tabpanel" aria-labelledby="tab-10985" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
-              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10985] ข้อมูลจัดเก็บรายได้ โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate text-10985"><i class="fa-solid fa-hospital-user text-10985 me-2"></i>[10985] ข้อมูลจัดเก็บรายได้ โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
-                <span class="text-secondary small">Update {{$update_at10985}}</span>
+                <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10985}}</span>
                 <div id="btn-10985" class="btn-container-contents"></div>
               </div>
             </div>
+            
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #8b5cf6 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10985"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                  <div id="chart_10985_ppfs" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #8b5cf6 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10985"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                  <div id="chart_10985_cr" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #8b5cf6 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10985"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                  <div id="chart_10985_herb" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10985" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -626,13 +735,36 @@
         <!-- 10986 -->
         <div class="tab-pane fade" id="pane-10986" role="tabpanel" aria-labelledby="tab-10986" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
-              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10986] ข้อมูลจัดเก็บรายได้ โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate text-10986"><i class="fa-solid fa-hospital-user text-10986 me-2"></i>[10986] ข้อมูลจัดเก็บรายได้ โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
-                <span class="text-secondary small">Update {{$update_at10986}}</span>
+                <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10986}}</span>
                 <div id="btn-10986" class="btn-container-contents"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #06b6d4 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10986"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                  <div id="chart_10986_ppfs" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #06b6d4 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10986"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                  <div id="chart_10986_cr" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #06b6d4 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10986"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                  <div id="chart_10986_herb" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10986" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -711,13 +843,36 @@
         <!-- 10987 -->
         <div class="tab-pane fade" id="pane-10987" role="tabpanel" aria-labelledby="tab-10987" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
-              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10987] ข้อมูลจัดเก็บรายได้ โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate text-10987"><i class="fa-solid fa-hospital-user text-10987 me-2"></i>[10987] ข้อมูลจัดเก็บรายได้ โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
-                <span class="text-secondary small">Update {{$update_at10987}}</span>
+                <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10987}}</span>
                 <div id="btn-10987" class="btn-container-contents"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #ec4899 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10987"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                  <div id="chart_10987_ppfs" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #ec4899 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10987"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                  <div id="chart_10987_cr" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #ec4899 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10987"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                  <div id="chart_10987_herb" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10987" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -794,13 +949,36 @@
         <!-- 10988 -->
         <div class="tab-pane fade" id="pane-10988" role="tabpanel" aria-labelledby="tab-10988" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
-              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10988] ข้อมูลจัดเก็บรายได้ โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate text-10988"><i class="fa-solid fa-hospital-user text-10988 me-2"></i>[10988] ข้อมูลจัดเก็บรายได้ โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
-                <span class="text-secondary small">Update {{$update_at10988}}</span>
+                <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10988}}</span>
                 <div id="btn-10988" class="btn-container-contents"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f59e0b !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10988"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                  <div id="chart_10988_ppfs" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f59e0b !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10988"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                  <div id="chart_10988_cr" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f59e0b !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10988"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                  <div id="chart_10988_herb" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10988" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -879,13 +1057,36 @@
         <!-- 10989 -->
         <div class="tab-pane fade" id="pane-10989" role="tabpanel" aria-labelledby="tab-10989" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
-              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10989] ข้อมูลจัดเก็บรายได้ โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate text-10989"><i class="fa-solid fa-hospital-user text-10989 me-2"></i>[10989] ข้อมูลจัดเก็บรายได้ โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
-                <span class="text-secondary small">Update {{$update_at10989}}</span>
+                <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10989}}</span>
                 <div id="btn-10989" class="btn-container-contents"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #3b82f6 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10989"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                  <div id="chart_10989_ppfs" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #3b82f6 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10989"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                  <div id="chart_10989_cr" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #3b82f6 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10989"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                  <div id="chart_10989_herb" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10989" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -964,13 +1165,36 @@
         <!-- 10990 -->
         <div class="tab-pane fade" id="pane-10990" role="tabpanel" aria-labelledby="tab-10990" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
-              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10990] ข้อมูลจัดเก็บรายได้ โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate text-10990"><i class="fa-solid fa-hospital-user text-10990 me-2"></i>[10990] ข้อมูลจัดเก็บรายได้ โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
-                <span class="text-secondary small">Update {{$update_at10990}}</span>
+                <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10990}}</span>
                 <div id="btn-10990" class="btn-container-contents"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #10b981 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10990"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                  <div id="chart_10990_ppfs" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #10b981 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10990"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                  <div id="chart_10990_cr" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #10b981 !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10990"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                  <div id="chart_10990_herb" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10990" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -1049,13 +1273,36 @@
         <!-- 10703  -->
         <div class="tab-pane fade" id="pane-10703" role="tabpanel" aria-labelledby="tab-10703" tabindex="0">
           <div class="glass p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
-              <h6 class="fw-bold m-0 text-truncate"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10703] ข้อมูลจัดเก็บรายได้ โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-nowrap">
+              <h6 class="fw-bold m-0 text-truncate text-10703"><i class="fa-solid fa-hospital-user text-10703 me-2"></i>[10703] ข้อมูลจัดเก็บรายได้ โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-3">
-                <span class="text-secondary small">Update {{$update_at10703}}</span>
+                <span class="text-secondary small bg-white px-3 py-1 rounded-pill border border-light">Update {{$update_at10703}}</span>
                 <div id="btn-10703" class="btn-container-contents"></div>
               </div>
             </div>
+
+            <!-- 3 Charts Side-by-Side -->
+            <div class="row g-3 mb-4 mt-2">
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f43f5e !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10703"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                  <div id="chart_10703_ppfs" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f43f5e !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10703"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                  <div id="chart_10703_cr" style="min-height: 220px;"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f43f5e !important;">
+                  <h6 class="fw-bold text-center mb-2 small text-10703"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                  <div id="chart_10703_herb" style="min-height: 220px;"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="table10703" class="table custom-table table-hover align-middle my-3" width ="100%">
                 <thead>
@@ -1151,8 +1398,124 @@
 
 <!-- script datatable  ---------------------------------------------------------------------------------------->
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script>
     $(function () {
+      const claimData = {
+        '10985': @json($total_10985),
+        '10986': @json($total_10986),
+        '10987': @json($total_10987),
+        '10988': @json($total_10988),
+        '10989': @json($total_10989),
+        '10990': @json($total_10990),
+        '10703': @json($total_10703)
+      };
+
+      const hospColors = {
+        '10985': { primary: '#8b5cf6', secondary: '#10b981' }, // Purple, Green
+        '10986': { primary: '#06b6d4', secondary: '#10b981' }, // Teal, Green
+        '10987': { primary: '#ec4899', secondary: '#10b981' }, // Pink, Green
+        '10988': { primary: '#f59e0b', secondary: '#10b981' }, // Amber, Green
+        '10989': { primary: '#3b82f6', secondary: '#10b981' }, // Blue, Green
+        '10990': { primary: '#10b981', secondary: '#059669' }, // Emerald, Dark Green
+        '10703': { primary: '#f43f5e', secondary: '#10b981' }  // Rose, Green
+      };
+
+      function createClaimChart(containerId, months, claimedData, receivedData, themeColors) {
+        const options = {
+          series: [
+            {
+              name: 'เรียกเก็บ',
+              data: claimedData
+            },
+            {
+              name: 'ชดเชย',
+              data: receivedData
+            }
+          ],
+          chart: {
+            type: 'area',
+            height: 220,
+            toolbar: { show: false },
+            sparkline: { enabled: false },
+            fontFamily: 'Sarabun, sans-serif'
+          },
+          colors: [themeColors.primary, themeColors.secondary],
+          stroke: {
+            curve: 'smooth',
+            width: 2.5
+          },
+          markers: {
+            size: 4,
+            strokeWidth: 2,
+            hover: {
+              size: 6
+            }
+          },
+          fill: {
+            type: 'gradient',
+            gradient: {
+              shadeIntensity: 1,
+              opacityFrom: 0.3,
+              opacityTo: 0.02,
+              stops: [0, 90, 100]
+            }
+          },
+          dataLabels: { enabled: false },
+          xaxis: {
+            categories: months,
+            labels: {
+              style: {
+                colors: '#64748b',
+                fontSize: '11px'
+              }
+            },
+            axisBorder: { show: false },
+            axisTicks: { show: false }
+          },
+          yaxis: {
+            labels: {
+              formatter: function (value) {
+                return value.toLocaleString('th-TH', { maximumFractionDigits: 0 });
+              },
+              style: {
+                colors: '#64748b',
+                fontSize: '10px'
+              }
+            }
+          },
+          grid: {
+            borderColor: '#f1f5f9',
+            strokeDashArray: 4,
+            padding: {
+              left: 5,
+              right: 5,
+              bottom: 0
+            }
+          },
+          legend: {
+            show: true,
+            position: 'top',
+            horizontalAlign: 'center',
+            fontSize: '11px',
+            markers: {
+              radius: 12
+            }
+          },
+          tooltip: {
+            theme: 'light',
+            y: {
+              formatter: function (val) {
+                return val.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' บาท';
+              }
+            }
+          }
+        };
+
+        const chart = new ApexCharts(document.querySelector(`#${containerId}`), options);
+        chart.render();
+      }
+
       const hospitals = [
         { id: '10985', name: 'โรงพยาบาลชานุมาน' },
         { id: '10986', name: 'โรงพยาบาลปทุมราชวงศา' },
@@ -1190,6 +1553,28 @@
             this.api().buttons().container().detach().appendTo($(`#btn-${hosp.id}`));
           }
         });
+
+        // Initialize Charts
+        const data = claimData[hosp.id];
+        if (data && data.length > 0) {
+          const months = data.map(item => item.month);
+          const colors = hospColors[hosp.id] || { primary: '#3b82f6', secondary: '#10b981' };
+
+          // 1. PPFS Chart
+          const ppfsClaim = data.map(item => parseFloat(item.inc_ppfs_claim) || 0);
+          const ppfsReceive = data.map(item => parseFloat(item.inc_ppfs_receive) || 0);
+          createClaimChart(`chart_${hosp.id}_ppfs`, months, ppfsClaim, ppfsReceive, colors);
+
+          // 2. CR Chart
+          const crClaim = data.map(item => parseFloat(item.inc_uccr_claim) || 0);
+          const crReceive = data.map(item => parseFloat(item.inc_uccr_receive) || 0);
+          createClaimChart(`chart_${hosp.id}_cr`, months, crClaim, crReceive, colors);
+
+          // 3. Herb Chart
+          const herbClaim = data.map(item => parseFloat(item.inc_herb_claim) || 0);
+          const herbReceive = data.map(item => parseFloat(item.inc_herb_receive) || 0);
+          createClaimChart(`chart_${hosp.id}_herb`, months, herbClaim, herbReceive, colors);
+        }
       });
     });
   </script>
