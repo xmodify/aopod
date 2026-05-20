@@ -964,11 +964,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -976,12 +976,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -993,11 +993,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1005,12 +1005,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1025,11 +1025,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1037,12 +1037,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1054,11 +1054,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1066,12 +1066,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1340,11 +1340,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1352,12 +1352,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1369,11 +1369,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1381,12 +1381,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1401,11 +1401,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1413,12 +1413,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1430,11 +1430,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1442,12 +1442,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1716,11 +1716,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1728,12 +1728,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1745,11 +1745,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1757,12 +1757,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1777,11 +1777,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1789,12 +1789,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -1806,11 +1806,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -1818,12 +1818,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2092,11 +2092,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2104,12 +2104,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2121,11 +2121,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2133,12 +2133,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2153,11 +2153,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2165,12 +2165,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2182,11 +2182,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2194,12 +2194,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2468,11 +2468,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2480,12 +2480,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2497,11 +2497,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2509,12 +2509,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2529,11 +2529,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2541,12 +2541,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2558,11 +2558,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2570,12 +2570,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2844,11 +2844,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2856,12 +2856,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2873,11 +2873,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2885,12 +2885,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2905,11 +2905,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2917,12 +2917,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -2934,11 +2934,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -2946,12 +2946,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -3220,11 +3220,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -3232,12 +3232,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -3249,11 +3249,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -3261,12 +3261,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -3281,11 +3281,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -3293,12 +3293,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -3310,11 +3310,11 @@
                   <div class="row align-items-center">
                     <!-- Left Legend (5 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#2563eb; flex-shrink:0;"></span> UCS ใน CUP</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#3b82f6; flex-shrink:0;"></span> UCS ในจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#60a5fa; flex-shrink:0;"></span> UCS นอกจังหวัด</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#10b981; flex-shrink:0;"></span> OFC ข้าราชการ</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#a855f7; flex-shrink:0;"></span> BKK กทม.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                     <!-- Center Donut -->
                     <div class="col-md-6 text-center">
@@ -3322,12 +3322,12 @@
                     </div>
                     <!-- Right Legend (6 items) -->
                     <div class="col-md-3 d-flex flex-column gap-2 small py-2">
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span>
-                      <span class="d-flex align-items-center gap-1 fw-medium text-secondary"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#ec4899; flex-shrink:0;"></span> BMT ขสมก.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f59e0b; flex-shrink:0;"></span> SSS ประกันสังคม</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#f97316; flex-shrink:0;"></span> LGO อปท.</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#06b6d4; flex-shrink:0;"></span> FSS ต่างด้าว</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#84cc16; flex-shrink:0;"></span> STP Stateless</span><span class="fw-bold text-dark legend-val"></span></span>
+                      <span class="d-flex align-items-center justify-content-between gap-1 fw-medium text-secondary w-100"><span class="d-flex align-items-center gap-1"><span class="rounded-circle" style="display:inline-block; width:10px; height:10px; background-color:#6b7280; flex-shrink:0;"></span> ชำระเงิน/พรบ.</span><span class="fw-bold text-dark legend-val"></span></span>
                     </div>
                   </div>
                 </div>
@@ -3622,14 +3622,28 @@
 
         const rightsColors = ['#2563eb', '#3b82f6', '#60a5fa', '#10b981', '#a855f7', '#ec4899', '#f59e0b', '#f97316', '#06b6d4', '#84cc16', '#6b7280'];
 
+        const updateLegend = (chartId, series, suffix) => {
+          const chartEl = document.querySelector(chartId);
+          if (!chartEl) return;
+          const cardEl = chartEl.closest('.card');
+          if (!cardEl) return;
+          const valSpans = cardEl.querySelectorAll('.legend-val');
+          series.forEach((val, idx) => {
+            if (valSpans[idx]) {
+              valSpans[idx].textContent = `${Math.round(val).toLocaleString('th-TH')} ${suffix}`;
+            }
+          });
+        };
+
         // Donut 1: Visits by Rights Group
+        const visitSeries = [
+          sumCol('visit_ucs_incup'), sumCol('visit_ucs_inprov'), sumCol('visit_ucs_outprov'),
+          sumCol('visit_ofc'), sumCol('visit_bkk'), sumCol('visit_bmt'),
+          sumCol('visit_sss'), sumCol('visit_lgo'), sumCol('visit_fss'),
+          sumCol('visit_stp'), sumCol('visit_pay')
+        ];
         new ApexCharts(document.querySelector(`#chart_${code}_inc_visit`), {
-          series: [
-            sumCol('visit_ucs_incup'), sumCol('visit_ucs_inprov'), sumCol('visit_ucs_outprov'),
-            sumCol('visit_ofc'), sumCol('visit_bkk'), sumCol('visit_bmt'),
-            sumCol('visit_sss'), sumCol('visit_lgo'), sumCol('visit_fss'),
-            sumCol('visit_stp'), sumCol('visit_pay')
-          ],
+          series: visitSeries,
           labels: rightsLabels,
           chart: {
             type: 'donut',
@@ -3680,15 +3694,17 @@
           },
           colors: rightsColors
         }).render();
+        updateLegend(`#chart_${code}_inc_visit`, visitSeries, 'ราย');
 
         // Donut 2: Income by Rights Group
+        const incomeSeries = [
+          sumCol('inc_ucs_incup'), sumCol('inc_ucs_inprov'), sumCol('inc_ucs_outprov'),
+          sumCol('inc_ofc'), sumCol('inc_bkk'), sumCol('inc_bmt'),
+          sumCol('inc_sss'), sumCol('inc_lgo'), sumCol('inc_fss'),
+          sumCol('inc_stp'), sumCol('inc_pay')
+        ];
         new ApexCharts(document.querySelector(`#chart_${code}_inc_total`), {
-          series: [
-            sumCol('inc_ucs_incup'), sumCol('inc_ucs_inprov'), sumCol('inc_ucs_outprov'),
-            sumCol('inc_ofc'), sumCol('inc_bkk'), sumCol('inc_bmt'),
-            sumCol('inc_sss'), sumCol('inc_lgo'), sumCol('inc_fss'),
-            sumCol('inc_stp'), sumCol('inc_pay')
-          ],
+          series: incomeSeries,
           labels: rightsLabels,
           chart: {
             type: 'donut',
@@ -3739,15 +3755,17 @@
           },
           colors: rightsColors
         }).render();
+        updateLegend(`#chart_${code}_inc_total`, incomeSeries, 'บาท');
 
         // Donut 3: Lab Income by Rights Group
+        const labSeries = [
+          sumCol('inc_lab_ucs_incup'), sumCol('inc_lab_ucs_inprov'), sumCol('inc_lab_ucs_outprov'),
+          sumCol('inc_lab_ofc'), sumCol('inc_lab_bkk'), sumCol('inc_lab_bmt'),
+          sumCol('inc_lab_sss'), sumCol('inc_lab_lgo'), sumCol('inc_lab_fss'),
+          sumCol('inc_lab_stp'), sumCol('inc_lab_pay')
+        ];
         new ApexCharts(document.querySelector(`#chart_${code}_inc_lab`), {
-          series: [
-            sumCol('inc_lab_ucs_incup'), sumCol('inc_lab_ucs_inprov'), sumCol('inc_lab_ucs_outprov'),
-            sumCol('inc_lab_ofc'), sumCol('inc_lab_bkk'), sumCol('inc_lab_bmt'),
-            sumCol('inc_lab_sss'), sumCol('inc_lab_lgo'), sumCol('inc_lab_fss'),
-            sumCol('inc_lab_stp'), sumCol('inc_lab_pay')
-          ],
+          series: labSeries,
           labels: rightsLabels,
           chart: {
             type: 'donut',
@@ -3798,15 +3816,17 @@
           },
           colors: rightsColors
         }).render();
+        updateLegend(`#chart_${code}_inc_lab`, labSeries, 'บาท');
 
         // Donut 4: Drug Income by Rights Group
+        const drugSeries = [
+          sumCol('inc_drug_ucs_incup'), sumCol('inc_drug_ucs_inprov'), sumCol('inc_drug_ucs_outprov'),
+          sumCol('inc_drug_ofc'), sumCol('inc_drug_bkk'), sumCol('inc_drug_bmt'),
+          sumCol('inc_drug_sss'), sumCol('inc_drug_lgo'), sumCol('inc_drug_fss'),
+          sumCol('inc_drug_stp'), sumCol('inc_drug_pay')
+        ];
         new ApexCharts(document.querySelector(`#chart_${code}_inc_drug`), {
-          series: [
-            sumCol('inc_drug_ucs_incup'), sumCol('inc_drug_ucs_inprov'), sumCol('inc_drug_ucs_outprov'),
-            sumCol('inc_drug_ofc'), sumCol('inc_drug_bkk'), sumCol('inc_drug_bmt'),
-            sumCol('inc_drug_sss'), sumCol('inc_drug_lgo'), sumCol('inc_drug_fss'),
-            sumCol('inc_drug_stp'), sumCol('inc_drug_pay')
-          ],
+          series: drugSeries,
           labels: rightsLabels,
           chart: {
             type: 'donut',
@@ -3857,6 +3877,7 @@
           },
           colors: rightsColors
         }).render();
+        updateLegend(`#chart_${code}_inc_drug`, drugSeries, 'บาท');
 
       });
     });
