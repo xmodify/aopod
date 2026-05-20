@@ -195,6 +195,26 @@
     color: #e11d48 !important;
     box-shadow: 0 6px 15px rgba(244, 63, 94, 0.12) !important;
   }
+
+  /* Hospital Monthly Chart Card Styles (Blue, Green, Orange) */
+  .card.card-chart-ppfs {
+    border-top: 4px solid #1976d2 !important;
+  }
+  .card-chart-ppfs h6 {
+    color: #1976d2 !important;
+  }
+  .card.card-chart-cr {
+    border-top: 4px solid #388e3c !important;
+  }
+  .card-chart-cr h6 {
+    color: #388e3c !important;
+  }
+  .card.card-chart-herb {
+    border-top: 4px solid #f57c00 !important;
+  }
+  .card-chart-herb h6 {
+    color: #f57c00 !important;
+  }
 </style>
 
 @section('title', 'Dashboard | AOPOD')
@@ -638,20 +658,20 @@
             <!-- 3 Charts Side-by-Side -->
             <div class="row g-3 mb-4 mt-2">
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #8b5cf6 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10985"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                <div class="card card-chart-ppfs border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
                   <div id="chart_10985_ppfs" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #8b5cf6 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10985"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                <div class="card card-chart-cr border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
                   <div id="chart_10985_cr" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #8b5cf6 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10985"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                <div class="card card-chart-herb border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
                   <div id="chart_10985_herb" style="min-height: 220px;"></div>
                 </div>
               </div>
@@ -746,20 +766,20 @@
             <!-- 3 Charts Side-by-Side -->
             <div class="row g-3 mb-4 mt-2">
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #06b6d4 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10986"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                <div class="card card-chart-ppfs border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
                   <div id="chart_10986_ppfs" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #06b6d4 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10986"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                <div class="card card-chart-cr border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
                   <div id="chart_10986_cr" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #06b6d4 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10986"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                <div class="card card-chart-herb border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
                   <div id="chart_10986_herb" style="min-height: 220px;"></div>
                 </div>
               </div>
@@ -854,20 +874,20 @@
             <!-- 3 Charts Side-by-Side -->
             <div class="row g-3 mb-4 mt-2">
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #ec4899 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10987"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                <div class="card card-chart-ppfs border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
                   <div id="chart_10987_ppfs" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #ec4899 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10987"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                <div class="card card-chart-cr border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
                   <div id="chart_10987_cr" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #ec4899 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10987"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                <div class="card card-chart-herb border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
                   <div id="chart_10987_herb" style="min-height: 220px;"></div>
                 </div>
               </div>
@@ -960,20 +980,20 @@
             <!-- 3 Charts Side-by-Side -->
             <div class="row g-3 mb-4 mt-2">
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f59e0b !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10988"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                <div class="card card-chart-ppfs border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
                   <div id="chart_10988_ppfs" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f59e0b !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10988"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                <div class="card card-chart-cr border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
                   <div id="chart_10988_cr" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f59e0b !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10988"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                <div class="card card-chart-herb border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
                   <div id="chart_10988_herb" style="min-height: 220px;"></div>
                 </div>
               </div>
@@ -1068,20 +1088,20 @@
             <!-- 3 Charts Side-by-Side -->
             <div class="row g-3 mb-4 mt-2">
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #3b82f6 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10989"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                <div class="card card-chart-ppfs border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
                   <div id="chart_10989_ppfs" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #3b82f6 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10989"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                <div class="card card-chart-cr border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
                   <div id="chart_10989_cr" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #3b82f6 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10989"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                <div class="card card-chart-herb border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
                   <div id="chart_10989_herb" style="min-height: 220px;"></div>
                 </div>
               </div>
@@ -1176,20 +1196,20 @@
             <!-- 3 Charts Side-by-Side -->
             <div class="row g-3 mb-4 mt-2">
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #10b981 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10990"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                <div class="card card-chart-ppfs border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
                   <div id="chart_10990_ppfs" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #10b981 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10990"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                <div class="card card-chart-cr border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
                   <div id="chart_10990_cr" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #10b981 !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10990"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                <div class="card card-chart-herb border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
                   <div id="chart_10990_herb" style="min-height: 220px;"></div>
                 </div>
               </div>
@@ -1284,20 +1304,20 @@
             <!-- 3 Charts Side-by-Side -->
             <div class="row g-3 mb-4 mt-2">
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f43f5e !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10703"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
+                <div class="card card-chart-ppfs border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>PP Fee Schedule</h6>
                   <div id="chart_10703_ppfs" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f43f5e !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10703"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
+                <div class="card card-chart-cr border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - บริการเฉพาะ CR</h6>
                   <div id="chart_10703_cr" style="min-height: 220px;"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px); border-top: 4px solid #f43f5e !important;">
-                  <h6 class="fw-bold text-center mb-2 small text-10703"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
+                <div class="card card-chart-herb border-0 shadow-sm rounded-4 h-100 p-2" style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small"><i class="fa-solid fa-chart-line me-1"></i>UCS - สมุนไพร 32 รายการ</h6>
                   <div id="chart_10703_herb" style="min-height: 220px;"></div>
                 </div>
               </div>
