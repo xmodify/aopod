@@ -850,8 +850,34 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10985] ข้อมูลบริการผู้ป่วยนอก OPD โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10985}}</span>
-                <div id="btn-10985"></div>
               </div>
+            </div>
+            <!-- 1x3 Charts Grid -->
+            <div class="row g-3 mb-4 mt-2">
+              <!-- Chart 1: Visit, OP, PP -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #2563eb !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #2563eb;"><i class="fa-solid fa-chart-line me-1"></i>จำนวนผู้รับบริการ (Visit, OP, PP)</h6>
+                  <div id="chart_10985_visits" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 2: Revenue breakdown -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #10b981 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #10b981;"><i class="fa-solid fa-chart-line me-1"></i>ค่ารักษาพยาบาล (รวม/ยา/Lab)</h6>
+                  <div id="chart_10985_income" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 3: Specialty Clinics -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #8b5cf6 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #8b5cf6;"><i class="fa-solid fa-chart-line me-1"></i>บริการเฉพาะทาง/คลินิก</h6>
+                  <div id="chart_10985_specialty" style="min-height: 250px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10985"></div>
             </div>
             <div class="table-responsive">
               <table id="table10985" class="table custom-table my-3" width ="100%">
@@ -926,8 +952,10 @@
               <h6 class="fw-bold"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>[10985] ข้อมูลค่ารักษาพยาบาลผู้ป่วยนอก OPD แยกกลุ่มสิทธิ โรงพยาบาลชานุมาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10985}}</span>
-                <div id="btn-10985-inc"></div>
               </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10985-inc"></div>
             </div>
             <div class="table-responsive">
               <table id="table10985_inc" class="table custom-table my-3" width="100%">
@@ -1075,8 +1103,34 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10986] ข้อมูลบริการผู้ป่วยนอก OPD โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10986}}</span>
-                <div id="btn-10986"></div>
               </div>
+            </div>
+            <!-- 1x3 Charts Grid -->
+            <div class="row g-3 mb-4 mt-2">
+              <!-- Chart 1: Visit, OP, PP -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #2563eb !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #2563eb;"><i class="fa-solid fa-chart-line me-1"></i>จำนวนผู้รับบริการ (Visit, OP, PP)</h6>
+                  <div id="chart_10986_visits" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 2: Revenue breakdown -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #10b981 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #10b981;"><i class="fa-solid fa-chart-line me-1"></i>ค่ารักษาพยาบาล (รวม/ยา/Lab)</h6>
+                  <div id="chart_10986_income" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 3: Specialty Clinics -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #8b5cf6 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #8b5cf6;"><i class="fa-solid fa-chart-line me-1"></i>บริการเฉพาะทาง/คลินิก</h6>
+                  <div id="chart_10986_specialty" style="min-height: 250px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10986"></div>
             </div>
             <div class="table-responsive">
               <table id="table10986" class="table custom-table my-3" width ="100%">
@@ -1151,8 +1205,10 @@
               <h6 class="fw-bold"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>[10986] ข้อมูลค่ารักษาพยาบาลผู้ป่วยนอก OPD แยกกลุ่มสิทธิ โรงพยาบาลปทุมราชวงศา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10986}}</span>
-                <div id="btn-10986-inc"></div>
               </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10986-inc"></div>
             </div>
             <div class="table-responsive">
               <table id="table10986_inc" class="table custom-table my-3" width="100%">
@@ -1300,8 +1356,34 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10987] ข้อมูลบริการผู้ป่วยนอก OPD โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10987}}</span>
-                <div id="btn-10987"></div>
               </div>
+            </div>
+            <!-- 1x3 Charts Grid -->
+            <div class="row g-3 mb-4 mt-2">
+              <!-- Chart 1: Visit, OP, PP -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #2563eb !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #2563eb;"><i class="fa-solid fa-chart-line me-1"></i>จำนวนผู้รับบริการ (Visit, OP, PP)</h6>
+                  <div id="chart_10987_visits" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 2: Revenue breakdown -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #10b981 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #10b981;"><i class="fa-solid fa-chart-line me-1"></i>ค่ารักษาพยาบาล (รวม/ยา/Lab)</h6>
+                  <div id="chart_10987_income" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 3: Specialty Clinics -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #8b5cf6 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #8b5cf6;"><i class="fa-solid fa-chart-line me-1"></i>บริการเฉพาะทาง/คลินิก</h6>
+                  <div id="chart_10987_specialty" style="min-height: 250px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10987"></div>
             </div>
             <div class="table-responsive">
               <table id="table10987" class="table custom-table my-3" width ="100%">
@@ -1376,8 +1458,10 @@
               <h6 class="fw-bold"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>[10987] ข้อมูลค่ารักษาพยาบาลผู้ป่วยนอก OPD แยกกลุ่มสิทธิ โรงพยาบาลพนา ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10987}}</span>
-                <div id="btn-10987-inc"></div>
               </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10987-inc"></div>
             </div>
             <div class="table-responsive">
               <table id="table10987_inc" class="table custom-table my-3" width="100%">
@@ -1525,8 +1609,34 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10988] ข้อมูลบริการผู้ป่วยนอก OPD โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10988}}</span>
-                <div id="btn-10988"></div>
               </div>
+            </div>
+            <!-- 1x3 Charts Grid -->
+            <div class="row g-3 mb-4 mt-2">
+              <!-- Chart 1: Visit, OP, PP -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #2563eb !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #2563eb;"><i class="fa-solid fa-chart-line me-1"></i>จำนวนผู้รับบริการ (Visit, OP, PP)</h6>
+                  <div id="chart_10988_visits" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 2: Revenue breakdown -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #10b981 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #10b981;"><i class="fa-solid fa-chart-line me-1"></i>ค่ารักษาพยาบาล (รวม/ยา/Lab)</h6>
+                  <div id="chart_10988_income" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 3: Specialty Clinics -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #8b5cf6 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #8b5cf6;"><i class="fa-solid fa-chart-line me-1"></i>บริการเฉพาะทาง/คลินิก</h6>
+                  <div id="chart_10988_specialty" style="min-height: 250px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10988"></div>
             </div>
             <div class="table-responsive">
               <table id="table10988" class="table custom-table my-3" width ="100%">
@@ -1601,8 +1711,10 @@
               <h6 class="fw-bold"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>[10988] ข้อมูลค่ารักษาพยาบาลผู้ป่วยนอก OPD แยกกลุ่มสิทธิ โรงพยาบาลเสนางคนิคม ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10988}}</span>
-                <div id="btn-10988-inc"></div>
               </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10988-inc"></div>
             </div>
             <div class="table-responsive">
               <table id="table10988_inc" class="table custom-table my-3" width="100%">
@@ -1750,8 +1862,34 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10989] ข้อมูลบริการผู้ป่วยนอก OPD โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10989}}</span>
-                <div id="btn-10989"></div>
               </div>
+            </div>
+            <!-- 1x3 Charts Grid -->
+            <div class="row g-3 mb-4 mt-2">
+              <!-- Chart 1: Visit, OP, PP -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #2563eb !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #2563eb;"><i class="fa-solid fa-chart-line me-1"></i>จำนวนผู้รับบริการ (Visit, OP, PP)</h6>
+                  <div id="chart_10989_visits" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 2: Revenue breakdown -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #10b981 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #10b981;"><i class="fa-solid fa-chart-line me-1"></i>ค่ารักษาพยาบาล (รวม/ยา/Lab)</h6>
+                  <div id="chart_10989_income" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 3: Specialty Clinics -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #8b5cf6 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #8b5cf6;"><i class="fa-solid fa-chart-line me-1"></i>บริการเฉพาะทาง/คลินิก</h6>
+                  <div id="chart_10989_specialty" style="min-height: 250px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10989"></div>
             </div>
             <div class="table-responsive">
               <table id="table10989" class="table custom-table my-3" width ="100%">
@@ -1826,8 +1964,10 @@
               <h6 class="fw-bold"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>[10989] ข้อมูลค่ารักษาพยาบาลผู้ป่วยนอก OPD แยกกลุ่มสิทธิ โรงพยาบาลหัวตะพาน ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10989}}</span>
-                <div id="btn-10989-inc"></div>
               </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10989-inc"></div>
             </div>
             <div class="table-responsive">
               <table id="table10989_inc" class="table custom-table my-3" width="100%">
@@ -1975,8 +2115,34 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10990] ข้อมูลบริการผู้ป่วยนอก OPD โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10990}}</span>
-                <div id="btn-10990"></div>
               </div>
+            </div>
+            <!-- 1x3 Charts Grid -->
+            <div class="row g-3 mb-4 mt-2">
+              <!-- Chart 1: Visit, OP, PP -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #2563eb !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #2563eb;"><i class="fa-solid fa-chart-line me-1"></i>จำนวนผู้รับบริการ (Visit, OP, PP)</h6>
+                  <div id="chart_10990_visits" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 2: Revenue breakdown -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #10b981 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #10b981;"><i class="fa-solid fa-chart-line me-1"></i>ค่ารักษาพยาบาล (รวม/ยา/Lab)</h6>
+                  <div id="chart_10990_income" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 3: Specialty Clinics -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #8b5cf6 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #8b5cf6;"><i class="fa-solid fa-chart-line me-1"></i>บริการเฉพาะทาง/คลินิก</h6>
+                  <div id="chart_10990_specialty" style="min-height: 250px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10990"></div>
             </div>
             <div class="table-responsive">
               <table id="table10990" class="table custom-table my-3" width ="100%">
@@ -2051,8 +2217,10 @@
               <h6 class="fw-bold"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>[10990] ข้อมูลค่ารักษาพยาบาลผู้ป่วยนอก OPD แยกกลุ่มสิทธิ โรงพยาบาลลืออำนาจ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10990}}</span>
-                <div id="btn-10990-inc"></div>
               </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10990-inc"></div>
             </div>
             <div class="table-responsive">
               <table id="table10990_inc" class="table custom-table my-3" width="100%">
@@ -2200,8 +2368,34 @@
               <h6 class="fw-bold"><i class="fa-solid fa-hospital-user text-primary me-2"></i>[10703] ข้อมูลบริการผู้ป่วยนอก OPD โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10703}}</span>
-                <div id="btn-10703"></div>
               </div>
+            </div>
+            <!-- 1x3 Charts Grid -->
+            <div class="row g-3 mb-4 mt-2">
+              <!-- Chart 1: Visit, OP, PP -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #2563eb !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #2563eb;"><i class="fa-solid fa-chart-line me-1"></i>จำนวนผู้รับบริการ (Visit, OP, PP)</h6>
+                  <div id="chart_10703_visits" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 2: Revenue breakdown -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #10b981 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #10b981;"><i class="fa-solid fa-chart-line me-1"></i>ค่ารักษาพยาบาล (รวม/ยา/Lab)</h6>
+                  <div id="chart_10703_income" style="min-height: 250px;"></div>
+                </div>
+              </div>
+              <!-- Chart 3: Specialty Clinics -->
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-2" style="border-top: 4px solid #8b5cf6 !important; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(8px);">
+                  <h6 class="fw-bold text-center mb-2 small" style="color: #8b5cf6;"><i class="fa-solid fa-chart-line me-1"></i>บริการเฉพาะทาง/คลินิก</h6>
+                  <div id="chart_10703_specialty" style="min-height: 250px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10703"></div>
             </div>
             <div class="table-responsive">
               <table id="table10703" class="table custom-table my-3" width ="100%">
@@ -2276,8 +2470,10 @@
               <h6 class="fw-bold"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>[10703] ข้อมูลค่ารักษาพยาบาลผู้ป่วยนอก OPD แยกกลุ่มสิทธิ โรงพยาบาลอำนาจเจริญ ปีงบประมาณ {{$budget_year}}</h6>
               <div class="d-flex align-items-center gap-2">
                 <span class="text-secondary small">Update {{$update_at10703}}</span>
-                <div id="btn-10703-inc"></div>
               </div>
+            </div>
+            <div class="d-flex justify-content-end mb-2">
+              <div id="btn-10703-inc"></div>
             </div>
             <div class="table-responsive">
               <table id="table10703_inc" class="table custom-table my-3" width="100%">
@@ -2437,6 +2633,126 @@
 
 <!-- script datatable  ---------------------------------------------------------------------------------------->
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const opdData = {
+        '10985': @json($total_10985),
+        '10986': @json($total_10986),
+        '10987': @json($total_10987),
+        '10988': @json($total_10988),
+        '10989': @json($total_10989),
+        '10990': @json($total_10990),
+        '10703': @json($total_10703)
+      };
+
+      const hospcodes = ['10985', '10986', '10987', '10988', '10989', '10990', '10703'];
+
+      hospcodes.forEach(code => {
+        const data = opdData[code] || [];
+        const months = data.map(item => item.month);
+
+        // 1. Chart Visits
+        new ApexCharts(document.querySelector(`#chart_${code}_visits`), {
+          series: [
+            { name: 'Visit Total', data: data.map(item => item.visit_total) },
+            { name: 'Visit OP', data: data.map(item => item.visit_total_op) },
+            { name: 'Visit PP', data: data.map(item => item.visit_total_pp) }
+          ],
+          chart: {
+            height: 250,
+            type: 'line',
+            toolbar: { show: false },
+            animations: { enabled: true, easing: 'easeinout', speed: 800 },
+            dropShadow: {
+              enabled: true,
+              top: 3,
+              left: 2,
+              blur: 4,
+              opacity: 0.12
+            }
+          },
+          colors: ['#10b981', '#2563eb', '#f59e0b'],
+          stroke: { curve: 'smooth', width: [4, 2.5, 2.5] },
+          markers: { size: 4 },
+          xaxis: { categories: months },
+          yaxis: {
+            labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+          },
+          tooltip: {
+            y: { formatter: val => Math.round(val).toLocaleString('th-TH') + ' ราย' }
+          }
+        }).render();
+
+        // 2. Chart Income
+        new ApexCharts(document.querySelector(`#chart_${code}_income`), {
+          series: [
+            { name: 'ค่ารักษารวม', data: data.map(item => parseFloat(item.inc_total || 0).toFixed(2)) },
+            { name: 'ค่ายา', data: data.map(item => parseFloat(item.inc_drug_total || 0).toFixed(2)) },
+            { name: 'ค่า Lab', data: data.map(item => parseFloat(item.inc_lab_total || 0).toFixed(2)) }
+          ],
+          chart: {
+            height: 250,
+            type: 'line',
+            toolbar: { show: false },
+            animations: { enabled: true, easing: 'easeinout', speed: 800 },
+            dropShadow: {
+              enabled: true,
+              top: 3,
+              left: 2,
+              blur: 4,
+              opacity: 0.12
+            }
+          },
+          colors: ['#10b981', '#8b5cf6', '#f59e0b'],
+          stroke: { curve: 'smooth', width: [4, 2.5, 2.5] },
+          markers: { size: 4 },
+          xaxis: { categories: months },
+          yaxis: {
+            labels: { formatter: val => parseFloat(val).toLocaleString('th-TH', { minimumFractionDigits: 2 }) }
+          },
+          tooltip: {
+            y: { formatter: val => parseFloat(val).toLocaleString('th-TH', { minimumFractionDigits: 2 }) + ' บาท' }
+          }
+        }).render();
+
+        // 3. Chart Specialty
+        new ApexCharts(document.querySelector(`#chart_${code}_specialty`), {
+          series: [
+            { name: 'ทันตกรรม', data: data.map(item => item.visit_dent) },
+            { name: 'กายภาพ', data: data.map(item => item.visit_physic) },
+            { name: 'แพทย์แผนไทย', data: data.map(item => item.visit_healthmed) },
+            { name: 'ฝากครรภ์', data: data.map(item => item.visit_anc) },
+            { name: 'ทางไกล', data: data.map(item => item.visit_telehealth) }
+          ],
+          chart: {
+            height: 250,
+            type: 'line',
+            toolbar: { show: false },
+            animations: { enabled: true, easing: 'easeinout', speed: 800 },
+            dropShadow: {
+              enabled: true,
+              top: 3,
+              left: 2,
+              blur: 4,
+              opacity: 0.12
+            }
+          },
+          colors: ['#8b5cf6', '#f43f5e', '#10b981', '#d97706', '#0ea5e9'],
+          stroke: { curve: 'smooth', width: 2.5 },
+          markers: { size: 4 },
+          xaxis: { categories: months },
+          yaxis: {
+            labels: { formatter: val => Math.round(val).toLocaleString('th-TH') }
+          },
+          tooltip: {
+            y: { formatter: val => Math.round(val).toLocaleString('th-TH') + ' ราย' }
+          }
+        }).render();
+
+      });
+    });
+  </script>
   <script>
     $(function () {
       var table10985 = $('#table10985').DataTable({
