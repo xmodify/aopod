@@ -233,8 +233,8 @@
         <div class="col-12 col-sm-6 col-xl-8">
           <div class="card-opd card card-theme-chart glass p-3 h-100">
             <canvas id="visitRightsChart" height="200"></canvas>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+            <script src="{{ asset('assets/vendor/chart.js/chart.umd.min.js') }}"></script>
+            <script src="{{ asset('assets/vendor/chartjs-plugin-datalabels/chartjs-plugin-datalabels.min.js') }}"></script>
             <script>
               document.addEventListener("DOMContentLoaded", () => {
                 new Chart(document.querySelector('#visitRightsChart'), {
@@ -3494,7 +3494,7 @@
 
 <!-- script datatable  ---------------------------------------------------------------------------------------->
 @push('scripts')
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const opdData = {
