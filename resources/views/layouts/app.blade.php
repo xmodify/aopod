@@ -378,6 +378,44 @@
                       <i class="bi bi-capsule-pill fs-5" style="color: #10b981;"></i> One Province One Formula
                   </a>
               </div>
+              <div class="navbar-nav ms-auto d-flex align-items-center gap-2 py-2 py-xl-0">
+                  @auth
+                      @if(Auth::user()->isAdmin())
+                          <a class="btn-glass-action" href="{{ route('admin.index') }}">
+                              <i class="fa-solid fa-gauge-high"></i> แผงควบคุม Admin
+                          </a>
+                      @endif
+
+                      <!-- User Actions Dropdown -->
+                      <div class="dropdown">
+                          <button class="btn-glass-action dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa-solid fa-circle-user text-green fs-5"></i>
+                              <span>{{ Auth::user()->name }}</span>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="border-radius: 16px; min-width: 200px;">
+                              <li>
+                                  <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-dark" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="border-radius: 10px;">
+                                      <i class="fa-solid fa-key text-warning"></i> เปลี่ยนรหัสผ่าน
+                                  </a>
+                              </li>
+                              <li><hr class="dropdown-divider my-2"></li>
+                              <li>
+                                  <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-radius: 10px;">
+                                      <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                                  </a>
+                              </li>
+                          </ul>
+                      </div>
+
+                      <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                          @csrf
+                      </form>
+                  @else
+                      <button type="button" class="btn-glass-action" data-bs-toggle="modal" data-bs-target="#loginModal">
+                          <i class="fa-solid fa-right-to-bracket text-green"></i> Login
+                      </button>
+                  @endauth
+              </div>
           </div>
       </div>
   </nav>
@@ -396,26 +434,73 @@
 
   {{-- Login Modal --}}
   <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 22px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border: 1px solid rgba(33, 192, 139, 0.25);">
         <form method="POST" action="{{ route('login') }}">
           @csrf
-          <div class="modal-header">
-            <h5 class="modal-title" id="loginModalLabel">เข้าสู่ระบบ</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <div class="modal-header border-0 pb-0 pt-4 px-4">
+            <h4 class="modal-title fw-bold" id="loginModalLabel" style="background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Login</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body p-4">
               <div class="mb-3">
-                  <label class="form-label">อีเมล</label>
-                  <input type="email" name="email" class="form-control" required>
+                  <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Username</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-person"></i></span>
+                      <input type="email" name="email" class="form-control border-start-0" placeholder="Enter your email/username" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                  </div>
+              </div>
+              <div class="mb-4">
+                  <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Password</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-lock"></i></span>
+                      <input type="password" name="password" class="form-control border-start-0" placeholder="Enter your password" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer border-0 pt-0 pb-4 px-4">
+            <button type="submit" class="btn w-100 py-2.5 fw-bold text-white shadow" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); transition: all 0.2s ease;">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {{-- Change Password Modal --}}
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 22px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(245, 158, 11, 0.25);">
+        <form method="POST" action="{{ route('change-password') }}">
+          @csrf
+          <div class="modal-header border-0 pb-0 pt-4 px-4">
+            <h4 class="modal-title fw-bold" id="changePasswordModalLabel" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">เปลี่ยนรหัสผ่าน</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+              <div class="mb-3">
+                  <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">รหัสผ่านเดิม</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(245, 158, 11, 0.25); color: #f59e0b;"><i class="bi bi-shield-lock"></i></span>
+                      <input type="password" name="current_password" class="form-control border-start-0" placeholder="รหัสผ่านปัจจุบัน" required style="border-radius: 0 12px 12px 0; border-color: rgba(245, 158, 11, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                  </div>
               </div>
               <div class="mb-3">
-                  <label class="form-label">รหัสผ่าน</label>
-                  <input type="password" name="password" class="form-control" required>
+                  <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">รหัสผ่านใหม่</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(245, 158, 11, 0.25); color: #f59e0b;"><i class="bi bi-key"></i></span>
+                      <input type="password" name="new_password" class="form-control border-start-0" placeholder="รหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)" required style="border-radius: 0 12px 12px 0; border-color: rgba(245, 158, 11, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                  </div>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">ยืนยันรหัสผ่านใหม่</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(245, 158, 11, 0.25); color: #f59e0b;"><i class="bi bi-check-circle"></i></span>
+                      <input type="password" name="new_password_confirmation" class="form-control border-start-0" placeholder="ยืนยันรหัสผ่านใหม่อีกครั้ง" required style="border-radius: 0 12px 12px 0; border-color: rgba(245, 158, 11, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                  </div>
               </div>
           </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary w-100">เข้าสู่ระบบ</button>
+          <div class="modal-footer border-0 pt-0 pb-4 px-4">
+            <button type="submit" class="btn w-100 py-2.5 fw-bold text-white shadow" style="border-radius: 12px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); transition: all 0.2s ease;">บันทึกรหัสผ่านใหม่</button>
           </div>
         </form>
       </div>

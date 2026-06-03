@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\DashboardOPDController;
 use App\Http\Controllers\Web\DashboardClaimController;
 use App\Http\Controllers\Web\DashboardReferController;
 use App\Http\Controllers\Web\DashboardOperationController;
+use App\Http\Controllers\Web\AdminController;
 
 // หน้าแรก redirect ไป web
 Route::get('/', function () {
@@ -33,4 +34,10 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/dashboard', function () {
         return redirect()->to(url('web')); 
     });
+    Route::post('/change-password', [LoginController::class, 'changePassword'])->name('change-password');
+});
+
+// Admin Area Protected Routes
+Route::middleware(['auth:web', 'admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 });
