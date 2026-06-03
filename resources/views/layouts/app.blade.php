@@ -351,7 +351,7 @@
                   </a>
         
                   <a class="nav-menu-link {{ Request::is('web/opd') ? 'active-opd' : '' }}" href="{{ url('web/opd') }}">
-                      <i class="bi bi-person-vcard fs-5" style="color: #10b981;"></i> OPD
+                      <i class="fa-solid fa-address-card fs-5" style="color: #10b981;"></i> OPD
                   </a>
         
                   <a class="nav-menu-link {{ Request::is('web/refer') ? 'active-refer-cust' : '' }}" href="{{ url('web/refer') }}">
@@ -447,7 +447,7 @@
                   <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Username</label>
                   <div class="input-group">
                       <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-person"></i></span>
-                      <input type="email" name="email" class="form-control border-start-0" placeholder="Enter your email/username" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                      <input type="email" name="email" class="form-control border-start-0" placeholder="Enter your username" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
                   </div>
               </div>
               <div class="mb-4">

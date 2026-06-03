@@ -20,7 +20,73 @@ class AdminController extends Controller
         if (!auth()->check() || !auth()->user()->isAdmin()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
-        return view('admin.settings');
+        $bedTypes = \App\Models\IpdBedType::all();
+        return view('admin.settings', compact('bedTypes'));
+    }
+
+    public function createBedType(Request $request)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        $request->validate([
+            'bed_code' => ['required', 'string', 'max:6', 'unique:ipd_bed_type,bed_code'],
+            'bed_name' => ['required', 'string', 'max:100'],
+            'unit' => ['required', 'string', 'max:100'],
+        ]);
+
+        try {
+            \App\Models\IpdBedType::create([
+                'bed_code' => $request->bed_code,
+                'bed_name' => $request->bed_name,
+                'unit' => $request->unit,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'เพิ่มประเภทเตียงเรียบร้อยแล้ว']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function updateBedType(Request $request, $bed_code)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        $bedType = \App\Models\IpdBedType::where('bed_code', $bed_code)->firstOrFail();
+
+        $request->validate([
+            'bed_name' => ['required', 'string', 'max:100'],
+            'unit' => ['required', 'string', 'max:100'],
+        ]);
+
+        try {
+            $bedType->update([
+                'bed_name' => $request->bed_name,
+                'unit' => $request->unit,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'แก้ไขประเภทเตียงเรียบร้อยแล้ว']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteBedType($bed_code)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        try {
+            $bedType = \App\Models\IpdBedType::where('bed_code', $bed_code)->firstOrFail();
+            $bedType->delete();
+            return response()->json(['success' => true, 'message' => 'ลบประเภทเตียงเรียบร้อยแล้ว']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
     }
 
     public function gitPull()

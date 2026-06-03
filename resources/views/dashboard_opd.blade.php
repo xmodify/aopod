@@ -103,7 +103,7 @@
           <div class="col-lg-7">          
             <div class="d-flex align-items-center gap-3">
               <div class="bg-success bg-opacity-10 rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                <i class="bi bi-person-vcard fs-4 text-success"></i>
+                <i class="fa-solid fa-address-card fs-4 text-success"></i>
               </div>
               <div>
                 <h4 class="fw-bold mb-1" style="color: #1e293b;">ข้อมูลบริการผู้ป่วยนอก (OPD)</h4>

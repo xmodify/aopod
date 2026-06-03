@@ -42,6 +42,9 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::post('/admin/settings/git-pull', [AdminController::class, 'gitPull'])->name('admin.git-pull');
+    Route::post('/admin/settings/bed-types', [AdminController::class, 'createBedType'])->name('admin.settings.bed-types.create');
+    Route::put('/admin/settings/bed-types/{bed_code}', [AdminController::class, 'updateBedType'])->name('admin.settings.bed-types.update');
+    Route::delete('/admin/settings/bed-types/{bed_code}', [AdminController::class, 'deleteBedType'])->name('admin.settings.bed-types.delete');
 
     // User Management Routes
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');

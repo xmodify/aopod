@@ -282,26 +282,29 @@
       </div>
 
       <!-- User Actions -->
-      <div class="dropdown">
-        <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border shadow-sm px-3 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px;">
-          <i class="fa-solid fa-circle-user text-green fs-5"></i>
-          <span class="fw-semibold text-dark">{{ Auth::user()->name }}</span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="border-radius: 12px; min-width: 180px;">
-          <li><span class="dropdown-item-text text-muted small">สิทธิ์การใช้งาน: {{ ucfirst(Auth::user()->role) }}</span></li>
-          <li><hr class="dropdown-divider my-1"></li>
-          <li>
-            <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-dark" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="border-radius: 8px;">
-              <i class="fa-solid fa-key text-warning"></i> เปลี่ยนรหัสผ่าน
-            </a>
-          </li>
-          <li><hr class="dropdown-divider my-1"></li>
-          <li>
-            <a class="dropdown-item text-danger d-flex align-items-center gap-2 py-2 px-3" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-radius: 8px;">
-              <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
-            </a>
-          </li>
-        </ul>
+      <div class="d-flex align-items-center gap-3">
+        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-semibold" style="font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05);">V.690603_2300</span>
+        <div class="dropdown">
+          <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border shadow-sm px-3 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px;">
+            <i class="fa-solid fa-circle-user text-green fs-5"></i>
+            <span class="fw-semibold text-dark">{{ Auth::user()->name }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="border-radius: 12px; min-width: 180px;">
+            <li><span class="dropdown-item-text text-muted small">สิทธิ์การใช้งาน: {{ ucfirst(Auth::user()->role) }}</span></li>
+            <li><hr class="dropdown-divider my-1"></li>
+            <li>
+              <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-dark" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="border-radius: 8px;">
+                <i class="fa-solid fa-key text-warning"></i> เปลี่ยนรหัสผ่าน
+              </a>
+            </li>
+            <li><hr class="dropdown-divider my-1"></li>
+            <li>
+              <a class="dropdown-item text-danger d-flex align-items-center gap-2 py-2 px-3" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-radius: 8px;">
+                <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </header>
 
