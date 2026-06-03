@@ -252,7 +252,7 @@
       </li>
 
       <li class="sidebar-menu-item">
-        <a href="#" class="sidebar-link">
+        <a href="{{ route('admin.settings') }}" class="sidebar-link {{ Request::is('admin/settings') ? 'active' : '' }}">
           <i class="fa-solid fa-gears fs-5" style="color: #21c08b !important;"></i>
           <span>ตั้งค่าระบบ</span>
         </a>
