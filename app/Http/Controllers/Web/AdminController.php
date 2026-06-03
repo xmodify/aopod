@@ -160,6 +160,22 @@ class AdminController extends Controller
             return response()->json(['success' => true, 'message' => 'ลบสมาชิกเรียบร้อยแล้ว']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+    }
+
+    public function resetPassword($id)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        try {
+            $user = \App\Models\User::findOrFail($id);
+            $user->password = \Illuminate\Support\Facades\Hash::make('12345678');
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'รีเซ็ตรหัสผ่านเป็น 12345678 สำเร็จแล้ว']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
         }
     }
 }

@@ -48,4 +48,5 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::post('/admin/users', [AdminController::class, 'createUser'])->name('admin.users.create');
     Route::put('/admin/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::post('/admin/users/{user}/reset-password', [AdminController::class, 'resetPassword'])->name('admin.users.reset-password');
 });
