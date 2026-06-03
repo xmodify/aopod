@@ -9,16 +9,29 @@ class AdminController extends Controller
 {
     public function index()
     {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         return view('admin.index');
     }
 
     public function settings()
     {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         return view('admin.settings');
     }
 
     public function gitPull()
     {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'คุณไม่มีสิทธิ์ดำเนินการนี้'
+            ], 403);
+        }
+
         try {
             $output = [];
             $exitCode = 0;
