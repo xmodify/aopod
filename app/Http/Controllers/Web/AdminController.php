@@ -160,6 +160,7 @@ class AdminController extends Controller
             return response()->json(['success' => true, 'message' => 'ลบสมาชิกเรียบร้อยแล้ว']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
     }
 
     public function resetPassword($id)
