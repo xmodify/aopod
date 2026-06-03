@@ -76,4 +76,90 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function users()
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
+        $users = \App\Models\User::all();
+        return view('admin.users', compact('users'));
+    }
+
+    public function createUser(Request $request)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', 'string', 'in:user,admin'],
+        ]);
+
+        try {
+            \App\Models\User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+                'role' => $request->role,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        $user = \App\Models\User::findOrFail($id);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
+            'password' => ['nullable', 'string', 'min:8'],
+            'role' => ['required', 'string', 'in:user,admin'],
+        ]);
+
+        try {
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->role = $request->role;
+            if ($request->password) {
+                $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+            }
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'แก้ไขข้อมูลสมาชิกเรียบร้อยแล้ว']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteUser($id)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        try {
+            $user = \App\Models\User::findOrFail($id);
+            
+            if ($user->id === auth()->user()->id) {
+                return response()->json(['success' => false, 'message' => 'คุณไม่สามารถลบบัญชีของคุณเองได้'], 400);
+            }
+
+            $user->delete();
+            return response()->json(['success' => true, 'message' => 'ลบสมาชิกเรียบร้อยแล้ว']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
+    }
 }

@@ -245,7 +245,7 @@
       </li>
 
       <li class="sidebar-menu-item">
-        <a href="#" class="sidebar-link">
+        <a href="{{ route('admin.users') }}" class="sidebar-link {{ Request::is('admin/users*') ? 'active' : '' }}">
           <i class="fa-solid fa-user-gear fs-5" style="color: #0d6efd !important;"></i>
           <span>จัดการสมาชิก</span>
         </a>
