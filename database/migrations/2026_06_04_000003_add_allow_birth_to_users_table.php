@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->boolean('allow_birth')->default(false)->after('allow_death');
-        });
+        if (!Schema::hasColumn('users', 'allow_birth')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->boolean('allow_birth')->default(false)->after('allow_death');
+            });
+        }
     }
 
     /**
