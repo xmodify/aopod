@@ -244,12 +244,14 @@
         <div class="text-muted small px-3 mb-2 fw-bold text-uppercase" style="letter-spacing: 1px;">ระบบหลัก</div>
       </li>
 
+      @if(Auth::user()->isAdmin())
       <li class="sidebar-menu-item">
         <a href="{{ route('admin.users') }}" class="sidebar-link {{ Request::is('admin/users*') ? 'active' : '' }}">
           <i class="fa-solid fa-user-gear fs-5" style="color: #0d6efd !important;"></i>
           <span>จัดการสมาชิก</span>
         </a>
       </li>
+      @endif
 
       @if(Auth::user()->canAccessDeath())
       <li class="sidebar-menu-item">
@@ -269,12 +271,14 @@
       </li>
       @endif
 
+      @if(Auth::user()->isAdmin())
       <li class="sidebar-menu-item">
         <a href="{{ route('admin.settings') }}" class="sidebar-link {{ Request::is('admin/settings') ? 'active' : '' }}">
           <i class="fa-solid fa-gears fs-5" style="color: #21c08b !important;"></i>
           <span>ตั้งค่าระบบ</span>
         </a>
       </li>
+      @endif
       
       <li class="sidebar-menu-item mt-4">
         <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="sidebar-link text-danger">

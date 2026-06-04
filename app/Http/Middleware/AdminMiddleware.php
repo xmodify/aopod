@@ -15,7 +15,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || (!auth()->user()->isAdmin() && !auth()->user()->canAccessDeath() && !auth()->user()->canAccessBirth())) {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
             return redirect()->to(url('web'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
 
