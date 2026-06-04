@@ -41,6 +41,7 @@ Route::middleware('auth:web')->group(function () {
 Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::post('/admin/settings/upgrade-structure', [AdminController::class, 'upgradeStructure'])->name('admin.settings.upgrade-structure');
     Route::post('/admin/settings/git-pull', [AdminController::class, 'gitPull'])->name('admin.git-pull');
     Route::post('/admin/settings/bed-types', [AdminController::class, 'createBedType'])->name('admin.settings.bed-types.create');
     Route::put('/admin/settings/bed-types/{bed_code}', [AdminController::class, 'updateBedType'])->name('admin.settings.bed-types.update');
@@ -52,4 +53,10 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::put('/admin/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     Route::post('/admin/users/{user}/reset-password', [AdminController::class, 'resetPassword'])->name('admin.users.reset-password');
+});
+
+// Death Data Routes (Requires Web Authentication, access checked in Controller)
+Route::middleware(['auth:web'])->group(function () {
+    Route::get('/admin/death-data', [\App\Http\Controllers\Web\DeathDataController::class, 'index'])->name('admin.death-data.index');
+    Route::post('/admin/death-data/import', [\App\Http\Controllers\Web\DeathDataController::class, 'import'])->name('admin.death-data.import');
 });

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'allow_death',
     ];
 
     /**
@@ -32,6 +33,16 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Check if the user has death data access permission.
+     *
+     * @return bool
+     */
+    public function canAccessDeath(): bool
+    {
+        return $this->isAdmin() || (bool)$this->allow_death;
     }
 
     /**

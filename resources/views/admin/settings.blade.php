@@ -21,28 +21,48 @@
                 </li>
             </ul>
 
-            {{-- Tab Content --}}
-            <div class="tab-content" id="settingsTabContent">
-                
-                {{-- Tab 1: ปรับปรุงระบบ --}}
+                           {{-- Tab 1: ปรับปรุงระบบ --}}
                 <div class="tab-pane fade show active" id="git" role="tabpanel" aria-labelledby="git-tab">
                     <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-code-branch text-green me-2"></i> การปรับปรุงระบบผ่าน Git (Deployment)</h5>
-                    <p class="text-secondary">คุณสามารถดึงข้อมูลเวอร์ชันล่าสุดจาก Git Repository (กิ่ง `main`) และทำความสะอาดแคชระบบของ Laravel ได้โดยอัตโนมัติ เพื่อให้ระบบทำงานได้เต็มประสิทธิภาพและอัปเดตเป็นปัจจุบัน</p>
+                    <p class="text-secondary mb-4">คุณสามารถดึงข้อมูลเวอร์ชันล่าสุดจาก Git Repository (กิ่ง `main`) และทำความสะอาดแคชระบบของ Laravel ได้โดยอัตโนมัติ เพื่อให้ระบบทำงานได้เต็มประสิทธิภาพและอัปเดตเป็นปัจจุบัน</p>
                     
-                    <div class="p-4 bg-light rounded-4 border d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mt-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="p-3 bg-success bg-opacity-10 text-success rounded-3" style="font-size: 1.8rem; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fa-solid fa-cloud-arrow-down"></i>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold text-dark mb-1">ดึงข้อมูลเวอร์ชันล่าสุด (Git Pull & Clear Cache)</h6>
-                                <span class="text-secondary small">ระบบจะทำการรันคำสั่ง <code>git reset --hard</code>, <code>git pull origin main</code> และ <code>php artisan optimize:clear</code></span>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-4 border d-flex flex-column justify-content-between h-100 gap-3">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-3" style="font-size: 1.8rem; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-1">ดึงข้อมูลเวอร์ชันล่าสุด (Git Pull & Clear Cache)</h6>
+                                        <span class="text-secondary small">ระบบจะทำการรันคำสั่ง <code>git reset --hard</code>, <code>git pull origin main</code> และ <code>php artisan optimize:clear</code></span>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-auto pt-2">
+                                    <button type="button" class="btn btn-success w-100 py-2.5 fw-bold text-white shadow-sm" id="btnGitPull" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); border: none;">
+                                        <i class="fa-solid fa-rotate me-2"></i> รันระบบ Git Pull
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <button type="button" class="btn btn-success px-4 py-2.5 fw-bold text-white shadow-sm" id="btnGitPull" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); border: none;">
-                                <i class="fa-solid fa-rotate me-2"></i> รันระบบ Git Pull
-                            </button>
+
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-4 border d-flex flex-column justify-content-between h-100 gap-3">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3" style="font-size: 1.8rem; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <i class="fa-solid fa-database"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-1">ปรับปรุงโครงสร้างฐานข้อมูล (Upgrade Database Structure)</h6>
+                                        <span class="text-secondary small">รันการทำงานเกี่ยวกับการเพิ่มตาราง เพิ่มฟิลด์ของระบบ (Migrate Database Schema)</span>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-auto pt-2">
+                                    <button type="button" class="btn btn-primary w-100 py-2.5 fw-bold text-white shadow-sm" id="btnUpgradeStructure" style="border-radius: 12px; background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); border: none;">
+                                        <i class="fa-solid fa-gears me-2"></i> Upgrade Structure
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -247,6 +267,75 @@
                             }
                             Swal.fire({
                                 title: 'อัปเดตระบบล้มเหลว',
+                                html: '<div class="text-start mt-2"><pre class="bg-dark text-danger p-3 rounded-3 small" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">' + errorMessage + '</pre></div>',
+                                icon: 'error',
+                                confirmButtonColor: '#dc3545',
+                                confirmButtonText: 'ตกลง',
+                                width: '600px',
+                                background: 'rgba(255, 255, 255, 0.95)'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // Upgrade Structure Process
+        document.getElementById('btnUpgradeStructure').addEventListener('click', function() {
+            Swal.fire({
+                title: 'ต้องการปรับปรุงโครงสร้างฐานข้อมูลใช่หรือไม่?',
+                text: "ระบบจะทำการเพิ่มตารางและฟิลด์ที่กำหนดไว้ลงในฐานข้อมูล",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ดำเนินการเลย',
+                cancelButtonText: 'ยกเลิก',
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdrop: 'rgba(15, 23, 42, 0.3)',
+                customClass: {
+                    popup: 'rounded-4 border shadow-lg'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'กำลังปรับปรุงฐานข้อมูล...',
+                        html: 'โปรดรอสักครู่ ระบบกำลังปรับปรุงตารางและข้อมูล...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        showConfirmButton: false,
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('admin.settings.upgrade-structure') }}",
+                        method: 'POST',
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'ปรับปรุงฐานข้อมูลสำเร็จ!',
+                                html: '<div class="text-start mt-2"><pre class="bg-dark text-light p-3 rounded-3 small" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">' + response.message + '</pre></div>',
+                                icon: 'success',
+                                confirmButtonColor: '#18a573',
+                                confirmButtonText: 'ตกลง',
+                                width: '600px',
+                                background: 'rgba(255, 255, 255, 0.95)'
+                            });
+                        },
+                        error: function(xhr) {
+                            let errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                            Swal.fire({
+                                title: 'ปรับปรุงฐานข้อมูลล้มเหลว',
                                 html: '<div class="text-start mt-2"><pre class="bg-dark text-danger p-3 rounded-3 small" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">' + errorMessage + '</pre></div>',
                                 icon: 'error',
                                 confirmButtonColor: '#dc3545',

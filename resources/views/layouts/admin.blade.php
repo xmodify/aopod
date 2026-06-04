@@ -251,6 +251,15 @@
         </a>
       </li>
 
+      @if(Auth::user()->canAccessDeath())
+      <li class="sidebar-menu-item">
+        <a href="{{ route('admin.death-data.index') }}" class="sidebar-link {{ Request::is('admin/death-data*') ? 'active' : '' }}">
+          <i class="fa-solid fa-skull fs-5" style="color: #dc3545 !important;"></i>
+          <span>ข้อมูลการตาย</span>
+        </a>
+      </li>
+      @endif
+
       <li class="sidebar-menu-item">
         <a href="{{ route('admin.settings') }}" class="sidebar-link {{ Request::is('admin/settings') ? 'active' : '' }}">
           <i class="fa-solid fa-gears fs-5" style="color: #21c08b !important;"></i>

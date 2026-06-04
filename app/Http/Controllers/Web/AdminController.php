@@ -143,6 +143,31 @@ class AdminController extends Controller
         }
     }
 
+    public function upgradeStructure()
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'คุณไม่มีสิทธิ์ดำเนินการนี้'
+            ], 403);
+        }
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+
+            return response()->json([
+                'success' => true,
+                'message' => "ปรับปรุงโครงสร้างฐานข้อมูลสำเร็จแล้ว!\n\n{$output}"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาดในการปรับปรุงฐานข้อมูล: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function users()
     {
         if (!auth()->check() || !auth()->user()->isAdmin()) {
@@ -163,6 +188,7 @@ class AdminController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
+            'allow_death' => ['nullable'],
         ]);
 
         try {
@@ -171,6 +197,7 @@ class AdminController extends Controller
                 'email' => $request->email,
                 'password' => \Illuminate\Support\Facades\Hash::make($request->password),
                 'role' => $request->role,
+                'allow_death' => $request->has('allow_death') ? 1 : 0,
             ]);
 
             return response()->json(['success' => true, 'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว']);
@@ -192,12 +219,14 @@ class AdminController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
             'password' => ['nullable', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
+            'allow_death' => ['nullable'],
         ]);
 
         try {
             $user->name = $request->name;
             $user->email = $request->email;
             $user->role = $request->role;
+            $user->allow_death = $request->has('allow_death') ? 1 : 0;
             if ($request->password) {
                 $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
             }
