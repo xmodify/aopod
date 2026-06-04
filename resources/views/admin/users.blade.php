@@ -278,7 +278,7 @@
             });
 
             $.ajax({
-                url: `/admin/users/${id}`,
+                url: "{{ route('admin.users.update', ':id') }}".replace(':id', id),
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -331,7 +331,7 @@
                     });
 
                     $.ajax({
-                        url: `/admin/users/${id}`,
+                        url: "{{ route('admin.users.delete', ':id') }}".replace(':id', id),
                         method: 'DELETE',
                         data: {
                             _token: "{{ csrf_token() }}"
@@ -388,7 +388,7 @@
                     });
 
                     $.ajax({
-                        url: `/admin/users/${id}/reset-password`,
+                        url: "{{ route('admin.users.reset-password', ':id') }}".replace(':id', id),
                         method: 'POST',
                         data: {
                             _token: "{{ csrf_token() }}"
