@@ -24,7 +24,10 @@ Route::match(['get','post'],'web/refer', [DashboardReferController::class, 'inde
 Route::match(['get','post'],'web/operation', [DashboardOperationController::class, 'index']);
 
 // Login (สำหรับ Modal login)
-Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::get('/login', function () {
+    return redirect()->to(url('web'));
+})->name('login');
+Route::post('/login', [LoginController::class, 'login']);
 
 // Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
