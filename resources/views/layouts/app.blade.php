@@ -380,9 +380,9 @@
               </div>
               <div class="navbar-nav ms-auto d-flex align-items-center gap-2 py-2 py-xl-0">
                   @auth
-                      @if(Auth::user()->isAdmin())
+                      @if(Auth::user()->isAdmin() || Auth::user()->canAccessDeath() || Auth::user()->canAccessBirth())
                           <a class="btn-glass-action" href="{{ route('admin.index') }}">
-                              <i class="fa-solid fa-gauge-high"></i> แผงควบคุม Admin
+                              <i class="fa-solid fa-gauge-high"></i> แผงควบคุม
                           </a>
                       @endif
 
