@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
-        $middleware->redirectGuestsTo('/web');
+        $middleware->redirectGuestsTo(fn () => route('web.index'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

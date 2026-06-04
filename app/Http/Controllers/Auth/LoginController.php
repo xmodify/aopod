@@ -30,7 +30,7 @@ class LoginController extends Controller
                 return redirect()->intended(route('admin.index'));
             }
             
-            return redirect()->intended('/dashboard');
+            return redirect()->intended(url('dashboard'));
         }
 
         return back()->withErrors([
@@ -45,7 +45,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->to(url('/'));
     }
 
     // เปลี่ยนรหัสผ่าน
