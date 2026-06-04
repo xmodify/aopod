@@ -87,11 +87,18 @@ class DeathDataController extends Controller
         }
 
         $request->validate([
-            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:20480'],
+            'file' => ['required', 'file', 'max:20480'],
         ]);
 
         try {
             $file = $request->file('file');
+            if (!$file) {
+                return response()->json(['success' => false, 'message' => 'ไม่พบไฟล์ที่อัปโหลด กรุณาตรวจสอบขนาดไฟล์ไม่เกินขีดจำกัดของเซิร์ฟเวอร์'], 400);
+            }
+            $extension = strtolower($file->getClientOriginalExtension());
+            if (!in_array($extension, ['xlsx', 'xls', 'csv'])) {
+                return response()->json(['success' => false, 'message' => 'กรุณาอัปโหลดไฟล์ Excel (.xlsx, .xls) หรือ CSV เท่านั้น'], 400);
+            }
             $spreadsheet = IOFactory::load($file->getRealPath());
             
             // Try to find Sheet2 as requested, fallback to active sheet
@@ -167,7 +174,7 @@ class DeathDataController extends Controller
                 'message' => 'นำเข้าข้อมูลเรียบร้อยแล้วทั้งหมด ' . count($mappedData) . ' รายการ'
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล: ' . $e->getMessage()

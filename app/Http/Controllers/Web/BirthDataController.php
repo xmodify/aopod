@@ -171,7 +171,7 @@ class BirthDataController extends Controller
                 'message' => 'นำเข้าข้อมูลเรียบร้อยแล้วทั้งหมด ' . count($mappedData) . ' รายการ'
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล: ' . $e->getMessage()
