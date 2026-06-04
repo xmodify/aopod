@@ -22,32 +22,24 @@ class DeathDataController extends Controller
         $deaths = Death::orderBy('id', 'desc')->get();
         $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
 
-        // Calculate fiscal years in B.E. (dmon >= 10 ? dyear + 1 : dyear)
-        $fiscalYears = Death::selectRaw('DISTINCT CASE WHEN dmon >= 10 THEN dyear + 1 ELSE dyear END as fiscal_year')
+        // Calculate calendar years in B.E. (dyear)
+        $fiscalYears = Death::selectRaw('DISTINCT dyear as fiscal_year')
             ->whereNotNull('dyear')
-            ->whereNotNull('dmon')
             ->orderBy('fiscal_year', 'desc')
             ->pluck('fiscal_year')
             ->toArray();
 
         // Default selected year is latest available or current B.E. year
         $currentYearBE = date('Y') + 543;
-        $currentMonth = date('n');
-        $defaultFiscalYear = $currentMonth >= 10 ? $currentYearBE + 1 : $currentYearBE;
+        $defaultFiscalYear = $currentYearBE;
 
         $selectedYear = $request->input('fiscal_year', reset($fiscalYears) ?: $defaultFiscalYear);
 
-        // Fetch deaths in the selected fiscal year
-        $deathsInYear = Death::where(function($query) use ($selectedYear) {
-            $query->where(function($q) use ($selectedYear) {
-                $q->where('dyear', $selectedYear - 1)->where('dmon', '>=', 10);
-            })->orWhere(function($q) use ($selectedYear) {
-                $q->where('dyear', $selectedYear)->where('dmon', '<', 10);
-            });
-        })->get();
+        // Fetch deaths in the selected calendar year
+        $deathsInYear = Death::where('dyear', $selectedYear)->get();
 
-        // Initialize monthly data for Amnat Charoen districts (3701 - 3707)
-        $monthsOrder = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        // Initialize monthly data for Amnat Charoen districts (3701 - 3707) starting from January to December
+        $monthsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         $districts = ['3701', '3702', '3703', '3704', '3705', '3706', '3707'];
         $districtNames = [
             '3701' => 'อ.เมืองอำนาจเจริญ',

@@ -21,32 +21,24 @@ class BirthDataController extends Controller
 
         $births = Birth::orderBy('id', 'desc')->get();
 
-        // Calculate fiscal years in B.E. (bmon >= 10 ? byear + 1 : byear)
-        $fiscalYears = Birth::selectRaw('DISTINCT CASE WHEN bmon >= 10 THEN byear + 1 ELSE byear END as fiscal_year')
+        // Calculate calendar years in B.E. (byear)
+        $fiscalYears = Birth::selectRaw('DISTINCT byear as fiscal_year')
             ->whereNotNull('byear')
-            ->whereNotNull('bmon')
             ->orderBy('fiscal_year', 'desc')
             ->pluck('fiscal_year')
             ->toArray();
 
         // Default selected year is latest available or current B.E. year
         $currentYearBE = date('Y') + 543;
-        $currentMonth = date('n');
-        $defaultFiscalYear = $currentMonth >= 10 ? $currentYearBE + 1 : $currentYearBE;
+        $defaultFiscalYear = $currentYearBE;
 
         $selectedYear = $request->input('fiscal_year', reset($fiscalYears) ?: $defaultFiscalYear);
 
-        // Fetch births in the selected fiscal year
-        $birthsInYear = Birth::where(function($query) use ($selectedYear) {
-            $query->where(function($q) use ($selectedYear) {
-                $q->where('byear', $selectedYear - 1)->where('bmon', '>=', 10);
-            })->orWhere(function($q) use ($selectedYear) {
-                $q->where('byear', $selectedYear)->where('bmon', '<', 10);
-            });
-        })->get();
+        // Fetch births in the selected calendar year
+        $birthsInYear = Birth::where('byear', $selectedYear)->get();
 
-        // Initialize monthly data for Amnat Charoen districts (3701 - 3707)
-        $monthsOrder = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        // Initialize monthly data for Amnat Charoen districts (3701 - 3707) starting from January to December
+        $monthsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         $districts = ['3701', '3702', '3703', '3704', '3705', '3706', '3707'];
         $districtNames = [
             '3701' => 'อ.เมืองอำนาจเจริญ',

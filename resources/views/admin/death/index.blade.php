@@ -50,13 +50,13 @@
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <form method="GET" action="{{ route('admin.death-data.index') }}" id="fiscalYearForm">
-                                <label class="form-label fw-bold text-secondary" style="font-size: 0.9rem;">เลือกปีงบประมาณ</label>
+                                <label class="form-label fw-bold text-secondary" style="font-size: 0.9rem;">เลือกปี พ.ศ.</label>
                                 <select name="fiscal_year" class="form-select" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none;">
                                     @foreach($fiscalYears as $year)
-                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>ปีงบประมาณ {{ $year }}</option>
+                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>ปี พ.ศ. {{ $year < 2400 ? $year + 543 : $year }}</option>
                                     @endforeach
                                     @if(empty($fiscalYears))
-                                        <option value="{{ $selectedYear }}">ปีงบประมาณ {{ $selectedYear }}</option>
+                                        <option value="{{ $selectedYear }}">ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</option>
                                     @endif
                                 </select>
                             </form>
@@ -65,7 +65,7 @@
 
                     {{-- Chart Canvas --}}
                     <div class="p-4 bg-white rounded-4 border mb-4 shadow-sm" style="min-height: 400px; position: relative;">
-                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-bar text-primary me-2"></i> สถิติคนเสียชีวิตรายเดือน แยกตามอำเภอทั้ง 7 แห่ง (ปีงบประมาณ {{ $selectedYear }})</h6>
+                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-bar text-primary me-2"></i> สถิติคนเสียชีวิตรายเดือน แยกตามอำเภอทั้ง 7 แห่ง (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
                         <div style="height: 380px; width: 100%;">
                             <canvas id="deathChart"></canvas>
                         </div>
@@ -73,15 +73,15 @@
 
                     {{-- Data Table Section below the Chart --}}
                     <div class="p-4 bg-white rounded-4 border shadow-sm mb-4">
-                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปจำนวนคนเสียชีวิตรายเดือน แยกตามอำเภอ (ปีงบประมาณ {{ $selectedYear }})</h6>
+                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปจำนวนคนเสียชีวิตรายเดือน แยกตามอำเภอ (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
                                 <thead class="table-light">
                                     <tr>
                                         <th style="width: 20%; text-align: left;">อำเภอ</th>
                                         @php
-                                            $monthsLabels = ['ต.ค.', 'พ.ย.', 'ธ.ค.', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.'];
-                                            $monthsKeys = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                                            $monthsLabels = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                                            $monthsKeys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
                                             $districtsList = ['3701', '3702', '3703', '3704', '3705', '3706', '3707'];
                                         @endphp
                                         @foreach($monthsLabels as $label)
@@ -171,7 +171,7 @@
                                     <td>{{ $death->age ?? '-' }}</td>
                                     <td class="fw-semibold text-slate-700">
                                         @if($death->ddate && $death->dmon && $death->dyear)
-                                            {{ sprintf('%02d/%02d/%d', $death->ddate, $death->dmon, $death->dyear) }}
+                                            {{ sprintf('%02d/%02d/%d', $death->ddate, $death->dmon, $death->dyear < 2400 ? $death->dyear + 543 : $death->dyear) }}
                                         @else
                                             -
                                         @endif
@@ -184,7 +184,7 @@
                                     </td>
                                     <td>
                                         @if($death->bdate && $death->bmon && $death->byear)
-                                            {{ sprintf('%02d/%02d/%d', $death->bdate, $death->bmon, $death->byear) }}
+                                            {{ sprintf('%02d/%02d/%d', $death->bdate, $death->bmon, $death->byear < 2400 ? $death->byear + 543 : $death->byear) }}
                                         @else
                                             -
                                         @endif
@@ -298,8 +298,8 @@
         // Initialize Chart.js stacked bar chart
         const chartData = @json($chartData);
         const districtNames = @json($districtNames);
-        const monthsOrder = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const monthLabels = ['ต.ค.', 'พ.ย.', 'ธ.ค.', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.'];
+        const monthsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        const monthLabels = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
         const districts = ['3701', '3702', '3703', '3704', '3705', '3706', '3707'];
 
         const colors = {
