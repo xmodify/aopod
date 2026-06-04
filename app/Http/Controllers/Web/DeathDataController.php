@@ -13,7 +13,7 @@ class DeathDataController extends Controller
     /**
      * Display death data list.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!auth()->check() || !auth()->user()->canAccessDeath()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
@@ -21,7 +21,60 @@ class DeathDataController extends Controller
 
         $deaths = Death::orderBy('id', 'desc')->get();
         $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
-        return view('admin.death.index', compact('deaths', 'hospitals'));
+
+        // Calculate fiscal years in B.E. (dmon >= 10 ? dyear + 1 : dyear)
+        $fiscalYears = Death::selectRaw('DISTINCT CASE WHEN dmon >= 10 THEN dyear + 1 ELSE dyear END as fiscal_year')
+            ->whereNotNull('dyear')
+            ->whereNotNull('dmon')
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year')
+            ->toArray();
+
+        // Default selected year is latest available or current B.E. year
+        $currentYearBE = date('Y') + 543;
+        $currentMonth = date('n');
+        $defaultFiscalYear = $currentMonth >= 10 ? $currentYearBE + 1 : $currentYearBE;
+
+        $selectedYear = $request->input('fiscal_year', reset($fiscalYears) ?: $defaultFiscalYear);
+
+        // Fetch deaths in the selected fiscal year
+        $deathsInYear = Death::where(function($query) use ($selectedYear) {
+            $query->where(function($q) use ($selectedYear) {
+                $q->where('dyear', $selectedYear - 1)->where('dmon', '>=', 10);
+            })->orWhere(function($q) use ($selectedYear) {
+                $q->where('dyear', $selectedYear)->where('dmon', '<', 10);
+            });
+        })->get();
+
+        // Initialize monthly data for Amnat Charoen districts (3701 - 3707)
+        $monthsOrder = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        $districts = ['3701', '3702', '3703', '3704', '3705', '3706', '3707'];
+        $districtNames = [
+            '3701' => 'อ.เมืองอำนาจเจริญ',
+            '3702' => 'อ.ชานุมาน',
+            '3703' => 'อ.ปทุมราชวงศา',
+            '3704' => 'อ.พนา',
+            '3705' => 'อ.เสนางคนิคม',
+            '3706' => 'อ.หัวตะพาน',
+            '3707' => 'อ.ลืออำนาจ',
+        ];
+
+        $chartData = [];
+        foreach ($monthsOrder as $m) {
+            $chartData[$m] = array_fill_keys($districts, 0);
+        }
+
+        foreach ($deathsInYear as $death) {
+            $m = (int)$death->dmon;
+            if (!in_array($m, $monthsOrder)) continue;
+
+            $districtCode = substr($death->lccaattmm, 0, 4);
+            if (in_array($districtCode, $districts)) {
+                $chartData[$m][$districtCode]++;
+            }
+        }
+
+        return view('admin.death.index', compact('deaths', 'hospitals', 'fiscalYears', 'selectedYear', 'chartData', 'districtNames'));
     }
 
     /**

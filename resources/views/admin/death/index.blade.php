@@ -3,6 +3,12 @@
 @section('title', 'ข้อมูลการตาย - AOPOD')
 @section('header_title', 'ข้อมูลการตาย (Death Information)')
 
+@push('styles')
+{{-- Load Chart.js and DataLabels plugin from local assets --}}
+<script src="{{ asset('assets/vendor/chart.js/chart.umd.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/chartjs-plugin-datalabels/chartjs-plugin-datalabels.min.js') }}"></script>
+@endpush
+
 @section('content')
 <div class="row g-4">
     <div class="col-12">
@@ -10,7 +16,12 @@
             {{-- Tab Navigation --}}
             <ul class="nav nav-pills mb-4 pb-2 border-bottom" id="deathTab" role="tablist" style="gap: 10px;">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="true" style="border-radius: 12px; transition: all 0.2s;">
+                    <button class="nav-link active fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-pane" type="button" role="tab" aria-controls="dashboard-pane" aria-selected="true" style="border-radius: 12px; transition: all 0.2s;">
+                        <i class="fa-solid fa-chart-line"></i> แดชบอร์ดสถิติ
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="false" style="border-radius: 12px; transition: all 0.2s;">
                         <i class="fa-solid fa-list"></i> รายการข้อมูลการตาย
                     </button>
                 </li>
@@ -23,16 +34,107 @@
 
             {{-- Tab Content --}}
             <div class="tab-content" id="deathTabContent">
-                {{-- Tab 1: รายการข้อมูลการตาย --}}
-                <div class="tab-pane fade show active" id="list-pane" role="tabpanel" aria-labelledby="list-tab">
+                {{-- Tab 1: แดชบอร์ดสถิติ --}}
+                <div class="tab-pane fade show active" id="dashboard-pane" role="tabpanel" aria-labelledby="dashboard-tab">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                         <div>
-                            <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-skull text-danger me-2"></i> รายการข้อมูลการตาย</h5>
-                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการตายและนำเข้าไฟล์จากระบบ Excel</span>
+                            <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-chart-line text-green me-2"></i> แดชบอร์ดวิเคราะห์ข้อมูลการตาย</h5>
+                            <span class="text-secondary small">วิเคราะห์ข้อมูลคนเสียชีวิตรายเดือน แยกตามอำเภอ </span>
                         </div>
                         <button type="button" class="btn btn-danger px-4 py-2.5 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#importExcelModal" style="border-radius: 12px; background: linear-gradient(135deg, #dc3545 0%, #ffc107 100%); border: none;">
                             <i class="fa-solid fa-file-excel me-2"></i> นำเข้าข้อมูลการตาย (Excel)
                         </button>
+                    </div>
+
+                    {{-- Fiscal Year Selector --}}
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <form method="GET" action="{{ route('admin.death-data.index') }}" id="fiscalYearForm">
+                                <label class="form-label fw-bold text-secondary" style="font-size: 0.9rem;">เลือกปีงบประมาณ</label>
+                                <select name="fiscal_year" class="form-select" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none;">
+                                    @foreach($fiscalYears as $year)
+                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>ปีงบประมาณ {{ $year }}</option>
+                                    @endforeach
+                                    @if(empty($fiscalYears))
+                                        <option value="{{ $selectedYear }}">ปีงบประมาณ {{ $selectedYear }}</option>
+                                    @endif
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Chart Canvas --}}
+                    <div class="p-4 bg-white rounded-4 border mb-4 shadow-sm" style="min-height: 400px; position: relative;">
+                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-bar text-primary me-2"></i> สถิติคนเสียชีวิตรายเดือน แยกตามอำเภอทั้ง 7 แห่ง (ปีงบประมาณ {{ $selectedYear }})</h6>
+                        <div style="height: 380px; width: 100%;">
+                            <canvas id="deathChart"></canvas>
+                        </div>
+                    </div>
+
+                    {{-- Data Table Section below the Chart --}}
+                    <div class="p-4 bg-white rounded-4 border shadow-sm mb-4">
+                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปจำนวนคนเสียชีวิตรายเดือน แยกตามอำเภอ (ปีงบประมาณ {{ $selectedYear }})</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 20%; text-align: left;">อำเภอ</th>
+                                        @php
+                                            $monthsLabels = ['ต.ค.', 'พ.ย.', 'ธ.ค.', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.'];
+                                            $monthsKeys = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                                            $districtsList = ['3701', '3702', '3703', '3704', '3705', '3706', '3707'];
+                                        @endphp
+                                        @foreach($monthsLabels as $label)
+                                            <th>{{ $label }}</th>
+                                        @endforeach
+                                        <th class="table-dark text-white">รวม</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $grandTotal = 0;
+                                        $monthlyTotals = array_fill_keys($monthsKeys, 0);
+                                    @endphp
+                                    @foreach($districtsList as $dist)
+                                        @php
+                                            $rowTotal = 0;
+                                        @endphp
+                                        <tr>
+                                            <td class="fw-bold text-dark text-start">{{ $districtNames[$dist] }}</td>
+                                            @foreach($monthsKeys as $m)
+                                                @php
+                                                    $val = $chartData[$m][$dist] ?? 0;
+                                                    $rowTotal += $val;
+                                                    $monthlyTotals[$m] += $val;
+                                                @endphp
+                                                <td class="{{ $val > 0 ? 'fw-bold text-primary' : 'text-muted' }}">{{ $val }}</td>
+                                            @endforeach
+                                            <td class="fw-bold bg-light">{{ $rowTotal }}</td>
+                                            @php
+                                                $grandTotal += $rowTotal;
+                                            @endphp
+                                        </tr>
+                                    @endforeach
+                                    <tr class="table-light fw-bold text-dark">
+                                        <td class="text-start">รวมทั้งหมด</td>
+                                        @foreach($monthsKeys as $m)
+                                            <td>{{ $monthlyTotals[$m] }}</td>
+                                        @endforeach
+                                        <td class="table-dark text-white">{{ $grandTotal }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tab 2: รายการข้อมูลการตาย --}}
+                <div class="tab-pane fade" id="list-pane" role="tabpanel" aria-labelledby="list-tab">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                        <div>
+                            <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-skull text-danger me-2"></i> รายการข้อมูลการตาย</h5>
+                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการตายทั้งหมดในระบบ</span>
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -105,7 +207,7 @@
                     </div>
                 </div>
 
-                {{-- Tab 2: ลิงก์ API สำหรับ รพ. --}}
+                {{-- Tab 3: ลิงก์ API สำหรับ รพ. --}}
                 <div class="tab-pane fade" id="api-pane" role="tabpanel" aria-labelledby="api-tab">
                     <div class="p-4 bg-light rounded-4 border">
                         <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-link text-primary me-2"></i> ลิงก์ API สำหรับดึงข้อมูลไปตรวจสอบที่ HOSxP ของแต่ละ รพ.</h5>
@@ -191,6 +293,98 @@
             },
             ordering: true,
             pageLength: 10
+        });
+
+        // Initialize Chart.js stacked bar chart
+        const chartData = @json($chartData);
+        const districtNames = @json($districtNames);
+        const monthsOrder = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const monthLabels = ['ต.ค.', 'พ.ย.', 'ธ.ค.', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.'];
+        const districts = ['3701', '3702', '3703', '3704', '3705', '3706', '3707'];
+
+        const colors = {
+            '3701': '#0d6efd', // Blue
+            '3702': '#21c08b', // Green
+            '3703': '#f59e0b', // Orange
+            '3704': '#10b981', // Emerald
+            '3705': '#6366f1', // Indigo
+            '3706': '#ec4899', // Pink
+            '3707': '#8b5cf6'  // Purple
+        };
+
+        const datasets = districts.map(code => {
+            const data = monthsOrder.map(m => chartData[m] ? (chartData[m][code] || 0) : 0);
+            return {
+                label: districtNames[code] || code,
+                data: data,
+                backgroundColor: colors[code] || '#6c757d',
+                borderColor: colors[code] || '#6c757d',
+                borderWidth: 1,
+                borderRadius: 4
+            };
+        });
+
+        const ctx = document.getElementById('deathChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: monthLabels,
+                datasets: datasets
+            },
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            family: 'Inter, Noto Sans Thai',
+                            size: 11
+                        },
+                        formatter: function(value) {
+                            return value > 0 ? value : '';
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                family: 'Inter, Noto Sans Thai'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        padding: 10,
+                        bodyFont: {
+                            family: 'Inter, Noto Sans Thai'
+                        },
+                        titleFont: {
+                            family: 'Inter, Noto Sans Thai',
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
         });
 
         // Copy API URL function
