@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'allow_death',
+        'allow_birth',
     ];
 
     /**
@@ -43,6 +44,16 @@ class User extends Authenticatable
     public function canAccessDeath(): bool
     {
         return $this->isAdmin() || (bool)$this->allow_death;
+    }
+
+    /**
+     * Check if the user has birth data access permission.
+     *
+     * @return bool
+     */
+    public function canAccessBirth(): bool
+    {
+        return $this->isAdmin() || (bool)$this->allow_birth;
     }
 
     /**

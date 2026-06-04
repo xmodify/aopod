@@ -48,6 +48,9 @@
                                 @if($user->allow_death)
                                     <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-3" style="font-size: 0.85rem;"><i class="fa-solid fa-skull me-1"></i> เข้าถึงข้อมูลการตาย</span>
                                 @endif
+                                @if($user->allow_birth)
+                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-3" style="font-size: 0.85rem;"><i class="fa-solid fa-baby me-1"></i> เข้าถึงข้อมูลการเกิด</span>
+                                @endif
                             </td>
                             <td class="text-secondary small">{{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : '-' }}</td>
                             <td class="text-end">
@@ -66,6 +69,7 @@
                                             data-email="{{ $user->email }}" 
                                             data-role="{{ $user->role }}"
                                             data-allow-death="{{ $user->allow_death }}"
+                                            data-allow-birth="{{ $user->allow_birth }}"
                                             style="border-radius: 8px;"
                                             aria-label="Edit User">
                                         <i class="fa-solid fa-user-pen text-primary"></i>
@@ -124,6 +128,10 @@
                         <input class="form-check-input ms-n5" type="checkbox" name="allow_death" id="addUserAllowDeath" value="1">
                         <label class="form-check-label fw-semibold text-secondary" for="addUserAllowDeath" style="font-size: 0.9rem;">อนุญาตให้เข้าถึงข้อมูลการตาย (allow_death)</label>
                     </div>
+                    <div class="mb-3 form-check form-switch p-0 ps-5">
+                        <input class="form-check-input ms-n5" type="checkbox" name="allow_birth" id="addUserAllowBirth" value="1">
+                        <label class="form-check-label fw-semibold text-secondary" for="addUserAllowBirth" style="font-size: 0.9rem;">อนุญาตให้เข้าถึงข้อมูลการเกิด (allow_birth)</label>
+                    </div>
                 </div>
                 <div class="modal-footer border-0 pt-0 pb-4 px-4">
                     <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold text-white shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); border: none;">บันทึกข้อมูล</button>
@@ -168,6 +176,10 @@
                     <div class="mb-3 form-check form-switch p-0 ps-5">
                         <input class="form-check-input ms-n5" type="checkbox" name="allow_death" id="editUserAllowDeath" value="1">
                         <label class="form-check-label fw-semibold text-secondary" for="editUserAllowDeath" style="font-size: 0.9rem;">อนุญาตให้เข้าถึงข้อมูลการตาย (allow_death)</label>
+                    </div>
+                    <div class="mb-3 form-check form-switch p-0 ps-5">
+                        <input class="form-check-input ms-n5" type="checkbox" name="allow_birth" id="editUserAllowBirth" value="1">
+                        <label class="form-check-label fw-semibold text-secondary" for="editUserAllowBirth" style="font-size: 0.9rem;">อนุญาตให้เข้าถึงข้อมูลการเกิด (allow_birth)</label>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0 pb-4 px-4">
@@ -241,12 +253,14 @@
             const email = $(this).data('email');
             const role = $(this).data('role');
             const allowDeath = $(this).data('allow-death');
+            const allowBirth = $(this).data('allow-birth');
 
             $('#editUserId').val(id);
             $('#editUserName').val(name);
             $('#editUserEmail').val(email);
             $('#editUserRole').val(role);
             $('#editUserAllowDeath').prop('checked', allowDeath == 1);
+            $('#editUserAllowBirth').prop('checked', allowBirth == 1);
 
             $('#editUserModal').modal('show');
         });

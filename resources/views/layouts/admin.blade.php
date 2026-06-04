@@ -260,6 +260,15 @@
       </li>
       @endif
 
+      @if(Auth::user()->canAccessBirth())
+      <li class="sidebar-menu-item">
+        <a href="{{ route('admin.birth-data.index') }}" class="sidebar-link {{ Request::is('admin/birth-data*') ? 'active' : '' }}">
+          <i class="fa-solid fa-baby fs-5" style="color: #21c08b !important;"></i>
+          <span>ข้อมูลการเกิด</span>
+        </a>
+      </li>
+      @endif
+
       <li class="sidebar-menu-item">
         <a href="{{ route('admin.settings') }}" class="sidebar-link {{ Request::is('admin/settings') ? 'active' : '' }}">
           <i class="fa-solid fa-gears fs-5" style="color: #21c08b !important;"></i>

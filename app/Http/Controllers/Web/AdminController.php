@@ -189,6 +189,7 @@ class AdminController extends Controller
             'password' => ['required', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
             'allow_death' => ['nullable'],
+            'allow_birth' => ['nullable'],
         ]);
 
         try {
@@ -198,6 +199,7 @@ class AdminController extends Controller
                 'password' => \Illuminate\Support\Facades\Hash::make($request->password),
                 'role' => $request->role,
                 'allow_death' => $request->has('allow_death') ? 1 : 0,
+                'allow_birth' => $request->has('allow_birth') ? 1 : 0,
             ]);
 
             return response()->json(['success' => true, 'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว']);
@@ -220,6 +222,7 @@ class AdminController extends Controller
             'password' => ['nullable', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
             'allow_death' => ['nullable'],
+            'allow_birth' => ['nullable'],
         ]);
 
         try {
@@ -227,6 +230,7 @@ class AdminController extends Controller
             $user->email = $request->email;
             $user->role = $request->role;
             $user->allow_death = $request->has('allow_death') ? 1 : 0;
+            $user->allow_birth = $request->has('allow_birth') ? 1 : 0;
             if ($request->password) {
                 $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
             }

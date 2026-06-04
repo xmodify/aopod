@@ -59,4 +59,6 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin/death-data', [\App\Http\Controllers\Web\DeathDataController::class, 'index'])->name('admin.death-data.index');
     Route::post('/admin/death-data/import', [\App\Http\Controllers\Web\DeathDataController::class, 'import'])->name('admin.death-data.import');
+    Route::get('/admin/birth-data', [\App\Http\Controllers\Web\BirthDataController::class, 'index'])->name('admin.birth-data.index');
+    Route::post('/admin/birth-data/import', [\App\Http\Controllers\Web\BirthDataController::class, 'import'])->name('admin.birth-data.import');
 });
