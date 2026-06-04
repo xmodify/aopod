@@ -211,10 +211,10 @@
                 <div class="tab-pane fade" id="api-pane" role="tabpanel" aria-labelledby="api-tab">
                     <div class="p-4 bg-light rounded-4 border">
                         <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-link text-primary me-2"></i> ลิงก์ API สำหรับดึงข้อมูลไปตรวจสอบที่ HOSxP ของแต่ละ รพ.</h5>
-                        <p class="text-secondary mb-4">โรงพยาบาลทั้ง 7 สามารถดึงข้อมูลการตายผ่าน API ด้านล่างนี้ โดยส่ง Token ที่แต่ละโรงพยาบาลมีใน **Authorization Header (Bearer token)** หรือแนบใน query parameter (<code>?token=YOUR_TOKEN</code>) เพื่อความปลอดภัย</p>
+                        <p class="text-secondary mb-4">โรงพยาบาลทั้ง 7 สามารถดึงข้อมูลการตายผ่าน API ด้านล่างนี้ โดยส่งคำขอแบบ **POST** และแนบ Token ประจำโรงพยาบาลมาใน **Authorization Header (Bearer token)** หรือแนบใน Body (<code>token</code>) เพื่อความปลอดภัยสูงสุด</p>
                         
                         <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary" style="font-size: 0.95rem;">API Endpoint URL</label>
+                            <label class="form-label fw-semibold text-secondary" style="font-size: 0.95rem;">API Endpoint URL (POST Method)</label>
                             <div class="input-group">
                                 <code class="form-control bg-white text-break d-flex align-items-center py-2 px-3 fs-6" id="api_endpoint_url" style="color: #0d6efd;">{{ url('/api/death-data') }}</code>
                                 <button class="btn btn-primary px-4 fw-bold copy-api-btn" data-target="api_endpoint_url" type="button" style="border-radius: 0 12px 12px 0;">

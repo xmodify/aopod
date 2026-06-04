@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/hospital_config', [HospitalUpdateController::class, 'update']);
 });
 
-Route::get('/death-data', [\App\Http\Controllers\Api\DeathApiController::class, 'getDeathData']);
+Route::post('/death-data', [\App\Http\Controllers\Api\DeathApiController::class, 'getDeathData']);
  
 
 

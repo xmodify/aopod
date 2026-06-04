@@ -14,8 +14,8 @@ class DeathApiController extends Controller
      */
     public function getDeathData(Request $request)
     {
-        // Get token from Authorization header or query parameter
-        $token = $request->header('Authorization') ?? $request->query('token');
+        // Get token from Authorization header or request body
+        $token = $request->header('Authorization') ?? $request->input('token');
         if ($token) {
             if (str_starts_with($token, 'Bearer ')) {
                 $token = substr($token, 7);
@@ -25,7 +25,7 @@ class DeathApiController extends Controller
         if (!$token) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized: Token is required in Authorization header or query parameter (?token=xxx)'
+                'message' => 'Unauthorized: Token is required in Authorization header (Bearer token) or request body'
             ], 401);
         }
 
