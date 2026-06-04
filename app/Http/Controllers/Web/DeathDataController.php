@@ -20,7 +20,8 @@ class DeathDataController extends Controller
         }
 
         $deaths = Death::orderBy('id', 'desc')->get();
-        return view('admin.death.index', compact('deaths'));
+        $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
+        return view('admin.death.index', compact('deaths', 'hospitals'));
     }
 
     /**
