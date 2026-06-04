@@ -416,7 +416,7 @@
             });
 
             $.ajax({
-                url: `/admin/settings/bed-types/${code}`,
+                url: "{{ route('admin.settings.bed-types.update', ':code') }}".replace(':code', code),
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -469,7 +469,7 @@
                     });
 
                     $.ajax({
-                        url: `/admin/settings/bed-types/${code}`,
+                        url: "{{ route('admin.settings.bed-types.delete', ':code') }}".replace(':code', code),
                         method: 'DELETE',
                         data: {
                             _token: "{{ csrf_token() }}"
