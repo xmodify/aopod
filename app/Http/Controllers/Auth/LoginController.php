@@ -25,12 +25,7 @@ class LoginController extends Controller
         if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
             
-            $user = Auth::guard('web')->user();
-            if ($user && $user->isAdmin()) {
-                return redirect()->intended(route('admin.index'));
-            }
-            
-            return redirect()->intended(url('dashboard'));
+            return redirect()->intended(route('admin.index'));
         }
 
         return back()->withErrors([
