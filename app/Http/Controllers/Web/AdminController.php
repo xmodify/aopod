@@ -125,6 +125,22 @@ class AdminController extends Controller
                 ], 500);
             }
 
+            // Execute composer install to get new packages
+            $output = [];
+            exec('composer install --no-interaction --no-dev --optimize-autoloader 2>&1', $output, $exitCode);
+            $composerOutput = implode("\n", $output);
+
+            if ($exitCode !== 0) {
+                // If composer is not in system path, try local composer.phar or fallback to telling the user
+                $output = [];
+                exec('php composer.phar install --no-interaction --no-dev --optimize-autoloader 2>&1', $output, $exitCode);
+                if ($exitCode !== 0) {
+                    $composerOutput = "Composer install failed (both global composer and local composer.phar). Please run 'composer install' manually on server command line. Error details:\n" . implode("\n", $output);
+                } else {
+                    $composerOutput = implode("\n", $output);
+                }
+            }
+
             // Execute php artisan optimize:clear
             $output = [];
             exec('php artisan optimize:clear 2>&1', $output, $exitCode);
@@ -132,7 +148,7 @@ class AdminController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "ดึงข้อมูลจาก Git และเคลียร์แคชระบบสำเร็จแล้ว!\n\n[Git Reset]:\n{$resetOutput}\n\n[Git Pull]:\n{$pullOutput}\n\n[Artisan Optimize]:\n{$artisanOutput}"
+                'message' => "ดึงข้อมูลจาก Git และเคลียร์แคชระบบสำเร็จแล้ว!\n\n[Git Reset]:\n{$resetOutput}\n\n[Git Pull]:\n{$pullOutput}\n\n[Composer Install]:\n{$composerOutput}\n\n[Artisan Optimize]:\n{$artisanOutput}"
             ]);
 
         } catch (\Exception $e) {
