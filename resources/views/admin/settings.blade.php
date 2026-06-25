@@ -21,7 +21,8 @@
                 </li>
             </ul>
 
-                           {{-- Tab 1: ปรับปรุงระบบ --}}
+            <div class="tab-content" id="settingsTabContent">
+                {{-- Tab 1: ปรับปรุงระบบ --}}
                 <div class="tab-pane fade show active" id="git" role="tabpanel" aria-labelledby="git-tab">
                     <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-code-branch text-green me-2"></i> การปรับปรุงระบบผ่าน Git (Deployment)</h5>
                     <p class="text-secondary mb-4">คุณสามารถดึงข้อมูลเวอร์ชันล่าสุดจาก Git Repository (กิ่ง `main`) และทำความสะอาดแคชระบบของ Laravel ได้โดยอัตโนมัติ เพื่อให้ระบบทำงานได้เต็มประสิทธิภาพและอัปเดตเป็นปัจจุบัน</p>
@@ -65,22 +66,69 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- API Integration Section --}}
+                    <div class="mt-4 pt-2">
+                        <div class="p-4 bg-light rounded-4 border">
+                            <div class="row g-4">
+                                {{-- Left Column: API info & URL --}}
+                                <div class="col-md-6">
+                                    <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-link text-primary me-2"></i> ลิงก์ API สำหรับดึงข้อมูลไปตรวจสอบที่ HOSxP ของแต่ละ รพ.</h5>
+                                    <p class="text-secondary mb-4" style="font-size: 0.9rem; line-height: 1.6;">โรงพยาบาลทั้ง 7 สามารถดึงข้อมูลการตายผ่าน API ด้านล่างนี้ โดยส่งคำขอแบบ **POST** และแนบ Token ประจำโรงพยาบาลมาใน **Authorization Header (Bearer token)** หรือแนบใน Body (<code>token</code>) เพื่อความปลอดภัยสูงสุด</p>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold text-secondary" style="font-size: 0.95rem;">API Endpoint URL (POST Method)</label>
+                                        <div class="input-group">
+                                            <code class="form-control bg-white text-break d-flex align-items-center py-2 px-3 fs-6" id="api_endpoint_url" style="color: #0d6efd;">{{ url('/api/death-data') }}</code>
+                                            <button class="btn btn-primary px-4 fw-bold copy-api-btn" data-target="api_endpoint_url" type="button" style="border-radius: 0 12px 12px 0;">
+                                                <i class="fa-solid fa-copy me-2"></i> คัดลอกลิงก์ API
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Right Column: Active Hospitals Table --}}
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-hospital text-slate-500 me-2"></i> รายชื่อโรงพยาบาลที่มีสิทธิ์ใช้งาน</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0 bg-white border" style="font-size: 0.9rem;">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th style="width: 60%;">ชื่อโรงพยาบาล</th>
+                                                    <th style="width: 40%;">รหัส รพ. (hospcode)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($hospitals as $hosp)
+                                                <tr>
+                                                    <td class="fw-bold text-dark">{{ $hosp->name }}</td>
+                                                    <td><code>{{ $hosp->hospcode }}</code></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Tab 2: ข้อมูลประเภทเตียง --}}
                 <div class="tab-pane fade" id="beds" role="tabpanel" aria-labelledby="beds-tab">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-bed text-blue me-2"></i> จัดการข้อมูลประเภทเตียง (IPD Bed Type)</h5>
-                            <span class="text-secondary small">เพิ่ม ลบ หรือแก้ไขรหัสและรายชื่อประเภทเตียงของระบบ IPD</span>
+                    <div style="max-width: 900px;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-bed text-blue me-2"></i> จัดการข้อมูลประเภทเตียง (IPD Bed Type)</h5>
+                                <span class="text-secondary small">เพิ่ม ลบ หรือแก้ไขรหัสและรายชื่อประเภทเตียงของระบบ IPD</span>
+                            </div>
+                            <button type="button" class="btn btn-primary px-4 py-2 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#addBedModal" style="border-radius: 12px; background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); border: none;">
+                                <i class="fa-solid fa-plus me-2"></i> เพิ่มประเภทเตียง
+                            </button>
                         </div>
-                        <button type="button" class="btn btn-primary px-4 py-2 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#addBedModal" style="border-radius: 12px; background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); border: none;">
-                            <i class="fa-solid fa-plus me-2"></i> เพิ่มประเภทเตียง
-                        </button>
-                    </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 w-100" id="bedsTable">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 w-100" id="bedsTable">
                             <thead>
                                 <tr class="text-secondary" style="font-size: 0.9rem;">
                                     <th style="width: 20%;">รหัสเตียง (bed_code)</th>
@@ -120,8 +168,10 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
                 </div>
+            </div>
+            </div>
+            </div> {{-- End tab-content --}}
 
             </div>
         </div>
@@ -284,7 +334,6 @@
         document.getElementById('btnUpgradeStructure').addEventListener('click', function() {
             Swal.fire({
                 title: 'ต้องการปรับปรุงโครงสร้างฐานข้อมูลใช่หรือไม่?',
-                text: "ระบบจะทำการเพิ่มตารางและฟิลด์ที่กำหนดไว้ลงในฐานข้อมูล",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#0d6efd',
@@ -299,52 +348,145 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        title: 'กำลังปรับปรุงฐานข้อมูล...',
-                        html: 'โปรดรอสักครู่ ระบบกำลังปรับปรุงตารางและข้อมูล...',
+                        title: 'กำลังอัปเกรดโครงสร้างฐานข้อมูล...',
+                        html: `
+                            <div class="mb-3 text-start">
+                                <span id="upgrade-status-text" class="fw-semibold text-secondary" style="font-size: 0.95rem;">ขั้นตอนที่ 1/2: ตรวจสอบและอัปเกรดโครงสร้างตารางระบบทั้งหมด...</span>
+                            </div>
+                            <div class="progress mb-3" style="height: 20px; border-radius: 8px;">
+                                <div id="upgrade-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%; border-radius: 8px; font-weight: bold;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            </div>
+                            <div class="p-3 bg-light rounded-3 border text-start" style="font-size: 0.85rem; line-height: 1.6; max-height: 200px; overflow-y: auto;">
+                                <div id="upgrade-step-list" class="d-flex flex-column gap-2">
+                                    <div id="step-1-status" class="text-secondary"><i class="fa-solid fa-hourglass-start me-2"></i> รอดำเนินการ ขั้นตอนที่ 1/2: ตรวจสอบและอัปเกรดโครงสร้างตารางระบบทั้งหมด...</div>
+                                    <div id="step-2-status" class="text-secondary"><i class="fa-solid fa-hourglass-start me-2"></i> รอดำเนินการ ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center mt-3">
+                                <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        `,
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         allowEnterKey: false,
                         showConfirmButton: false,
                         background: 'rgba(255, 255, 255, 0.95)',
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
+                        width: '550px',
                     });
 
-                    $.ajax({
-                        url: "{{ route('admin.settings.upgrade-structure') }}",
-                        method: 'POST',
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            Swal.fire({
-                                title: 'ปรับปรุงฐานข้อมูลสำเร็จ!',
-                                html: '<div class="text-start mt-2"><pre class="bg-dark text-light p-3 rounded-3 small" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">' + response.message + '</pre></div>',
-                                icon: 'success',
-                                confirmButtonColor: '#18a573',
-                                confirmButtonText: 'ตกลง',
-                                width: '600px',
-                                background: 'rgba(255, 255, 255, 0.95)'
-                            });
-                        },
-                        error: function(xhr) {
-                            let errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
+                    const eventSource = new EventSource("{{ route('admin.settings.upgrade-stream') }}");
+                    const progressBar = document.getElementById('upgrade-progress-bar');
+                    const statusText = document.getElementById('upgrade-status-text');
+
+                    let step1Started = false;
+                    let step2Started = false;
+                    let lastChanges = [];
+                    let lastSeedsSummary = [];
+
+                    eventSource.onmessage = function(event) {
+                        const data = JSON.parse(event.data);
+                        
+                        // Update progress bar
+                        progressBar.style.width = data.percent + '%';
+                        progressBar.setAttribute('aria-valuenow', data.percent);
+                        progressBar.innerHTML = data.percent + '%';
+                        
+                        // Update current status text
+                        statusText.innerHTML = data.status;
+
+                        // Save variables for completion screen
+                        if (data.changes) lastChanges = data.changes;
+                        if (data.seeds_summary) lastSeedsSummary = data.seeds_summary;
+
+                        const step1Div = document.getElementById('step-1-status');
+                        const step2Div = document.getElementById('step-2-status');
+
+                        if (data.step === 1) {
+                            if (!step1Started) {
+                                step1Started = true;
+                                step1Div.className = 'text-primary fw-semibold';
+                                step1Div.innerHTML = '<i class="fa-solid fa-rocket me-2"></i> เริ่มต้น ขั้นตอนที่ 1/2: ตรวจสอบและอัปเกรดโครงสร้างตารางระบบทั้งหมด...';
                             }
+                            if (data.percent >= 70) {
+                                step1Div.className = 'text-success fw-semibold';
+                                let changesText = '';
+                                if (lastChanges.length > 0) {
+                                    changesText = ' (ปรับปรุง: ' + lastChanges.join(', ') + ')';
+                                }
+                                step1Div.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> ตรวจสอบโครงสร้างทุกตารางสำเร็จ' + changesText;
+                            }
+                        } else if (data.step === 2) {
+                            step1Div.className = 'text-success fw-semibold';
+                            let changesText = '';
+                            if (lastChanges.length > 0) {
+                                changesText = ' (ปรับปรุง: ' + lastChanges.join(', ') + ')';
+                            }
+                            step1Div.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> ตรวจสอบโครงสร้างทุกตารางสำเร็จ' + changesText;
+
+                            if (!step2Started) {
+                                step2Started = true;
+                                step2Div.className = 'text-primary fw-semibold';
+                                step2Div.innerHTML = '<i class="fa-solid fa-rocket me-2"></i> เริ่มต้น ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...';
+                            }
+
+                            if (data.percent >= 100) {
+                                step2Div.className = 'text-success fw-semibold';
+                                step2Div.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> นำเข้าข้อมูลพื้นฐานสำเร็จ';
+                            }
+                        }
+                        
+                        // Check if finished
+                        if (data.percent >= 100) {
+                            eventSource.close();
+
+                            let changesText = 'ตรวจสอบโครงสร้างทุกตารางสำเร็จ';
+                            if (lastChanges.length > 0) {
+                                changesText += ' (ปรับปรุง: ' + lastChanges.join(', ') + ')';
+                            }
+
+                            let seedsText = 'นำเข้าข้อมูลพื้นฐานสำเร็จ';
+                            if (lastSeedsSummary.length > 0) {
+                                seedsText += ': ' + lastSeedsSummary.join(', ');
+                            }
+
                             Swal.fire({
-                                title: 'ปรับปรุงฐานข้อมูลล้มเหลว',
-                                html: '<div class="text-start mt-2"><pre class="bg-dark text-danger p-3 rounded-3 small" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">' + errorMessage + '</pre></div>',
-                                icon: 'error',
-                                confirmButtonColor: '#dc3545',
+                                title: 'อัปเกรดโครงสร้างเสร็จสิ้น!',
+                                html: `
+                                    <div class="text-start mb-3">
+                                        <p class="text-success fw-bold mb-2" style="font-size: 1.05rem;">การดำเนินการทุกขั้นตอนสำเร็จเรียบร้อย:</p>
+                                        <ul class="ps-3 mb-0 text-secondary" style="font-size: 0.95rem; line-height: 1.8; list-style-type: disc;">
+                                            <li class="mb-1">${changesText}</li>
+                                            <li>${seedsText}</li>
+                                        </ul>
+                                    </div>
+                                `,
+                                icon: 'success',
+                                confirmButtonColor: '#198754',
                                 confirmButtonText: 'ตกลง',
-                                width: '600px',
-                                background: 'rgba(255, 255, 255, 0.95)'
+                                width: '500px',
+                                background: 'rgba(255, 255, 255, 0.95)',
+                                customClass: {
+                                    popup: 'rounded-4 border shadow-lg',
+                                    confirmButton: 'px-4 py-2 fw-bold text-white rounded-3'
+                                }
+                            }).then(() => {
+                                location.reload();
                             });
                         }
-                    });
+                    };
+
+                    eventSource.onerror = function(err) {
+                        eventSource.close();
+                        Swal.fire({
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'การเชื่อมต่อเซิร์ฟเวอร์ล้มเหลว หรือเกิดข้อผิดพลาดระหว่างดำเนินการปรับปรุงโครงสร้างฐานข้อมูล',
+                            icon: 'error',
+                            confirmButtonColor: '#dc3545',
+                            confirmButtonText: 'ตกลง'
+                        });
+                    };
                 }
             });
         });
@@ -500,6 +642,43 @@
                 }
             });
         });
+
+        // Copy API URL function
+        $('.copy-api-btn').on('click', function() {
+            let targetId = $(this).data('target');
+            let textToCopy = $('#' + targetId).text();
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    Swal.fire({
+                        title: 'คัดลอกสำเร็จ!',
+                        text: 'คัดลอกลิงก์ API เรียบร้อยแล้ว',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }).catch(function() {
+                    fallbackCopy(textToCopy);
+                });
+            } else {
+                fallbackCopy(textToCopy);
+            }
+        });
+
+        function fallbackCopy(textToCopy) {
+            let tempInput = $('<input>');
+            $('body').append(tempInput);
+            tempInput.val(textToCopy).select();
+            document.execCommand('copy');
+            tempInput.remove();
+            Swal.fire({
+                title: 'คัดลอกสำเร็จ!',
+                text: 'คัดลอกลิงก์ API เรียบร้อยแล้ว',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
     });
 </script>
 @endpush

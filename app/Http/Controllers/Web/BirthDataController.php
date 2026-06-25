@@ -15,11 +15,9 @@ class BirthDataController extends Controller
      */
     public function index(Request $request)
     {
-        if (!auth()->check() || !auth()->user()->canAccessBirth()) {
+        if (!auth()->check() || !auth()->user()->canAccessBirthDashboard()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
-
-        $births = Birth::orderBy('id', 'desc')->get();
 
         // Calculate calendar years in B.E. (byear)
         $fiscalYears = Birth::selectRaw('DISTINCT byear as fiscal_year')
@@ -33,6 +31,11 @@ class BirthDataController extends Controller
         $defaultFiscalYear = $currentYearBE;
 
         $selectedYear = $request->input('fiscal_year', reset($fiscalYears) ?: $defaultFiscalYear);
+
+        $births = [];
+        if (auth()->user()->canAccessBirth()) {
+            $births = Birth::where('byear', $selectedYear)->orderBy('id', 'desc')->get();
+        }
 
         // Fetch births in the selected calendar year
         $birthsInYear = Birth::where('byear', $selectedYear)->get();

@@ -43,6 +43,7 @@ Route::middleware('auth:web')->group(function () {
 // Admin Area Protected Routes
 Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::get('/admin/settings/upgrade-stream', [AdminController::class, 'upgradeStructureStream'])->name('admin.settings.upgrade-stream');
     Route::post('/admin/settings/upgrade-structure', [AdminController::class, 'upgradeStructure'])->name('admin.settings.upgrade-structure');
     Route::post('/admin/settings/git-pull', [AdminController::class, 'gitPull'])->name('admin.git-pull');
     Route::post('/admin/settings/bed-types', [AdminController::class, 'createBedType'])->name('admin.settings.bed-types.create');

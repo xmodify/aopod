@@ -24,6 +24,8 @@ class User extends Authenticatable
         'role',
         'allow_death',
         'allow_birth',
+        'allow_death_dashboard',
+        'allow_birth_dashboard',
     ];
 
     /**
@@ -37,7 +39,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user has death data access permission.
+     * Check if the user has full death data access permission.
      *
      * @return bool
      */
@@ -47,13 +49,33 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user has birth data access permission.
+     * Check if the user has death dashboard access permission.
+     *
+     * @return bool
+     */
+    public function canAccessDeathDashboard(): bool
+    {
+        return $this->canAccessDeath() || (bool)$this->allow_death_dashboard;
+    }
+
+    /**
+     * Check if the user has full birth data access permission.
      *
      * @return bool
      */
     public function canAccessBirth(): bool
     {
         return $this->isAdmin() || (bool)$this->allow_birth;
+    }
+
+    /**
+     * Check if the user has birth dashboard access permission.
+     *
+     * @return bool
+     */
+    public function canAccessBirthDashboard(): bool
+    {
+        return $this->canAccessBirth() || (bool)$this->allow_birth_dashboard;
     }
 
     /**

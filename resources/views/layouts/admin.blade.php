@@ -253,7 +253,7 @@
       </li>
       @endif
 
-      @if(Auth::user()->canAccessDeath())
+      @if(Auth::user()->canAccessDeathDashboard())
       <li class="sidebar-menu-item">
         <a href="{{ route('admin.death-data.index') }}" class="sidebar-link {{ Request::is('admin/death-data*') ? 'active' : '' }}">
           <i class="fa-solid fa-skull fs-5" style="color: #dc3545 !important;"></i>
@@ -262,7 +262,7 @@
       </li>
       @endif
 
-      @if(Auth::user()->canAccessBirth())
+      @if(Auth::user()->canAccessBirthDashboard())
       <li class="sidebar-menu-item">
         <a href="{{ route('admin.birth-data.index') }}" class="sidebar-link {{ Request::is('admin/birth-data*') ? 'active' : '' }}">
           <i class="fa-solid fa-baby fs-5" style="color: #21c08b !important;"></i>
@@ -305,7 +305,7 @@
 
       <!-- User Actions -->
       <div class="d-flex align-items-center gap-3">
-        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-semibold" style="font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05);">V.690603_2300</span>
+        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-semibold" style="font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05);">V.690625_1900</span>
         <div class="dropdown">
           <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border shadow-sm px-3 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px;">
             <i class="fa-solid fa-circle-user text-green fs-5"></i>

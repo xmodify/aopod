@@ -9,7 +9,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        if (!auth()->check() || (!auth()->user()->isAdmin() && !auth()->user()->canAccessDeath() && !auth()->user()->canAccessBirth())) {
+        if (!auth()->check() || (!auth()->user()->isAdmin() && !auth()->user()->canAccessDeathDashboard() && !auth()->user()->canAccessBirthDashboard())) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
         return view('admin.index');
@@ -21,7 +21,8 @@ class AdminController extends Controller
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
         $bedTypes = \App\Models\IpdBedType::all();
-        return view('admin.settings', compact('bedTypes'));
+        $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
+        return view('admin.settings', compact('bedTypes', 'hospitals'));
     }
 
     public function createBedType(Request $request)
@@ -159,6 +160,44 @@ class AdminController extends Controller
         }
     }
 
+    public function upgradeStructureStream()
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
+
+        return response()->stream(function () {
+            if (function_exists('apache_setenv')) {
+                @apache_setenv('no-gzip', 1);
+            }
+            @ini_set('zlib.output_compression', 0);
+            @ini_set('implicit_flush', 1);
+            
+            // Clean output buffers
+            while (ob_get_level() > 0) {
+                ob_end_flush();
+            }
+
+            $service = new \App\Services\SchemaUpgradeService();
+            $service->upgrade(function ($percent, $step, $status, $details, $changes, $seedsSummary) {
+                echo "data: " . json_encode([
+                    'percent' => $percent,
+                    'step' => $step,
+                    'status' => $status,
+                    'details' => $details,
+                    'changes' => $changes,
+                    'seeds_summary' => $seedsSummary
+                ], JSON_UNESCAPED_UNICODE) . "\n\n";
+                flush();
+            });
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+            'X-Accel-Buffering' => 'no',
+        ]);
+    }
+
     public function upgradeStructure()
     {
         if (!auth()->check() || !auth()->user()->isAdmin()) {
@@ -169,17 +208,15 @@ class AdminController extends Controller
         }
 
         try {
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-            $output = \Illuminate\Support\Facades\Artisan::output();
-
+            // Keep a legacy fallback or simple check endpoint if needed, but we can return success
             return response()->json([
                 'success' => true,
-                'message' => "ปรับปรุงโครงสร้างฐานข้อมูลสำเร็จแล้ว!\n\n{$output}"
+                'message' => 'พร้อมสำหรับการปรับปรุงโครงสร้าง'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'เกิดข้อผิดพลาดในการปรับปรุงฐานข้อมูล: ' . $e->getMessage()
+                'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -205,7 +242,9 @@ class AdminController extends Controller
             'password' => ['required', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
             'allow_death' => ['nullable'],
+            'allow_death_dashboard' => ['nullable'],
             'allow_birth' => ['nullable'],
+            'allow_birth_dashboard' => ['nullable'],
         ]);
 
         try {
@@ -215,7 +254,9 @@ class AdminController extends Controller
                 'password' => \Illuminate\Support\Facades\Hash::make($request->password),
                 'role' => $request->role,
                 'allow_death' => $request->has('allow_death') ? 1 : 0,
+                'allow_death_dashboard' => $request->has('allow_death_dashboard') ? 1 : 0,
                 'allow_birth' => $request->has('allow_birth') ? 1 : 0,
+                'allow_birth_dashboard' => $request->has('allow_birth_dashboard') ? 1 : 0,
             ]);
 
             return response()->json(['success' => true, 'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว']);
@@ -238,7 +279,9 @@ class AdminController extends Controller
             'password' => ['nullable', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
             'allow_death' => ['nullable'],
+            'allow_death_dashboard' => ['nullable'],
             'allow_birth' => ['nullable'],
+            'allow_birth_dashboard' => ['nullable'],
         ]);
 
         try {
@@ -246,7 +289,9 @@ class AdminController extends Controller
             $user->email = $request->email;
             $user->role = $request->role;
             $user->allow_death = $request->has('allow_death') ? 1 : 0;
+            $user->allow_death_dashboard = $request->has('allow_death_dashboard') ? 1 : 0;
             $user->allow_birth = $request->has('allow_birth') ? 1 : 0;
+            $user->allow_birth_dashboard = $request->has('allow_birth_dashboard') ? 1 : 0;
             if ($request->password) {
                 $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
             }

@@ -13,6 +13,30 @@
 <div class="row g-4">
     <div class="col-12">
         <div class="glass-card">
+            {{-- Global Actions Header --}}
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                    <form method="GET" action="{{ route('admin.birth-data.index') }}" id="fiscalYearForm" class="d-flex align-items-center gap-2">
+                        <label class="fw-bold text-secondary mb-0" style="font-size: 0.9rem; white-space: nowrap;">เลือกปี พ.ศ.</label>
+                        <select name="fiscal_year" class="form-select py-2" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none; min-width: 140px;">
+                            @foreach($fiscalYears as $year)
+                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>ปี พ.ศ. {{ $year < 2400 ? $year + 543 : $year }}</option>
+                            @endforeach
+                            @if(empty($fiscalYears))
+                                <option value="{{ $selectedYear }}">ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</option>
+                            @endif
+                        </select>
+                    </form>
+                </div>
+                @if(auth()->user()->canAccessBirth())
+                <div>
+                    <button type="button" class="btn btn-primary px-4 py-2.5 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#importExcelModal" style="border-radius: 12px; background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); border: none;">
+                        <i class="fa-solid fa-file-excel me-2"></i> นำเข้าข้อมูลการเกิด (Excel)
+                    </button>
+                </div>
+                @endif
+            </div>
+
             {{-- Tab Navigation --}}
             <ul class="nav nav-pills mb-4 pb-2 border-bottom" id="birthTab" role="tablist" style="gap: 10px;">
                 <li class="nav-item" role="presentation">
@@ -20,11 +44,13 @@
                         <i class="fa-solid fa-chart-line"></i> แดชบอร์ดสถิติ
                     </button>
                 </li>
+                @if(auth()->user()->canAccessBirth())
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="false" style="border-radius: 12px; transition: all 0.2s;">
                         <i class="fa-solid fa-list"></i> รายการข้อมูลการเกิด
                     </button>
                 </li>
+                @endif
             </ul>
 
             {{-- Tab Content --}}
@@ -35,26 +61,6 @@
                         <div>
                             <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-chart-line text-green me-2"></i> แดชบอร์ดวิเคราะห์ข้อมูลการเกิด</h5>
                             <span class="text-secondary small">วิเคราะห์ข้อมูลการเกิดรายเดือน แยกตามอำเภอ </span>
-                        </div>
-                        <button type="button" class="btn btn-primary px-4 py-2.5 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#importExcelModal" style="border-radius: 12px; background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); border: none;">
-                            <i class="fa-solid fa-file-excel me-2"></i> นำเข้าข้อมูลการเกิด (Excel)
-                        </button>
-                    </div>
-
-                    {{-- Fiscal Year Selector --}}
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <form method="GET" action="{{ route('admin.birth-data.index') }}" id="fiscalYearForm">
-                                <label class="form-label fw-bold text-secondary" style="font-size: 0.9rem;">เลือกปี พ.ศ.</label>
-                                <select name="fiscal_year" class="form-select" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none;">
-                                    @foreach($fiscalYears as $year)
-                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>ปี พ.ศ. {{ $year < 2400 ? $year + 543 : $year }}</option>
-                                    @endforeach
-                                    @if(empty($fiscalYears))
-                                        <option value="{{ $selectedYear }}">ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</option>
-                                    @endif
-                                </select>
-                            </form>
                         </div>
                     </div>
 
@@ -123,12 +129,13 @@
                     </div>
                 </div>
 
+                @if(auth()->user()->canAccessBirth())
                 {{-- Tab 2: รายการข้อมูลการเกิด --}}
                 <div class="tab-pane fade" id="list-pane" role="tabpanel" aria-labelledby="list-tab">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                         <div>
                             <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-baby text-green me-2"></i> รายการข้อมูลการเกิด</h5>
-                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการเกิดทั้งหมดในระบบ</span>
+                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการเกิด ประจำปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</span>
                         </div>
                     </div>
 
@@ -183,6 +190,7 @@
                         </table>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>
@@ -225,14 +233,16 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Initialize DataTable for Births Table
-        $('#birthsTable').DataTable({
-            language: {
-                url: "{{ asset('assets/vendor/datatables/th.json') }}"
-            },
-            ordering: true,
-            pageLength: 10
-        });
+        // Initialize DataTable for Births Table if exists
+        if ($('#birthsTable').length) {
+            $('#birthsTable').DataTable({
+                language: {
+                    url: "{{ asset('assets/vendor/datatables/th.json') }}"
+                },
+                ordering: true,
+                pageLength: 10
+            });
+        }
 
         // Initialize Chart.js stacked bar chart
         const chartData = @json($chartData);

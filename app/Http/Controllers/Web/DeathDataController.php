@@ -15,12 +15,9 @@ class DeathDataController extends Controller
      */
     public function index(Request $request)
     {
-        if (!auth()->check() || !auth()->user()->canAccessDeath()) {
+        if (!auth()->check() || !auth()->user()->canAccessDeathDashboard()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
-
-        $deaths = Death::orderBy('id', 'desc')->get();
-        $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
 
         // Calculate calendar years in B.E. (dyear)
         $fiscalYears = Death::selectRaw('DISTINCT dyear as fiscal_year')
@@ -34,6 +31,12 @@ class DeathDataController extends Controller
         $defaultFiscalYear = $currentYearBE;
 
         $selectedYear = $request->input('fiscal_year', reset($fiscalYears) ?: $defaultFiscalYear);
+
+        $deaths = [];
+        if (auth()->user()->canAccessDeath()) {
+            $deaths = Death::where('dyear', $selectedYear)->orderBy('id', 'desc')->get();
+        }
+        $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
 
         // Fetch deaths in the selected calendar year
         $deathsInYear = Death::where('dyear', $selectedYear)->get();

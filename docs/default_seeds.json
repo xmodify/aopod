@@ -1,0 +1,246 @@
+{
+    "ipd_bed_type": [
+        {
+            "bed_code": "101100",
+            "bed_name": "แผนกอายุรกรรม",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "101201",
+            "bed_name": "แผนกอายุรกรรม ICU",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "101301",
+            "bed_name": "แผนกอายุรกรรม SEMI ICU",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "101400",
+            "bed_name": "แผนกอายุรกรรม STROK UNIT",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "101603",
+            "bed_name": "แผนกอายุรกรรม (เตียงเสริม)",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "102100",
+            "bed_name": "แผนกศัลยกรรม",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "102201",
+            "bed_name": "แผนกศัลยกรรม ICU",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "102603",
+            "bed_name": "แผนกศัลยกรรม (เตียงเสริม)",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "103100",
+            "bed_name": "แผนกสูติกรรม",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "103603",
+            "bed_name": "แผนกสูติกรรม (เตียงเสริม)",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "104100",
+            "bed_name": "แผนกนรีเวชกรรม",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "104603",
+            "bed_name": "แผนกนรีเวชกรรม (เตียงเสริม)",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "105100",
+            "bed_name": "แผนกกุมารเวชกรรม",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "105208",
+            "bed_name": "แผนกกุมารเวชกรรม NICU",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "105603",
+            "bed_name": "แผนกกุมารเวชกรรม (เตียงเสริม)",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "106100",
+            "bed_name": "แผนกโสต ศอ นาสิก",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "107100",
+            "bed_name": "แผนกจักษุวิทยา",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "108100",
+            "bed_name": "แผนกศัลยกรรมออร์โธปิดิกส์",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "109100",
+            "bed_name": "แผนกจิตเวช",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "109104",
+            "bed_name": "แผนกจิตเวช SICU",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "109602",
+            "bed_name": "บ้านภัคใจ IMC",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "109603",
+            "bed_name": "แผนกจิตเวช (เตียงเสริม)",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "109604",
+            "bed_name": "ห้องภัคใจ Acute",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "112100",
+            "bed_name": "แผนกเวชศาสตร์ฉุกเฉินและนิติเวช",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "120100",
+            "bed_name": "แผนกศัลยกรรมประสาท",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "199100",
+            "bed_name": "ทั่วไปไม่ระบุแผนก",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "199101",
+            "bed_name": "ทั่วไปไม่ระบุแผนก ICU",
+            "unit": "เตียง"
+        },
+        {
+            "bed_code": "199607",
+            "bed_name": "Homeward",
+            "unit": "เตียง"
+        }
+    ],
+    "budget_year": [
+        {
+            "LEAVE_YEAR_ID": "2560",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2560",
+            "DATE_BEGIN": "2016-10-01",
+            "DATE_END": "2017-09-30",
+            "ACTIVE": "False",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2022-01-07 04:02:42",
+            "created_at": "2020-08-19 11:45:13"
+        },
+        {
+            "LEAVE_YEAR_ID": "2561",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2561",
+            "DATE_BEGIN": "2017-10-01",
+            "DATE_END": "2018-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2022-10-03 06:09:43",
+            "created_at": "2020-08-19 11:45:13"
+        },
+        {
+            "LEAVE_YEAR_ID": "2562",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2562",
+            "DATE_BEGIN": "2018-10-01",
+            "DATE_END": "2019-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2022-10-03 06:09:43",
+            "created_at": "2020-08-19 11:45:13"
+        },
+        {
+            "LEAVE_YEAR_ID": "2563",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2563",
+            "DATE_BEGIN": "2019-10-01",
+            "DATE_END": "2020-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2022-10-03 06:09:42",
+            "created_at": "2020-08-19 11:45:13"
+        },
+        {
+            "LEAVE_YEAR_ID": "2564",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2564",
+            "DATE_BEGIN": "2020-10-01",
+            "DATE_END": "2021-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2022-05-26 08:37:48",
+            "created_at": "2020-09-02 09:09:46"
+        },
+        {
+            "LEAVE_YEAR_ID": "2565",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2565",
+            "DATE_BEGIN": "2021-10-01",
+            "DATE_END": "2022-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2021-01-13 04:53:34",
+            "created_at": "2020-10-19 13:05:21"
+        },
+        {
+            "LEAVE_YEAR_ID": "2566",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2566",
+            "DATE_BEGIN": "2022-10-01",
+            "DATE_END": "2023-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2022-09-19 02:29:24",
+            "created_at": "2022-08-05 08:54:11"
+        },
+        {
+            "LEAVE_YEAR_ID": "2567",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2567",
+            "DATE_BEGIN": "2023-10-01",
+            "DATE_END": "2024-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2023-09-25 07:36:47",
+            "created_at": "2023-09-25 07:36:33"
+        },
+        {
+            "LEAVE_YEAR_ID": "2568",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2568",
+            "DATE_BEGIN": "2024-10-01",
+            "DATE_END": "2025-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2024-09-11 15:22:35",
+            "created_at": "2024-09-11 15:22:32"
+        },
+        {
+            "LEAVE_YEAR_ID": "2569",
+            "LEAVE_YEAR_NAME": "ปีงบประมาณ 2569",
+            "DATE_BEGIN": "2025-10-01",
+            "DATE_END": "2026-09-30",
+            "ACTIVE": "True",
+            "DAY_PER_YEAR": 10,
+            "updated_at": "2024-09-11 15:22:35",
+            "created_at": "2024-09-11 15:22:32"
+        }
+    ]
+}

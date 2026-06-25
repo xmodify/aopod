@@ -13,6 +13,30 @@
 <div class="row g-4">
     <div class="col-12">
         <div class="glass-card">
+            {{-- Global Actions Header --}}
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                    <form method="GET" action="{{ route('admin.death-data.index') }}" id="fiscalYearForm" class="d-flex align-items-center gap-2">
+                        <label class="fw-bold text-secondary mb-0" style="font-size: 0.9rem; white-space: nowrap;">เลือกปี พ.ศ.</label>
+                        <select name="fiscal_year" class="form-select py-2" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none; min-width: 140px;">
+                            @foreach($fiscalYears as $year)
+                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>ปี พ.ศ. {{ $year < 2400 ? $year + 543 : $year }}</option>
+                            @endforeach
+                            @if(empty($fiscalYears))
+                                <option value="{{ $selectedYear }}">ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</option>
+                            @endif
+                        </select>
+                    </form>
+                </div>
+                @if(auth()->user()->canAccessDeath())
+                <div>
+                    <button type="button" class="btn btn-danger px-4 py-2.5 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#importExcelModal" style="border-radius: 12px; background: linear-gradient(135deg, #dc3545 0%, #ffc107 100%); border: none;">
+                        <i class="fa-solid fa-file-excel me-2"></i> นำเข้าข้อมูลการตาย (Excel)
+                    </button>
+                </div>
+                @endif
+            </div>
+
             {{-- Tab Navigation --}}
             <ul class="nav nav-pills mb-4 pb-2 border-bottom" id="deathTab" role="tablist" style="gap: 10px;">
                 <li class="nav-item" role="presentation">
@@ -20,16 +44,13 @@
                         <i class="fa-solid fa-chart-line"></i> แดชบอร์ดสถิติ
                     </button>
                 </li>
+                @if(auth()->user()->canAccessDeath())
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="false" style="border-radius: 12px; transition: all 0.2s;">
                         <i class="fa-solid fa-list"></i> รายการข้อมูลการตาย
                     </button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="api-tab" data-bs-toggle="tab" data-bs-target="#api-pane" type="button" role="tab" aria-controls="api-pane" aria-selected="false" style="border-radius: 12px; transition: all 0.2s;">
-                        <i class="fa-solid fa-link"></i> ลิงก์ API สำหรับ รพ.
-                    </button>
-                </li>
+                @endif
             </ul>
 
             {{-- Tab Content --}}
@@ -40,26 +61,6 @@
                         <div>
                             <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-chart-line text-green me-2"></i> แดชบอร์ดวิเคราะห์ข้อมูลการตาย</h5>
                             <span class="text-secondary small">วิเคราะห์ข้อมูลคนเสียชีวิตรายเดือน แยกตามอำเภอ </span>
-                        </div>
-                        <button type="button" class="btn btn-danger px-4 py-2.5 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#importExcelModal" style="border-radius: 12px; background: linear-gradient(135deg, #dc3545 0%, #ffc107 100%); border: none;">
-                            <i class="fa-solid fa-file-excel me-2"></i> นำเข้าข้อมูลการตาย (Excel)
-                        </button>
-                    </div>
-
-                    {{-- Fiscal Year Selector --}}
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <form method="GET" action="{{ route('admin.death-data.index') }}" id="fiscalYearForm">
-                                <label class="form-label fw-bold text-secondary" style="font-size: 0.9rem;">เลือกปี พ.ศ.</label>
-                                <select name="fiscal_year" class="form-select" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none;">
-                                    @foreach($fiscalYears as $year)
-                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>ปี พ.ศ. {{ $year < 2400 ? $year + 543 : $year }}</option>
-                                    @endforeach
-                                    @if(empty($fiscalYears))
-                                        <option value="{{ $selectedYear }}">ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</option>
-                                    @endif
-                                </select>
-                            </form>
                         </div>
                     </div>
 
@@ -128,12 +129,13 @@
                     </div>
                 </div>
 
+                @if(auth()->user()->canAccessDeath())
                 {{-- Tab 2: รายการข้อมูลการตาย --}}
                 <div class="tab-pane fade" id="list-pane" role="tabpanel" aria-labelledby="list-tab">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                         <div>
                             <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-skull text-danger me-2"></i> รายการข้อมูลการตาย</h5>
-                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการตายทั้งหมดในระบบ</span>
+                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการตาย ประจำปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</span>
                         </div>
                     </div>
 
@@ -206,44 +208,9 @@
                         </table>
                     </div>
                 </div>
+                @endif
 
-                {{-- Tab 3: ลิงก์ API สำหรับ รพ. --}}
-                <div class="tab-pane fade" id="api-pane" role="tabpanel" aria-labelledby="api-tab">
-                    <div class="p-4 bg-light rounded-4 border">
-                        <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-link text-primary me-2"></i> ลิงก์ API สำหรับดึงข้อมูลไปตรวจสอบที่ HOSxP ของแต่ละ รพ.</h5>
-                        <p class="text-secondary mb-4">โรงพยาบาลทั้ง 7 สามารถดึงข้อมูลการตายผ่าน API ด้านล่างนี้ โดยส่งคำขอแบบ **POST** และแนบ Token ประจำโรงพยาบาลมาใน **Authorization Header (Bearer token)** หรือแนบใน Body (<code>token</code>) เพื่อความปลอดภัยสูงสุด</p>
-                        
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary" style="font-size: 0.95rem;">API Endpoint URL (POST Method)</label>
-                            <div class="input-group">
-                                <code class="form-control bg-white text-break d-flex align-items-center py-2 px-3 fs-6" id="api_endpoint_url" style="color: #0d6efd;">{{ url('/api/death-data') }}</code>
-                                <button class="btn btn-primary px-4 fw-bold copy-api-btn" data-target="api_endpoint_url" type="button" style="border-radius: 0 12px 12px 0;">
-                                    <i class="fa-solid fa-copy me-2"></i> คัดลอกลิงก์ API
-                                </button>
-                            </div>
-                        </div>
 
-                        <h6 class="fw-bold text-dark mb-3 mt-4"><i class="fa-solid fa-hospital text-slate-500 me-2"></i> รายชื่อโรงพยาบาลที่มีสิทธิ์ใช้งาน</h6>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 bg-white border" style="font-size: 0.9rem;">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 60%;">ชื่อโรงพยาบาล</th>
-                                        <th style="width: 40%;">รหัส รพ. (hospcode)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($hospitals as $hosp)
-                                    <tr>
-                                        <td class="fw-bold text-dark">{{ $hosp->name }}</td>
-                                        <td><code>{{ $hosp->hospcode }}</code></td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
