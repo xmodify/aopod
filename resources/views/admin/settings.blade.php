@@ -40,7 +40,7 @@
                                     </div>
                                 </div>
                                 <div class="text-end mt-auto pt-2">
-                                    <button type="button" class="btn btn-success w-100 py-2.5 fw-bold text-white shadow-sm" id="btnGitPull" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); border: none;">
+                                    <button type="button" class="btn btn-danger w-100 py-2.5 fw-bold text-white shadow-sm" id="btnGitPull" style="border-radius: 12px; background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); border: none;">
                                         <i class="fa-solid fa-rotate me-2"></i> รันระบบ Git Pull
                                     </button>
                                 </div>
@@ -268,7 +268,7 @@
                 text: "ระบบจะทำการล้างโค้ดที่แก้ไขล่าสุดและดึงข้อมูลใหม่จาก Git (git reset & git pull)",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#18a573',
+                confirmButtonColor: '#dc3545',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'ใช่, ดำเนินการเลย',
                 cancelButtonText: 'ยกเลิก',
@@ -304,10 +304,12 @@
                                 title: 'อัปเดตระบบสำเร็จ!',
                                 html: '<div class="text-start mt-2"><pre class="bg-dark text-light p-3 rounded-3 small" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">' + response.message + '</pre></div>',
                                 icon: 'success',
-                                confirmButtonColor: '#18a573',
+                                confirmButtonColor: '#dc3545',
                                 confirmButtonText: 'ตกลง',
                                 width: '600px',
                                 background: 'rgba(255, 255, 255, 0.95)'
+                            }).then(() => {
+                                window.location.href = "{{ route('manage.settings') }}";
                             });
                         },
                         error: function(xhr) {
