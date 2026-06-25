@@ -242,7 +242,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.users.create') }}",
+                url: "{{ route('manage.users.create') }}",
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -306,7 +306,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.users.update', ':id') }}".replace(':id', id),
+                url: "{{ route('manage.users.update', ':id') }}".replace(':id', id),
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -359,7 +359,7 @@
                     });
 
                     $.ajax({
-                        url: "{{ route('admin.users.delete', ':id') }}".replace(':id', id),
+                        url: "{{ route('manage.users.delete', ':id') }}".replace(':id', id),
                         method: 'DELETE',
                         data: {
                             _token: "{{ csrf_token() }}"
@@ -416,7 +416,7 @@
                     });
 
                     $.ajax({
-                        url: "{{ route('admin.users.reset-password', ':id') }}".replace(':id', id),
+                        url: "{{ route('manage.users.reset-password', ':id') }}".replace(':id', id),
                         method: 'POST',
                         data: {
                             _token: "{{ csrf_token() }}"

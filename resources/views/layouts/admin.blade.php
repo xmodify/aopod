@@ -213,7 +213,7 @@
     </button>
 
     <!-- Brand -->
-    <a href="{{ route('admin.index') }}" class="sidebar-brand">
+    <a href="{{ route('manage.index') }}" class="sidebar-brand">
       <svg width="36" height="36" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -226,7 +226,7 @@
       </svg>
       <div class="d-flex flex-column">
         <span class="fs-5 fw-bold text-white leading-tight">AOPOD</span>
-        <span class="text-muted" style="font-size: 0.65rem; font-weight: 600;">ADMIN PANEL</span>
+        <span class="text-muted" style="font-size: 0.65rem; font-weight: 600;">MANAGE PANEL</span>
       </div>
     </a>
 
@@ -246,7 +246,7 @@
 
       @if(Auth::user()->isAdmin())
       <li class="sidebar-menu-item">
-        <a href="{{ route('admin.users') }}" class="sidebar-link {{ Request::is('admin/users*') ? 'active' : '' }}">
+        <a href="{{ route('manage.users') }}" class="sidebar-link {{ Request::is('manage/users*') ? 'active' : '' }}">
           <i class="fa-solid fa-user-gear fs-5" style="color: #0d6efd !important;"></i>
           <span>จัดการสมาชิก</span>
         </a>
@@ -255,7 +255,7 @@
 
       @if(Auth::user()->canAccessDeathDashboard())
       <li class="sidebar-menu-item">
-        <a href="{{ route('admin.death-data.index') }}" class="sidebar-link {{ Request::is('admin/death-data*') ? 'active' : '' }}">
+        <a href="{{ route('manage.death-data.index') }}" class="sidebar-link {{ Request::is('manage/death-data*') ? 'active' : '' }}">
           <i class="fa-solid fa-skull fs-5" style="color: #dc3545 !important;"></i>
           <span>ข้อมูลการตาย</span>
         </a>
@@ -264,7 +264,7 @@
 
       @if(Auth::user()->canAccessBirthDashboard())
       <li class="sidebar-menu-item">
-        <a href="{{ route('admin.birth-data.index') }}" class="sidebar-link {{ Request::is('admin/birth-data*') ? 'active' : '' }}">
+        <a href="{{ route('manage.birth-data.index') }}" class="sidebar-link {{ Request::is('manage/birth-data*') ? 'active' : '' }}">
           <i class="fa-solid fa-baby fs-5" style="color: #21c08b !important;"></i>
           <span>ข้อมูลการเกิด</span>
         </a>
@@ -273,7 +273,7 @@
 
       @if(Auth::user()->isAdmin())
       <li class="sidebar-menu-item">
-        <a href="{{ route('admin.settings') }}" class="sidebar-link {{ Request::is('admin/settings') ? 'active' : '' }}">
+        <a href="{{ route('manage.settings') }}" class="sidebar-link {{ Request::is('manage/settings') ? 'active' : '' }}">
           <i class="fa-solid fa-gears fs-5" style="color: #21c08b !important;"></i>
           <span>ตั้งค่าระบบ</span>
         </a>
@@ -312,7 +312,11 @@
             <span class="fw-semibold text-dark">{{ Auth::user()->name }}</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="border-radius: 12px; min-width: 180px;">
-            <li><span class="dropdown-item-text text-muted small">สิทธิ์การใช้งาน: {{ ucfirst(Auth::user()->role) }}</span></li>
+            <li>
+              <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-dark" href="{{ url('web/') }}" style="border-radius: 8px;">
+                <i class="fa-solid fa-house-chimney text-primary"></i> กลับหน้าหลัก
+              </a>
+            </li>
             <li><hr class="dropdown-divider my-1"></li>
             <li>
               <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-dark" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="border-radius: 8px;">

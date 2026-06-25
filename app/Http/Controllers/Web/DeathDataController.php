@@ -31,10 +31,15 @@ class DeathDataController extends Controller
         $defaultFiscalYear = $currentYearBE;
 
         $selectedYear = $request->input('fiscal_year', reset($fiscalYears) ?: $defaultFiscalYear);
+        $selectedDistrict = $request->input('district', 'all');
 
         $deaths = [];
         if (auth()->user()->canAccessDeath()) {
-            $deaths = Death::where('dyear', $selectedYear)->orderBy('id', 'desc')->get();
+            $deathsQuery = Death::where('dyear', $selectedYear);
+            if ($selectedDistrict !== 'all') {
+                $deathsQuery->where('lccaattmm', 'like', $selectedDistrict . '%');
+            }
+            $deaths = $deathsQuery->orderBy('id', 'desc')->get();
         }
         $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
 
@@ -69,7 +74,72 @@ class DeathDataController extends Controller
             }
         }
 
-        return view('admin.death.index', compact('deaths', 'hospitals', 'fiscalYears', 'selectedYear', 'chartData', 'districtNames'));
+        // --- Calculate Top 20 Causes of Death (Primary Diagnosis) ---
+        $topCausesQuery = Death::where('dyear', $selectedYear);
+        if ($selectedDistrict !== 'all') {
+            $topCausesQuery->where('lccaattmm', 'like', $selectedDistrict . '%');
+        }
+        $topCausesRaw = $topCausesQuery->select(
+            'ncause',
+            DB::raw('SUM(CASE WHEN sex = "1" THEN 1 ELSE 0 END) as male_count'),
+            DB::raw('SUM(CASE WHEN sex = "2" THEN 1 ELSE 0 END) as female_count'),
+            DB::raw('COUNT(*) as total_count')
+        )
+        ->groupBy('ncause')
+        ->orderByDesc('total_count')
+        ->take(20)
+        ->get();
+
+        $topCauses = $topCausesRaw->map(function ($cause) {
+            return [
+                'code' => $cause->ncause ?: '-',
+                'description' => \App\Services\Icd10Service::getDescription($cause->ncause),
+                'male' => (int)$cause->male_count,
+                'female' => (int)$cause->female_count,
+                'total' => (int)$cause->total_count,
+            ];
+        });
+
+        // --- Calculate 21 Cause Groups (รง.504) ---
+        $allCausesQuery = Death::where('dyear', $selectedYear);
+        if ($selectedDistrict !== 'all') {
+            $allCausesQuery->where('lccaattmm', 'like', $selectedDistrict . '%');
+        }
+        $allDeathsForGrouping = $allCausesQuery->select('ncause', 'sex')->get();
+
+        $causeGroups = [];
+        foreach (\App\Services\Icd10Service::getAllGroups() as $groupNum => $groupName) {
+            $causeGroups[$groupNum] = [
+                'group_num' => $groupNum,
+                'name' => $groupName,
+                'male' => 0,
+                'female' => 0,
+                'total' => 0,
+            ];
+        }
+
+        foreach ($allDeathsForGrouping as $deathRecord) {
+            $groupNum = \App\Services\Icd10Service::getGroupNumber($deathRecord->ncause);
+            if (isset($causeGroups[$groupNum])) {
+                if ($deathRecord->sex == '1') {
+                    $causeGroups[$groupNum]['male']++;
+                } elseif ($deathRecord->sex == '2') {
+                    $causeGroups[$groupNum]['female']++;
+                }
+                $causeGroups[$groupNum]['total']++;
+            }
+        }
+
+        // Sort groups by total count descending
+        usort($causeGroups, function ($a, $b) {
+            return $b['total'] <=> $a['total'];
+        });
+
+        return view('admin.death.index', compact(
+            'deaths', 'hospitals', 'fiscalYears', 'selectedYear', 
+            'chartData', 'districtNames', 'selectedDistrict', 
+            'topCauses', 'causeGroups'
+        ));
     }
 
     /**

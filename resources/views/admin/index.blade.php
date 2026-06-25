@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'แผงควบคุมผู้ดูแลระบบ - AOPOD')
-@section('header_title', 'แผงควบคุม (Admin Dashboard)')
+@section('title', 'การจัดการระบบ - AOPOD')
+@section('header_title', 'Dashboard')
 
 @section('content')
 <div class="row g-4">
@@ -10,7 +10,7 @@
         <div class="glass-card p-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" style="background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(33, 192, 139, 0.1) 100%);">
             <div>
                 <h3 class="fw-bold mb-1" style="color: var(--admin-primary);">ยินดีต้อนรับกลับมา, {{ Auth::user()->name }}! 👋</h3>
-                <p class="text-secondary mb-0">นี่คือแผงควบคุมระบบสำหรับผู้ดูแลระบบ AOPOD (Amnatcharoen One Province One Data)</p>
+                <p class="text-secondary mb-0">ระบบการจัดการข้อมูล : AOPOD (Amnatcharoen One Province One Data)</p>
             </div>
             <div>
                 <a href="{{ url('web') }}" class="btn btn-outline-primary px-4 py-2" style="border-radius: 12px; font-weight: 500;">

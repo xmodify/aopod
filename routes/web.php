@@ -40,29 +40,29 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/change-password', [LoginController::class, 'changePassword'])->name('change-password');
 });
 
-// Admin Area Protected Routes
+// Manage Area Protected Routes (Admin Only)
 Route::middleware(['auth:web', 'admin'])->group(function () {
-    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
-    Route::get('/admin/settings/upgrade-stream', [AdminController::class, 'upgradeStructureStream'])->name('admin.settings.upgrade-stream');
-    Route::post('/admin/settings/upgrade-structure', [AdminController::class, 'upgradeStructure'])->name('admin.settings.upgrade-structure');
-    Route::post('/admin/settings/git-pull', [AdminController::class, 'gitPull'])->name('admin.git-pull');
-    Route::post('/admin/settings/bed-types', [AdminController::class, 'createBedType'])->name('admin.settings.bed-types.create');
-    Route::put('/admin/settings/bed-types/{bed_code}', [AdminController::class, 'updateBedType'])->name('admin.settings.bed-types.update');
-    Route::delete('/admin/settings/bed-types/{bed_code}', [AdminController::class, 'deleteBedType'])->name('admin.settings.bed-types.delete');
+    Route::get('/manage/settings', [AdminController::class, 'settings'])->name('manage.settings');
+    Route::get('/manage/settings/upgrade-stream', [AdminController::class, 'upgradeStructureStream'])->name('manage.settings.upgrade-stream');
+    Route::post('/manage/settings/upgrade-structure', [AdminController::class, 'upgradeStructure'])->name('manage.settings.upgrade-structure');
+    Route::post('/manage/settings/git-pull', [AdminController::class, 'gitPull'])->name('manage.git-pull');
+    Route::post('/manage/settings/bed-types', [AdminController::class, 'createBedType'])->name('manage.settings.bed-types.create');
+    Route::put('/manage/settings/bed-types/{bed_code}', [AdminController::class, 'updateBedType'])->name('manage.settings.bed-types.update');
+    Route::delete('/manage/settings/bed-types/{bed_code}', [AdminController::class, 'deleteBedType'])->name('manage.settings.bed-types.delete');
 
     // User Management Routes
-    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
-    Route::post('/admin/users', [AdminController::class, 'createUser'])->name('admin.users.create');
-    Route::put('/admin/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
-    Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
-    Route::post('/admin/users/{user}/reset-password', [AdminController::class, 'resetPassword'])->name('admin.users.reset-password');
+    Route::get('/manage/users', [AdminController::class, 'users'])->name('manage.users');
+    Route::post('/manage/users', [AdminController::class, 'createUser'])->name('manage.users.create');
+    Route::put('/manage/users/{user}', [AdminController::class, 'updateUser'])->name('manage.users.update');
+    Route::delete('/manage/users/{user}', [AdminController::class, 'deleteUser'])->name('manage.users.delete');
+    Route::post('/manage/users/{user}/reset-password', [AdminController::class, 'resetPassword'])->name('manage.users.reset-password');
 });
 
-// Death Data Routes (Requires Web Authentication, access checked in Controller)
+// Manage Data Routes (Requires Web Authentication, access checked in Controller)
 Route::middleware(['auth:web'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-    Route::get('/admin/death-data', [\App\Http\Controllers\Web\DeathDataController::class, 'index'])->name('admin.death-data.index');
-    Route::post('/admin/death-data/import', [\App\Http\Controllers\Web\DeathDataController::class, 'import'])->name('admin.death-data.import');
-    Route::get('/admin/birth-data', [\App\Http\Controllers\Web\BirthDataController::class, 'index'])->name('admin.birth-data.index');
-    Route::post('/admin/birth-data/import', [\App\Http\Controllers\Web\BirthDataController::class, 'import'])->name('admin.birth-data.import');
+    Route::get('/manage', [AdminController::class, 'index'])->name('manage.index');
+    Route::get('/manage/death-data', [\App\Http\Controllers\Web\DeathDataController::class, 'index'])->name('manage.death-data.index');
+    Route::post('/manage/death-data/import', [\App\Http\Controllers\Web\DeathDataController::class, 'import'])->name('manage.death-data.import');
+    Route::get('/manage/birth-data', [\App\Http\Controllers\Web\BirthDataController::class, 'index'])->name('manage.birth-data.index');
+    Route::post('/manage/birth-data/import', [\App\Http\Controllers\Web\BirthDataController::class, 'import'])->name('manage.birth-data.import');
 });

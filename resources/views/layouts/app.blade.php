@@ -380,12 +380,6 @@
               </div>
               <div class="navbar-nav ms-auto d-flex align-items-center gap-2 py-2 py-xl-0">
                   @auth
-                      @if(Auth::user()->isAdmin() || Auth::user()->canAccessDeath() || Auth::user()->canAccessBirth())
-                          <a class="btn-glass-action" href="{{ route('admin.index') }}">
-                              <i class="fa-solid fa-gauge-high"></i> แผงควบคุม
-                          </a>
-                      @endif
-
                       <!-- User Actions Dropdown -->
                       <div class="dropdown">
                           <button class="btn-glass-action dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -393,6 +387,11 @@
                               <span>{{ Auth::user()->name }}</span>
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="border-radius: 16px; min-width: 200px;">
+                              <li>
+                                  <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-dark" href="{{ route('manage.index') }}" style="border-radius: 10px;">
+                                      <i class="fa-solid fa-screwdriver-wrench text-primary"></i> จัดการข้อมูล
+                                  </a>
+                              </li>
                               <li>
                                   <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-dark" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="border-radius: 10px;">
                                       <i class="fa-solid fa-key text-warning"></i> เปลี่ยนรหัสผ่าน

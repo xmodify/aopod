@@ -9,7 +9,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        if (!auth()->check() || (!auth()->user()->isAdmin() && !auth()->user()->canAccessDeathDashboard() && !auth()->user()->canAccessBirthDashboard())) {
+        if (!auth()->check()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
         return view('admin.index');

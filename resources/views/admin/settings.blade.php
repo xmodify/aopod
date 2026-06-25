@@ -293,7 +293,7 @@
                     });
 
                     $.ajax({
-                        url: "{{ route('admin.git-pull') }}",
+                        url: "{{ route('manage.git-pull') }}",
                         method: 'POST',
                         data: {
                             _token: "{{ csrf_token() }}"
@@ -376,7 +376,7 @@
                         width: '550px',
                     });
 
-                    const eventSource = new EventSource("{{ route('admin.settings.upgrade-stream') }}");
+                    const eventSource = new EventSource("{{ route('manage.settings.upgrade-stream') }}");
                     const progressBar = document.getElementById('upgrade-progress-bar');
                     const statusText = document.getElementById('upgrade-status-text');
 
@@ -503,7 +503,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.settings.bed-types.create') }}",
+                url: "{{ route('manage.settings.bed-types.create') }}",
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -558,7 +558,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.settings.bed-types.update', ':code') }}".replace(':code', code),
+                url: "{{ route('manage.settings.bed-types.update', ':code') }}".replace(':code', code),
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
@@ -611,7 +611,7 @@
                     });
 
                     $.ajax({
-                        url: "{{ route('admin.settings.bed-types.delete', ':code') }}".replace(':code', code),
+                        url: "{{ route('manage.settings.bed-types.delete', ':code') }}".replace(':code', code),
                         method: 'DELETE',
                         data: {
                             _token: "{{ csrf_token() }}"

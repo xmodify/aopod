@@ -16,7 +16,7 @@
             {{-- Global Actions Header --}}
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
                 <div class="d-flex align-items-center gap-3">
-                    <form method="GET" action="{{ route('admin.birth-data.index') }}" id="fiscalYearForm" class="d-flex align-items-center gap-2">
+                    <form method="GET" action="{{ route('manage.birth-data.index') }}" id="fiscalYearForm" class="d-flex align-items-center gap-2">
                         <label class="fw-bold text-secondary mb-0" style="font-size: 0.9rem; white-space: nowrap;">เลือกปี พ.ศ.</label>
                         <select name="fiscal_year" class="form-select py-2" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none; min-width: 140px;">
                             @foreach($fiscalYears as $year)
@@ -72,11 +72,15 @@
                         </div>
                     </div>
 
-                    {{-- Data Table Section below the Chart --}}
                     <div class="p-4 bg-white rounded-4 border shadow-sm mb-4">
-                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปจำนวนคนเกิดรายเดือน แยกตามอำเภอ (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปจำนวนคนเกิดรายเดือน แยกตามอำเภอ (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                            <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1.5 d-flex align-items-center gap-1" onclick="exportTableToExcel('monthlyBirthTable', 'monthly_births_by_district')" style="border-radius: 10px;">
+                                <i class="fa-solid fa-file-excel"></i> Excel
+                            </button>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                            <table class="table table-bordered table-hover align-middle mb-0 text-center" id="monthlyBirthTable" style="font-size: 0.85rem;">
                                 <thead class="table-light">
                                     <tr>
                                         <th style="width: 20%; text-align: left;">อำเภอ</th>
@@ -143,7 +147,6 @@
                         <table class="table table-hover align-middle mb-0 w-100" id="birthsTable" style="font-size: 0.9rem;">
                             <thead>
                                 <tr class="text-secondary" style="font-size: 0.85rem;">
-                                    <th>ลำดับ (No)</th>
                                     <th>จังหวัด</th>
                                     <th>อำเภอ</th>
                                     <th>ตำบล</th>
@@ -159,7 +162,6 @@
                             <tbody>
                                 @foreach($births as $birth)
                                 <tr>
-                                    <td class="fw-bold text-dark">#{{ $birth->no ?? '-' }}</td>
                                     <td>{{ $birth->prov ?? '-' }}</td>
                                     <td>{{ $birth->amp ?? '-' }}</td>
                                     <td>{{ $birth->tb ?? '-' }}</td>
@@ -231,6 +233,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
     $(document).ready(function() {
         // Initialize DataTable for Births Table if exists
@@ -240,7 +243,11 @@
                     url: "{{ asset('assets/vendor/datatables/th.json') }}"
                 },
                 ordering: true,
-                pageLength: 10
+                pageLength: 10,
+                initComplete: function() {
+                    var excelBtn = $('<button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1.5 ms-2 d-inline-flex align-items-center gap-1" onclick="exportTableToExcel(\'birthsTable\', \'births_list\')" style="border-radius: 10px;"><i class="fa-solid fa-file-excel"></i> Excel</button>');
+                    $('#birthsTable_filter').append(excelBtn);
+                }
             });
         }
 
@@ -352,7 +359,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.birth-data.import') }}",
+                url: "{{ route('manage.birth-data.import') }}",
                 method: 'POST',
                 data: formData,
                 processData: false,
@@ -382,5 +389,37 @@
             });
         });
     });
+
+    // Excel Export Helper function (global scope) using SheetJS for real .xlsx files
+    function exportTableToExcel(tableID, filename = ''){
+        var $table = $('#' + tableID);
+        if ($table.length === 0) {
+            console.error('Table not found: ' + tableID);
+            return;
+        }
+        
+        var isDataTable = $.fn.DataTable.isDataTable('#' + tableID);
+        var dt;
+        var oldLength;
+        
+        if (isDataTable) {
+            dt = $table.DataTable();
+            oldLength = dt.page.len();
+            // Show all rows
+            dt.page.len(-1).draw(false);
+        }
+        
+        // Use SheetJS to convert table DOM to a workbook
+        var tableElement = document.getElementById(tableID);
+        var wb = XLSX.utils.table_to_book(tableElement, { raw: true });
+        
+        // Restore length
+        if (isDataTable) {
+            dt.page.len(oldLength).draw(false);
+        }
+        
+        var outFilename = filename ? filename + '_' + new Date().toISOString().slice(0,10) + '.xlsx' : 'excel_data.xlsx';
+        XLSX.writeFile(wb, outFilename);
+    }
 </script>
 @endpush

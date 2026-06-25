@@ -16,7 +16,8 @@
             {{-- Global Actions Header --}}
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
                 <div class="d-flex align-items-center gap-3">
-                    <form method="GET" action="{{ route('admin.death-data.index') }}" id="fiscalYearForm" class="d-flex align-items-center gap-2">
+                    <form method="GET" action="{{ route('manage.death-data.index') }}" id="fiscalYearForm" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="district" value="{{ $selectedDistrict }}">
                         <label class="fw-bold text-secondary mb-0" style="font-size: 0.9rem; white-space: nowrap;">เลือกปี พ.ศ.</label>
                         <select name="fiscal_year" class="form-select py-2" onchange="document.getElementById('fiscalYearForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none; min-width: 140px;">
                             @foreach($fiscalYears as $year)
@@ -44,6 +45,11 @@
                         <i class="fa-solid fa-chart-line"></i> แดชบอร์ดสถิติ
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="top20-tab" data-bs-toggle="tab" data-bs-target="#top20-pane" type="button" role="tab" aria-controls="top20-pane" aria-selected="false" style="border-radius: 12px; transition: all 0.2s;">
+                        <i class="fa-solid fa-ranking-star"></i> 20 อันดับสาเหตุการตาย
+                    </button>
+                </li>
                 @if(auth()->user()->canAccessDeath())
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="false" style="border-radius: 12px; transition: all 0.2s;">
@@ -60,7 +66,7 @@
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                         <div>
                             <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-chart-line text-green me-2"></i> แดชบอร์ดวิเคราะห์ข้อมูลการตาย</h5>
-                            <span class="text-secondary small">วิเคราะห์ข้อมูลคนเสียชีวิตรายเดือน แยกตามอำเภอ </span>
+                            <span class="text-secondary small">วิเคราะห์ข้อมูลคนเสียชีวิตรายเดือน แยกตามอำเภอ ประจำปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</span>
                         </div>
                     </div>
 
@@ -74,9 +80,14 @@
 
                     {{-- Data Table Section below the Chart --}}
                     <div class="p-4 bg-white rounded-4 border shadow-sm mb-4">
-                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปจำนวนคนเสียชีวิตรายเดือน แยกตามอำเภอ (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปจำนวนคนเสียชีวิตรายเดือน แยกตามอำเภอ (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                            <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1.5 d-flex align-items-center gap-1" onclick="exportTableToExcel('monthlyDeathTable', 'monthly_deaths_by_district')" style="border-radius: 10px;">
+                                <i class="fa-solid fa-file-excel"></i> Excel
+                            </button>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                            <table class="table table-bordered table-hover align-middle mb-0 text-center" id="monthlyDeathTable" style="font-size: 0.85rem;">
                                 <thead class="table-light">
                                     <tr>
                                         <th style="width: 20%; text-align: left;">อำเภอ</th>
@@ -129,13 +140,170 @@
                     </div>
                 </div>
 
+                {{-- Tab 2: 20 อันดับสาเหตุการตาย (Parent Tab containing district filter & nested sub-tabs) --}}
+                <div class="tab-pane fade" id="top20-pane" role="tabpanel" aria-labelledby="top20-tab">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                        <div>
+                            <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-ranking-star text-green me-2"></i> 20 อันดับสาเหตุการตาย</h5>
+                            <span class="text-secondary small">ข้อมูล 20 อันดับสาเหตุการตาย {{ $selectedDistrict === 'all' ? 'จ.อำนาจเจริญ' : ($districtNames[$selectedDistrict] ?? '') }} ประจำปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="fw-bold text-secondary mb-0" style="font-size: 0.9rem; white-space: nowrap;">เลือกอำเภอ:</label>
+                            <form method="GET" action="{{ route('manage.death-data.index') }}" id="districtFilterForm">
+                                <input type="hidden" name="fiscal_year" value="{{ $selectedYear }}">
+                                <select name="district" class="form-select py-2" onchange="document.getElementById('districtFilterForm').submit();" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); box-shadow: none; min-width: 200px;">
+                                    <option value="all" {{ (string)$selectedDistrict === 'all' ? 'selected' : '' }}>จ.อำนาจเจริญ</option>
+                                    @foreach($districtNames as $code => $name)
+                                        <option value="{{ $code }}" {{ (string)$selectedDistrict === (string)$code ? 'selected' : '' }}>{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Nested Sub-Tabs --}}
+                    <ul class="nav nav-tabs mb-4" id="top20SubTab" role="tablist" style="gap: 5px; border-bottom: 2px solid #dee2e6;">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold px-4 py-2.5 text-danger border-0 border-bottom" id="sub-top20-tab" data-bs-toggle="tab" data-bs-target="#sub-top20-pane" type="button" role="tab" aria-controls="sub-top20-pane" aria-selected="true" style="border-radius: 0;">
+                                <i class="fa-solid fa-ranking-star me-1"></i> 20 อันดับโรค (Primary Diagnosis)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold px-4 py-2.5 text-warning border-0 border-bottom" id="sub-group504-tab" data-bs-toggle="tab" data-bs-target="#sub-group504-pane" type="button" role="tab" aria-controls="sub-group504-pane" aria-selected="false" style="border-radius: 0;">
+                                <i class="fa-solid fa-list-ol me-1"></i> 21 กลุ่มสาเหตุ (รง.504)
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="top20SubTabContent">
+                        {{-- Sub-Tab A: 20 อันดับโรค --}}
+                        <div class="tab-pane fade show active" id="sub-top20-pane" role="tabpanel" aria-labelledby="sub-top20-tab">
+                            <div class="row g-4">
+                                {{-- Left Column: Chart --}}
+                                <div class="col-lg-6">
+                                    <div class="p-4 bg-white rounded-4 border shadow-sm d-flex flex-column" style="height: 550px; position: relative;">
+                                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-bar text-danger me-2"></i> อันดับโรคการเสียชีวิต (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                                        <div class="flex-grow-1" style="height: calc(100% - 40px); width: 100%;">
+                                            <canvas id="topCausesChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Right Column: Table --}}
+                                <div class="col-lg-6">
+                                    <div class="p-4 bg-white rounded-4 border shadow-sm d-flex flex-column" style="height: 550px;">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุปอันดับโรคการเสียชีวิต (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <input type="text" id="topCausesSearch" class="form-control form-control-sm py-1.5" placeholder="ค้นหาโรค..." style="border-radius: 8px; max-width: 160px; font-size: 0.8rem; border-color: rgba(33, 192, 139, 0.25); box-shadow: none;">
+                                                <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1.5 d-flex align-items-center gap-1" onclick="exportTableToExcel('topCausesTable', '20_causes_death')" style="border-radius: 10px;">
+                                                    <i class="fa-solid fa-file-excel"></i> Excel
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive flex-grow-1" style="max-height: 420px; overflow-y: auto;">
+                                            <table class="table table-hover align-middle mb-0" id="topCausesTable" style="font-size: 0.85rem;">
+                                                <thead class="table-light sticky-top">
+                                                    <tr>
+                                                        <th class="text-center" style="width: 10%;">อันดับ</th>
+                                                        <th>รหัส - ชื่อโรคส่งต่อ (ICD10)</th>
+                                                        <th class="text-center" style="width: 15%;">ชาย</th>
+                                                        <th class="text-center" style="width: 15%;">หญิง</th>
+                                                        <th class="text-center fw-bold text-dark" style="width: 15%;">รวม</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($topCauses as $idx => $cause)
+                                                    <tr>
+                                                        <td class="text-center fw-bold">{{ $idx + 1 }}</td>
+                                                        <td>{{ $cause['description'] }}</td>
+                                                        <td class="text-center text-primary">{{ $cause['male'] }}</td>
+                                                        <td class="text-center text-pink">{{ $cause['female'] }}</td>
+                                                        <td class="text-center fw-bold text-dark bg-light bg-opacity-50">{{ $cause['total'] }}</td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="5" class="text-center text-muted py-4">ไม่พบข้อมูลสาเหตุการตาย</td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Sub-Tab B: 21 กลุ่มสาเหตุ (รง.504) --}}
+                        <div class="tab-pane fade" id="sub-group504-pane" role="tabpanel" aria-labelledby="sub-group504-tab">
+                            <div class="row g-4">
+                                {{-- Left Column: Chart --}}
+                                <div class="col-lg-6">
+                                    <div class="p-4 bg-white rounded-4 border shadow-sm d-flex flex-column" style="height: 550px; position: relative;">
+                                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-bar text-warning me-2"></i> สัดส่วนการเสียชีวิตแยกตาม 21 กลุ่มโรค (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                                        <div class="flex-grow-1" style="height: calc(100% - 40px); width: 100%;">
+                                            <canvas id="causeGroupsChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Right Column: Table --}}
+                                <div class="col-lg-6">
+                                    <div class="p-4 bg-white rounded-4 border shadow-sm d-flex flex-column" style="height: 550px;">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-table text-secondary me-2"></i> ตารางสรุป 21 กลุ่มสาเหตุโรค (ปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }})</h6>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <input type="text" id="causeGroupsSearch" class="form-control form-control-sm py-1.5" placeholder="ค้นหากลุ่มโรค..." style="border-radius: 8px; max-width: 160px; font-size: 0.8rem; border-color: rgba(33, 192, 139, 0.25); box-shadow: none;">
+                                                <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1.5 d-flex align-items-center gap-1" onclick="exportTableToExcel('causeGroupsTable', '21_groups_death')" style="border-radius: 10px;">
+                                                    <i class="fa-solid fa-file-excel"></i> Excel
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive flex-grow-1" style="max-height: 420px; overflow-y: auto;">
+                                            <table class="table table-hover align-middle mb-0" id="causeGroupsTable" style="font-size: 0.85rem;">
+                                                <thead class="table-light sticky-top">
+                                                    <tr>
+                                                        <th class="text-center" style="width: 10%;">อันดับ</th>
+                                                        <th>กลุ่มสาเหตุ (รง.504)</th>
+                                                        <th class="text-center" style="width: 15%;">ชาย</th>
+                                                        <th class="text-center" style="width: 15%;">หญิง</th>
+                                                        <th class="text-center fw-bold text-dark" style="width: 15%;">รวม</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php $rank = 1; @endphp
+                                                    @forelse($causeGroups as $group)
+                                                    @if($group['total'] > 0)
+                                                    <tr>
+                                                        <td class="text-center fw-bold">{{ $rank++ }}</td>
+                                                        <td>{{ $group['name'] }}</td>
+                                                        <td class="text-center text-primary">{{ $group['male'] }}</td>
+                                                        <td class="text-center text-pink">{{ $group['female'] }}</td>
+                                                        <td class="text-center fw-bold text-dark bg-light bg-opacity-50">{{ $group['total'] }}</td>
+                                                    </tr>
+                                                    @endif
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="5" class="text-center text-muted py-4">ไม่พบข้อมูลสาเหตุการตาย</td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 @if(auth()->user()->canAccessDeath())
-                {{-- Tab 2: รายการข้อมูลการตาย --}}
+                {{-- Tab 3: รายการข้อมูลการตาย --}}
                 <div class="tab-pane fade" id="list-pane" role="tabpanel" aria-labelledby="list-tab">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                         <div>
                             <h5 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-skull text-danger me-2"></i> รายการข้อมูลการตาย</h5>
-                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการตาย ประจำปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }}</span>
+                            <span class="text-secondary small">ตารางแสดงรายละเอียดข้อมูลการตาย ประจำปี พ.ศ. {{ $selectedYear < 2400 ? $selectedYear + 543 : $selectedYear }} | พื้นที่: {{ $selectedDistrict === 'all' ? 'จ.อำนาจเจริญ' : ($districtNames[$selectedDistrict] ?? '') }}</span>
                         </div>
                     </div>
 
@@ -160,7 +328,7 @@
                             <tbody>
                                 @foreach($deaths as $death)
                                 <tr>
-                                    <td class="fw-bold text-dark">{{ $death->pid }}</td>
+                                    <td class="fw-bold text-dark" style="mso-number-format:'\@';">{{ $death->pid }}</td>
                                     <td>
                                         @if($death->sex == '1')
                                             <span class="badge bg-primary bg-opacity-10 text-primary px-2.5 py-1.5 rounded-3">ชาย</span>
@@ -251,6 +419,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
     $(document).ready(function() {
         // Initialize DataTable for Deaths Table
@@ -259,7 +428,11 @@
                 url: "{{ asset('assets/vendor/datatables/th.json') }}"
             },
             ordering: true,
-            pageLength: 10
+            pageLength: 10,
+            initComplete: function() {
+                var excelBtn = $('<button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1.5 ms-2 d-inline-flex align-items-center gap-1" onclick="exportTableToExcel(\'deathsTable\', \'deaths_list\')" style="border-radius: 10px;"><i class="fa-solid fa-file-excel"></i> Excel</button>');
+                $('#deathsTable_filter').append(excelBtn);
+            }
         });
 
         // Initialize Chart.js stacked bar chart
@@ -354,6 +527,118 @@
             }
         });
 
+        // --- Store and restore active tab from localStorage ---
+        const activeTab = localStorage.getItem('death_active_tab');
+        if (activeTab) {
+            const tabEl = document.querySelector(`#deathTab button[data-bs-target="${activeTab}"]`);
+            if (tabEl) {
+                const tab = new bootstrap.Tab(tabEl);
+                tab.show();
+            }
+        }
+        
+        $('#deathTab button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            localStorage.setItem('death_active_tab', $(e.target).attr('data-bs-target'));
+        });
+
+        // --- Store and restore active sub-tab from localStorage ---
+        const activeSubTab = localStorage.getItem('death_active_sub_tab');
+        if (activeSubTab) {
+            const subTabEl = document.querySelector(`#top20SubTab button[data-bs-target="${activeSubTab}"]`);
+            if (subTabEl) {
+                const tab = new bootstrap.Tab(subTabEl);
+                tab.show();
+            }
+        }
+        
+        $('#top20SubTab button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            localStorage.setItem('death_active_sub_tab', $(e.target).attr('data-bs-target'));
+        });
+
+        // --- Chart for Top 20 Causes of Death (Primary Diagnosis) ---
+        const topCausesData = @json($topCauses);
+        const topCausesLabels = topCausesData.map(item => item.code);
+        const topCausesTotals = topCausesData.map(item => item.total);
+        const topCausesTooltips = topCausesData.map(item => item.description);
+
+        const ctxTop = document.getElementById('topCausesChart').getContext('2d');
+        new Chart(ctxTop, {
+            type: 'bar',
+            data: {
+                labels: topCausesLabels,
+                datasets: [{
+                    label: 'จำนวนผู้เสียชีวิต (ราย)',
+                    data: topCausesTotals,
+                    backgroundColor: 'rgba(220, 53, 69, 0.85)',
+                    borderColor: '#dc3545',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                return ` จำนวน: ${context.parsed.x} ราย (${topCausesTooltips[idx]})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { beginAtZero: true, ticks: { precision: 0 } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // --- Chart for 21 Cause Groups (รง.504) ---
+        const causeGroupsData = @json($causeGroups).filter(item => item.total > 0).slice(0, 10);
+        const causeGroupsLabels = causeGroupsData.map(item => `กลุ่มที่ ${item.group_num}`);
+        const causeGroupsTotals = causeGroupsData.map(item => item.total);
+        const causeGroupsNames = causeGroupsData.map(item => item.name);
+
+        const ctxGroups = document.getElementById('causeGroupsChart').getContext('2d');
+        new Chart(ctxGroups, {
+            type: 'bar',
+            data: {
+                labels: causeGroupsLabels,
+                datasets: [{
+                    label: 'จำนวนผู้เสียชีวิต (ราย)',
+                    data: causeGroupsTotals,
+                    backgroundColor: 'rgba(245, 158, 11, 0.85)',
+                    borderColor: '#f59e0b',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                return ` จำนวน: ${context.parsed.x} ราย (${causeGroupsNames[idx]})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { beginAtZero: true, ticks: { precision: 0 } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
         // Copy API URL function
         $('.copy-api-btn').on('click', function() {
             let targetId = $(this).data('target');
@@ -407,7 +692,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.death-data.import') }}",
+                url: "{{ route('manage.death-data.import') }}",
                 method: 'POST',
                 data: formData,
                 processData: false,
@@ -436,6 +721,63 @@
                 }
             });
         });
+        // Search functionality for Top Causes Table
+        $('#topCausesSearch').on('keyup', function() {
+            var value = $(this).val().toLowerCase();
+            $('#topCausesTable tbody tr').filter(function() {
+                var rowText = $(this).find('td:nth-child(2)').text().toLowerCase();
+                $(this).toggle(rowText.indexOf(value) > -1);
+            });
+            var visibleRank = 1;
+            $('#topCausesTable tbody tr:visible').each(function() {
+                $(this).find('td:first-child').text(visibleRank++);
+            });
+        });
+
+        // Search functionality for Cause Groups Table
+        $('#causeGroupsSearch').on('keyup', function() {
+            var value = $(this).val().toLowerCase();
+            $('#causeGroupsTable tbody tr').filter(function() {
+                var rowText = $(this).find('td:nth-child(2)').text().toLowerCase();
+                $(this).toggle(rowText.indexOf(value) > -1);
+            });
+            var visibleRank = 1;
+            $('#causeGroupsTable tbody tr:visible').each(function() {
+                $(this).find('td:first-child').text(visibleRank++);
+            });
+        });
     });
+
+    // Excel Export Helper function (global scope) using SheetJS for real .xlsx files
+    function exportTableToExcel(tableID, filename = ''){
+        var $table = $('#' + tableID);
+        if ($table.length === 0) {
+            console.error('Table not found: ' + tableID);
+            return;
+        }
+        
+        var isDataTable = $.fn.DataTable.isDataTable('#' + tableID);
+        var dt;
+        var oldLength;
+        
+        if (isDataTable) {
+            dt = $table.DataTable();
+            oldLength = dt.page.len();
+            // Show all rows
+            dt.page.len(-1).draw(false);
+        }
+        
+        // Use SheetJS to convert table DOM to a workbook
+        var tableElement = document.getElementById(tableID);
+        var wb = XLSX.utils.table_to_book(tableElement, { raw: true });
+        
+        // Restore length
+        if (isDataTable) {
+            dt.page.len(oldLength).draw(false);
+        }
+        
+        var outFilename = filename ? filename + '_' + new Date().toISOString().slice(0,10) + '.xlsx' : 'excel_data.xlsx';
+        XLSX.writeFile(wb, outFilename);
+    }
 </script>
 @endpush
