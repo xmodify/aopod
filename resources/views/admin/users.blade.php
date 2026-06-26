@@ -119,7 +119,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">อีเมล / Username</label>
-                        <input type="email" name="email" class="form-control" required placeholder="example@email.com" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); padding: 0.6rem 0.8rem; box-shadow: none;">
+                        <input type="email" name="email" class="form-control" required placeholder="example@email.com" oninput="this.value = this.value.replace(/\s/g, '')" style="border-radius: 12px; border-color: rgba(33, 192, 139, 0.25); padding: 0.6rem 0.8rem; box-shadow: none;">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">รหัสผ่าน</label>
@@ -176,7 +176,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">อีเมล / Username</label>
-                        <input type="email" name="email" id="editUserEmail" class="form-control" required placeholder="example@email.com" style="border-radius: 12px; border-color: rgba(13, 110, 253, 0.25); padding: 0.6rem 0.8rem; box-shadow: none;">
+                        <input type="email" name="email" id="editUserEmail" class="form-control" required placeholder="example@email.com" oninput="this.value = this.value.replace(/\s/g, '')" style="border-radius: 12px; border-color: rgba(13, 110, 253, 0.25); padding: 0.6rem 0.8rem; box-shadow: none;">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">รหัสผ่านใหม่ (ปล่อยว่างหากไม่ต้องการเปลี่ยน)</label>

@@ -167,6 +167,22 @@
       .main-wrapper {
         margin-left: 0;
       }
+      .topbar {
+        padding: 0 1rem;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .topbar h4 {
+        font-size: 1.1rem;
+        max-width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .topbar {
+        padding: 0 0.75rem;
+      }
     }
 
     /* Desktop behavior when collapsed */
@@ -304,12 +320,12 @@
       </div>
 
       <!-- User Actions -->
-      <div class="d-flex align-items-center gap-3">
-        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-semibold" style="font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05);">V.690625_1900</span>
+      <div class="d-flex align-items-center gap-2 gap-sm-3">
+        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-semibold d-none d-md-inline-block" style="font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05);">V.690626_09</span>
         <div class="dropdown">
-          <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border shadow-sm px-3 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px;">
+          <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border shadow-sm px-2 px-sm-3 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px;">
             <i class="fa-solid fa-circle-user text-green fs-5"></i>
-            <span class="fw-semibold text-dark">{{ Auth::user()->name }}</span>
+            <span class="fw-semibold text-dark text-truncate d-none d-sm-inline-block" style="max-width: 100px; vertical-align: middle;">{{ Auth::user()->name }}</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="border-radius: 12px; min-width: 180px;">
             <li>

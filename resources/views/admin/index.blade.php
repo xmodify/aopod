@@ -8,8 +8,8 @@
     <!-- Welcome section -->
     <div class="col-12">
         <div class="glass-card p-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" style="background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(33, 192, 139, 0.1) 100%);">
-            <div>
-                <h3 class="fw-bold mb-1" style="color: var(--admin-primary);">ยินดีต้อนรับกลับมา, {{ Auth::user()->name }}! 👋</h3>
+            <div class="text-center text-md-start">
+                <h3 class="fw-bold mb-1" style="color: var(--admin-primary); word-break: break-word;">ยินดีต้อนรับกลับมา, {{ Auth::user()->name }}! 👋</h3>
                 <p class="text-secondary mb-0">ระบบการจัดการข้อมูล : AOPOD (Amnatcharoen One Province One Data)</p>
             </div>
             <div>
