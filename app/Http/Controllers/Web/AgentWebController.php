@@ -534,56 +534,6 @@ SQL,
     }
 
     /**
-     * Download pre-configured config.yaml for specific hospital.
-     */
-    public function downloadConfig($hcode)
-    {
-        $hospital = Hospital::where('hospcode', $hcode)->firstOrFail();
-        $tokenStr = $hospital->token_api;
-        
-        if (empty($tokenStr)) {
-            $token = $hospital->createToken("{$hcode}-ingest", ['ingest'])->plainTextToken;
-            $hospital->update(['token_api' => $token]);
-            $tokenStr = $token;
-        }
-
-        $serverUrl = url('/');
-
-        $yamlContent = <<<YAML
-hospital:
-  code: "{$hcode}"
-  name: "{$hospital->name}"
-  token: "{$tokenStr}"
-  server_url: "{$serverUrl}"
-  bed_qty: 30
-
-database:
-  driver: "mysql"
-  host: "127.0.0.1"
-  port: 3306
-  username: "rims"
-  password: "your_password"
-  database: "hosxp"
-
-schedule:
-  opd_cron: "0 */2 * * *"
-  ipd_cron: "0 */2 * * *"
-  bed_cron: "*/15 * * * *"
-  sync_days_back: 10
-  chunk_size: 200
-
-web:
-  port: 8989
-  open_browser: true
-YAML;
-
-        return response($yamlContent, 200, [
-            'Content-Type'        => 'application/x-yaml',
-            'Content-Disposition' => "attachment; filename=\"config-{$hcode}.yaml\"",
-        ]);
-    }
-
-    /**
      * Dispatch remote auto-update task to one or all hospital agents.
      */
     public function dispatchRemoteUpdate(Request $request)

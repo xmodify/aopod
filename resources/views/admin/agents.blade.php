@@ -239,9 +239,6 @@
                                             <button type="button" class="btn btn-sm btn-light border text-primary" data-bs-toggle="modal" data-bs-target="#remoteSyncModal" data-target-hcode="{{ $item['hcode'] }}" data-target-name="{{ $item['name'] }}" title="สั่ง Sync ย้อนหลัง">
                                                 <i class="fa-solid fa-paper-plane"></i> สั่ง Sync
                                             </button>
-                                            <a href="{{ route('manage.agents.download-config', $item['hcode']) }}" class="btn btn-sm btn-light border text-secondary" title="ดาวน์โหลด config.yaml">
-                                                <i class="fa-solid fa-file-arrow-down"></i> Config
-                                            </a>
                                             <button type="button" class="btn btn-sm btn-light border text-success fw-semibold btn-view-token" data-hcode="{{ $item['hcode'] }}" data-name="{{ $item['name'] }}" data-token="{{ $item['token_api'] }}" title="ดูและคัดลอก Token">
                                                 <i class="fa-solid fa-key text-success"></i> ดู Token
                                             </button>
@@ -503,8 +500,8 @@
                 <div class="p-3 bg-light bg-opacity-75 rounded-3 border small text-secondary">
                     <i class="fa-solid fa-circle-info text-primary me-1"></i> <strong>วิธีใช้งาน Token:</strong>
                     <ul class="mb-0 ps-3 mt-1" style="line-height: 1.5;">
-                        <li>นำไปกรอกในหน้าต่าง <strong>AOPOD Agent (Web GUI)</strong> ที่แท็บตั้งค่า</li>
-                        <li>หรือวางในไฟล์ <code>config.yaml</code> ตรงหัวข้อ <code>token: "..."</code></li>
+                        <li>นำ Token นี้ส่งให้เจ้าหน้าที่ไอทีของโรงพยาบาล</li>
+                        <li>เปิดโปรแกรม <strong>AOPOD Agent</strong> ที่เครื่อง รพ. นำ Token ไปวางในแท็บ <strong>"ตั้งค่าการเชื่อมต่อ"</strong> แล้วกดบันทึก</li>
                     </ul>
                 </div>
             </div>
