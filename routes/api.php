@@ -24,7 +24,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/ipd_bed_dep', [IpdBedDepController::class, 'ingest']);
     Route::get('/ipd_bed_dep', [IpdBedDepController::class, 'get']);
     Route::post('/hospital_config', [HospitalUpdateController::class, 'update']);
+
+    // Agent Management APIs
+    Route::post('/agent/verify', [\App\Http\Controllers\Api\AgentApiController::class, 'verifyToken']);
+    Route::get('/agent/config', [\App\Http\Controllers\Api\AgentApiController::class, 'getConfig']);
+    Route::post('/agent/heartbeat', [\App\Http\Controllers\Api\AgentApiController::class, 'heartbeat']);
+    Route::post('/agent/task/complete', [\App\Http\Controllers\Api\AgentApiController::class, 'completeTask']);
 });
+
+// Public / Token-less Lookup & Download Route for Agent
+Route::get('/agent/lookups/icd10', [\App\Http\Controllers\Api\AgentApiController::class, 'getIcd10Lookup']);
+Route::get('/agent/download-latest', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadExe']);
 
 Route::post('/death-data', [\App\Http\Controllers\Api\DeathApiController::class, 'getDeathData']);
  

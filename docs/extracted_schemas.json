@@ -1813,5 +1813,31 @@
                 ]
             }
         }
+    },
+    "lookup_icd10": {
+        "columns": {
+            "icd10": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "pp": {
+                "type": "varchar(1)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "icd10"
+                ]
+            }
+        }
     }
 }

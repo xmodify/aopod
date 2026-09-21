@@ -71,6 +71,18 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::put('/manage/users/{user}', [AdminController::class, 'updateUser'])->name('manage.users.update');
     Route::delete('/manage/users/{user}', [AdminController::class, 'deleteUser'])->name('manage.users.delete');
     Route::post('/manage/users/{user}/reset-password', [AdminController::class, 'resetPassword'])->name('manage.users.reset-password');
+
+    // Hospital Agent Management Routes
+    Route::get('/manage/agents', [\App\Http\Controllers\Web\AgentWebController::class, 'index'])->name('manage.agents');
+    Route::post('/manage/agents/remote-sync', [\App\Http\Controllers\Web\AgentWebController::class, 'dispatchRemoteSync'])->name('manage.agents.remote-sync');
+    Route::post('/manage/agents/remote-update', [\App\Http\Controllers\Web\AgentWebController::class, 'dispatchRemoteUpdate'])->name('manage.agents.remote-update');
+    Route::post('/manage/agents/queries', [\App\Http\Controllers\Web\AgentWebController::class, 'updateQueries'])->name('manage.agents.update-queries');
+    Route::post('/manage/agents/queries/reset', [\App\Http\Controllers\Web\AgentWebController::class, 'resetQueries'])->name('manage.agents.reset-queries');
+    Route::post('/manage/agents/lookup-icd10', [\App\Http\Controllers\Web\AgentWebController::class, 'updatePpIcd10'])->name('manage.agents.update-icd10');
+    Route::post('/manage/agents/lookup-icd10/reset', [\App\Http\Controllers\Web\AgentWebController::class, 'resetPpIcd10'])->name('manage.agents.reset-icd10');
+    Route::post('/manage/agents/{hcode}/token', [\App\Http\Controllers\Web\AgentWebController::class, 'issueToken'])->name('manage.agents.issue-token');
+    Route::get('/manage/agents/{hcode}/config', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadConfig'])->name('manage.agents.download-config');
+    Route::get('/manage/agents/download-exe', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadExe'])->name('manage.agents.download-exe');
 });
 
 // Manage Data Routes (Requires Web Authentication, access checked in Controller)

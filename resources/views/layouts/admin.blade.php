@@ -18,6 +18,8 @@
   {{-- SweetAlert2 --}}
   <script src="{{ asset('assets/vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
 
+  @stack('styles')
+
   <style>
     :root {
       --admin-primary: #0f172a;
@@ -288,6 +290,12 @@
       @endif
 
       @if(Auth::user()->isAdmin())
+      <li class="sidebar-menu-item">
+        <a href="{{ route('manage.agents') }}" class="sidebar-link {{ Request::is('manage/agents*') ? 'active' : '' }}">
+          <i class="fa-solid fa-robot fs-5" style="color: #0d6efd !important;"></i>
+          <span>จัดการ Agent รพ.</span>
+        </a>
+      </li>
       <li class="sidebar-menu-item">
         <a href="{{ route('manage.settings') }}" class="sidebar-link {{ Request::is('manage/settings') ? 'active' : '' }}">
           <i class="fa-solid fa-gears fs-5" style="color: #21c08b !important;"></i>
