@@ -1,7 +1,7 @@
 hospital:
   code: "10989"
-  name: "รพช. หัวตะพาน"
-  token: "11|hbkDX13O14cY7j4Jz6BTDz5iTtvFnNvfYeA8rOL8ede50d0b"
+  name: "โรงพยาบาลตัวอย่าง"
+  token: "YOUR_AOPOD_API_TOKEN_HERE"
   server_url: "http://127.0.0.1/aopod"
   bed_qty: 30
 
@@ -9,9 +9,9 @@ database:
   driver: "mysql"
   host: "127.0.0.1"
   port: 3306
-  username: "rims"
-  password: "h10989"
-  database: "hosxe"
+  username: "your_mysql_user"
+  password: "your_mysql_password"
+  database: "hos"
 
 schedule:
   opd_cron: "0 */2 * * *"
