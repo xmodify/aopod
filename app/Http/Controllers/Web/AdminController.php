@@ -190,14 +190,18 @@ class AdminController extends Controller
                 ], 500);
             }
 
+            $stripAnsi = function ($text) {
+                return preg_replace('/\x1b\[[0-9;]*[a-zA-Z]/', '', (string)$text);
+            };
+
             // Execute composer install if composer is present
             $output = [];
-            exec('composer install --no-interaction --no-dev --optimize-autoloader 2>&1', $output, $exitCode);
+            exec('composer install --no-interaction --no-ansi --no-dev --optimize-autoloader 2>&1', $output, $exitCode);
             $composerOutput = implode("\n", $output);
 
             if ($exitCode !== 0) {
                 $output = [];
-                exec('php composer.phar install --no-interaction --no-dev --optimize-autoloader 2>&1', $output, $exitCode);
+                exec('php composer.phar install --no-interaction --no-ansi --no-dev --optimize-autoloader 2>&1', $output, $exitCode);
                 if ($exitCode !== 0) {
                     $composerOutput = "ข้าม Composer Install (ปกติหากไม่ได้ติดตั้ง Composer ในระบบ หรือไม่มีแพ็กเกจใหม่)";
                 } else {
@@ -212,9 +216,14 @@ class AdminController extends Controller
                 $artisanOutput = "เคลียร์แคชระบบสำเร็จ (config, cache, compiled, events, routes, views)";
             }
 
+            $cleanReset = $stripAnsi($resetOutput);
+            $cleanPull = $stripAnsi($pullOutput);
+            $cleanComposer = $stripAnsi($composerOutput);
+            $cleanArtisan = $stripAnsi($artisanOutput);
+
             return response()->json([
                 'success' => true,
-                'message' => "ดึงข้อมูลจาก Git และเคลียร์แคชระบบสำเร็จแล้ว!\n\n[Git Reset]:\n{$resetOutput}\n\n[Git Pull]:\n{$pullOutput}\n\n[Composer]:\n{$composerOutput}\n\n[Artisan Optimize]:\n{$artisanOutput}"
+                'message' => "ดึงข้อมูลจาก Git และเคลียร์แคชระบบสำเร็จแล้ว!\n\n[Git Reset]:\n{$cleanReset}\n\n[Git Pull]:\n{$cleanPull}\n\n[Composer]:\n{$cleanComposer}\n\n[Artisan Optimize]:\n{$cleanArtisan}"
             ]);
 
         } catch (\Exception $e) {
