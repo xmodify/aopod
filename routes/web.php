@@ -23,11 +23,25 @@ Route::match(['get','post'],'web/claim', [DashboardClaimController::class, 'inde
 Route::match(['get','post'],'web/refer', [DashboardReferController::class, 'index']);
 Route::match(['get','post'],'web/operation', [DashboardOperationController::class, 'index']);
 
+use App\Http\Controllers\Auth\ProviderIdAuthController;
+use App\Http\Controllers\Auth\MophAlert2FAController;
+
 // Login (สำหรับ Modal login)
 Route::get('/login', function () {
     return redirect()->to(url('web'));
 })->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+
+// 2FA MOPH Alert Routes
+Route::get('/login/verify-2fa', [MophAlert2FAController::class, 'index'])->name('auth.2fa.index');
+Route::post('/login/verify-2fa', [MophAlert2FAController::class, 'verifyOTP'])->name('auth.2fa.verify');
+Route::post('/login/resend-2fa', [MophAlert2FAController::class, 'resendOTP'])->name('auth.2fa.resend');
+
+// Health ID & Provider ID Routes
+Route::prefix('auth/health-id')->name('auth.health-id.')->group(function () {
+    Route::get('/redirect', [ProviderIdAuthController::class, 'redirectToProvider'])->name('redirect');
+    Route::get('/callback', [ProviderIdAuthController::class, 'handleProviderCallback'])->name('callback');
+});
 
 // Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -43,6 +57,7 @@ Route::middleware('auth:web')->group(function () {
 // Manage Area Protected Routes (Admin Only)
 Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::get('/manage/settings', [AdminController::class, 'settings'])->name('manage.settings');
+    Route::post('/manage/settings/moph', [AdminController::class, 'updateMophSettings'])->name('manage.settings.moph');
     Route::get('/manage/settings/upgrade-stream', [AdminController::class, 'upgradeStructureStream'])->name('manage.settings.upgrade-stream');
     Route::post('/manage/settings/upgrade-structure', [AdminController::class, 'upgradeStructure'])->name('manage.settings.upgrade-structure');
     Route::post('/manage/settings/git-pull', [AdminController::class, 'gitPull'])->name('manage.git-pull');

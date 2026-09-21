@@ -186,6 +186,33 @@ class SchemaUpgradeService
                 }
             }
 
+            // Sync Column Positions according to JSON schema order
+            $colsCurrent = DB::select("SHOW FULL COLUMNS FROM `$table`");
+            $currentOrder = array_map(fn($c) => $c->Field, $colsCurrent);
+            $targetOrder = array_keys($jsonColumns);
+
+            if ($currentOrder !== $targetOrder) {
+                $prevCol = null;
+                $hasReordered = false;
+                foreach ($jsonColumns as $col => $colDef) {
+                    $colsCurrent = DB::select("SHOW FULL COLUMNS FROM `$table`");
+                    $currentOrder = array_map(fn($c) => $c->Field, $colsCurrent);
+                    $currentIndex = array_search($col, $currentOrder);
+                    $currentPrev = ($currentIndex !== false && $currentIndex > 0) ? $currentOrder[$currentIndex - 1] : null;
+
+                    if ($currentPrev !== $prevCol) {
+                        $colSql = $this->buildColumnSql($col, $colDef);
+                        $posSql = $prevCol ? "AFTER `$prevCol`" : "FIRST";
+                        DB::statement("ALTER TABLE `$table` MODIFY $colSql $posSql");
+                        $hasReordered = true;
+                    }
+                    $prevCol = $col;
+                }
+                if ($hasReordered) {
+                    $changes[] = "{$table}: จัดเรียงลำดับคอลัมน์";
+                }
+            }
+
             // Compare indexes
             $idxRaw = DB::select("SHOW INDEX FROM `$table`");
             $dbIndexes = [];
@@ -250,18 +277,18 @@ class SchemaUpgradeService
         $onProgress(70, 1, 'ขั้นตอนที่ 1/2: ตรวจสอบและอัปเกรดโครงสร้างตารางระบบทั้งหมด...', $detailStep1, $changes, []);
 
         // Start Step 2
-        $onProgress(75, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...', 'กำลังเริ่มนำเข้าข้อมูลพื้นฐาน...', $changes, []);
+        $onProgress(75, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year, main_setting)...', 'กำลังเริ่มนำเข้าข้อมูลพื้นฐาน...', $changes, []);
 
         // 4. Seeding Default Data
         $seedsPath = base_path('docs/default_seeds.json');
         if (!file_exists($seedsPath)) {
-            $onProgress(100, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...', 'ไม่พบไฟล์ docs/default_seeds.json', $changes, []);
+            $onProgress(100, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน...', 'ไม่พบไฟล์ docs/default_seeds.json', $changes, []);
             return;
         }
 
         $seeds = json_decode(file_get_contents($seedsPath), true);
         if (empty($seeds)) {
-            $onProgress(100, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...', 'ไม่มีข้อมูลตั้งต้นใน default_seeds.json', $changes, []);
+            $onProgress(100, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน...', 'ไม่มีข้อมูลตั้งต้นใน default_seeds.json', $changes, []);
             return;
         }
 
@@ -270,8 +297,8 @@ class SchemaUpgradeService
             $bedTypes = $seeds['ipd_bed_type'];
             $totalBeds = count($bedTypes);
             foreach ($bedTypes as $index => $row) {
-                $subPercent = 75 + (int)(($index / $totalBeds) * 12); // 75% to 87%
-                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...', "กำลังซิงค์ข้อมูลประเภทเตียง: {$row['bed_name']}...", $changes, []);
+                $subPercent = 75 + (int)(($index / $totalBeds) * 8); // 75% to 83%
+                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year, main_setting)...', "กำลังซิงค์ข้อมูลประเภทเตียง: {$row['bed_name']}...", $changes, []);
                 
                 DB::table('ipd_bed_type')->updateOrInsert(
                     ['bed_code' => $row['bed_code']],
@@ -286,8 +313,8 @@ class SchemaUpgradeService
             $budgetYears = $seeds['budget_year'];
             $totalYears = count($budgetYears);
             foreach ($budgetYears as $index => $row) {
-                $subPercent = 87 + (int)(($index / $totalYears) * 12); // 87% to 99%
-                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...', "กำลังซิงค์ข้อมูลปีงบประมาณ: {$row['LEAVE_YEAR_NAME']}...", $changes, []);
+                $subPercent = 83 + (int)(($index / $totalYears) * 8); // 83% to 91%
+                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year, main_setting)...', "กำลังซิงค์ข้อมูลปีงบประมาณ: {$row['LEAVE_YEAR_NAME']}...", $changes, []);
                 
                 DB::table('budget_year')->updateOrInsert(
                     ['LEAVE_YEAR_ID' => $row['LEAVE_YEAR_ID']],
@@ -297,7 +324,28 @@ class SchemaUpgradeService
             $seedsSummary[] = "budget_year ({$totalYears} รายการ)";
         }
 
+        // Import main_setting (Insert default keys if not exist)
+        if (isset($seeds['main_setting']) && count($seeds['main_setting']) > 0) {
+            $mainSettings = $seeds['main_setting'];
+            $totalSettings = count($mainSettings);
+            foreach ($mainSettings as $index => $row) {
+                $subPercent = 91 + (int)(($index / $totalSettings) * 8); // 91% to 99%
+                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year, main_setting)...', "กำลังซิงค์ค่าตั้งค่าระบบ: {$row['name']}...", $changes, []);
+                
+                $exists = DB::table('main_setting')->where('name', $row['name'])->exists();
+                if (!$exists) {
+                    DB::table('main_setting')->insert([
+                        'name' => $row['name'],
+                        'value' => $row['value'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+            $seedsSummary[] = "main_setting ({$totalSettings} รายการ)";
+        }
+
         // Complete Step 2 & Finish
-        $onProgress(100, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year)...', 'นำเข้าข้อมูลพื้นฐานสำเร็จ', $changes, $seedsSummary);
+        $onProgress(100, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐานสำเร็จ', 'นำเข้าข้อมูลพื้นฐานสำเร็จ', $changes, $seedsSummary);
     }
 }

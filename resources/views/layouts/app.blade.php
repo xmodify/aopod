@@ -145,6 +145,27 @@
       transform: translateY(0) !important;
     }
 
+    /* === Provider ID Login Button Style === */
+    .btn-provider-id-login {
+      background: #ffffff !important;
+      color: #00a86b !important;
+      border: 2px solid #00a86b !important;
+      font-size: 1.25rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.5px;
+      transition: all 0.25s ease-in-out !important;
+      box-shadow: 0 4px 14px rgba(0, 168, 107, 0.12);
+    }
+    .btn-provider-id-login:hover {
+      background: #00a86b !important;
+      color: #ffffff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(0, 168, 107, 0.28);
+    }
+    .btn-provider-id-login:active {
+      transform: translateY(0);
+    }
+
     /* === Modern Premium Tab Pills Style (Global) === */
     .nav-pills .nav-link {
       background: rgba(255, 255, 255, 0.4) !important;
@@ -431,36 +452,99 @@
     </div>
   </footer>
 
+  @php
+    $isProviderIdActive = (\App\Models\MainSetting::get('provider_id_active', config('moph.provider_id_active', 'Y')) === 'Y');
+  @endphp
+
   {{-- Login Modal --}}
   <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg" style="border-radius: 22px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border: 1px solid rgba(33, 192, 139, 0.25);">
-        <form method="POST" action="{{ route('login') }}">
-          @csrf
-          <div class="modal-header border-0 pb-0 pt-4 px-4">
-            <h4 class="modal-title fw-bold" id="loginModalLabel" style="background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Login</h4>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 28px; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(33, 192, 139, 0.3);">
+        
+        @if($isProviderIdActive)
+          {{-- Provider ID SSO Login View (Matching รูปที่ 2: provider_id.jpg) --}}
+          <div id="providerIdLoginView" class="p-4 p-md-5 text-center position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-4" data-bs-dismiss="modal" aria-label="Close"></button>
+            
+            <div class="my-3 py-2">
+              <img src="{{ asset('images/provider_id.jpg') }}" alt="Provider ID" class="img-fluid" style="max-height: 140px; object-fit: contain;">
+            </div>
+
+            <div class="mt-4 mb-3">
+              <button type="button" id="btnProviderIdLogin" class="btn btn-provider-id-login w-100 py-2.5 px-4 rounded-pill">
+                ลงชื่อเข้าใช้
+              </button>
+            </div>
+
+            <div class="mt-4 pt-2">
+              <a href="javascript:void(0)" class="text-secondary small text-decoration-none" onclick="$('#providerIdLoginView').hide(); $('#traditionalLoginView').slideDown();">
+                <i class="fa-solid fa-lock me-1"></i> เข้าสู่ระบบด้วยชื่อผู้ใช้ / รหัสผ่าน
+              </a>
+            </div>
           </div>
-          <div class="modal-body p-4">
-              <div class="mb-3">
-                  <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Username</label>
-                  <div class="input-group">
-                      <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-person"></i></span>
-                      <input type="email" name="email" class="form-control border-start-0" placeholder="Enter your username" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+
+          {{-- Traditional Login View (Fallback for Admin) --}}
+          <div id="traditionalLoginView" style="display: none;">
+            <form method="POST" action="{{ route('login') }}">
+              @csrf
+              <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <h4 class="modal-title fw-bold" id="loginModalLabel" style="background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Login</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+                  <div class="mb-3">
+                      <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Username / Email</label>
+                      <div class="input-group">
+                          <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-person"></i></span>
+                          <input type="email" name="email" class="form-control border-start-0" placeholder="Enter your username" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                      </div>
+                  </div>
+                  <div class="mb-3">
+                      <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Password</label>
+                      <div class="input-group">
+                          <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-lock"></i></span>
+                          <input type="password" name="password" class="form-control border-start-0" placeholder="Enter your password" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                      </div>
                   </div>
               </div>
-              <div class="mb-4">
-                  <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Password</label>
-                  <div class="input-group">
-                      <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-lock"></i></span>
-                      <input type="password" name="password" class="form-control border-start-0" placeholder="Enter your password" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
-                  </div>
+              <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex flex-column gap-2">
+                <button type="submit" class="btn w-100 py-2.5 fw-bold text-white shadow" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); transition: all 0.2s ease;">Login</button>
+                <a href="javascript:void(0)" class="text-success small text-decoration-none text-center mt-2" onclick="$('#traditionalLoginView').hide(); $('#providerIdLoginView').slideDown();">
+                  <i class="fa-solid fa-arrow-left me-1"></i> กลับไปหน้าเข้าสู่ระบบด้วย Provider ID
+                </a>
               </div>
+            </form>
           </div>
-          <div class="modal-footer border-0 pt-0 pb-4 px-4">
-            <button type="submit" class="btn w-100 py-2.5 fw-bold text-white shadow" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); transition: all 0.2s ease;">Login</button>
-          </div>
-        </form>
+        @else
+          {{-- Normal Traditional Login View --}}
+          <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+              <h4 class="modal-title fw-bold" id="loginModalLabel" style="background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Login</h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Username / Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-person"></i></span>
+                        <input type="email" name="email" class="form-control border-start-0" placeholder="Enter your username" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary" style="font-size: 0.9rem;">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: rgba(33, 192, 139, 0.25); color: #10b981;"><i class="bi bi-lock"></i></span>
+                        <input type="password" name="password" class="form-control border-start-0" placeholder="Enter your password" required style="border-radius: 0 12px 12px 0; border-color: rgba(33, 192, 139, 0.25); font-size: 0.95rem; padding: 0.6rem 0.8rem; box-shadow: none;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 pb-4 px-4">
+              <button type="submit" class="btn w-100 py-2.5 fw-bold text-white shadow" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); transition: all 0.2s ease;">Login</button>
+            </div>
+          </form>
+        @endif
+
       </div>
     </div>
   </div>
@@ -524,6 +608,64 @@
 
   <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('assets/vendor/chart.js/chart.umd.min.js') }}"></script>
+
+  {{-- Provider ID SSO Pop-up Handler --}}
+  <script>
+    function openProviderIdLogin() {
+      const width = 600;
+      const height = 750;
+      const left = (screen.width - width) / 2;
+      const top = (screen.height - height) / 2;
+      const popup = window.open(
+        "{{ route('auth.health-id.redirect') }}",
+        "moph_health_id_login",
+        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=yes`
+      );
+      if (popup) {
+        popup.focus();
+      } else {
+        window.location.href = "{{ route('auth.health-id.redirect') }}";
+      }
+    }
+
+    $(document).on('click', '#btnProviderIdLogin', function(e) {
+      e.preventDefault();
+      openProviderIdLogin();
+    });
+
+    // Listen for SSO postMessage response from popup window
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'PROVIDER_ID_AUTH_RESULT') {
+        if (event.data.status === 'success') {
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({
+              title: 'เข้าสู่ระบบสำเร็จ!',
+              text: event.data.message || 'กำลังเข้าสู่ระบบ...',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1200
+            }).then(() => {
+              window.location.href = event.data.redirectUrl || "{{ route('manage.index') }}";
+            });
+          } else {
+            window.location.href = event.data.redirectUrl || "{{ route('manage.index') }}";
+          }
+        } else {
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({
+              title: 'เข้าสู่ระบบไม่สำเร็จ',
+              text: event.data.message || 'ไม่สามารถยืนยันตัวตนได้',
+              icon: 'error',
+              confirmButtonColor: '#dc3545',
+              confirmButtonText: 'ตกลง'
+            });
+          } else {
+            alert(event.data.message || 'เข้าสู่ระบบไม่สำเร็จ');
+          }
+        }
+      }
+    });
+  </script>
 
   @stack('scripts')
 </body>

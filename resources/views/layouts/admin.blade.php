@@ -321,7 +321,7 @@
 
       <!-- User Actions -->
       <div class="d-flex align-items-center gap-2 gap-sm-3">
-        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-semibold d-none d-md-inline-block" style="font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05);">V.690626_09</span>
+        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-semibold d-none d-md-inline-block" style="font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05);">{{ config('app.version', 'V.690626_09') }}</span>
         <div class="dropdown">
           <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border shadow-sm px-2 px-sm-3 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px;">
             <i class="fa-solid fa-circle-user text-green fs-5"></i>

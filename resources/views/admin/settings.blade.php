@@ -19,6 +19,11 @@
                         <i class="fa-solid fa-bed"></i> ข้อมูลประเภทเตียง
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold px-4 py-2.5 d-flex align-items-center gap-2" id="moph-tab" data-bs-toggle="tab" data-bs-target="#moph" type="button" role="tab" aria-controls="moph" aria-selected="false" style="border-radius: 12px; transition: all 0.2s;">
+                        <i class="fa-solid fa-shield-halved"></i> ตั้งค่าระบบ Login
+                    </button>
+                </li>
             </ul>
 
             <div class="tab-content" id="settingsTabContent">
@@ -168,9 +173,119 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
                 </div>
             </div>
-            </div>
+
+            {{-- Tab 3: ตั้งค่าระบบ Login --}}
+                <div class="tab-pane fade" id="moph" role="tabpanel" aria-labelledby="moph-tab">
+                    <div style="max-width: 900px;">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="p-3 bg-success bg-opacity-10 text-success rounded-3" style="font-size: 1.8rem; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">ตั้งค่าระบบ Login (Provider ID & 2FA หมอพร้อม)</h5>
+                                <span class="text-secondary small">กำหนดการเชื่อมต่อ API ของกระทรวงสาธารณสุข สำหรับระบบยืนยันตัวตน Provider ID / Health ID และระบบ 2FA OTP ผ่านหมอพร้อม</span>
+                            </div>
+                        </div>
+
+                        <form id="mophSettingsForm">
+                            @csrf
+                            <div class="p-4 bg-light rounded-4 border mb-4">
+                                {{-- Toggle Active --}}
+                                <div class="mb-4 pb-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1">เปิดใช้งานการเข้าสู่ระบบด้วย Provider ID</h6>
+                                            <span class="text-secondary small">เมื่อเปิดใช้งาน หน้าต่าง Login Modal จะแสดงปุ่มและโลโก้ Provider ID เพื่อเข้าสู่ระบบผ่าน MOPH Health ID</span>
+                                        </div>
+                                        <div class="form-check form-switch fs-4">
+                                            <input class="form-check-input" type="checkbox" name="provider_id_active" id="provider_id_active" value="Y" {{ ($mophSettings['provider_id_active'] ?? 'Y') === 'Y' ? 'checked' : '' }}>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Health ID Credentials (2 Fields) --}}
+                                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-shield-heart text-success me-2"></i> ข้อมูล Health ID (MOPH IDP)</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary small">Health ID Client ID <span class="text-danger">*</span></label>
+                                        <input type="text" name="health_id_client_id" class="form-control" value="{{ $mophSettings['health_id_client_id'] ?? '' }}" placeholder="กรอก Health ID Client ID" style="border-radius: 12px; padding: 0.6rem 0.8rem;">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary small">Health ID Client Secret <span class="text-danger">*</span></label>
+                                        <input type="password" name="health_id_client_secret" class="form-control" value="{{ $mophSettings['health_id_client_secret'] ?? '' }}" placeholder="กรอก Health ID Client Secret" style="border-radius: 12px; padding: 0.6rem 0.8rem;">
+                                    </div>
+                                </div>
+
+                                {{-- Provider ID API Credentials (2 Fields) --}}
+                                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user-doctor text-primary me-2"></i> ข้อมูล Provider ID API (provider.id.th)</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary small">Provider ID Client ID <span class="text-danger">*</span></label>
+                                        <input type="text" name="provider_id_client_id" class="form-control" value="{{ $mophSettings['provider_id_client_id'] ?? '' }}" placeholder="กรอก Provider ID Client ID" style="border-radius: 12px; padding: 0.6rem 0.8rem;">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary small">Provider ID Secret Key <span class="text-danger">*</span></label>
+                                        <input type="password" name="provider_id_secret_key" class="form-control" value="{{ $mophSettings['provider_id_secret_key'] ?? '' }}" placeholder="กรอก Provider ID Secret Key" style="border-radius: 12px; padding: 0.6rem 0.8rem;">
+                                    </div>
+                                </div>
+
+                                {{-- Callback URL Info Display (Auto-generated / Read-only) --}}
+                                <div class="p-3 bg-white rounded-3 border border-dashed mb-4">
+                                    <div class="row align-items-center g-2">
+                                        <div class="col-lg-5">
+                                            <div class="fw-bold text-dark small"><i class="fa-solid fa-link text-primary me-1"></i> Health ID Redirect URI (Callback URL)</div>
+                                            <div class="text-secondary" style="font-size: 0.8rem;">(ระบบสร้างให้อัตโนมัติ ไม่ต้องกรอก ใช้คัดลอกไปลงทะเบียนกับ สป.สธ.)</div>
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <div class="input-group">
+                                                <code class="form-control bg-light text-break d-flex align-items-center py-2 px-3" id="health_id_callback_display" style="color: #0d6efd; font-size: 0.85rem; border-radius: 10px 0 0 10px;">{{ url('/auth/health-id/callback') }}</code>
+                                                <button class="btn btn-outline-primary px-3 fw-bold copy-api-btn" data-target="health_id_callback_display" type="button" style="border-radius: 0 10px 10px 0; font-size: 0.85rem;">
+                                                    <i class="fa-solid fa-copy me-1"></i> คัดลอก URL
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- 2FA MOPH Alert (หมอพร้อม App & Line OA) Section --}}
+                                <div class="pt-4 border-top">
+                                    <div class="mb-4 pb-3 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="fw-bold text-dark mb-1"><i class="fa-solid fa-shield-halved text-success me-2"></i> เปิดใช้งานการยืนยันตัวตน 2 ขั้นตอน (2FA หมอพร้อม)</h6>
+                                                <span class="text-secondary small">เมื่อเปิดใช้งาน สมาชิกที่เข้าสู่ระบบด้วยรหัสผ่านจะต้องยืนยันรหัส OTP 6 หลักที่ส่งแจ้งเตือนเข้า <strong>แอปพลิเคชันหมอพร้อม</strong> และ <strong>LINE OA หมอพร้อม</strong></span>
+                                            </div>
+                                            <div class="form-check form-switch fs-4">
+                                                <input class="form-check-input" type="checkbox" name="moph_alert_active" id="moph_alert_active" value="Y" {{ ($mophSettings['moph_alert_active'] ?? 'N') === 'Y' ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-bell text-warning me-2"></i> ข้อมูล MOPH Alert API (morpromt2c.moph.go.th)</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold text-secondary small">MOPH Alert Client Key</label>
+                                            <input type="text" name="moph_alert_client_id" class="form-control" value="{{ $mophSettings['moph_alert_client_id'] ?? '' }}" placeholder="กรอก MOPH Alert Client Key" style="border-radius: 12px; padding: 0.6rem 0.8rem;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold text-secondary small">MOPH Alert Secret Key</label>
+                                            <input type="password" name="moph_alert_client_secret" class="form-control" value="{{ $mophSettings['moph_alert_client_secret'] ?? '' }}" placeholder="กรอก MOPH Alert Secret Key" style="border-radius: 12px; padding: 0.6rem 0.8rem;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary px-4 py-2.5 fw-bold text-white shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #18a573 0%, #21c08b 100%); border: none;">
+                                    <i class="fa-solid fa-floppy-disk me-2"></i> บันทึกการตั้งค่า
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div> {{-- End tab-content --}}
 
             </div>
@@ -667,6 +782,67 @@
             }
         });
 
+        // Copy Input Value function
+        $('.copy-input-btn').on('click', function() {
+            let targetId = $(this).data('target');
+            let textToCopy = $('#' + targetId).val();
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    Swal.fire({
+                        title: 'คัดลอกสำเร็จ!',
+                        text: 'คัดลอกข้อมูลเรียบร้อยแล้ว',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }).catch(function() {
+                    fallbackCopy(textToCopy);
+                });
+            } else {
+                fallbackCopy(textToCopy);
+            }
+        });
+
+        // Submit MOPH Provider ID Settings Form
+        $('#mophSettingsForm').on('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'กำลังบันทึกข้อมูล...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('manage.settings.moph') }}",
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    Swal.fire({
+                        title: 'สำเร็จ!',
+                        text: response.message || 'บันทึกการตั้งค่าระบบ Login สำเร็จแล้ว',
+                        icon: 'success',
+                        confirmButtonColor: '#18a573',
+                        confirmButtonText: 'ตกลง'
+                    });
+                },
+                error: function(xhr) {
+                    let err = 'เกิดข้อผิดพลาดในการบันทึกข้อมูล';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        err = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: err,
+                        icon: 'error',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
+        });
+
         function fallbackCopy(textToCopy) {
             let tempInput = $('<input>');
             $('body').append(tempInput);
@@ -675,7 +851,7 @@
             tempInput.remove();
             Swal.fire({
                 title: 'คัดลอกสำเร็จ!',
-                text: 'คัดลอกลิงก์ API เรียบร้อยแล้ว',
+                text: 'คัดลอกข้อมูลเรียบร้อยแล้ว',
                 icon: 'success',
                 timer: 1500,
                 showConfirmButton: false

@@ -1619,10 +1619,31 @@
                 "default": null,
                 "extra": "auto_increment"
             },
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
             "name": {
                 "type": "varchar(255)",
                 "null": "NO",
                 "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "position": {
+                "type": "varchar(255)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "cid": {
+                "type": "varchar(13)",
+                "null": "YES",
+                "key": "MUL",
                 "default": null,
                 "extra": ""
             },
@@ -1643,6 +1664,34 @@
             "password": {
                 "type": "varchar(255)",
                 "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "provider_id": {
+                "type": "varchar(50)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "moph_token": {
+                "type": "text",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "moph_token_expire": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "remember_token": {
+                "type": "varchar(100)",
+                "null": "YES",
                 "key": "",
                 "default": null,
                 "extra": ""
@@ -1682,11 +1731,11 @@
                 "default": "0",
                 "extra": ""
             },
-            "remember_token": {
-                "type": "varchar(100)",
-                "null": "YES",
+            "active": {
+                "type": "char(1)",
+                "null": "NO",
                 "key": "",
-                "default": null,
+                "default": "Y",
                 "extra": ""
             },
             "created_at": {
@@ -1715,6 +1764,52 @@
                 "unique": true,
                 "columns": [
                     "email"
+                ]
+            },
+            "users_cid_index": {
+                "unique": false,
+                "columns": [
+                    "cid"
+                ]
+            }
+        }
+    },
+    "main_setting": {
+        "columns": {
+            "name": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "value": {
+                "type": "text",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "name"
                 ]
             }
         }

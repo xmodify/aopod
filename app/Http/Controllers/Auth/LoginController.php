@@ -24,7 +24,16 @@ class LoginController extends Controller
 
         if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
-            
+
+            $mophAlertActive = \App\Models\MainSetting::get('moph_alert_active', config('moph.alert.active', 'N'));
+            $user = Auth::guard('web')->user();
+
+            if ($mophAlertActive === 'Y' && !empty($user->cid)) {
+                session(['moph_alert_2fa_verified' => false]);
+                return redirect()->route('auth.2fa.index');
+            }
+
+            session(['moph_alert_2fa_verified' => true]);
             return redirect()->intended(route('manage.index'));
         }
 

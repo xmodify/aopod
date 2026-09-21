@@ -22,11 +22,42 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'hospcode',
+        'position',
+        'cid',
+        'provider_id',
+        'moph_token',
+        'moph_token_expire',
+        'active',
         'allow_death',
         'allow_birth',
         'allow_death_dashboard',
         'allow_birth_dashboard',
     ];
+
+    /**
+     * Relationship with Hospital model.
+     */
+    public function hospital()
+    {
+        return $this->belongsTo(Hospital::class, 'hospcode', 'hospcode');
+    }
+
+    /**
+     * Check if user is active.
+     */
+    public function isActive(): bool
+    {
+        return $this->active === 'Y' || $this->active === '1' || $this->active === true;
+    }
+
+    /**
+     * Check if user is linked to Provider ID.
+     */
+    public function hasProviderId(): bool
+    {
+        return !empty($this->provider_id);
+    }
 
     /**
      * Check if the user is an admin.
@@ -97,6 +128,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'moph_token_expire' => 'datetime',
             'password' => 'hashed',
         ];
     }

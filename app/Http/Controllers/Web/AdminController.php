@@ -20,9 +20,69 @@ class AdminController extends Controller
         if (!auth()->check() || !auth()->user()->isAdmin()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
-        $bedTypes = \App\Models\IpdBedType::all();
-        $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
-        return view('admin.settings', compact('bedTypes', 'hospitals'));
+        try {
+            $bedTypes = \App\Models\IpdBedType::all();
+        } catch (\Throwable $e) {
+            $bedTypes = collect();
+        }
+
+        try {
+            $hospitals = \App\Models\Hospital::where('is_active', true)->where('hospcode', '!=', '00025')->get();
+        } catch (\Throwable $e) {
+            $hospitals = collect();
+        }
+        
+        $mophSettings = [
+            'provider_id_active' => \App\Models\MainSetting::get('provider_id_active', config('moph.provider_id_active', 'Y')),
+            'health_id_client_id' => \App\Models\MainSetting::get('health_id_client_id', config('moph.health_id.client_id', '')),
+            'health_id_client_secret' => \App\Models\MainSetting::get('health_id_client_secret', config('moph.health_id.client_secret', '')),
+            'provider_id_client_id' => \App\Models\MainSetting::get('provider_id_client_id', config('moph.provider_id.client_id', '')),
+            'provider_id_secret_key' => \App\Models\MainSetting::get('provider_id_secret_key', config('moph.provider_id.secret_key', '')),
+            'moph_alert_active' => \App\Models\MainSetting::get('moph_alert_active', config('moph.alert.active', 'N')),
+            'moph_alert_client_id' => \App\Models\MainSetting::get('moph_alert_client_id', config('moph.alert.client_id', '')),
+            'moph_alert_client_secret' => \App\Models\MainSetting::get('moph_alert_client_secret', config('moph.alert.client_secret', '')),
+        ];
+
+        return view('admin.settings', compact('bedTypes', 'hospitals', 'mophSettings'));
+    }
+
+    public function updateMophSettings(Request $request)
+    {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีสิทธิ์ดำเนินการ'], 403);
+        }
+
+        $request->validate([
+            'provider_id_active' => ['nullable', 'string', 'in:Y,N'],
+            'health_id_client_id' => ['nullable', 'string'],
+            'health_id_client_secret' => ['nullable', 'string'],
+            'provider_id_client_id' => ['nullable', 'string'],
+            'provider_id_secret_key' => ['nullable', 'string'],
+            'moph_alert_active' => ['nullable', 'string', 'in:Y,N'],
+            'moph_alert_client_id' => ['nullable', 'string'],
+            'moph_alert_client_secret' => ['nullable', 'string'],
+        ]);
+
+        try {
+            \App\Models\MainSetting::set('provider_id_active', $request->has('provider_id_active') ? 'Y' : 'N');
+            \App\Models\MainSetting::set('health_id_client_id', $request->health_id_client_id ?? '');
+            \App\Models\MainSetting::set('health_id_client_secret', $request->health_id_client_secret ?? '');
+            \App\Models\MainSetting::set('provider_id_client_id', $request->provider_id_client_id ?? '');
+            \App\Models\MainSetting::set('provider_id_secret_key', $request->provider_id_secret_key ?? '');
+            \App\Models\MainSetting::set('moph_alert_active', $request->has('moph_alert_active') ? 'Y' : 'N');
+            \App\Models\MainSetting::set('moph_alert_client_id', $request->moph_alert_client_id ?? '');
+            \App\Models\MainSetting::set('moph_alert_client_secret', $request->moph_alert_client_secret ?? '');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'บันทึกการตั้งค่า Provider ID และ 2FA สำเร็จแล้ว'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function createBedType(Request $request)
@@ -226,8 +286,9 @@ class AdminController extends Controller
         if (!auth()->check() || !auth()->user()->isAdmin()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
-        $users = \App\Models\User::all();
-        return view('admin.users', compact('users'));
+        $users = \App\Models\User::with('hospital')->get();
+        $hospitals = \App\Models\Hospital::where('is_active', true)->orderBy('hospcode', 'asc')->get();
+        return view('admin.users', compact('users', 'hospitals'));
     }
 
     public function createUser(Request $request)
@@ -241,6 +302,10 @@ class AdminController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
+            'hospcode' => ['nullable', 'string', 'max:10'],
+            'position' => ['nullable', 'string', 'max:255'],
+            'cid' => ['nullable', 'string', 'max:13', 'unique:users,cid'],
+            'active' => ['nullable'],
             'allow_death' => ['nullable'],
             'allow_death_dashboard' => ['nullable'],
             'allow_birth' => ['nullable'],
@@ -253,6 +318,10 @@ class AdminController extends Controller
                 'email' => $request->email,
                 'password' => \Illuminate\Support\Facades\Hash::make($request->password),
                 'role' => $request->role,
+                'hospcode' => $request->hospcode,
+                'position' => $request->position,
+                'cid' => $request->cid ? preg_replace('/[^0-9]/', '', $request->cid) : null,
+                'active' => $request->has('active') ? 'Y' : 'N',
                 'allow_death' => $request->has('allow_death') ? 1 : 0,
                 'allow_death_dashboard' => $request->has('allow_death_dashboard') ? 1 : 0,
                 'allow_birth' => $request->has('allow_birth') ? 1 : 0,
@@ -278,6 +347,10 @@ class AdminController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
             'password' => ['nullable', 'string', 'min:8'],
             'role' => ['required', 'string', 'in:user,admin'],
+            'hospcode' => ['nullable', 'string', 'max:10'],
+            'position' => ['nullable', 'string', 'max:255'],
+            'cid' => ['nullable', 'string', 'max:13', 'unique:users,cid,' . $id],
+            'active' => ['nullable'],
             'allow_death' => ['nullable'],
             'allow_death_dashboard' => ['nullable'],
             'allow_birth' => ['nullable'],
@@ -288,6 +361,10 @@ class AdminController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->role = $request->role;
+            $user->hospcode = $request->hospcode;
+            $user->position = $request->position;
+            $user->cid = $request->cid ? preg_replace('/[^0-9]/', '', $request->cid) : null;
+            $user->active = $request->has('active') ? 'Y' : 'N';
             $user->allow_death = $request->has('allow_death') ? 1 : 0;
             $user->allow_death_dashboard = $request->has('allow_death_dashboard') ? 1 : 0;
             $user->allow_birth = $request->has('allow_birth') ? 1 : 0;
