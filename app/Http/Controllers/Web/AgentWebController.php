@@ -170,6 +170,8 @@ class AgentWebController extends Controller
         return [
             'opd'       => MainSetting::get('agent_query_opd', $defaults['opd']),
             'ipd'       => MainSetting::get('agent_query_ipd', $defaults['ipd']),
+            'refer'     => MainSetting::get('agent_query_refer', $defaults['refer']),
+            'operation' => MainSetting::get('agent_query_operation', $defaults['operation']),
             'bed_total' => MainSetting::get('agent_query_bed_total', $defaults['bed_total']),
             'bed_dep'   => MainSetting::get('agent_query_bed_dep', $defaults['bed_dep']),
         ];
@@ -183,12 +185,18 @@ class AgentWebController extends Controller
         $request->validate([
             'query_opd'       => 'required|string',
             'query_ipd'       => 'required|string',
+            'query_refer'     => 'nullable|string',
+            'query_operation' => 'nullable|string',
             'query_bed_total' => 'required|string',
             'query_bed_dep'   => 'required|string',
         ]);
 
+        $defaults = self::getDefaultQueries();
+
         MainSetting::set('agent_query_opd', $request->input('query_opd'));
         MainSetting::set('agent_query_ipd', $request->input('query_ipd'));
+        MainSetting::set('agent_query_refer', $request->input('query_refer', $defaults['refer']));
+        MainSetting::set('agent_query_operation', $request->input('query_operation', $defaults['operation']));
         MainSetting::set('agent_query_bed_total', $request->input('query_bed_total'));
         MainSetting::set('agent_query_bed_dep', $request->input('query_bed_dep'));
 
@@ -210,6 +218,8 @@ class AgentWebController extends Controller
         $defaults = self::getDefaultQueries();
         MainSetting::set('agent_query_opd', $defaults['opd']);
         MainSetting::set('agent_query_ipd', $defaults['ipd']);
+        MainSetting::set('agent_query_refer', $defaults['refer']);
+        MainSetting::set('agent_query_operation', $defaults['operation']);
         MainSetting::set('agent_query_bed_total', $defaults['bed_total']);
         MainSetting::set('agent_query_bed_dep', $defaults['bed_dep']);
 
@@ -379,16 +389,16 @@ LEFT JOIN (
 	SELECT DATE(reply_date_time) as d,
 		COUNT(DISTINCT CASE WHEN lh.chwpart = (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_inprov,
 		COUNT(DISTINCT CASE WHEN lh.chwpart != (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_outprov
-	FROM referin_reply rr
-	LEFT JOIN hospcode lh ON lh.hospcode = rr.reply_hospcode
+	FROM refer_reply rr
+	LEFT JOIN hospcode lh ON lh.hospcode = rr.dest_hospcode
 	WHERE DATE(reply_date_time) BETWEEN ? AND ?
 	GROUP BY DATE(reply_date_time)
 ) rb ON rb.d = a.vstdate
 LEFT JOIN (
-	SELECT o.operation_request_date as d, COUNT(DISTINCT o.operation_id) as visit_operation
+	SELECT o.request_date as d, COUNT(DISTINCT o.operation_id) as visit_operation
 	FROM operation_list o
-	WHERE o.operation_request_date BETWEEN ? AND ?
-	GROUP BY o.operation_request_date
+	WHERE o.request_date BETWEEN ? AND ?
+	GROUP BY o.request_date
 ) op ON op.d = a.vstdate
 LEFT JOIN (
 	SELECT appointment_date as d, COUNT(DISTINCT cid) as cnt
@@ -462,6 +472,66 @@ WHERE b.export_code IS NOT NULL
   AND b.export_code <> ''
 GROUP BY b.export_code 
 ORDER BY b.export_code
+SQL,
+
+            'refer' => <<<'SQL'
+SELECT 
+	ov.vstdate,
+	COUNT(DISTINCT CASE WHEN r_out.referout_inprov = 'Y' THEN ov.vn END) AS visit_referout_inprov,
+	COUNT(DISTINCT CASE WHEN r_out.referout_outprov = 'Y' THEN ov.vn END) AS visit_referout_outprov,
+	COUNT(DISTINCT CASE WHEN r_out_ipd.referout_inprov_ipd = 'Y' THEN ip.an END) AS visit_referout_inprov_ipd,
+	COUNT(DISTINCT CASE WHEN r_out_ipd.referout_outprov_ipd = 'Y' THEN ip.an END) AS visit_referout_outprov_ipd,
+	COUNT(DISTINCT CASE WHEN r_in.inprov = 'Y' AND ip.vn IS NULL THEN ov.vn END) AS visit_referin_inprov,
+	COUNT(DISTINCT CASE WHEN r_in.outprov = 'Y' AND ip.vn IS NULL THEN ov.vn END) AS visit_referin_outprov,
+	COUNT(DISTINCT CASE WHEN r_in.inprov = 'Y' AND ip.vn IS NOT NULL THEN ov.vn END) AS visit_referin_inprov_ipd,
+	COUNT(DISTINCT CASE WHEN r_in.outprov = 'Y' AND ip.vn IS NOT NULL THEN ov.vn END) AS visit_referin_outprov_ipd,
+	COALESCE(rb.visit_referback_inprov, 0) AS visit_referback_inprov,
+	COALESCE(rb.visit_referback_outprov, 0) AS visit_referback_outprov
+FROM ovst ov
+LEFT JOIN ipt ip ON ip.vn = ov.vn
+LEFT JOIN (
+	SELECT vn,
+		MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_inprov,
+		MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_outprov
+	FROM referout
+	GROUP BY vn
+) r_out ON r_out.vn = ov.vn
+LEFT JOIN (
+	SELECT vn,
+		MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_inprov_ipd,
+		MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_outprov_ipd
+	FROM referout
+	GROUP BY vn
+) r_out_ipd ON r_out_ipd.vn = ip.an
+LEFT JOIN (
+	SELECT vn,
+		MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS inprov,
+		MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS outprov
+	FROM referin
+	GROUP BY vn
+) r_in ON r_in.vn = ov.vn
+LEFT JOIN (
+	SELECT DATE(reply_date_time) as d,
+		COUNT(DISTINCT CASE WHEN lh.chwpart = (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_inprov,
+		COUNT(DISTINCT CASE WHEN lh.chwpart != (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_outprov
+	FROM refer_reply rr
+	LEFT JOIN hospcode lh ON lh.hospcode = rr.dest_hospcode
+	WHERE DATE(reply_date_time) BETWEEN ? AND ?
+	GROUP BY DATE(reply_date_time)
+) rb ON rb.d = ov.vstdate
+WHERE ov.vstdate BETWEEN ? AND ?
+GROUP BY ov.vstdate
+ORDER BY ov.vstdate
+SQL,
+
+            'operation' => <<<'SQL'
+SELECT 
+	o.request_date AS vstdate,
+	COUNT(DISTINCT o.operation_id) AS visit_operation
+FROM operation_list o
+WHERE o.request_date BETWEEN ? AND ?
+GROUP BY o.request_date
+ORDER BY o.request_date
 SQL,
         ];
     }

@@ -334,14 +334,68 @@
                             </div>
                         </div>
 
-                        <!-- 3. Bed Total Query Editor -->
+                        <!-- 3. Refer Query Editor -->
                         <div class="col-12 col-lg-6">
                             <div class="glass-card bg-white p-4 rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between">
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div>
                                             <h6 class="fw-bold text-dark mb-0">
-                                                <i class="fa-solid fa-chart-pie text-info me-2"></i> 3. คำสั่งเตียงรวม รพ. (Bed Total)
+                                                <i class="fa-solid fa-truck-medical text-danger me-2"></i> 3. คำสั่ง SQL ส่งต่อผู้ป่วย (Refer Query)
+                                            </h6>
+                                            <small class="text-secondary">ใช้ดึงยอด Refer In / Refer Out / Refer Back จากตาราง <code>referout</code>, <code>referin</code>, <code>refer_reply</code></small>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5" onclick="copyTextarea('query_refer')">
+                                            <i class="fa-solid fa-copy"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="sql-editor-container mt-2">
+                                        <div class="sql-editor-header text-secondary small">
+                                            <span><i class="fa-solid fa-file-code text-danger me-1"></i> query_refer.sql</span>
+                                            <span class="text-muted" style="font-size: 0.75rem;">พารามิเตอร์: <code>(startDate, endDate) x 2</code></span>
+                                        </div>
+                                        <textarea name="query_refer" id="query_refer" class="sql-editor-textarea" rows="10" required>{{ $queries['refer'] ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Operation Query Editor -->
+                        <div class="col-12 col-lg-6">
+                            <div class="glass-card bg-white p-4 rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0">
+                                                <i class="fa-solid fa-heart-pulse text-purple me-2"></i> 4. คำสั่ง SQL ผ่าตัด (Operation Query)
+                                            </h6>
+                                            <small class="text-secondary">ใช้ดึงยอดการทำหัตถการผ่าตัดจากตาราง <code>operation_list</code></small>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5" onclick="copyTextarea('query_operation')">
+                                            <i class="fa-solid fa-copy"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="sql-editor-container mt-2">
+                                        <div class="sql-editor-header text-secondary small">
+                                            <span><i class="fa-solid fa-file-code text-purple me-1"></i> query_operation.sql</span>
+                                            <span class="text-muted" style="font-size: 0.75rem;">พารามิเตอร์: <code>(startDate, endDate)</code></span>
+                                        </div>
+                                        <textarea name="query_operation" id="query_operation" class="sql-editor-textarea" rows="10" required>{{ $queries['operation'] ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Bed Total Query Editor -->
+                        <div class="col-12 col-lg-6">
+                            <div class="glass-card bg-white p-4 rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0">
+                                                <i class="fa-solid fa-chart-pie text-info me-2"></i> 5. คำสั่งเตียงรวม รพ. (Bed Total)
                                             </h6>
                                             <small class="text-secondary">ดึงจำนวนเตียงที่เปิดใช้และเตียงครอง Real-time</small>
                                         </div>
@@ -361,14 +415,14 @@
                             </div>
                         </div>
 
-                        <!-- 4. Bed Department Query Editor -->
+                        <!-- 6. Bed Department Query Editor -->
                         <div class="col-12 col-lg-6">
                             <div class="glass-card bg-white p-4 rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between">
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div>
                                             <h6 class="fw-bold text-dark mb-0">
-                                                <i class="fa-solid fa-building-user text-warning me-2"></i> 4. คำสั่งเตียงแยกแผนก (Bed Department)
+                                                <i class="fa-solid fa-building-user text-warning me-2"></i> 6. คำสั่งเตียงแยกแผนก (Bed Department)
                                             </h6>
                                             <small class="text-secondary">ดึงเตียงและผู้ป่วยครองแยกตาม <code>export_code</code></small>
                                         </div>
@@ -785,6 +839,8 @@ $(document).ready(function() {
                         if (res.queries) {
                             $('#query_opd').val(res.queries.opd);
                             $('#query_ipd').val(res.queries.ipd);
+                            $('#query_refer').val(res.queries.refer);
+                            $('#query_operation').val(res.queries.operation);
                             $('#query_bed_total').val(res.queries.bed_total);
                             $('#query_bed_dep').val(res.queries.bed_dep);
                         }

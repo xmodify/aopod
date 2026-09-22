@@ -128,8 +128,28 @@ func PerformSync(startDate, endDate string) (*sender.SyncSummary, error) {
 		AddLog("INFO", fmt.Sprintf("ส่งข้อมูลผู้ป่วยใน (IPD): %d วัน (%d รายการ) สำเร็จ (ล้มเหลว: %d)", len(ipdRecords), ipdResult.TotalSent, ipdResult.TotalFailed))
 	}
 
+	// 7. Collect & Send Refer
+	referRecords, err := collector.CollectRefer(db, startDate, endDate)
+	if err != nil {
+		AddLog("ERROR", "เกิดข้อผิดพลาดในการ Query Refer: "+err.Error())
+	} else {
+		referResult, _ := sender.SendChunks(referRecords, "/api/refer", func(r collector.ReferRecord) string { return r.Vstdate }, "REFER")
+		summary.Refer = referResult
+		AddLog("INFO", fmt.Sprintf("ส่งข้อมูลส่งต่อ (Refer): %d วัน (%d รายการ) สำเร็จ (ล้มเหลว: %d)", len(referRecords), referResult.TotalSent, referResult.TotalFailed))
+	}
+
+	// 8. Collect & Send Operation
+	opRecords, err := collector.CollectOperation(db, startDate, endDate)
+	if err != nil {
+		AddLog("ERROR", "เกิดข้อผิดพลาดในการ Query ผ่าตัด (Operation): "+err.Error())
+	} else {
+		opResult, _ := sender.SendChunks(opRecords, "/api/operation", func(r collector.OperationRecord) string { return r.Vstdate }, "OPERATION")
+		summary.Operation = opResult
+		AddLog("INFO", fmt.Sprintf("ส่งข้อมูลผ่าตัด (Operation): %d วัน (%d รายการ) สำเร็จ (ล้มเหลว: %d)", len(opRecords), opResult.TotalSent, opResult.TotalFailed))
+	}
+
 	summary.DurationMs = time.Since(startTime).Milliseconds()
-	if summary.OPD.TotalFailed > 0 || summary.IPD.TotalFailed > 0 {
+	if summary.OPD.TotalFailed > 0 || summary.IPD.TotalFailed > 0 || summary.Refer.TotalFailed > 0 || summary.Operation.TotalFailed > 0 {
 		summary.Success = false
 		summary.Message = "ส่งข้อมูลสำเร็จบางส่วน มีบาง Batch ล้มเหลว"
 	} else {

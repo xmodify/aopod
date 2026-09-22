@@ -29,6 +29,8 @@ type SyncSummary struct {
 	DurationMs int64       `json:"duration_ms"`
 	OPD        BatchResult `json:"opd"`
 	IPD        BatchResult `json:"ipd"`
+	Refer      BatchResult `json:"refer"`
+	Operation  BatchResult `json:"operation"`
 	Bed        BatchResult `json:"bed"`
 	BedDep     BatchResult `json:"bed_dep"`
 	Message    string      `json:"message"`

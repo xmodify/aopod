@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\OpdController;
 use App\Http\Controllers\Api\IpdController;
 use App\Http\Controllers\Api\IpdBedDepController;
 use App\Http\Controllers\Api\HospitalUpdateController;
+use App\Http\Controllers\Api\ReferController;
+use App\Http\Controllers\Api\OperationController;
 
 // Route::get('/hospitals/{hospcode}/tokens', [HospitalTokenController::class, 'index']);
 //Route::post('/hospitals/{hospcode}/tokens', [HospitalTokenController::class, 'issue']);
@@ -21,6 +23,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/opd', [OpdController::class, 'get_opd']);    
     Route::post('/ipd', [IpdController::class, 'ipd']);
     Route::get('/ipd', [IpdController::class, 'get_ipd']);
+    Route::post('/refer', [ReferController::class, 'refer']);
+    Route::get('/refer', [ReferController::class, 'get_refer']);
+    Route::post('/operation', [OperationController::class, 'operation']);
+    Route::get('/operation', [OperationController::class, 'get_operation']);
     Route::post('/ipd_bed_dep', [IpdBedDepController::class, 'ingest']);
     Route::get('/ipd_bed_dep', [IpdBedDepController::class, 'get']);
     Route::post('/hospital_config', [HospitalUpdateController::class, 'update']);

@@ -1,6 +1,7 @@
 package singleinstance
 
 import (
+	"os"
 	"syscall"
 	"time"
 	"unsafe"
@@ -67,5 +68,11 @@ func Release() {
 // AttachParentConsole attaches stdout/stderr to parent cmd/powershell if available.
 func AttachParentConsole() {
 	procAttachConsole := kernel32.NewProc("AttachConsole")
-	procAttachConsole.Call(^uintptr(0)) // ATTACH_PARENT_PROCESS = -1
+	r, _, _ := procAttachConsole.Call(^uintptr(0)) // ATTACH_PARENT_PROCESS = -1
+	if r != 0 {
+		hout, _ := syscall.GetStdHandle(syscall.STD_OUTPUT_HANDLE)
+		herr, _ := syscall.GetStdHandle(syscall.STD_ERROR_HANDLE)
+		os.Stdout = os.NewFile(uintptr(hout), "/dev/stdout")
+		os.Stderr = os.NewFile(uintptr(herr), "/dev/stderr")
+	}
 }

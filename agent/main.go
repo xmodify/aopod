@@ -141,7 +141,7 @@ func main() {
 				fmt.Printf("❌ Sync error: %v\n", err)
 				os.Exit(1)
 			}
-			fmt.Printf("✅ %s\n- OPD sent: %d\n- IPD sent: %d\n", summary.Message, summary.OPD.TotalSent, summary.IPD.TotalSent)
+			fmt.Printf("✅ %s\n- OPD sent: %d\n- IPD sent: %d\n- Refer sent: %d\n- Operation sent: %d\n", summary.Message, summary.OPD.TotalSent, summary.IPD.TotalSent, summary.Refer.TotalSent, summary.Operation.TotalSent)
 			return
 		}
 	}
@@ -176,19 +176,18 @@ func main() {
 		port = 8989
 	}
 	guiURL := fmt.Sprintf("http://localhost:%d", port)
+	logPath = filepath.Join(config.GetConfigDir(), "agent.log")
 
 	log.Printf("Starting AOPOD Agent on port %d...\n", port)
 
 	// 2. Start Web Server & Cron in background goroutines
 	go prg.run()
 
-	// 3. Open browser if configured
-	if cfg.Web.Open {
-		go func() {
-			time.Sleep(800 * time.Millisecond)
-			server.OpenBrowser(guiURL)
-		}()
-	}
+	// 3. Open browser
+	go func() {
+		time.Sleep(800 * time.Millisecond)
+		server.OpenBrowser(guiURL)
+	}()
 
 	// 4. Run System Tray on main UI thread (Blocks until user exits from tray)
 	log.Println("Starting systray loop...")

@@ -171,16 +171,16 @@ LEFT JOIN (
 	SELECT DATE(reply_date_time) as d,
 		COUNT(DISTINCT CASE WHEN lh.chwpart = (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_inprov,
 		COUNT(DISTINCT CASE WHEN lh.chwpart != (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_outprov
-	FROM referin_reply rr
-	LEFT JOIN hospcode lh ON lh.hospcode = rr.reply_hospcode
+	FROM refer_reply rr
+	LEFT JOIN hospcode lh ON lh.hospcode = rr.dest_hospcode
 	WHERE DATE(reply_date_time) BETWEEN ? AND ?
 	GROUP BY DATE(reply_date_time)
 ) rb ON rb.d = a.vstdate
 LEFT JOIN (
-	SELECT o.operation_request_date as d, COUNT(DISTINCT o.operation_id) as visit_operation
+	SELECT o.request_date as d, COUNT(DISTINCT o.operation_id) as visit_operation
 	FROM operation_list o
-	WHERE o.operation_request_date BETWEEN ? AND ?
-	GROUP BY o.operation_request_date
+	WHERE o.request_date BETWEEN ? AND ?
+	GROUP BY o.request_date
 ) op ON op.d = a.vstdate
 LEFT JOIN (
 	SELECT appointment_date as d, COUNT(DISTINCT cid) as cnt
@@ -249,10 +249,68 @@ WHERE b.export_code IS NOT NULL
 GROUP BY b.export_code 
 ORDER BY b.export_code`
 
+const defaultReferQuery = `SELECT 
+	ov.vstdate,
+	COUNT(DISTINCT CASE WHEN r_out.referout_inprov = 'Y' THEN ov.vn END) AS visit_referout_inprov,
+	COUNT(DISTINCT CASE WHEN r_out.referout_outprov = 'Y' THEN ov.vn END) AS visit_referout_outprov,
+	COUNT(DISTINCT CASE WHEN r_out_ipd.referout_inprov_ipd = 'Y' THEN ip.an END) AS visit_referout_inprov_ipd,
+	COUNT(DISTINCT CASE WHEN r_out_ipd.referout_outprov_ipd = 'Y' THEN ip.an END) AS visit_referout_outprov_ipd,
+	COUNT(DISTINCT CASE WHEN r_in.inprov = 'Y' AND ip.vn IS NULL THEN ov.vn END) AS visit_referin_inprov,
+	COUNT(DISTINCT CASE WHEN r_in.outprov = 'Y' AND ip.vn IS NULL THEN ov.vn END) AS visit_referin_outprov,
+	COUNT(DISTINCT CASE WHEN r_in.inprov = 'Y' AND ip.vn IS NOT NULL THEN ov.vn END) AS visit_referin_inprov_ipd,
+	COUNT(DISTINCT CASE WHEN r_in.outprov = 'Y' AND ip.vn IS NOT NULL THEN ov.vn END) AS visit_referin_outprov_ipd,
+	COALESCE(rb.visit_referback_inprov, 0) AS visit_referback_inprov,
+	COALESCE(rb.visit_referback_outprov, 0) AS visit_referback_outprov
+FROM ovst ov
+LEFT JOIN ipt ip ON ip.vn = ov.vn
+LEFT JOIN (
+	SELECT vn,
+		MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_inprov,
+		MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_outprov
+	FROM referout
+	GROUP BY vn
+) r_out ON r_out.vn = ov.vn
+LEFT JOIN (
+	SELECT vn,
+		MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_inprov_ipd,
+		MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_outprov_ipd
+	FROM referout
+	GROUP BY vn
+) r_out_ipd ON r_out_ipd.vn = ip.an
+LEFT JOIN (
+	SELECT vn,
+		MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS inprov,
+		MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS outprov
+	FROM referin
+	GROUP BY vn
+) r_in ON r_in.vn = ov.vn
+LEFT JOIN (
+	SELECT DATE(reply_date_time) as d,
+		COUNT(DISTINCT CASE WHEN lh.chwpart = (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_inprov,
+		COUNT(DISTINCT CASE WHEN lh.chwpart != (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_outprov
+	FROM refer_reply rr
+	LEFT JOIN hospcode lh ON lh.hospcode = rr.dest_hospcode
+	WHERE DATE(reply_date_time) BETWEEN ? AND ?
+	GROUP BY DATE(reply_date_time)
+) rb ON rb.d = ov.vstdate
+WHERE ov.vstdate BETWEEN ? AND ?
+GROUP BY ov.vstdate
+ORDER BY ov.vstdate`
+
+const defaultOperationQuery = `SELECT 
+	o.request_date AS vstdate,
+	COUNT(DISTINCT o.operation_id) AS visit_operation
+FROM operation_list o
+WHERE o.request_date BETWEEN ? AND ?
+GROUP BY o.request_date
+ORDER BY o.request_date`
+
 func init() {
 	currentQueries = map[string]string{
 		"opd":       defaultOpdQuery,
 		"ipd":       defaultIpdQuery,
+		"refer":     defaultReferQuery,
+		"operation": defaultOperationQuery,
 		"bed_total": defaultBedTotalQuery,
 		"bed_dep":   defaultBedDepQuery,
 	}
@@ -391,6 +449,41 @@ func GetBedDepQuery() string {
 		return q
 	}
 	return defaultBedDepQuery
+}
+
+// GetReferQuery returns the active Refer query with province hospcodes replaced.
+func GetReferQuery(hospcode string) string {
+	queriesMutex.RLock()
+	q := currentQueries["refer"]
+	provCodes := currentProvinceHospcodes
+	queriesMutex.RUnlock()
+
+	if q == "" {
+		q = defaultReferQuery
+	}
+
+	if hospcode == "" {
+		hospcode = config.Get().Hospital.Code
+	}
+	if provCodes == "" {
+		provCodes = "'10703', '10985', '10986', '10987', '10988', '10989', '10990'"
+	}
+
+	q = strings.ReplaceAll(q, "{{HOSPCODE}}", hospcode)
+	q = strings.ReplaceAll(q, "{{MAIN_HOSPCODE}}", hospcode)
+	q = strings.ReplaceAll(q, "{{PROVINCE_HOSPCODES}}", provCodes)
+
+	return q
+}
+
+// GetOperationQuery returns the active Operation query.
+func GetOperationQuery() string {
+	queriesMutex.RLock()
+	defer queriesMutex.RUnlock()
+	if q, ok := currentQueries["operation"]; ok && strings.TrimSpace(q) != "" {
+		return q
+	}
+	return defaultOperationQuery
 }
 
 // GetQueriesVersion returns current active queries version.
