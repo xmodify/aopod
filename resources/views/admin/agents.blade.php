@@ -106,13 +106,18 @@
                 <div class="d-flex align-items-center gap-3">
                     <img src="{{ asset('images/aopod-agent-logo.png') }}" alt="AOPOD Agent" style="width: 52px; height: 52px; border-radius: 12px; box-shadow: 0 4px 12px rgba(24, 165, 115, 0.2);">
                     <div>
-                        <h5 class="fw-bold text-dark mb-1">ระบบจัดการ AOPOD Agent ประจำโรงพยาบาล</h5>
-                        <p class="text-secondary small mb-0">ตรวจสอบสถานะการเชื่อมต่อ ดาวน์โหลดโปรแกรมติดตั้ง ปรับแต่งคำสั่ง SQL ส่วนกลาง และสั่งการดึงข้อมูลย้อนหลัง</p>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <h5 class="fw-bold text-dark mb-0">ระบบจัดการ AOPOD Agent ประจำโรงพยาบาล</h5>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1" style="font-size: 0.78rem; font-weight: 700;">
+                                <i class="fa-solid fa-code-branch me-1"></i> v{{ $latestAgentVersion }}
+                            </span>
+                        </div>
+                        <p class="text-secondary small mb-0 mt-1">ตรวจสอบสถานะการเชื่อมต่อ ดาวน์โหลดโปรแกรมติดตั้ง ปรับแต่งคำสั่ง SQL ส่วนกลาง และสั่งการดึงข้อมูลย้อนหลัง</p>
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
                     <a href="{{ route('manage.agents.download-exe') }}" class="btn btn-primary fw-bold px-3 py-2 text-nowrap" style="border-radius: 10px; background: linear-gradient(135deg, #18a573 0%, #128259 100%); border: none;">
-                        <i class="fa-solid fa-download me-1"></i> ดาวน์โหลด Agent.exe
+                        <i class="fa-solid fa-download me-1"></i> ดาวน์โหลด Agent.exe (v{{ $latestAgentVersion }})
                     </a>
                     <button type="button" class="btn btn-warning text-dark fw-bold px-3 py-2 text-nowrap" onclick="handleRemoteUpdate('all', 'ทุกโรงพยาบาลในจังหวัด')" style="border-radius: 10px; background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); border: none;">
                         <i class="fa-solid fa-cloud-arrow-up me-1"></i> อัปเดต Client ทุก รพ.

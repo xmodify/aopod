@@ -73,8 +73,9 @@ class AgentWebController extends Controller
         $ppIcd10List = self::getPpIcd10List();
         $globalSchedule = \App\Models\AgentSchedule::getForHospital('ALL');
         $schedules = \App\Models\AgentSchedule::orderBy('hospcode')->get();
+        $latestAgentVersion = MainSetting::get('agent_latest_version', '1.0.1');
 
-        return view('admin.agents', compact('agentList', 'settings', 'queries', 'queriesVersion', 'ppIcd10List', 'globalSchedule', 'schedules'));
+        return view('admin.agents', compact('agentList', 'settings', 'queries', 'queriesVersion', 'ppIcd10List', 'globalSchedule', 'schedules', 'latestAgentVersion'));
     }
 
     /**
