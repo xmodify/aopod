@@ -849,10 +849,29 @@
                     <div class="text-muted small" id="tokenModalHospCode">รหัส: -</div>
                 </div>
 
+                <!-- 1. AOPOD Server URL -->
                 <div class="mb-3">
-                    <label class="form-label fw-semibold text-secondary small">AOPOD API Token (คัดลอกไปใช้ใน Agent หรือ config.yaml)</label>
+                    <label class="form-label fw-semibold text-secondary small">
+                        <i class="fa-solid fa-server text-primary me-1"></i> AOPOD Server URL (คัดลอกไปใส่ในช่อง AOPOD Server URL)
+                    </label>
                     <div class="input-group">
-                        <input type="text" class="form-control text-primary font-monospace bg-white" id="tokenModalValue" readonly style="border-radius: 10px 0 0 10px; font-size: 0.88rem; font-weight: 600;">
+                        <input type="text" class="form-control text-primary font-monospace bg-white" id="tokenModalServerUrl" value="{{ url('/') }}" readonly style="border-radius: 10px 0 0 10px; font-size: 0.88rem; font-weight: 600;">
+                        <button class="btn btn-outline-primary px-3 fw-bold" type="button" id="btnCopyServerUrl" style="border-radius: 0 10px 10px 0;">
+                            <i class="fa-solid fa-copy me-1"></i> คัดลอก
+                        </button>
+                    </div>
+                    <div class="form-text text-success d-none" id="copyUrlSuccessText">
+                        <i class="fa-solid fa-circle-check me-1"></i> คัดลอก Server URL ลงคลิปบอร์ดเรียบร้อยแล้ว!
+                    </div>
+                </div>
+
+                <!-- 2. AOPOD API Token -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-secondary small">
+                        <i class="fa-solid fa-key text-success me-1"></i> AOPOD API Token (คัดลอกไปใส่ในช่อง AOPOD API Bearer Token)
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control text-success font-monospace bg-white" id="tokenModalValue" readonly style="border-radius: 10px 0 0 10px; font-size: 0.88rem; font-weight: 600;">
                         <button class="btn btn-success px-3 fw-bold" type="button" id="btnCopyToken" style="border-radius: 0 10px 10px 0;">
                             <i class="fa-solid fa-copy me-1"></i> คัดลอก
                         </button>
@@ -863,11 +882,11 @@
                 </div>
 
                 <div class="p-3 bg-light bg-opacity-75 rounded-3 border small text-secondary">
-                    <i class="fa-solid fa-circle-info text-primary me-1"></i> <strong>วิธีใช้งาน Token:</strong>
-                    <ul class="mb-0 ps-3 mt-1" style="line-height: 1.5;">
-                        <li>นำ Token นี้ส่งให้เจ้าหน้าที่ไอทีของโรงพยาบาล</li>
-                        <li>เปิดโปรแกรม <strong>AOPOD Agent</strong> ที่เครื่อง รพ. นำ Token ไปวางในแท็บ <strong>"ตั้งค่าการเชื่อมต่อ"</strong> แล้วกดบันทึก</li>
-                    </ul>
+                    <i class="fa-solid fa-circle-info text-primary me-1"></i> <strong>วิธีเชื่อมต่อ AOPOD Agent:</strong>
+                    <ol class="mb-0 ps-3 mt-1" style="line-height: 1.6;">
+                        <li>คัดลอก <strong>Server URL</strong> และ <strong>API Token</strong> ข้างต้น</li>
+                        <li>เปิดโปรแกรม <strong>AOPOD Agent</strong> ที่เครื่อง รพ. นำไปวางในแท็บ <strong>"ตั้งค่าการเชื่อมต่อ"</strong> หมวดที่ 1 แล้วกดบันทึก</li>
+                    </ol>
                 </div>
             </div>
             <div class="modal-footer border-0 pt-0 d-flex justify-content-end">
@@ -1072,9 +1091,18 @@ $(document).ready(function() {
         currentModalHospName = $(this).data('name');
         let token = $(this).data('token') || '';
 
+        // Dynamically detect server base URL from browser address bar
+        const detectedBase = window.location.origin + (window.location.pathname.split('/manage')[0] || '');
+        if (detectedBase) {
+            $('#tokenModalServerUrl').val(detectedBase);
+        }
+
         $('#tokenModalHospName').text(currentModalHospName);
         $('#tokenModalHospCode').text(`รหัสสถานพยาบาล: ${currentModalHcode}`);
         $('#tokenModalValue').val(token);
+
+        $('#copyUrlSuccessText').addClass('d-none');
+        $('#btnCopyServerUrl').html('<i class="fa-solid fa-copy me-1"></i> คัดลอก').removeClass('btn-primary text-white').addClass('btn-outline-primary');
         $('#copySuccessText').addClass('d-none');
         $('#btnCopyToken').html('<i class="fa-solid fa-copy me-1"></i> คัดลอก');
 
@@ -1085,6 +1113,20 @@ $(document).ready(function() {
         }
 
         $('#viewTokenModal').modal('show');
+    });
+
+    // Copy Server URL Button
+    $('#btnCopyServerUrl').on('click', function() {
+        const urlInput = document.getElementById('tokenModalServerUrl');
+        urlInput.select();
+        urlInput.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(urlInput.value).then(function() {
+            $('#copyUrlSuccessText').removeClass('d-none');
+            $('#btnCopyServerUrl').html('<i class="fa-solid fa-check me-1"></i> คัดลอกแล้ว!').removeClass('btn-outline-primary').addClass('btn-primary text-white');
+            setTimeout(() => {
+                $('#btnCopyServerUrl').html('<i class="fa-solid fa-copy me-1"></i> คัดลอก').removeClass('btn-primary text-white').addClass('btn-outline-primary');
+            }, 3000);
+        });
     });
 
     // Copy Token Button
