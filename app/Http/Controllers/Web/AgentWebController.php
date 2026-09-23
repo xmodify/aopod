@@ -73,13 +73,37 @@ class AgentWebController extends Controller
         $ppIcd10List = self::getPpIcd10List();
         $globalSchedule = \App\Models\AgentSchedule::getForHospital('ALL');
         $schedules = \App\Models\AgentSchedule::orderBy('hospcode')->get();
-        $latestAgentVersion = MainSetting::get('agent_latest_version');
-        if (!$latestAgentVersion || version_compare($latestAgentVersion, '1.0.1', '<')) {
-            $latestAgentVersion = '1.0.1';
-            MainSetting::set('agent_latest_version', '1.0.1');
-        }
+        $latestAgentVersion = self::getLatestAgentVersion();
 
         return view('admin.agents', compact('agentList', 'settings', 'queries', 'queriesVersion', 'ppIcd10List', 'globalSchedule', 'schedules', 'latestAgentVersion'));
+    }
+
+    /**
+     * Get the latest Agent version (Single Source of Truth).
+     * Automatically reads from agent/config/config.go so you only update version in 1 single place!
+     */
+    public static function getLatestAgentVersion(): string
+    {
+        $goConfigFile = base_path('agent/config/config.go');
+        $fileVersion = null;
+
+        if (file_exists($goConfigFile)) {
+            $content = file_get_contents($goConfigFile);
+            if (preg_match('/const\s+AppVersion\s*=\s*"([^"]+)"/', $content, $matches)) {
+                $fileVersion = trim($matches[1]);
+            }
+        }
+
+        $dbVersion = MainSetting::get('agent_latest_version');
+
+        if ($fileVersion) {
+            if (!$dbVersion || version_compare($fileVersion, $dbVersion, '>')) {
+                MainSetting::set('agent_latest_version', $fileVersion);
+                return $fileVersion;
+            }
+        }
+
+        return $dbVersion ?: ($fileVersion ?: '1.0.1');
     }
 
     /**
@@ -649,7 +673,7 @@ SQL,
         $taskId = 'update_task_' . time() . '_' . substr(md5(uniqid()), 0, 6);
         $downloadUrl = url('/api/agent/download-latest');
 
-        $latestVersion = MainSetting::get('agent_latest_version', '1.0.1');
+        $latestVersion = self::getLatestAgentVersion();
         $taskPayload = [
             'task_id'      => $taskId,
             'action'       => 'update_client',
