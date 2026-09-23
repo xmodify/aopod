@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const AppVersion = "1.0.0"
+const AppVersion = "1.0.1"
 
 type Config struct {
 	Hospital HospitalConfig `yaml:"hospital" json:"hospital"`
