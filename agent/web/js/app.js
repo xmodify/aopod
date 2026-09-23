@@ -137,19 +137,10 @@ function initSettingsModal() {
   btnCloseSettingsModal?.addEventListener('click', closeSettingsModal);
   btnDismissSettings?.addEventListener('click', closeSettingsModal);
 
-  // Close on outside click
-  passwordModal?.addEventListener('click', (e) => {
-    if (e.target === passwordModal) closePasswordModal();
-  });
-  settingsModal?.addEventListener('click', (e) => {
-    if (e.target === settingsModal) closeSettingsModal();
-  });
-
-  // Close on Escape key
+  // Close password modal on Escape key only (ไม่ปิด settingsModal ด้วย Escape หรือ backdrop click เพื่อป้องกันค่าที่กำลังตั้งค่าหลุด)
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closePasswordModal();
-      closeSettingsModal();
     }
   });
 
@@ -169,7 +160,7 @@ function initSettingsModal() {
     }
   });
 
-  // Password verification
+  // Password verification (รองรับ Aopod2026 หรือ Aopod ไม่ต้องจำรหัส รพ. ในการติดตั้งใหม่)
   function verifyPassword() {
     const inputPass = inputSettingsPassword ? inputSettingsPassword.value.trim() : '';
     if (!inputPass) {
@@ -190,18 +181,28 @@ function initSettingsModal() {
         if (val) hcode = val;
       }
     }
-    if (!hcode) hcode = '10989';
 
-    const codePrefix = String.fromCharCode(65, 111, 112, 111, 100);
-    const authTarget = codePrefix + hcode;
+    const baseStr = String.fromCharCode(65, 111, 112, 111, 100); // "Aopod"
+    const allowed = [
+      baseStr + '2026',                // Aopod2026
+      baseStr.toLowerCase() + '2026',  // aopod2026
+      baseStr,                          // Aopod
+      baseStr.toLowerCase()             // aopod
+    ];
+    if (hcode) {
+      allowed.push(baseStr + hcode);                // Aopod<hcode>
+      allowed.push(baseStr.toLowerCase() + hcode);  // aopod<hcode>
+    }
 
-    // ตรวจสอบตัวพิมพ์ใหญ่-เล็กให้ตรงตาม Aopod ตามด้วยรหัส รพ. (Strict Case-Sensitive)
-    if (inputPass === authTarget) {
+    const cleanInput = inputPass.toLowerCase();
+    const isMatched = allowed.some(pass => pass.toLowerCase() === cleanInput);
+
+    if (isMatched) {
       closePasswordModal();
       openSettingsModal();
     } else {
       if (passwordError) {
-        passwordError.innerText = '❌ รหัสผ่านไม่ถูกต้อง (กรุณาตรวจสอบตัวพิมพ์ใหญ่-เล็ก)';
+        passwordError.innerHTML = '❌ รหัสผ่านไม่ถูกต้อง (รหัสผ่านเริ่มต้นคือ: <code>Aopod2026</code> หรือ <code>Aopod</code>)';
         passwordError.style.display = 'block';
       }
       inputSettingsPassword?.select();

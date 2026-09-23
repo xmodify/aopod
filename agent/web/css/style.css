@@ -514,6 +514,7 @@ body {
   padding: 12px 18px;
   border-bottom: 1px solid #f1f5f9;
   background: #f8fafc;
+  flex-shrink: 0;
 }
 
 .modal-title {
@@ -545,6 +546,7 @@ body {
 .modal-body {
   padding: 16px 18px;
   overflow-y: auto;
+  flex: 1 1 auto;
 }
 
 .modal-scroll {
@@ -556,9 +558,10 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  padding: 10px 18px;
-  border-top: 1px solid #f1f5f9;
+  padding: 12px 18px;
+  border-top: 1px solid #e2e8f0;
   background: #f8fafc;
+  flex-shrink: 0;
 }
 
 /* Password Input Group */

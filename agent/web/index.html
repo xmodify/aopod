@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/flatpickr.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=1.0.4">
+  <link rel="stylesheet" href="/css/style.css?v=1.0.5">
 </head>
 <body>
 
@@ -143,13 +143,16 @@
           กรุณากรอกรหัสผ่านเพื่อเข้าสู่หน้าตั้งค่าระบบ
         </p>
         <div class="form-group">
-          <label>รหัสผ่าน (Password)</label>
+          <label>รหัสผ่านเข้าหน้าตั้งค่า</label>
           <div class="password-input-group">
-            <input type="password" class="form-control" id="inputSettingsPassword" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+            <input type="password" class="form-control" id="inputSettingsPassword" placeholder="Aopod2026 หรือ Aopod" autocomplete="current-password">
             <button type="button" class="btn-toggle-eye" id="btnTogglePasswordEye" title="แสดง/ซ่อนรหัสผ่าน">
               <i class="fa-solid fa-eye" id="eyeIcon"></i>
             </button>
           </div>
+          <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 5px;">
+            <i class="fa-solid fa-circle-info text-primary"></i> รหัสผ่านเริ่มต้นคือ: <code>Aopod2026</code> หรือ <code>Aopod</code>
+          </span>
         </div>
         <div id="passwordError" class="alert-error" style="display: none;"></div>
       </div>
@@ -228,15 +231,14 @@
           </button>
         </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 12px;">
-            <button type="button" class="btn btn-outline" id="btnOpenConfigFolder" style="padding: 8px 14px; font-size: 0.8rem;" title="เปิดโฟลเดอร์ Roaming AppData">
-              <i class="fa-solid fa-folder-open text-warning"></i> เปิดโฟลเดอร์ AppData
-            </button>
-          </div>
+        <div style="display: flex; gap: 10px; margin-top: 12px;">
+          <button type="button" class="btn btn-outline" id="btnOpenConfigFolder" style="padding: 8px 14px; font-size: 0.8rem;" title="เปิดโฟลเดอร์ Roaming AppData">
+            <i class="fa-solid fa-folder-open text-warning"></i> เปิดโฟลเดอร์ AppData
+          </button>
+        </div>
 
-          <div class="p-2 bg-light rounded mt-2 border" style="font-size: 0.74rem; color: var(--text-muted); background: #f8fafc; border-radius: 6px; padding: 6px 10px; margin-top: 8px;">
-            <i class="fa-solid fa-circle-info text-primary me-1"></i> ไฟล์ตั้งค่าจัดเก็บที่: <code id="cfgLocationPath">%APPDATA%\AOPOD-Agent\config.yaml</code>
-          </div>
+        <div class="p-2 bg-light rounded mt-2 border" style="font-size: 0.74rem; color: var(--text-muted); background: #f8fafc; border-radius: 6px; padding: 6px 10px; margin-top: 8px;">
+          <i class="fa-solid fa-circle-info text-primary me-1"></i> ไฟล์ตั้งค่าจัดเก็บที่: <code id="cfgLocationPath">%APPDATA%\aopod-agent\config.yaml</code>
         </div>
       </div>
       <div class="modal-footer">
@@ -247,11 +249,10 @@
       </div>
     </div>
   </div>
-</div>
 
 <script src="/js/flatpickr.min.js"></script>
 <script src="/js/flatpickr-th.js"></script>
 <script src="/js/flatpickr-th-buddhist.js"></script>
-<script src="/js/app.js?v=1.0.4"></script>
+<script src="/js/app.js?v=1.0.5"></script>
 </body>
 </html>
