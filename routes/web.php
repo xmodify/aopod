@@ -81,6 +81,7 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::post('/manage/agents/lookup-icd10', [\App\Http\Controllers\Web\AgentWebController::class, 'updatePpIcd10'])->name('manage.agents.update-icd10');
     Route::post('/manage/agents/lookup-icd10/reset', [\App\Http\Controllers\Web\AgentWebController::class, 'resetPpIcd10'])->name('manage.agents.reset-icd10');
     Route::post('/manage/agents/{hcode}/token', [\App\Http\Controllers\Web\AgentWebController::class, 'issueToken'])->name('manage.agents.issue-token');
+    Route::post('/manage/agents/schedule', [\App\Http\Controllers\Web\AgentWebController::class, 'updateSchedule'])->name('manage.agents.update-schedule');
     Route::get('/manage/agents/download-exe', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadExe'])->name('manage.agents.download-exe');
 });
 

@@ -75,7 +75,7 @@ func onReady() {
 					if err != nil {
 						scheduler.AddLog("ERROR", fmt.Sprintf("[Tray] ส่งข้อมูลล้มเหลว: %v", err))
 					} else {
-						scheduler.AddLog("SUCCESS", fmt.Sprintf("[Tray] %s (OPD: %d, IPD: %d)", summary.Message, summary.OPD.TotalSent, summary.IPD.TotalSent))
+						scheduler.AddLog("SUCCESS", fmt.Sprintf("[Tray] %s (เตียง: สำเร็จ, IPD: %d, OPD: %d, Refer: %d, ผ่าตัด: %d)", summary.Message, summary.IPD.TotalSent, summary.OPD.TotalSent, summary.Refer.TotalSent, summary.Operation.TotalSent))
 					}
 				}()
 

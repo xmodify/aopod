@@ -7,39 +7,39 @@
   <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/flatpickr.min.css">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=1.0.4">
 </head>
 <body>
 
 <div class="agent-container">
-  <!-- Header Area -->
+  <!-- Compact Header Area -->
   <header class="agent-header">
     <div class="logo-area">
-      <img src="/images/logo.png" alt="AOPOD Agent" class="logo-img" style="width: 54px; height: 54px; border-radius: 14px; box-shadow: 0 6px 18px rgba(24, 165, 115, 0.3);">
+      <img src="/images/logo.png" alt="AOPOD Agent" class="logo-img" style="width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 4px 14px rgba(24, 165, 115, 0.25);">
       <div class="logo-title">
         <h2 id="hospTitle">AOPOD Agent (โรงพยาบาล)</h2>
-        <p>โปรแกรมส่งข้อมูลผู้ป่วยนอก ผู้ป่วยใน และเตียง ประจำโรงพยาบาล</p>
+        <p>โปรแกรมส่งข้อมูลผู้ป่วยนอก ผู้ป่วยใน ส่งต่อ ผ่าตัด และเตียง ประจำโรงพยาบาล</p>
       </div>
     </div>
     <div class="header-badges">
-      <span class="badge badge-online" id="statusBadge"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> พร้อมทำงาน</span>
-      <span class="badge badge-version">v1.0.0</span>
+      <span class="badge badge-online" id="statusBadge"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> พร้อมทำงาน</span>
+      <span class="badge badge-version" id="versionBadge">v1.0.2</span>
+      <button type="button" class="btn-gear" id="btnOpenSettings" title="ตั้งค่าการเชื่อมต่อระบบ">
+        <i class="fa-solid fa-gear"></i>
+      </button>
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
-  <nav class="nav-tabs">
+  <!-- Navigation Tabs (พร้อมขยายแท็บฟีเจอร์ในอนาคต) -->
+  <nav class="nav-tabs" id="mainNavTabs">
     <button class="tab-btn active" data-tab="tabDashboard">
       <i class="fa-solid fa-gauge-high"></i> ภาพรวม & ส่งข้อมูล
-    </button>
-    <button class="tab-btn" data-tab="tabSettings">
-      <i class="fa-solid fa-sliders"></i> ตั้งค่าการเชื่อมต่อ
     </button>
   </nav>
 
   <!-- Tab 1: Dashboard -->
   <div class="tab-content active" id="tabDashboard">
-    <!-- Status Grid -->
+    <!-- Compact Status Grid -->
     <div class="status-grid">
       <div class="status-box">
         <div class="status-icon db"><i class="fa-solid fa-database"></i></div>
@@ -74,11 +74,11 @@
     <!-- Manual Sync Card -->
     <div class="glass-card">
       <h3 class="card-title"><i class="fa-solid fa-paper-plane"></i> ส่งข้อมูลบริการเข้าเซิร์ฟเวอร์กลาง (Sync Data)</h3>
-      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px;">
+      <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 12px;">
         คุณสามารถสั่งดึงข้อมูลบริการย้อนหลังและส่งเข้าเซิร์ฟเวอร์กลาง AOPOD ได้ทันทีตามช่วงวันที่ระบุ
       </p>
 
-      <!-- Date Presets -->
+      <!-- Compact Date Presets -->
       <div class="presets">
         <button class="preset-btn" data-days="0">วันนี้</button>
         <button class="preset-btn" data-days="7">ย้อนหลัง 7 วัน</button>
@@ -87,7 +87,7 @@
         <button class="preset-btn" data-days="-1">เดือนนี้</button>
       </div>
 
-      <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 16px;">
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 12px;">
         <div class="form-group">
           <label><i class="fa-solid fa-calendar-day text-success"></i> วันที่เริ่มต้น (Start Date)</label>
           <input type="text" class="form-control" id="startDate" placeholder="เลือกวันที่เริ่มต้น" style="background: white;">
@@ -102,18 +102,26 @@
         <div class="progress-bar-fill" id="progressBarFill"></div>
       </div>
 
-      <button class="btn btn-primary" id="btnSyncNow" style="width: 100%; padding: 12px; font-size: 1rem;">
+      <button class="btn btn-primary" id="btnSyncNow" style="width: 100%; padding: 10px; font-size: 0.9rem;">
         <i class="fa-solid fa-paper-plane"></i> เริ่มส่งข้อมูล (Sync Now)
       </button>
     </div>
 
-    <!-- Live Terminal Log -->
+    <!-- Compact Live Terminal Log -->
     <div class="glass-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h3 class="card-title" style="margin-bottom: 0;"><i class="fa-solid fa-terminal"></i> กิจกรรมการทำงาน (Live Activity Log)</h3>
-        <button class="btn btn-outline" id="btnClearLogs" style="padding: 4px 12px; font-size: 0.8rem;">
-          <i class="fa-solid fa-trash-can"></i> ล้าง Log
-        </button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h3 class="card-title" style="margin-bottom: 2px;"><i class="fa-solid fa-terminal"></i> กิจกรรมการทำงาน (Live Activity Log)</h3>
+          <span style="font-size: 0.72rem; color: var(--text-muted);"><i class="fa-solid fa-clock-rotate-left"></i> เก็บประวัติย้อนหลังสูงสุด 30 วัน (ระบบจะลบไฟล์เก่าอัตโนมัติ)</span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn btn-outline" id="btnOpenLogsFolder" style="padding: 4px 10px; font-size: 0.76rem;" title="เปิดโฟลเดอร์เก็บไฟล์ Log ใน Windows Explorer">
+            <i class="fa-solid fa-folder-open text-warning"></i> เปิดโฟลเดอร์ Log
+          </button>
+          <button class="btn btn-outline" id="btnClearLogs" style="padding: 4px 10px; font-size: 0.76rem; border-color: rgba(220, 53, 69, 0.4);" title="ลบและล้างประวัติ Log ทั้งหมด">
+            <i class="fa-solid fa-trash-can text-danger"></i> ล้าง Log
+          </button>
+        </div>
       </div>
       <div class="log-terminal" id="logTerminal">
         <div class="log-line INFO">[System] AOPOD Agent เริ่มต้นทำงานเรียบร้อยแล้ว</div>
@@ -121,153 +129,121 @@
     </div>
   </div>
 
-  <!-- Tab 2: Settings -->
-  <div class="tab-content" id="tabSettings">
-    <div class="glass-card">
-      <h3 class="card-title"><i class="fa-solid fa-hospital"></i> 1. ข้อมูลโรงพยาบาลและเซิร์ฟเวอร์กลาง AOPOD</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>รหัสสถานพยาบาล (Hospcode 5 หลัก)</label>
-          <input type="text" class="form-control" id="cfgHospCode" placeholder="เช่น 10989">
+  <!-- Password Security Modal -->
+  <div class="modal-backdrop" id="passwordModal" style="display: none;">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-shield-halved text-success"></i> ยืนยันสิทธิ์เข้าใช้งาน
         </div>
-        <div class="form-group">
-          <label>ชื่อโรงพยาบาล</label>
-          <input type="text" class="form-control" id="cfgHospName" placeholder="เช่น รพช. หัวตะพาน">
-        </div>
-        <div class="form-group">
-          <label>AOPOD Server URL</label>
-          <input type="text" class="form-control" id="cfgServerUrl" placeholder="http://127.0.0.1/aopod">
-        </div>
-        <div class="form-group">
-          <label>จำนวนเตียงที่เปิดให้บริการ (Bed Qty)</label>
-          <input type="number" class="form-control" id="cfgBedQty" placeholder="30">
-        </div>
+        <button type="button" class="modal-close" id="btnClosePasswordModal">&times;</button>
       </div>
-      <div class="form-group" style="margin-bottom: 16px;">
-        <label>AOPOD API Bearer Token (รับจากแอดมินกลาง)</label>
-        <input type="password" class="form-control" id="cfgToken" placeholder="วาง Token ที่นี่">
-      </div>
-      <button class="btn btn-outline" id="btnTestApi">
-        <i class="fa-solid fa-cloud-arrow-up"></i> ทดสอบ Token / เชื่อมต่อ Server
-      </button>
-    </div>
-
-    <div class="glass-card">
-      <h3 class="card-title"><i class="fa-solid fa-database"></i> 2. การเชื่อมต่อฐานข้อมูล HOSxP ของโรงพยาบาล</h3>
-      <div class="form-grid">
+      <div class="modal-body">
+        <p style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 12px;">
+          กรุณากรอกรหัสผ่านเพื่อเข้าสู่หน้าตั้งค่าระบบ
+        </p>
         <div class="form-group">
-          <label>Host IP / Server</label>
-          <input type="text" class="form-control" id="cfgDbHost" placeholder="127.0.0.1 หรือ 192.168.1.x">
-        </div>
-        <div class="form-group">
-          <label>Port</label>
-          <input type="number" class="form-control" id="cfgDbPort" placeholder="3306">
-        </div>
-        <div class="form-group">
-          <label>Database Name</label>
-          <input type="text" class="form-control" id="cfgDbName" placeholder="hosxp หรือ hosxe">
-        </div>
-        <div class="form-group">
-          <label>Username (ผู้ใช้งาน MySQL)</label>
-          <input type="text" class="form-control" id="cfgDbUser" placeholder="rims หรือ root">
-        </div>
-        <div class="form-group">
-          <label>Password (รหัสผ่าน MySQL)</label>
-          <input type="password" class="form-control" id="cfgDbPass" placeholder="รหัสผ่าน">
-        </div>
-      </div>
-      <button class="btn btn-outline" id="btnTestDb">
-        <i class="fa-solid fa-plug"></i> ทดสอบเชื่อมต่อ HOSxP
-      </button>
-    </div>
-
-    <div class="glass-card">
-      <h3 class="card-title"><i class="fa-solid fa-clock"></i> 3. การตั้งเวลาส่งข้อมูลอัตโนมัติ (Schedule)</h3>
-
-      <!-- 1. Interval Type Card -->
-      <div class="schedule-card">
-        <div class="schedule-row">
-          <div style="flex: 1; min-width: 260px;">
-            <label style="font-weight: 600; font-size: 0.9rem; color: #0284c7; margin-bottom: 8px; display: block;">
-              รูปแบบเวลาที่ทำงาน (Interval Type)
-            </label>
-            <select class="form-control" id="cfgScheduleType" onchange="onScheduleTypeChange()">
-              <option value="daily">ส่งข้อมูลรายวัน (Daily)</option>
-              <option value="hourly">ส่งข้อมูลรายชั่วโมง (Hourly)</option>
-              <option value="minute">ส่งข้อมูลรายนาที (Minute)</option>
-            </select>
+          <label>รหัสผ่าน (Password)</label>
+          <div class="password-input-group">
+            <input type="password" class="form-control" id="inputSettingsPassword" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+            <button type="button" class="btn-toggle-eye" id="btnTogglePasswordEye" title="แสดง/ซ่อนรหัสผ่าน">
+              <i class="fa-solid fa-eye" id="eyeIcon"></i>
+            </button>
           </div>
+        </div>
+        <div id="passwordError" class="alert-error" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="btnCancelPassword">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" id="btnSubmitPassword">
+          <i class="fa-solid fa-lock-open"></i> เข้าสู่ระบบ
+        </button>
+      </div>
+    </div>
+  </div>
 
-          <!-- Time Picker for Daily -->
-          <div id="panelDailyTime" style="display: flex; align-items: center; gap: 8px; padding-top: 24px;">
-            <span style="font-size: 0.9rem; color: #475569; font-weight: 500;">ทำงานทุกวัน เวลา:</span>
-            <div class="time-picker-wrapper">
-              <input type="number" class="time-digit-input" id="cfgDailyHour" min="0" max="23" value="02" placeholder="02">
-              <span style="font-weight: 700; color: #64748b;">:</span>
-              <input type="number" class="time-digit-input" id="cfgDailyMinute" min="0" max="59" value="00" placeholder="00">
+  <!-- Settings Modal (Popup) -->
+  <div class="modal-backdrop" id="settingsModal" style="display: none;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-gear text-primary"></i> ตั้งค่าการเชื่อมต่อระบบ (Connection Settings)
+        </div>
+        <button type="button" class="modal-close" id="btnCloseSettingsModal">&times;</button>
+      </div>
+      <div class="modal-body modal-scroll">
+        <!-- 1. ข้อมูลโรงพยาบาลและเซิร์ฟเวอร์กลาง AOPOD -->
+        <div class="glass-card" style="margin-bottom: 14px; padding: 14px 16px;">
+          <h3 class="card-title"><i class="fa-solid fa-hospital"></i> 1. ข้อมูลโรงพยาบาลและเซิร์ฟเวอร์กลาง AOPOD</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>รหัสสถานพยาบาล (Hospcode 5 หลัก)</label>
+              <input type="text" class="form-control" id="cfgHospCode" placeholder="เช่น 10989">
             </div>
-            <span style="font-size: 0.9rem; color: #475569; font-weight: 500;">น.</span>
-          </div>
-
-          <!-- Picker for Hourly -->
-          <div id="panelHourlyTime" style="display: none; align-items: center; gap: 8px; padding-top: 24px;">
-            <span style="font-size: 0.9rem; color: #475569; font-weight: 500;">ทำงานทุกๆ:</span>
-            <select class="form-control" id="cfgIntervalHours" style="width: 140px;">
-              <option value="1" selected>1 ชั่วโมง</option>
-              <option value="2">2 ชั่วโมง</option>
-              <option value="3">3 ชั่วโมง</option>
-              <option value="4">4 ชั่วโมง</option>
-              <option value="6">6 ชั่วโมง</option>
-              <option value="8">8 ชั่วโมง</option>
-              <option value="12">12 ชั่วโมง</option>
-            </select>
-          </div>
-
-          <!-- Picker for Minute -->
-          <div id="panelMinuteTime" style="display: none; align-items: center; gap: 8px; padding-top: 24px;">
-            <span style="font-size: 0.9rem; color: #475569; font-weight: 500;">ทำงานทุกๆ:</span>
-            <select class="form-control" id="cfgIntervalMins" style="width: 130px;">
-              <option value="5">5 นาที</option>
-              <option value="10">10 นาที</option>
-              <option value="15" selected>15 นาที</option>
-              <option value="20">20 นาที</option>
-              <option value="30">30 นาที</option>
-              <option value="45">45 นาที</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Sync Range & Hardware Auto-Tune Panel -->
-      <div class="form-grid">
-        <div class="form-group">
-          <label>ดึงข้อมูลย้อนหลังในแต่ละรอบ (วัน)</label>
-          <input type="number" class="form-control" id="cfgSyncDays" placeholder="30" value="30">
-          <div class="form-hint">(ตัวอย่าง: ตั้งไว้ 30 จะดึงข้อมูลย้อนหลัง 30 วันล่าสุดเสมอ และอัปเดตข้อมูลที่มีการแก้ไข)</div>
-        </div>
-        <div class="form-group" style="display: flex; flex-direction: column; justify-content: center;">
-          <label>ประสิทธิภาพการส่งข้อมูล (Performance Engine)</label>
-          <div style="background: rgba(24, 165, 115, 0.08); border: 1px solid rgba(24, 165, 115, 0.25); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; height: 46px;">
-            <i class="fa-solid fa-microchip text-success" style="font-size: 1.3rem;"></i>
-            <div>
-              <div style="font-weight: 600; color: #18a573; font-size: 0.88rem;">Auto Hardware-Tuned</div>
-              <div style="font-size: 0.74rem; color: #64748b;">ปรับขนาดชุดข้อมูล (Chunk) และ Threads อัตโนมัติตามสเปก CPU</div>
+            <div class="form-group">
+              <label>ชื่อโรงพยาบาล</label>
+              <input type="text" class="form-control" id="cfgHospName" placeholder="เช่น รพช. หัวตะพาน">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>AOPOD Server URL</label>
+              <input type="text" class="form-control" id="cfgServerUrl" placeholder="http://127.0.0.1/aopod">
             </div>
           </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>AOPOD API Bearer Token (รับจากแอดมินกลาง)</label>
+            <input type="password" class="form-control" id="cfgToken" placeholder="วาง Token ที่นี่">
+          </div>
+          <button type="button" class="btn btn-outline" id="btnTestApi">
+            <i class="fa-solid fa-cloud-arrow-up"></i> ทดสอบ Token / เชื่อมต่อ Server
+          </button>
+        </div>
+
+        <!-- 2. การเชื่อมต่อฐานข้อมูล HOSxP ของโรงพยาบาล -->
+        <div class="glass-card" style="margin-bottom: 14px; padding: 14px 16px;">
+          <h3 class="card-title"><i class="fa-solid fa-database"></i> 2. การเชื่อมต่อฐานข้อมูล HOSxP ของโรงพยาบาล</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Host IP / Server</label>
+              <input type="text" class="form-control" id="cfgDbHost" placeholder="127.0.0.1 หรือ 192.168.1.x">
+            </div>
+            <div class="form-group">
+              <label>Port</label>
+              <input type="number" class="form-control" id="cfgDbPort" placeholder="3306">
+            </div>
+            <div class="form-group">
+              <label>Database Name</label>
+              <input type="text" class="form-control" id="cfgDbName" placeholder="hosxp หรือ hosxe">
+            </div>
+            <div class="form-group">
+              <label>Username (ผู้ใช้งาน MySQL)</label>
+              <input type="text" class="form-control" id="cfgDbUser" placeholder="rims หรือ root">
+            </div>
+            <div class="form-group">
+              <label>Password (รหัสผ่าน MySQL)</label>
+              <input type="password" class="form-control" id="cfgDbPass" placeholder="รหัสผ่าน">
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline" id="btnTestDb">
+            <i class="fa-solid fa-plug"></i> ทดสอบเชื่อมต่อ HOSxP
+          </button>
+        </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
+            <button type="button" class="btn btn-outline" id="btnOpenConfigFolder" style="padding: 8px 14px; font-size: 0.8rem;" title="เปิดโฟลเดอร์ Roaming AppData">
+              <i class="fa-solid fa-folder-open text-warning"></i> เปิดโฟลเดอร์ AppData
+            </button>
+          </div>
+
+          <div class="p-2 bg-light rounded mt-2 border" style="font-size: 0.74rem; color: var(--text-muted); background: #f8fafc; border-radius: 6px; padding: 6px 10px; margin-top: 8px;">
+            <i class="fa-solid fa-circle-info text-primary me-1"></i> ไฟล์ตั้งค่าจัดเก็บที่: <code id="cfgLocationPath">%APPDATA%\AOPOD-Agent\config.yaml</code>
+          </div>
         </div>
       </div>
-
-      <div style="display: flex; gap: 12px; margin-top: 16px;">
-        <button class="btn btn-primary" id="btnSaveConfig" style="flex: 1; padding: 12px; font-size: 1rem;">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="btnDismissSettings">ปิดหน้าต่าง</button>
+        <button type="button" class="btn btn-primary" id="btnSaveConfig">
           <i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า
         </button>
-        <button class="btn btn-outline" id="btnOpenConfigFolder" style="padding: 12px 18px;" title="เปิดโฟลเดอร์ Roaming AppData">
-          <i class="fa-solid fa-folder-open text-warning"></i> เปิดโฟลเดอร์ AppData
-        </button>
-      </div>
-
-      <div class="p-3 bg-light rounded-3 mt-3 border" style="font-size: 0.8rem; color: var(--text-muted);">
-        <i class="fa-solid fa-circle-info text-primary me-1"></i> ไฟล์ตั้งค่าจัดเก็บที่: <code id="cfgLocationPath">%APPDATA%\AOPOD-Agent\config.yaml</code>
       </div>
     </div>
   </div>
@@ -276,6 +252,6 @@
 <script src="/js/flatpickr.min.js"></script>
 <script src="/js/flatpickr-th.js"></script>
 <script src="/js/flatpickr-th-buddhist.js"></script>
-<script src="/js/app.js"></script>
+<script src="/js/app.js?v=1.0.4"></script>
 </body>
 </html>

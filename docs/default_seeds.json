@@ -242,39 +242,5 @@
             "updated_at": "2024-09-11 15:22:35",
             "created_at": "2024-09-11 15:22:32"
         }
-    ],
-    "main_setting": [
-        {
-            "name": "provider_id_active",
-            "value": "Y"
-        },
-        {
-            "name": "health_id_client_id",
-            "value": ""
-        },
-        {
-            "name": "health_id_client_secret",
-            "value": ""
-        },
-        {
-            "name": "provider_id_client_id",
-            "value": ""
-        },
-        {
-            "name": "provider_id_secret_key",
-            "value": ""
-        },
-        {
-            "name": "moph_alert_active",
-            "value": "N"
-        },
-        {
-            "name": "moph_alert_client_id",
-            "value": ""
-        },
-        {
-            "name": "moph_alert_client_secret",
-            "value": ""
-        }
     ]
 }

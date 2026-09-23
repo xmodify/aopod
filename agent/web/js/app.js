@@ -1,11 +1,13 @@
 // AOPOD Agent Client Application JS
 
 let syncStartPicker, syncEndPicker;
+let currentHospCode = '10989';
 
 document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initDatePickers();
   initPresets();
+  initSettingsModal();
   loadStatus();
   loadConfig();
   startLogPolling();
@@ -16,8 +18,26 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnTestApi')?.addEventListener('click', handleTestApi);
   document.getElementById('btnSaveConfig')?.addEventListener('click', handleSaveConfig);
   document.getElementById('btnOpenConfigFolder')?.addEventListener('click', handleOpenConfigFolder);
-  document.getElementById('btnClearLogs')?.addEventListener('click', () => {
-    document.getElementById('logTerminal').innerHTML = '';
+  document.getElementById('btnClearLogs')?.addEventListener('click', async () => {
+    if (!confirm('คุณต้องการล้างและลบประวัติ Log ทั้งหมดใช่หรือไม่?')) return;
+    try {
+      const res = await fetch('/api/logs/clear', { method: 'POST' });
+      const data = await res.json();
+      const terminal = document.getElementById('logTerminal');
+      if (terminal) {
+        terminal.innerHTML = `<div class="log-line INFO">[System] ${data.message || 'ล้างประวัติ Log เรียบร้อยแล้ว'}</div>`;
+      }
+    } catch (err) {
+      console.error('Failed to clear logs:', err);
+    }
+  });
+
+  document.getElementById('btnOpenLogsFolder')?.addEventListener('click', async () => {
+    try {
+      await fetch('/api/open-logs-folder');
+    } catch (err) {
+      console.error('Failed to open logs folder:', err);
+    }
   });
 });
 
@@ -56,6 +76,143 @@ function initTabs() {
       const targetId = btn.getAttribute('data-tab');
       document.getElementById(targetId)?.classList.add('active');
     });
+  });
+}
+
+// Settings & Password Modal Logic
+function initSettingsModal() {
+  const btnOpenSettings = document.getElementById('btnOpenSettings');
+  const passwordModal = document.getElementById('passwordModal');
+  const settingsModal = document.getElementById('settingsModal');
+  const btnClosePasswordModal = document.getElementById('btnClosePasswordModal');
+  const btnCancelPassword = document.getElementById('btnCancelPassword');
+  const btnSubmitPassword = document.getElementById('btnSubmitPassword');
+  const btnTogglePasswordEye = document.getElementById('btnTogglePasswordEye');
+  const inputSettingsPassword = document.getElementById('inputSettingsPassword');
+  const passwordError = document.getElementById('passwordError');
+  const btnCloseSettingsModal = document.getElementById('btnCloseSettingsModal');
+  const btnDismissSettings = document.getElementById('btnDismissSettings');
+
+  function openPasswordModal() {
+    // ซ่อนหน้าต่างตั้งค่าเดิมหากเปิดอยู่ เพื่อความปลอดภัย
+    if (settingsModal) settingsModal.style.display = 'none';
+
+    if (passwordError) {
+      passwordError.style.display = 'none';
+      passwordError.innerText = '';
+    }
+    if (inputSettingsPassword) {
+      inputSettingsPassword.value = '';
+    }
+    if (passwordModal) {
+      passwordModal.style.display = 'flex';
+      setTimeout(() => inputSettingsPassword?.focus(), 100);
+    }
+  }
+
+  function closePasswordModal() {
+    if (passwordModal) passwordModal.style.display = 'none';
+    if (inputSettingsPassword) inputSettingsPassword.value = '';
+  }
+
+  function openSettingsModal() {
+    if (settingsModal) {
+      settingsModal.style.display = 'flex';
+      loadConfig();
+    }
+  }
+
+  function closeSettingsModal() {
+    if (settingsModal) settingsModal.style.display = 'none';
+  }
+
+  // Open settings trigger - ถาม password ทุกครั้งที่กดปุ่มตั้งค่า (ไม่มีการจำ session)
+  btnOpenSettings?.addEventListener('click', () => {
+    openPasswordModal();
+  });
+
+  // Close triggers
+  btnClosePasswordModal?.addEventListener('click', closePasswordModal);
+  btnCancelPassword?.addEventListener('click', closePasswordModal);
+  btnCloseSettingsModal?.addEventListener('click', closeSettingsModal);
+  btnDismissSettings?.addEventListener('click', closeSettingsModal);
+
+  // Close on outside click
+  passwordModal?.addEventListener('click', (e) => {
+    if (e.target === passwordModal) closePasswordModal();
+  });
+  settingsModal?.addEventListener('click', (e) => {
+    if (e.target === settingsModal) closeSettingsModal();
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closePasswordModal();
+      closeSettingsModal();
+    }
+  });
+
+  // Toggle eye visibility
+  btnTogglePasswordEye?.addEventListener('click', () => {
+    const eyeIcon = document.getElementById('eyeIcon');
+    if (!inputSettingsPassword || !eyeIcon) return;
+
+    if (inputSettingsPassword.type === 'password') {
+      inputSettingsPassword.type = 'text';
+      eyeIcon.classList.remove('fa-eye');
+      eyeIcon.classList.add('fa-eye-slash');
+    } else {
+      inputSettingsPassword.type = 'password';
+      eyeIcon.classList.remove('fa-eye-slash');
+      eyeIcon.classList.add('fa-eye');
+    }
+  });
+
+  // Password verification
+  function verifyPassword() {
+    const inputPass = inputSettingsPassword ? inputSettingsPassword.value.trim() : '';
+    if (!inputPass) {
+      if (passwordError) {
+        passwordError.innerText = 'กรุณากรอกรหัสผ่าน';
+        passwordError.style.display = 'block';
+      }
+      return;
+    }
+
+    let hcode = currentHospCode;
+    if (!hcode) {
+      const match = document.getElementById('hospTitle')?.textContent?.match(/\((\d{5})\)/);
+      if (match && match[1]) {
+        hcode = match[1];
+      } else {
+        const val = document.getElementById('cfgHospCode')?.value?.trim();
+        if (val) hcode = val;
+      }
+    }
+    if (!hcode) hcode = '10989';
+
+    const expectedPassword = 'Aopod' + hcode;
+
+    // ตรวจสอบตัวพิมพ์ใหญ่-เล็กให้ตรงตาม Aopod ตามด้วยรหัส รพ. (Strict Case-Sensitive)
+    if (inputPass === expectedPassword) {
+      closePasswordModal();
+      openSettingsModal();
+    } else {
+      if (passwordError) {
+        passwordError.innerText = '❌ รหัสผ่านไม่ถูกต้อง (กรุณาตรวจสอบตัวพิมพ์ใหญ่-เล็ก)';
+        passwordError.style.display = 'block';
+      }
+      inputSettingsPassword?.select();
+    }
+  }
+
+  btnSubmitPassword?.addEventListener('click', verifyPassword);
+  inputSettingsPassword?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      verifyPassword();
+    }
   });
 }
 
@@ -105,6 +262,10 @@ async function loadStatus() {
     const res = await fetch('/api/status');
     const data = await res.json();
 
+    if (data.hospital_code) {
+      currentHospCode = data.hospital_code;
+    }
+
     document.getElementById('hospTitle').textContent = `${data.hospital_name || 'โรงพยาบาล'} (${data.hospital_code || '-'})`;
     document.getElementById('dbStatusText').textContent = data.db_status === 'connected' ? '🟢 เชื่อมต่อสำเร็จ' : '🔴 ไม่สามารถเชื่อมต่อได้';
     document.getElementById('serverStatusText').textContent = data.server_status === 'connected' ? '🟢 ออนไลน์' : '⚪ ยังไม่เชื่อมต่อ';
@@ -116,15 +277,17 @@ async function loadStatus() {
 
     // Update badges
     const statusBadge = document.getElementById('statusBadge');
-    if (data.db_status === 'connected') {
-      statusBadge.className = 'badge badge-online';
-      statusBadge.innerHTML = '<i class="fa-solid fa-circle text-success" style="font-size: 0.55rem;"></i> พร้อมทำงาน';
-    } else {
-      statusBadge.className = 'badge badge-offline';
-      statusBadge.innerHTML = '<i class="fa-solid fa-circle text-danger" style="font-size: 0.55rem;"></i> ขัดข้อง';
+    if (statusBadge) {
+      if (data.db_status === 'connected') {
+        statusBadge.className = 'badge badge-online';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle text-success" style="font-size: 0.5rem;"></i> พร้อมทำงาน';
+      } else {
+        statusBadge.className = 'badge badge-offline';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle text-danger" style="font-size: 0.5rem;"></i> ขัดข้อง';
+      }
     }
 
-    const versionBadge = document.querySelector('.badge-version');
+    const versionBadge = document.getElementById('versionBadge');
     if (versionBadge && data.version) {
       versionBadge.textContent = `v${data.version}`;
     }
@@ -133,84 +296,53 @@ async function loadStatus() {
   }
 }
 
-function onScheduleTypeChange() {
-  const type = document.getElementById('cfgScheduleType').value;
-  const panelDaily = document.getElementById('panelDailyTime');
-  const panelHourly = document.getElementById('panelHourlyTime');
-  const panelMinute = document.getElementById('panelMinuteTime');
-
-  if (panelDaily) panelDaily.style.display = type === 'daily' ? 'flex' : 'none';
-  if (panelHourly) panelHourly.style.display = type === 'hourly' ? 'flex' : 'none';
-  if (panelMinute) panelMinute.style.display = type === 'minute' ? 'flex' : 'none';
-}
-
 // Load Config into Form
 async function loadConfig() {
   try {
     const res = await fetch('/api/config');
     const cfg = await res.json();
 
+    if (cfg.hospital?.code) {
+      currentHospCode = cfg.hospital.code;
+    }
+
     // Hospital
     document.getElementById('cfgHospCode').value = cfg.hospital?.code || '';
     document.getElementById('cfgHospName').value = cfg.hospital?.name || '';
     document.getElementById('cfgToken').value = cfg.hospital?.token || '';
     document.getElementById('cfgServerUrl').value = cfg.hospital?.server_url || '';
-    document.getElementById('cfgBedQty').value = cfg.hospital?.bed_qty || 30;
 
     // Database
-    document.getElementById('cfgDbHost').value = cfg.database?.host || '127.0.0.1';
+    document.getElementById('cfgDbHost').value = cfg.database?.host || '';
     document.getElementById('cfgDbPort').value = cfg.database?.port || 3306;
-    document.getElementById('cfgDbUser').value = cfg.database?.username || 'rims';
+    document.getElementById('cfgDbName').value = cfg.database?.database || '';
+    document.getElementById('cfgDbUser').value = cfg.database?.username || '';
     document.getElementById('cfgDbPass').value = cfg.database?.password || '';
-    document.getElementById('cfgDbName').value = cfg.database?.database || 'hosxp';
-
-    // Schedule (3 unified options: Daily, Hourly, Minute)
-    const sched = cfg.schedule || {};
-    document.getElementById('cfgScheduleType').value = sched.type || 'daily';
-    document.getElementById('cfgDailyHour').value = String(sched.daily_hour ?? 2).padStart(2, '0');
-    document.getElementById('cfgDailyMinute').value = String(sched.daily_minute ?? 0).padStart(2, '0');
-    document.getElementById('cfgIntervalHours').value = sched.interval_hours || 1;
-    document.getElementById('cfgIntervalMins').value = sched.interval_mins || 15;
-    document.getElementById('cfgSyncDays').value = sched.sync_days_back || 30;
-    
-    onScheduleTypeChange();
   } catch (e) {
     console.error('Error loading config:', e);
   }
 }
 
-// Save Config
-async function handleSaveConfig(e) {
-  e.preventDefault();
+// Save Config Form
+async function handleSaveConfig() {
   const btn = document.getElementById('btnSaveConfig');
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
 
   const payload = {
     hospital: {
-      code: document.getElementById('cfgHospCode').value,
-      name: document.getElementById('cfgHospName').value,
-      token: document.getElementById('cfgToken').value,
-      server_url: document.getElementById('cfgServerUrl').value,
-      bed_qty: parseInt(document.getElementById('cfgBedQty').value, 10) || 30,
+      code: document.getElementById('cfgHospCode').value.trim(),
+      name: document.getElementById('cfgHospName').value.trim(),
+      token: document.getElementById('cfgToken').value.trim(),
+      server_url: document.getElementById('cfgServerUrl').value.trim(),
     },
     database: {
       driver: 'mysql',
-      host: document.getElementById('cfgDbHost').value,
+      host: document.getElementById('cfgDbHost').value.trim(),
       port: parseInt(document.getElementById('cfgDbPort').value, 10) || 3306,
       username: document.getElementById('cfgDbUser').value,
       password: document.getElementById('cfgDbPass').value,
       database: document.getElementById('cfgDbName').value,
-    },
-    schedule: {
-      type: document.getElementById('cfgScheduleType').value,
-      daily_hour: parseInt(document.getElementById('cfgDailyHour').value, 10) || 0,
-      daily_minute: parseInt(document.getElementById('cfgDailyMinute').value, 10) || 0,
-      interval_hours: parseInt(document.getElementById('cfgIntervalHours').value, 10) || 1,
-      interval_mins: parseInt(document.getElementById('cfgIntervalMins').value, 10) || 15,
-      sync_days_back: parseInt(document.getElementById('cfgSyncDays').value, 10) || 30,
-      chunk_size: 0, // Auto-tuned by Go Agent
-      threads: 0,    // Auto-tuned by Go Agent
     }
   };
 
@@ -223,6 +355,8 @@ async function handleSaveConfig(e) {
     const result = await res.json();
     alert(result.message || 'บันทึกการตั้งค่าเรียบร้อยแล้ว');
     loadStatus();
+    const modal = document.getElementById('settingsModal');
+    if (modal) modal.style.display = 'none';
   } catch (err) {
     alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
   } finally {
@@ -334,7 +468,10 @@ async function handleSyncNow() {
     progressFill.style.width = '100%';
 
     if (result.success) {
-      alert(`✅ ${result.message}\n- OPD: ส่งสำเร็จ ${result.opd?.total_sent || 0} รายการ\n- IPD: ส่งสำเร็จ ${result.ipd?.total_sent || 0} รายการ\n- เตียง: ส่งสำเร็จ`);
+      const bedText = (result.bed_dep && result.bed_dep.total_sent > 0) 
+        ? `${result.bed_dep.total_sent} แผนก` 
+        : 'เรียบร้อย';
+      alert(`✅ ${result.message}\n- เตียง: ส่งสำเร็จ ${bedText}\n- IPD: ส่งสำเร็จ ${result.ipd?.total_sent || 0} รายการ\n- OPD: ส่งสำเร็จ ${result.opd?.total_sent || 0} รายการ\n- Refer: ส่งสำเร็จ ${result.refer?.total_sent || 0} รายการ\n- ผ่าตัด (Operation): ส่งสำเร็จ ${result.operation?.total_sent || 0} รายการ`);
     } else {
       alert(`⚠️ การส่งข้อมูล: ${result.message}`);
     }

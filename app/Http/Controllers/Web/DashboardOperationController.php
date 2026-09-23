@@ -37,15 +37,15 @@ class DashboardOperationController extends Controller
         }
         $diff_days = Carbon::parse($start_date)->diffInDays(Carbon::parse($calc_end_date)) + 1;
 
-        $update_at10985 = DB::table('opd')->where('hospcode', '10985')->max('updated_at');
-        $update_at10986 = DB::table('opd')->where('hospcode', '10986')->max('updated_at');
-        $update_at10987 = DB::table('opd')->where('hospcode', '10987')->max('updated_at');
-        $update_at10988 = DB::table('opd')->where('hospcode', '10988')->max('updated_at');
-        $update_at10989 = DB::table('opd')->where('hospcode', '10989')->max('updated_at');
-        $update_at10990 = DB::table('opd')->where('hospcode', '10990')->max('updated_at');
-        $update_at10703 = DB::table('opd')->where('hospcode', '10703')->max('updated_at');
+        $update_at10985 = DB::table('operation')->where('hospcode', '10985')->max('updated_at');
+        $update_at10986 = DB::table('operation')->where('hospcode', '10986')->max('updated_at');
+        $update_at10987 = DB::table('operation')->where('hospcode', '10987')->max('updated_at');
+        $update_at10988 = DB::table('operation')->where('hospcode', '10988')->max('updated_at');
+        $update_at10989 = DB::table('operation')->where('hospcode', '10989')->max('updated_at');
+        $update_at10990 = DB::table('operation')->where('hospcode', '10990')->max('updated_at');
+        $update_at10703 = DB::table('operation')->where('hospcode', '10703')->max('updated_at');
 
-        $total = DB::table('opd')
+        $total = DB::table('operation')
             ->whereBetween('vstdate', [$today, $today])
             ->selectRaw("                
                 COALESCE(SUM(visit_operation),0) AS visit_operation 
@@ -56,15 +56,15 @@ class DashboardOperationController extends Controller
         ];
 
         $hospitalSummary = DB::table('hospital_config')
-            ->leftJoin('opd', function($join) use ($today) {
-                $join->on('hospital_config.hospcode', '=', 'opd.hospcode')
-                     ->whereBetween('opd.vstdate', [$today, $today]);
+            ->leftJoin('operation', function($join) use ($today) {
+                $join->on('hospital_config.hospcode', '=', 'operation.hospcode')
+                     ->whereBetween('operation.vstdate', [$today, $today]);
             })
             ->select(
                 'hospital_config.hospcode',
                 'hospital_config.hospname',
-                DB::raw('(SELECT MAX(updated_at) FROM opd WHERE opd.hospcode = hospital_config.hospcode) AS last_updated_at'),                
-                DB::raw('COALESCE(SUM(opd.visit_operation), 0) AS visit_operation')
+                DB::raw('(SELECT MAX(updated_at) FROM operation WHERE operation.hospcode = hospital_config.hospcode) AS last_updated_at'),                
+                DB::raw('COALESCE(SUM(operation.visit_operation), 0) AS visit_operation')
             )
             ->groupBy('hospital_config.hospcode', 'hospital_config.hospname')
             ->orderBy('hospital_config.hospcode')
@@ -88,7 +88,7 @@ class DashboardOperationController extends Controller
                     WHEN MONTH(vstdate)=9  THEN CONCAT('ก.ย. ', RIGHT(YEAR(vstdate)+543, 2))
                 END) AS month, 
                 SUM(visit_operation) AS visit_operation
-                FROM opd
+                FROM operation
                 WHERE vstdate BETWEEN ? AND ?
                 AND hospcode = ?
                 GROUP BY YEAR(vstdate), MONTH(vstdate)

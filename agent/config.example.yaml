@@ -3,7 +3,6 @@ hospital:
   name: "โรงพยาบาลตัวอย่าง"
   token: "YOUR_AOPOD_API_TOKEN_HERE"
   server_url: "http://127.0.0.1/aopod"
-  bed_qty: 30
 
 database:
   driver: "mysql"

@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
@@ -61,11 +60,8 @@ func (p *program) Stop(s service.Service) error {
 func main() {
 	updater.CleanOldBinary()
 
-	logPath := filepath.Join(config.GetConfigDir(), "agent.log")
-	logFile, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if logFile != nil {
-		log.SetOutput(logFile)
-	}
+	scheduler.InitLogger()
+	scheduler.CleanOldLogs(30)
 	log.Println("Starting AOPOD Agent process...")
 
 	var isServiceMode bool
@@ -176,7 +172,6 @@ func main() {
 		port = 8989
 	}
 	guiURL := fmt.Sprintf("http://localhost:%d", port)
-	logPath = filepath.Join(config.GetConfigDir(), "agent.log")
 
 	log.Printf("Starting AOPOD Agent on port %d...\n", port)
 

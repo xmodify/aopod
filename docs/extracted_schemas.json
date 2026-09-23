@@ -1,4 +1,127 @@
 {
+    "agent_schedules": {
+        "columns": {
+            "id": {
+                "type": "bigint(20) unsigned",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": "auto_increment"
+            },
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "MUL",
+                "default": "ALL",
+                "extra": ""
+            },
+            "schedule_type": {
+                "type": "varchar(20)",
+                "null": "NO",
+                "key": "",
+                "default": "minute",
+                "extra": ""
+            },
+            "interval_mins": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "15",
+                "extra": ""
+            },
+            "interval_hours": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "1",
+                "extra": ""
+            },
+            "start_minute": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "15",
+                "extra": ""
+            },
+            "opd_days_back": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "5",
+                "extra": ""
+            },
+            "ipd_days_back": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "30",
+                "extra": ""
+            },
+            "bed_interval_mins": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "15",
+                "extra": ""
+            },
+            "daily_hour": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "2",
+                "extra": ""
+            },
+            "daily_minute": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "sync_days_back": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "10",
+                "extra": ""
+            },
+            "is_active": {
+                "type": "tinyint(1)",
+                "null": "NO",
+                "key": "",
+                "default": "1",
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "id"
+                ]
+            },
+            "idx_hospcode": {
+                "unique": false,
+                "columns": [
+                    "hospcode"
+                ]
+            }
+        }
+    },
     "births": {
         "columns": {
             "id": {
@@ -39,7 +162,7 @@
             "byear": {
                 "type": "int(11)",
                 "null": "YES",
-                "key": "",
+                "key": "MUL",
                 "default": null,
                 "extra": ""
             },
@@ -265,7 +388,7 @@
             "dyear": {
                 "type": "int(11)",
                 "null": "YES",
-                "key": "",
+                "key": "MUL",
                 "default": null,
                 "extra": ""
             },
@@ -717,6 +840,72 @@
                 "unique": true,
                 "columns": [
                     "bed_code"
+                ]
+            }
+        }
+    },
+    "lookup_icd10": {
+        "columns": {
+            "icd10": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "pp": {
+                "type": "varchar(1)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "icd10"
+                ]
+            }
+        }
+    },
+    "main_setting": {
+        "columns": {
+            "name": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "value": {
+                "type": "text",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "name"
                 ]
             }
         }
@@ -1410,6 +1599,60 @@
             }
         }
     },
+    "operation": {
+        "columns": {
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "vstdate": {
+                "type": "date",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "visit_operation": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "hospcode",
+                    "vstdate"
+                ]
+            },
+            "operation_vstdate_index": {
+                "unique": false,
+                "columns": [
+                    "vstdate"
+                ]
+            }
+        }
+    },
     "password_reset_tokens": {
         "columns": {
             "email": {
@@ -1540,6 +1783,123 @@
                 "unique": false,
                 "columns": [
                     "expires_at"
+                ]
+            }
+        }
+    },
+    "refer": {
+        "columns": {
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "vstdate": {
+                "type": "date",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": ""
+            },
+            "visit_referout_inprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referout_outprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referout_inprov_ipd": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referout_outprov_ipd": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referin_inprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referin_outprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referin_inprov_ipd": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referin_outprov_ipd": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referback_inprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_referback_outprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "hospcode",
+                    "vstdate"
+                ]
+            },
+            "refer_vstdate_index": {
+                "unique": false,
+                "columns": [
+                    "vstdate"
                 ]
             }
         }
@@ -1770,217 +2130,6 @@
                 "unique": false,
                 "columns": [
                     "cid"
-                ]
-            }
-        }
-    },
-    "main_setting": {
-        "columns": {
-            "name": {
-                "type": "varchar(100)",
-                "null": "NO",
-                "key": "PRI",
-                "default": null,
-                "extra": ""
-            },
-            "value": {
-                "type": "text",
-                "null": "YES",
-                "key": "",
-                "default": null,
-                "extra": ""
-            },
-            "created_at": {
-                "type": "timestamp",
-                "null": "YES",
-                "key": "",
-                "default": null,
-                "extra": ""
-            },
-            "updated_at": {
-                "type": "timestamp",
-                "null": "YES",
-                "key": "",
-                "default": null,
-                "extra": ""
-            }
-        },
-        "indexes": {
-            "PRIMARY": {
-                "unique": true,
-                "columns": [
-                    "name"
-                ]
-            }
-        }
-    },
-    "refer": {
-        "columns": {
-            "hospcode": {
-                "type": "varchar(10)",
-                "null": "NO",
-                "key": "PRI",
-                "default": null,
-                "extra": ""
-            },
-            "vstdate": {
-                "type": "date",
-                "null": "NO",
-                "key": "PRI",
-                "default": null,
-                "extra": ""
-            },
-            "visit_referout_inprov": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referout_outprov": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referout_inprov_ipd": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referout_outprov_ipd": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referin_inprov": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referin_outprov": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referin_inprov_ipd": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referin_outprov_ipd": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referback_inprov": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "visit_referback_outprov": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "created_at": {
-                "type": "timestamp",
-                "null": "YES",
-                "key": "",
-                "default": null,
-                "extra": ""
-            },
-            "updated_at": {
-                "type": "timestamp",
-                "null": "YES",
-                "key": "",
-                "default": null,
-                "extra": ""
-            }
-        },
-        "indexes": {
-            "PRIMARY": {
-                "unique": true,
-                "columns": [
-                    "hospcode",
-                    "vstdate"
-                ]
-            },
-            "refer_vstdate_index": {
-                "unique": false,
-                "columns": [
-                    "vstdate"
-                ]
-            }
-        }
-    },
-    "operation": {
-        "columns": {
-            "hospcode": {
-                "type": "varchar(10)",
-                "null": "NO",
-                "key": "PRI",
-                "default": null,
-                "extra": ""
-            },
-            "vstdate": {
-                "type": "date",
-                "null": "NO",
-                "key": "PRI",
-                "default": null,
-                "extra": ""
-            },
-            "visit_operation": {
-                "type": "int(10) unsigned",
-                "null": "NO",
-                "key": "",
-                "default": "0",
-                "extra": ""
-            },
-            "created_at": {
-                "type": "timestamp",
-                "null": "YES",
-                "key": "",
-                "default": null,
-                "extra": ""
-            },
-            "updated_at": {
-                "type": "timestamp",
-                "null": "YES",
-                "key": "",
-                "default": null,
-                "extra": ""
-            }
-        },
-        "indexes": {
-            "PRIMARY": {
-                "unique": true,
-                "columns": [
-                    "hospcode",
-                    "vstdate"
-                ]
-            },
-            "operation_vstdate_index": {
-                "unique": false,
-                "columns": [
-                    "vstdate"
                 ]
             }
         }

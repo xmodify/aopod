@@ -23,3 +23,5 @@ yarn-error.log
 /.zed
 /agent/config.yaml
 /agent/queries_cache.json
+/agent/*.txt
+/agent/*.old

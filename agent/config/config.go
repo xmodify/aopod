@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const AppVersion = "1.0.1"
+const AppVersion = "1.0.0"
 
 type Config struct {
 	Hospital HospitalConfig `yaml:"hospital" json:"hospital"`
@@ -22,7 +22,6 @@ type HospitalConfig struct {
 	Name      string `yaml:"name" json:"name"`
 	Token     string `yaml:"token" json:"token"`
 	ServerURL string `yaml:"server_url" json:"server_url"`
-	BedQty    int    `yaml:"bed_qty" json:"bed_qty"`
 }
 
 type DatabaseConfig struct {
@@ -35,14 +34,16 @@ type DatabaseConfig struct {
 }
 
 type ScheduleConfig struct {
-	Type          string `yaml:"type" json:"type"`                     // "daily", "hourly", "minute"
-	DailyHour     int    `yaml:"daily_hour" json:"daily_hour"`         // 0..23 (default 2)
-	DailyMinute   int    `yaml:"daily_minute" json:"daily_minute"`     // 0..59 (default 0)
-	IntervalHours int    `yaml:"interval_hours" json:"interval_hours"` // e.g. 1, 2, 4
-	IntervalMins  int    `yaml:"interval_mins" json:"interval_mins"`   // e.g. 15, 30
-	SyncDaysBack  int    `yaml:"sync_days_back" json:"sync_days_back"` // default 30
-	ChunkSize     int    `yaml:"chunk_size" json:"chunk_size"`         // default 200
-	Threads       int    `yaml:"threads" json:"threads"`               // default 2
+	Type            string `yaml:"type" json:"type"`
+	IntervalHours   int    `yaml:"interval_hours" json:"interval_hours"`     // หมวดที่ 1: ทุกกี่ชั่วโมง (default 1)
+	StartMinute     int    `yaml:"start_minute" json:"start_minute"`         // หมวดที่ 1: เริ่มที่นาทีที่ (default 15)
+	OpdDaysBack     int    `yaml:"opd_days_back" json:"opd_days_back"`       // หมวดที่ 1: OPD ย้อนหลังกี่วัน (default 5)
+	IpdDaysBack     int    `yaml:"ipd_days_back" json:"ipd_days_back"`       // หมวดที่ 1: IPD ย้อนหลังกี่วัน (default 30)
+	BedIntervalMins int    `yaml:"bed_interval_mins" json:"bed_interval_mins"` // หมวดที่ 2: เตียง ทุกกี่นาที (default 15)
+	IsActive        bool   `yaml:"is_active" json:"is_active"`               // สวิตช์คุมระบบ (default true)
+	SyncDaysBack    int    `yaml:"sync_days_back" json:"sync_days_back"`     // backwards compatibility
+	ChunkSize       int    `yaml:"chunk_size" json:"chunk_size"`             // default 200
+	Threads         int    `yaml:"threads" json:"threads"`                   // default 2
 }
 
 type WebConfig struct {
@@ -63,7 +64,6 @@ func GetDefaultConfig() *Config {
 			Name:      "รพช. หัวตะพาน",
 			Token:     "",
 			ServerURL: "http://127.0.0.1/aopod",
-			BedQty:    30,
 		},
 		Database: DatabaseConfig{
 			Driver:   "mysql",
@@ -74,14 +74,15 @@ func GetDefaultConfig() *Config {
 			Database: "hosxp",
 		},
 		Schedule: ScheduleConfig{
-			Type:          "daily",
-			DailyHour:     2,
-			DailyMinute:   0,
-			IntervalHours: 2,
-			IntervalMins:  15,
-			SyncDaysBack:  30,
-			ChunkSize:     200,
-			Threads:       2,
+			Type:            "hourly",
+			IntervalHours:   1,
+			StartMinute:     15,
+			OpdDaysBack:     5,
+			IpdDaysBack:     30,
+			BedIntervalMins: 15,
+			IsActive:        true,
+			ChunkSize:       200,
+			Threads:         2,
 		},
 		Web: WebConfig{
 			Port: 8989,

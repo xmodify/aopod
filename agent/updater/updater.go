@@ -8,7 +8,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -16,12 +18,58 @@ import (
 	"aopod-agent/singleinstance"
 )
 
-var LogFunc func(level, msg string)
+var (
+	LogFunc     func(level, msg string)
+	isUpdating  bool
+	updateMutex sync.Mutex
+)
 
 func logMsg(level, msg string) {
 	if LogFunc != nil {
 		LogFunc(level, msg)
 	}
+}
+
+// IsUpdating returns whether a self-update is currently in progress.
+func IsUpdating() bool {
+	updateMutex.Lock()
+	defer updateMutex.Unlock()
+	return isUpdating
+}
+
+// IsNewerVersion returns true if remote version is strictly greater than local version.
+// Supports versions like "1.0.2" vs "1.0.1", "v1.1.0" vs "1.0.9", etc.
+func IsNewerVersion(remote, local string) bool {
+	remote = strings.TrimPrefix(strings.TrimSpace(remote), "v")
+	local = strings.TrimPrefix(strings.TrimSpace(local), "v")
+	if remote == "" || local == "" || remote == local {
+		return false
+	}
+
+	rParts := strings.Split(remote, ".")
+	lParts := strings.Split(local, ".")
+	maxLen := len(rParts)
+	if len(lParts) > maxLen {
+		maxLen = len(lParts)
+	}
+
+	for i := 0; i < maxLen; i++ {
+		rNum := 0
+		if i < len(rParts) {
+			rNum, _ = strconv.Atoi(rParts[i])
+		}
+		lNum := 0
+		if i < len(lParts) {
+			lNum, _ = strconv.Atoi(lParts[i])
+		}
+		if rNum > lNum {
+			return true
+		}
+		if rNum < lNum {
+			return false
+		}
+	}
+	return false
 }
 
 // CleanOldBinary removes any leftover .old binary from a previous update.
@@ -39,6 +87,18 @@ func CleanOldBinary() {
 
 // PerformSelfUpdate downloads the new binary from server, swaps files, and restarts the agent.
 func PerformSelfUpdate(downloadURL, targetVersion, taskID string) error {
+	updateMutex.Lock()
+	if isUpdating {
+		updateMutex.Unlock()
+		return fmt.Errorf("update already in progress")
+	}
+	isUpdating = true
+	updateMutex.Unlock()
+	defer func() {
+		updateMutex.Lock()
+		isUpdating = false
+		updateMutex.Unlock()
+	}()
 	cfg := config.Get()
 	if targetVersion == "" {
 		targetVersion = "latest"

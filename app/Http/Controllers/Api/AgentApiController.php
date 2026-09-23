@@ -47,20 +47,32 @@ class AgentApiController extends Controller
         // Check if there is a pending remote sync task for this hospital
         $pendingTask = Cache::get("agent_remote_task_{$hospcode}");
 
+        $schedule = \App\Models\AgentSchedule::getForHospital($hospcode);
+
         return response()->json([
             'status' => 'success',
             'hospital_code' => $hospcode,
             'settings' => [
+                'schedule' => [
+                    'interval_hours'    => (int)($schedule->interval_hours ?? 1),
+                    'start_minute'      => (int)($schedule->start_minute ?? 15),
+                    'opd_days_back'     => (int)($schedule->opd_days_back ?? 5),
+                    'ipd_days_back'     => (int)($schedule->ipd_days_back ?? 30),
+                    'bed_interval_mins' => (int)($schedule->bed_interval_mins ?? 15),
+                    'is_active'         => (bool)($schedule->is_active ?? true),
+                ],
                 'opd_cron' => MainSetting::get('agent_opd_cron', '0 */2 * * *'),
                 'ipd_cron' => MainSetting::get('agent_ipd_cron', '0 */2 * * *'),
                 'bed_cron' => MainSetting::get('agent_bed_cron', '*/15 * * * *'),
-                'sync_days_back' => (int)MainSetting::get('agent_sync_days_back', 10),
+                'sync_days_back' => (int)($schedule->sync_days_back ?? 10),
                 'chunk_size' => 200,
                 'province_hospcodes' => $provinceHospitals,
                 'main_sss_hospcode' => '10703',
+                'latest_agent_version' => MainSetting::get('agent_latest_version', '1.0.0'),
+                'agent_download_url' => url('/api/agent/download-latest'),
             ],
             'queries' => \App\Http\Controllers\Web\AgentWebController::getActiveQueries(),
-            'queries_version' => MainSetting::get('agent_queries_version', '2026.09.22.1'),
+            'queries_version' => MainSetting::get('agent_queries_version', '2026.09.23.2'),
             'pending_task' => $pendingTask,
         ]);
     }

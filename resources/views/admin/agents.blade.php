@@ -143,6 +143,14 @@
                     <span class="badge bg-warning text-dark ms-2 rounded-pill shadow-sm" id="badgeQueriesVersionNav">{{ $queriesVersion }}</span>
                 </button>
             </li>
+            <li class="nav-item flex-fill" role="presentation">
+                <button class="nav-link w-100 py-3 fw-bold rounded-3 text-center" id="tab-schedules-link" data-bs-toggle="pill" data-bs-target="#tab-schedules" type="button" role="tab" aria-controls="tab-schedules" aria-selected="false">
+                    <i class="fa-solid fa-clock me-2"></i> ตั้งเวลาส่งข้อมูลอัตโนมัติ (Schedule Policy)
+                    <span class="badge bg-primary text-white ms-2 rounded-pill shadow-sm" id="badgeScheduleInterval">
+                        ทุก {{ $globalSchedule->interval_hours ?? 1 }} ชม. (นาทีที่ {{ $globalSchedule->start_minute ?? 15 }})
+                    </span>
+                </button>
+            </li>
         </ul>
     </div>
 
@@ -235,9 +243,6 @@
                                         <div class="btn-group shadow-sm" style="border-radius: 10px;">
                                             <button type="button" class="btn btn-sm btn-light border text-warning" onclick="handleRemoteUpdate('{{ $item['hcode'] }}', '{{ $item['name'] }}')" title="สั่งให้อัปเดต Client เป็นเวอร์ชั่นล่าสุดจากเซิร์ฟเวอร์">
                                                 <i class="fa-solid fa-cloud-arrow-up text-warning"></i> อัปเดต
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-light border text-primary" data-bs-toggle="modal" data-bs-target="#remoteSyncModal" data-target-hcode="{{ $item['hcode'] }}" data-target-name="{{ $item['name'] }}" title="สั่ง Sync ย้อนหลัง">
-                                                <i class="fa-solid fa-paper-plane"></i> สั่ง Sync
                                             </button>
                                             <button type="button" class="btn btn-sm btn-light border text-success fw-semibold btn-view-token" data-hcode="{{ $item['hcode'] }}" data-name="{{ $item['name'] }}" data-token="{{ $item['token_api'] }}" title="ดูและคัดลอก Token">
                                                 <i class="fa-solid fa-key text-success"></i> ดู Token
@@ -464,15 +469,170 @@
                 </form>
             </div>
 
+            <!-- TAB 3: AGENT SCHEDULE POLICY -->
+            <div class="tab-pane fade" id="tab-schedules" role="tabpanel" aria-labelledby="tab-schedules-link">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-xl-10">
+                        <div class="glass-card bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+                            <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                                <div class="p-3 rounded-3" style="background: rgba(14, 165, 233, 0.1); color: #0284c7; font-size: 1.35rem;">
+                                    <i class="fa-solid fa-clock-rotate-left"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-dark mb-1">ตั้งเวลาส่งข้อมูลอัตโนมัติ (Schedule Policy)</h5>
+                                    <p class="text-secondary small mb-0">กำหนดรอบเวลาที่ AOPOD Agent แต่ละโรงพยาบาลจะส่งข้อมูลเข้าสู่ระบบโดยอัตโนมัติ</p>
+                                </div>
+                            </div>
+
+                            <form id="formGlobalSchedule">
+                                @csrf
+                                <input type="hidden" name="hospcode" value="ALL">
+
+                                <!-- หมวดที่ 1: รอบส่งข้อมูล (รายชั่วโมง) -->
+                                <div class="p-4 rounded-4 border mb-4" style="background: #f8fafc;">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <span class="badge bg-primary px-3 py-1.5 rounded-pill fs-6 fw-bold">หมวดที่ 1</span>
+                                        <h6 class="fw-bold text-dark mb-0 fs-5">รอบส่งข้อมูล (รายชั่วโมง)</h6>
+                                    </div>
+
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label fw-bold text-dark small">ความถี่การทำงาน:</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white"><i class="fa-solid fa-hourglass-half text-primary"></i></span>
+                                                <select class="form-select fw-bold" name="interval_hours" id="selectIntervalHours">
+                                                    @foreach([1, 2, 3, 4, 6, 8, 12] as $h)
+                                                    <option value="{{ $h }}" {{ ($globalSchedule->interval_hours ?? 1) == $h ? 'selected' : '' }}>ทำงานทุกๆ {{ $h }} ชั่วโมง</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label fw-bold text-dark small">เวลาเริ่มทำงาน:</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white"><i class="fa-solid fa-clock text-primary"></i></span>
+                                                <span class="input-group-text bg-light text-secondary">เริ่มที่นาทีที่</span>
+                                                <input type="number" class="form-control text-center fw-bold" name="start_minute" min="0" max="59" value="{{ $globalSchedule->start_minute ?? 15 }}" style="max-width: 80px;">
+                                                <span class="input-group-text bg-light text-secondary">น.</span>
+                                            </div>
+                                            <div class="form-text text-muted small mt-1">
+                                                ตัวอย่าง: เริ่มนาทีที่ 15 รอบถัดไปจะเป็น 01:15, 02:15, 03:15 ...
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Sub-items under Category 1 -->
+                                    <div class="p-3 bg-white rounded-3 border d-flex flex-column gap-3">
+                                        <!-- 1. OPD / Refer / Operation -->
+                                        <div>
+                                            <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                                                <label class="form-label fw-bold text-dark mb-0">
+                                                    <i class="fa-solid fa-stethoscope text-primary me-1.5"></i> 1. ข้อมูลผู้ป่วยนอก (OPD / Refer / ผ่าตัด)
+                                                </label>
+                                                <div class="d-flex gap-1">
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputOpdDaysBack').val(3)">3 วัน</button>
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputOpdDaysBack').val(5)">5 วัน</button>
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputOpdDaysBack').val(7)">7 วัน</button>
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputOpdDaysBack').val(10)">10 วัน</button>
+                                                </div>
+                                            </div>
+                                            <div class="input-group" style="max-width: 240px;">
+                                                <span class="input-group-text bg-light">ดึงย้อนหลัง</span>
+                                                <input type="number" class="form-control fw-bold text-center" name="opd_days_back" id="inputOpdDaysBack" min="1" max="365" value="{{ $globalSchedule->opd_days_back ?? 5 }}">
+                                                <span class="input-group-text bg-light">วัน</span>
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-1 border-light">
+
+                                        <!-- 2. IPD -->
+                                        <div>
+                                            <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                                                <label class="form-label fw-bold text-dark mb-0">
+                                                    <i class="fa-solid fa-bed-pulse text-info me-1.5"></i> 2. ข้อมูลผู้ป่วยใน (IPD - รอสรุปชาร์จ & CMI)
+                                                </label>
+                                                <div class="d-flex gap-1">
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputIpdDaysBack').val(15)">15 วัน</button>
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputIpdDaysBack').val(30)">30 วัน</button>
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputIpdDaysBack').val(45)">45 วัน</button>
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5" style="font-size: 0.75rem;" onclick="$('#inputIpdDaysBack').val(60)">60 วัน</button>
+                                                </div>
+                                            </div>
+                                            <div class="input-group" style="max-width: 240px;">
+                                                <span class="input-group-text bg-light">ดึงย้อนหลัง</span>
+                                                <input type="number" class="form-control fw-bold text-center" name="ipd_days_back" id="inputIpdDaysBack" min="1" max="365" value="{{ $globalSchedule->ipd_days_back ?? 30 }}">
+                                                <span class="input-group-text bg-light">วัน</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- หมวดที่ 2: รอบส่งข้อมูล (รายนาที) -->
+                                <div class="p-4 rounded-4 border mb-4" style="background: #f8fafc;">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <span class="badge bg-success px-3 py-1.5 rounded-pill fs-6 fw-bold">หมวดที่ 2</span>
+                                        <h6 class="fw-bold text-dark mb-0 fs-5">รอบส่งข้อมูล (รายนาที)</h6>
+                                    </div>
+
+                                    <div class="row g-3">
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label fw-bold text-dark small">ความถี่การทำงาน:</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white"><i class="fa-solid fa-stopwatch text-success"></i></span>
+                                                <select class="form-select fw-bold" name="bed_interval_mins" id="selectBedIntervalMins">
+                                                    @foreach([5, 10, 15, 20, 30, 60] as $m)
+                                                    <option value="{{ $m }}" {{ ($globalSchedule->bed_interval_mins ?? 15) == $m ? 'selected' : '' }}>ทำงานทุกๆ {{ $m }} นาที</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 d-flex align-items-center">
+                                            <div class="p-2.5 px-3 bg-white rounded-3 border w-100">
+                                                <div class="fw-bold text-dark small">
+                                                    <i class="fa-solid fa-bed text-success me-1.5"></i> 1. ข้อมูลสถานะเตียง (Bed Snapshot Real-time)
+                                                </div>
+                                                <span class="text-muted small">ดึงข้อมูลการครองเตียงปัจจุบันแยกแผนก</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- สวิตช์: เปิด / ปิด (Master Switch) -->
+                                <div class="mb-4 p-3.5 bg-light rounded-4 d-flex align-items-center justify-content-between border">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="p-2.5 bg-white rounded-circle shadow-xs text-primary fs-5">
+                                            <i class="fa-solid fa-power-off"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">เปิดใช้งานการส่งข้อมูลอัตโนมัติ (Master Active Switch)</div>
+                                            <div class="text-secondary small">ควบคุมการเปิดหรือปิดการทำงานของระบบส่งข้อมูลอัตโนมัติทั้งหมดร่วมกัน</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch fs-3 mb-0">
+                                        <input class="form-check-input" type="checkbox" role="switch" name="is_active" value="1" {{ ($globalSchedule->is_active ?? true) ? 'checked' : '' }}>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary px-4 py-2.5 fw-bold rounded-3 shadow-sm" id="btnSaveSchedule" style="background: linear-gradient(135deg, #18a573 0%, #128259 100%); border: none;">
+                                        <i class="fa-solid fa-floppy-disk me-1.5"></i> บันทึกรอบเวลาส่งข้อมูลอัตโนมัติ
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <!-- Modal สั่ง Remote Sync -->
 <div class="modal fade" id="remoteSyncModal" tabindex="-1" aria-labelledby="remoteSyncModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header border-0 pb-0">
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
                 <h5 class="modal-title fw-bold text-dark" id="remoteSyncModalLabel">
                     <i class="fa-solid fa-paper-plane text-success me-2"></i> สั่งดึงข้อมูลย้อนหลังจากส่วนกลาง
                 </h5>
@@ -480,32 +640,183 @@
             </div>
             <form id="remoteSyncForm">
                 @csrf
-                <input type="hidden" name="target" id="modalTargetHcode" value="all">
-                <div class="modal-body py-4">
-                    <div class="p-3 bg-light rounded-3 mb-3 border">
-                        <div class="text-secondary small">เป้าหมายที่จะสั่งการ:</div>
-                        <div class="fw-bold text-dark fs-6" id="modalTargetName">ทุกโรงพยาบาลในจังหวัด</div>
+                <div class="modal-body px-4 py-3">
+                    
+                    <!-- 1. เลือกโรงพยาบาลเป้าหมาย (Target Hospitals) Dropdown -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small mb-1.5" for="modalTargetHospcode">
+                            <i class="fa-solid fa-hospital text-success me-1"></i> เลือกโรงพยาบาลเป้าหมาย (Target Hospitals):
+                        </label>
+                        <select class="form-select bg-white shadow-xs py-2" name="target" id="modalTargetHospcode" style="border-radius: 10px; font-weight: 500;">
+                            <option value="all" selected>🏢 ทุกโรงพยาบาลในจังหวัดอำนาจเจริญ (7 แห่ง)</option>
+                            @foreach($agentList as $item)
+                                @if($item['hcode'] !== '00025' && !str_contains($item['name'], 'สาธารณสุข'))
+                                <option value="{{ $item['hcode'] }}">
+                                    {{ $item['hcode'] }} - {{ $item['name'] }} {{ $item['is_online'] ? '(ออนไลน์)' : '(ยังไม่เชื่อมต่อ)' }}
+                                </option>
+                                @endif
+                            @endforeach
+                        </select>
                     </div>
 
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <label class="form-label fw-semibold text-secondary small"><i class="fa-solid fa-calendar-day text-success me-1"></i> วันที่เริ่มต้น (Start Date)</label>
-                            <input type="text" name="start_date" id="modalStartDate" class="form-control bg-white" required placeholder="เลือกวันที่เริ่มต้น" style="border-radius: 10px;">
+                    <!-- 2. เลือกประเภทข้อมูลที่ต้องการดึง (1 คิวรี่ต่อ 1 แถว) -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label class="form-label fw-bold text-dark small mb-0">
+                                <i class="fa-solid fa-layer-group text-primary me-1"></i> เลือกประเภทข้อมูลที่ต้องการดึง (กำหนดช่วงวันที่แยกรายหมวด):
+                            </label>
+                            <button type="button" class="btn btn-xs btn-link text-decoration-none p-0 fw-bold" id="btnToggleAllModules" style="font-size: 0.78rem;">
+                                <i class="fa-solid fa-check-double me-1"></i> เลือกทุกหมวด / ยกเลิก
+                            </button>
                         </div>
-                        <div class="col-6">
-                            <label class="form-label fw-semibold text-secondary small"><i class="fa-solid fa-calendar-day text-primary me-1"></i> วันที่สิ้นสุด (End Date)</label>
-                            <input type="text" name="end_date" id="modalEndDate" class="form-control bg-white" required placeholder="เลือกวันที่สิ้นสุด" style="border-radius: 10px;">
+
+                        <div class="d-flex flex-column gap-2">
+                            <!-- 1. สถานะเตียง (Bed Snapshot Real-time - NO DATE RANGE) -->
+                            <div class="p-2.5 px-3 rounded-3 border bg-white shadow-xs module-card" id="card_bed" style="transition: all 0.2s;">
+                                <div class="row align-items-center g-2">
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-check d-flex align-items-center gap-2 m-0 cursor-pointer user-select-none">
+                                            <input class="form-check-input mt-0 module-checkbox" type="checkbox" name="modules[]" value="bed" id="modBed" data-mod="bed" checked>
+                                            <span class="fw-bold text-dark small">
+                                                <i class="fa-solid fa-bed text-success me-1.5"></i> สถานะเตียง (Bed Real-time)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-7">
+                                        <div class="p-1 px-2.5 rounded-2 bg-success bg-opacity-10 text-success border border-success-subtle d-flex align-items-center gap-2" style="font-size: 0.78rem;">
+                                            <i class="fa-solid fa-bolt text-success"></i>
+                                            <span>ดึงสถานะเตียงปัจจุบันแบบ Real-time (ไม่ต้องมีช่วงวันที่)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. ข้อมูลผู้ป่วยใน (IPD) -->
+                            <div class="p-2.5 px-3 rounded-3 border bg-white shadow-xs module-card" id="card_ipd" style="transition: all 0.2s;">
+                                <div class="row align-items-center g-2">
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-check d-flex align-items-center gap-2 m-0 cursor-pointer user-select-none">
+                                            <input class="form-check-input mt-0 module-checkbox" type="checkbox" name="modules[]" value="ipd" id="modIpd" data-mod="ipd" checked>
+                                            <span class="fw-bold text-dark small">
+                                                <i class="fa-solid fa-bed-pulse text-info me-1.5"></i> ข้อมูลผู้ป่วยใน (IPD)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-7">
+                                        <div class="d-flex align-items-center gap-1.5 date-range-group" id="date_group_ipd">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[ipd][start_date]" id="ipd_start_date" class="form-control form-control-sm bg-white border-start-0" placeholder="เริ่มต้น" style="font-size: 0.8rem;">
+                                            </div>
+                                            <span class="text-secondary small px-1 flex-shrink-0">ถึง</span>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[ipd][end_date]" id="ipd_end_date" class="form-control form-control-sm bg-white border-start-0" placeholder="สิ้นสุด" style="font-size: 0.8rem;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. ข้อมูลผู้ป่วยนอก (OPD) -->
+                            <div class="p-2.5 px-3 rounded-3 border bg-white shadow-xs module-card" id="card_opd" style="transition: all 0.2s;">
+                                <div class="row align-items-center g-2">
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-check d-flex align-items-center gap-2 m-0 cursor-pointer user-select-none">
+                                            <input class="form-check-input mt-0 module-checkbox" type="checkbox" name="modules[]" value="opd" id="modOpd" data-mod="opd" checked>
+                                            <span class="fw-bold text-dark small">
+                                                <i class="fa-solid fa-stethoscope text-primary me-1.5"></i> ข้อมูลผู้ป่วยนอก (OPD)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-7">
+                                        <div class="d-flex align-items-center gap-1.5 date-range-group" id="date_group_opd">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[opd][start_date]" id="opd_start_date" class="form-control form-control-sm bg-white border-start-0" placeholder="เริ่มต้น" style="font-size: 0.8rem;">
+                                            </div>
+                                            <span class="text-secondary small px-1 flex-shrink-0">ถึง</span>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[opd][end_date]" id="opd_end_date" class="form-control form-control-sm bg-white border-start-0" placeholder="สิ้นสุด" style="font-size: 0.8rem;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. ข้อมูลส่งต่อ (Refer) -->
+                            <div class="p-2.5 px-3 rounded-3 border bg-white shadow-xs module-card" id="card_refer" style="transition: all 0.2s;">
+                                <div class="row align-items-center g-2">
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-check d-flex align-items-center gap-2 m-0 cursor-pointer user-select-none">
+                                            <input class="form-check-input mt-0 module-checkbox" type="checkbox" name="modules[]" value="refer" id="modRefer" data-mod="refer" checked>
+                                            <span class="fw-bold text-dark small">
+                                                <i class="fa-solid fa-truck-medical text-warning me-1.5"></i> ข้อมูลส่งต่อ (Refer)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-7">
+                                        <div class="d-flex align-items-center gap-1.5 date-range-group" id="date_group_refer">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[refer][start_date]" id="refer_start_date" class="form-control form-control-sm bg-white border-start-0" placeholder="เริ่มต้น" style="font-size: 0.8rem;">
+                                            </div>
+                                            <span class="text-secondary small px-1 flex-shrink-0">ถึง</span>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[refer][end_date]" id="refer_end_date" class="form-control form-control-sm bg-white border-start-0" placeholder="สิ้นสุด" style="font-size: 0.8rem;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5. ข้อมูลผ่าตัด (Operation) -->
+                            <div class="p-2.5 px-3 rounded-3 border bg-white shadow-xs module-card" id="card_operation" style="transition: all 0.2s;">
+                                <div class="row align-items-center g-2">
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-check d-flex align-items-center gap-2 m-0 cursor-pointer user-select-none">
+                                            <input class="form-check-input mt-0 module-checkbox" type="checkbox" name="modules[]" value="operation" id="modOperation" data-mod="operation" checked>
+                                            <span class="fw-bold text-dark small">
+                                                <i class="fa-solid fa-syringe text-danger me-1.5"></i> ข้อมูลผ่าตัด (Operation)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-7">
+                                        <div class="d-flex align-items-center gap-1.5 date-range-group" id="date_group_operation">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[operation][start_date]" id="operation_start_date" class="form-control form-control-sm bg-white border-start-0" placeholder="เริ่มต้น" style="font-size: 0.8rem;">
+                                            </div>
+                                            <span class="text-secondary small px-1 flex-shrink-0">ถึง</span>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[operation][end_date]" id="operation_end_date" class="form-control form-control-sm bg-white border-start-0" placeholder="สิ้นสุด" style="font-size: 0.8rem;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Date Range Presets -->
+                        <div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2 pt-2 border-top">
+                            <span class="text-secondary small fw-semibold">
+                                <i class="fa-solid fa-wand-magic-sparkles text-primary me-1"></i> ปรับช่วงวันที่ทุกแถวพร้อมกัน:
+                            </span>
+                            <div class="d-flex gap-1.5 flex-wrap">
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1 btn-quick-all" data-days="5" style="font-size: 0.75rem;">ย้อนหลัง 5 วัน</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1 btn-quick-all" data-days="7" style="font-size: 0.75rem;">ย้อนหลัง 7 วัน</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1 btn-quick-all" data-days="15" style="font-size: 0.75rem;">ย้อนหลัง 15 วัน</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1 btn-quick-all" data-days="30" style="font-size: 0.75rem;">ย้อนหลัง 30 วัน</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1 btn-quick-all" data-days="month" style="font-size: 0.75rem;">เดือนนี้</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="d-flex gap-2 mt-3 flex-wrap">
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-quick-date" data-days="7">ย้อนหลัง 7 วัน</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-quick-date" data-days="10">ย้อนหลัง 10 วัน</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-quick-date" data-days="30">ย้อนหลัง 30 วัน</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-quick-date" data-days="month">เดือนนี้</button>
-                    </div>
                 </div>
-                <div class="modal-footer border-0 pt-0">
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
                     <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold" id="btnSubmitRemoteSync">
                         <i class="fa-solid fa-paper-plane me-1"></i> ส่งคำสั่งไปยัง Agent
@@ -629,19 +940,57 @@ $(document).ready(function() {
     let currentModalHcode = '';
     let currentModalHospName = '';
 
-    // Initialize Thai Buddhist Date Pickers
-    const modalEnd = new Date();
-    const modalStart = new Date();
-    modalStart.setDate(modalStart.getDate() - 10);
 
-    let startPicker = initThaiDatePicker('#modalStartDate', {
-        defaultDate: modalStart
-    });
-    let endPicker = initThaiDatePicker('#modalEndDate', {
-        defaultDate: modalEnd
+    // 2. Initialize Thai Buddhist Date Pickers for Each Module
+    const moduleDatePickers = {};
+
+    function initModuleDateRange(mod, defaultDaysAgo) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - defaultDaysAgo);
+
+        const sPicker = initThaiDatePicker(`#${mod}_start_date`, { defaultDate: start });
+        const ePicker = initThaiDatePicker(`#${mod}_end_date`, { defaultDate: end });
+
+        moduleDatePickers[mod] = { start: sPicker, end: ePicker };
+    }
+
+    // OPD (7 วัน), IPD (30 วัน), Refer (7 วัน), Operation (7 วัน)
+    initModuleDateRange('opd', 7);
+    initModuleDateRange('ipd', 30);
+    initModuleDateRange('refer', 7);
+    initModuleDateRange('operation', 7);
+
+    // 3. Module Checkbox Toggle & Visual State
+    function updateModuleCardState($cb) {
+        const mod = $cb.data('mod');
+        const isChecked = $cb.is(':checked');
+        const $card = $(`#card_${mod}`);
+
+        if (isChecked) {
+            $card.css('opacity', '1').removeClass('bg-light').addClass('bg-white');
+            $card.find('input[type="text"]').prop('disabled', false);
+        } else {
+            $card.css('opacity', '0.45').removeClass('bg-white').addClass('bg-light');
+            $card.find('input[type="text"]').prop('disabled', true);
+        }
+    }
+
+    $('.module-checkbox').on('change', function() {
+        updateModuleCardState($(this));
     });
 
-    $('.btn-quick-date').on('click', function() {
+    // Toggle All Modules
+    $('#btnToggleAllModules').on('click', function(e) {
+        e.preventDefault();
+        const anyUnchecked = $('.module-checkbox:not(:checked)').length > 0;
+        $('.module-checkbox').prop('checked', anyUnchecked).each(function() {
+            updateModuleCardState($(this));
+        });
+    });
+
+    // 4. Quick Date Range Presets for All Modules
+    $('.btn-quick-all').on('click', function() {
         const type = $(this).data('days');
         const end = new Date();
         let start = new Date();
@@ -653,23 +1002,39 @@ $(document).ready(function() {
             start.setDate(end.getDate() - days);
         }
 
-        if (startPicker) startPicker.setDate(start, true);
-        if (endPicker) endPicker.setDate(end, true);
-    });
-
-    // Remote Sync Modal open
-    $('#remoteSyncModal').on('show.bs.modal', function(event) {
-        const button = $(event.relatedTarget);
-        const hcode = button.data('target-hcode') || 'all';
-        const name = button.data('target-name') || 'ทุกโรงพยาบาลในจังหวัด';
-
-        $('#modalTargetHcode').val(hcode);
-        $('#modalTargetName').text(name);
+        ['opd', 'ipd', 'refer', 'operation'].forEach(mod => {
+            if (moduleDatePickers[mod]) {
+                if (moduleDatePickers[mod].start) moduleDatePickers[mod].start.setDate(start, true);
+                if (moduleDatePickers[mod].end) moduleDatePickers[mod].end.setDate(end, true);
+            }
+        });
     });
 
     // Submit Remote Sync
     $('#remoteSyncForm').on('submit', function(e) {
         e.preventDefault();
+
+        const target = $('#modalTargetHospcode').val();
+        if (!target) {
+            Swal.fire({
+                title: 'แจ้งเตือน',
+                text: 'กรุณาเลือกโรงพยาบาลเป้าหมาย',
+                icon: 'warning',
+                confirmButtonColor: '#18a573'
+            });
+            return;
+        }
+
+        if ($('.module-checkbox:checked').length === 0) {
+            Swal.fire({
+                title: 'แจ้งเตือน',
+                text: 'กรุณาเลือกประเภทข้อมูลที่ต้องการดึงอย่างน้อย 1 รายการ',
+                icon: 'warning',
+                confirmButtonColor: '#18a573'
+            });
+            return;
+        }
+
         const btn = $('#btnSubmitRemoteSync');
         btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่งคำสั่ง...');
 
@@ -1008,5 +1373,34 @@ function handleRemoteUpdate(targetHcode, targetName) {
         }
     });
 }
+
+
+// Submit Global Schedule
+$('#formGlobalSchedule').on('submit', function(e) {
+    e.preventDefault();
+    const btn = $('#btnSaveSchedule');
+    btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1.5"></i> กำลังบันทึก...');
+
+    $.ajax({
+        url: "{{ route('manage.agents.update-schedule') }}",
+        method: "POST",
+        data: $(this).serialize(),
+        success: function(res) {
+            Swal.fire({
+                title: 'บันทึกสำเร็จ!',
+                text: res.message,
+                icon: 'success',
+                confirmButtonColor: '#18a573'
+            }).then(() => {
+                location.reload();
+            });
+        },
+        error: function(xhr) {
+            btn.prop('disabled', false).html('<i class="fa-solid fa-floppy-disk me-1.5"></i> บันทึกรอบเวลาส่งข้อมูลอัตโนมัติ');
+            let errMsg = xhr.responseJSON?.message || 'ไม่สามารถบันทึกรอบเวลาได้';
+            Swal.fire('เกิดข้อผิดพลาด', errMsg, 'error');
+        }
+    });
+});
 </script>
 @endpush

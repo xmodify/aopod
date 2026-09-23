@@ -9,8 +9,51 @@ import (
 )
 
 var (
-	cronRunner *cron.Cron
+	cronRunner            *cron.Cron
+	currentRemoteSchedule *RemoteSchedule
 )
+
+type RemoteSchedule struct {
+	IntervalHours   int  `json:"interval_hours"`
+	StartMinute     int  `json:"start_minute"`
+	OpdDaysBack     int  `json:"opd_days_back"`
+	IpdDaysBack     int  `json:"ipd_days_back"`
+	BedIntervalMins int  `json:"bed_interval_mins"`
+	IsActive        bool `json:"is_active"`
+}
+
+// ApplyRemoteSchedule updates scheduler timings from central server policy.
+func ApplyRemoteSchedule(sched *RemoteSchedule) {
+	if sched == nil {
+		return
+	}
+
+	if currentRemoteSchedule != nil &&
+		currentRemoteSchedule.IntervalHours == sched.IntervalHours &&
+		currentRemoteSchedule.StartMinute == sched.StartMinute &&
+		currentRemoteSchedule.OpdDaysBack == sched.OpdDaysBack &&
+		currentRemoteSchedule.IpdDaysBack == sched.IpdDaysBack &&
+		currentRemoteSchedule.BedIntervalMins == sched.BedIntervalMins &&
+		currentRemoteSchedule.IsActive == sched.IsActive {
+		return // No change
+	}
+
+	currentRemoteSchedule = sched
+
+	// Update local in-memory config
+	cfg := config.Get()
+	cfg.Schedule.IntervalHours = sched.IntervalHours
+	cfg.Schedule.StartMinute = sched.StartMinute
+	cfg.Schedule.OpdDaysBack = sched.OpdDaysBack
+	cfg.Schedule.IpdDaysBack = sched.IpdDaysBack
+	cfg.Schedule.BedIntervalMins = sched.BedIntervalMins
+	cfg.Schedule.IsActive = sched.IsActive
+	_ = config.Update(cfg)
+
+	AddLog("INFO", fmt.Sprintf("[Schedule] 🔄 ซิงค์รอบเวลาส่งข้อมูลจากเซิร์ฟเวอร์: หมวด 1 ทุก %d ชม. (นาทีที่ %02d, OPD %d วัน, IPD %d วัน) | หมวด 2 เตียง ทุก %d นาที | Active: %v",
+		sched.IntervalHours, sched.StartMinute, sched.OpdDaysBack, sched.IpdDaysBack, sched.BedIntervalMins, sched.IsActive))
+	StartCronScheduler()
+}
 
 // StartCronScheduler starts background recurring cron jobs.
 func StartCronScheduler() {
@@ -21,69 +64,81 @@ func StartCronScheduler() {
 	cronRunner = cron.New()
 	cfg := config.Get()
 
-	// Compute cron expression based on the 3 simple choices: Daily, Hourly, Minute
-	var cronExpr string
-	var desc string
-
-	switch cfg.Schedule.Type {
-	case "hourly":
+	if cfg.Schedule.IsActive {
+		// 1. หมวดที่ 1: รอบส่งข้อมูล (รายชั่วโมง)
 		hours := cfg.Schedule.IntervalHours
 		if hours <= 0 {
 			hours = 1
 		}
-		cronExpr = fmt.Sprintf("0 */%d * * *", hours)
-		desc = fmt.Sprintf("ทุกๆ %d ชั่วโมง", hours)
+		startMin := cfg.Schedule.StartMinute
+		if startMin < 0 || startMin > 59 {
+			startMin = 15
+		}
 
-	case "minute":
-		mins := cfg.Schedule.IntervalMins
-		if mins <= 0 {
-			mins = 15
+		var hourlyCron string
+		if hours == 1 {
+			hourlyCron = fmt.Sprintf("%d * * * *", startMin)
+		} else {
+			hourlyCron = fmt.Sprintf("%d */%d * * *", startMin, hours)
 		}
-		cronExpr = fmt.Sprintf("*/%d * * * *", mins)
-		desc = fmt.Sprintf("ทุกๆ %d นาที", mins)
 
-	case "daily":
-		fallthrough
-	default:
-		h := cfg.Schedule.DailyHour
-		m := cfg.Schedule.DailyMinute
-		if h < 0 || h > 23 {
-			h = 2
+		opdDaysBack := cfg.Schedule.OpdDaysBack
+		if opdDaysBack <= 0 {
+			opdDaysBack = 5
 		}
-		if m < 0 || m > 59 {
-			m = 0
+		ipdDaysBack := cfg.Schedule.IpdDaysBack
+		if ipdDaysBack <= 0 {
+			ipdDaysBack = 30
 		}
-		cronExpr = fmt.Sprintf("%d %d * * *", m, h)
-		desc = fmt.Sprintf("ทุกวัน เวลา %02d:%02d น.", h, m)
+
+		hourlyDesc := fmt.Sprintf("ทุกๆ %d ชม. (ที่นาทีที่ %02d)", hours, startMin)
+		_, err := cronRunner.AddFunc(hourlyCron, func() {
+			AddLog("INFO", fmt.Sprintf("[Schedule] เริ่มต้นส่งข้อมูลประจำรอบรายชั่วโมง (%s)...", hourlyDesc))
+			_, _ = PerformHourlySync(opdDaysBack, ipdDaysBack)
+		})
+		if err != nil {
+			AddLog("ERROR", fmt.Sprintf("[Schedule] ตั้งเวลารายชั่วโมงล้มเหลว: %v", err))
+		} else {
+			AddLog("INFO", fmt.Sprintf("หมวดที่ 1 (รายชั่วโมง) เริ่มทำงาน: %s (Cron: %s)", hourlyDesc, hourlyCron))
+		}
+
+		// 2. หมวดที่ 2: รอบส่งข้อมูล (รายนาที - สถานะเตียง)
+		bedMins := cfg.Schedule.BedIntervalMins
+		if bedMins <= 0 {
+			bedMins = 15
+		}
+		bedCron := fmt.Sprintf("*/%d * * * *", bedMins)
+		_, err = cronRunner.AddFunc(bedCron, func() {
+			_, _ = PerformBedSync()
+		})
+		if err != nil {
+			AddLog("ERROR", fmt.Sprintf("[Schedule] ตั้งเวลารายนาที (เตียง) ล้มเหลว: %v", err))
+		} else {
+			AddLog("INFO", fmt.Sprintf("หมวดที่ 2 (รายนาที - เตียง) เริ่มทำงาน: ทุกๆ %d นาที (Cron: %s)", bedMins, bedCron))
+		}
+	} else {
+		AddLog("WARNING", "ระบบส่งข้อมูลอัตโนมัติ (Schedule) ปิดใช้งานอยู่ (Disabled)")
 	}
 
-	// 1. Unified Periodic Sync (Syncs Bed, OPD, IPD together)
-	_, err := cronRunner.AddFunc(cronExpr, func() {
-		daysBack := cfg.Schedule.SyncDaysBack
-		if daysBack <= 0 {
-			daysBack = 30
-		}
-		startDate := time.Now().AddDate(0, 0, -daysBack).Format("2006-01-02")
-		endDate := time.Now().Format("2006-01-02")
-		AddLog("INFO", fmt.Sprintf("[Schedule] เริ่มต้นส่งข้อมูลประจำรอบ (%s) ช่วงวันที่ %s ถึง %s", desc, startDate, endDate))
-		_, _ = PerformSync(startDate, endDate)
-	})
-	if err != nil {
-		AddLog("ERROR", fmt.Sprintf("[Schedule] ตั้งเวลารอบส่งข้อมูลล้มเหลว: %v", err))
-	}
-
-	// 2. Heartbeat & Remote Task Polling (Every 1 minute)
+	// 3. Heartbeat & Remote Task Polling (Every 1 minute always)
 	_, _ = cronRunner.AddFunc("*/1 * * * *", func() {
 		SendHeartbeat(GetLastSyncSummary())
 		PollRemoteTasks()
 	})
 
-	cronRunner.Start()
-	AddLog("INFO", fmt.Sprintf("ระบบตั้งเวลาส่งข้อมูลอัตโนมัติ (Schedule) เริ่มทำงานแล้ว: %s (Cron: %s)", desc, cronExpr))
+	// 4. Daily log cleanup for files older than 30 days (1 month retention) - runs at 01:00 AM every day
+	_, _ = cronRunner.AddFunc("0 1 * * *", func() {
+		if deleted := CleanOldLogs(30); deleted > 0 {
+			AddLog("INFO", fmt.Sprintf("ลบไฟล์ Log เก่ากว่า 30 วัน จำนวน %d ไฟล์เรียบร้อยแล้ว", deleted))
+		}
+	})
 
-	// Send initial heartbeat and poll remote tasks immediately upon startup
+	cronRunner.Start()
+
+	// Initial heartbeat upon startup & initial log cleanup
 	go func() {
 		time.Sleep(500 * time.Millisecond)
+		CleanOldLogs(30)
 		SendHeartbeat(GetLastSyncSummary())
 		PollRemoteTasks()
 	}()

@@ -39,6 +39,12 @@ func (s *Server) Start(port int) error {
 	mux.HandleFunc("/api/test-api", s.handleTestApi)
 	mux.HandleFunc("/api/sync", s.handleSync)
 	mux.HandleFunc("/api/logs", s.handleLogs)
+	mux.HandleFunc("/api/logs/clear", s.handleClearLogs)
+	mux.HandleFunc("/api/open-logs-folder", func(w http.ResponseWriter, r *http.Request) {
+		logsDir := scheduler.GetLogsDir()
+		_ = exec.Command("explorer.exe", logsDir).Start()
+		writeJSON(w, http.StatusOK, map[string]string{"status": "success", "path": logsDir})
+	})
 	mux.HandleFunc("/api/service/", s.handleService)
 	mux.HandleFunc("/api/open-config-folder", func(w http.ResponseWriter, r *http.Request) {
 		_ = exec.Command("explorer.exe", config.GetConfigDir()).Start()
@@ -96,7 +102,7 @@ func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		var newCfg config.Config
+		newCfg := *config.Get()
 		if err := json.NewDecoder(r.Body).Decode(&newCfg); err != nil {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 			return
@@ -198,8 +204,9 @@ func (s *Server) handleTestApi(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleSync(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		StartDate string `json:"start_date"`
-		EndDate   string `json:"end_date"`
+		StartDate string   `json:"start_date"`
+		EndDate   string   `json:"end_date"`
+		Modules   []string `json:"modules"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Invalid JSON body"})
@@ -211,7 +218,7 @@ func (s *Server) handleSync(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	summary, err := scheduler.PerformSync(req.StartDate, req.EndDate)
+	summary, err := scheduler.PerformSyncSelective(req.StartDate, req.EndDate, req.Modules)
 	if err != nil {
 		writeJSON(w, http.StatusOK, summary)
 		return
@@ -221,6 +228,18 @@ func (s *Server) handleSync(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleLogs(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, scheduler.GetRecentLogs())
+}
+
+func (s *Server) handleClearLogs(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+	_ = scheduler.ClearLogs()
+	writeJSON(w, http.StatusOK, map[string]string{
+		"status":  "success",
+		"message": "ล้างประวัติ Log และลบไฟล์ Log เก่าเรียบร้อยแล้ว",
+	})
 }
 
 func (s *Server) handleService(w http.ResponseWriter, r *http.Request) {
@@ -247,19 +266,12 @@ func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 
 // OpenBrowser opens default system web browser to given URL.
 func OpenBrowser(url string) {
-	var cmd string
-	var args []string
-
 	switch runtime.GOOS {
 	case "windows":
-		cmd = "cmd"
-		args = []string{"/c", "start", url}
+		_ = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
 	case "darwin":
-		cmd = "open"
-		args = []string{url}
+		_ = exec.Command("open", url).Start()
 	default:
-		cmd = "xdg-open"
-		args = []string{url}
+		_ = exec.Command("xdg-open", url).Start()
 	}
-	_ = exec.Command(cmd, args...).Start()
 }

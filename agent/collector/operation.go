@@ -3,13 +3,32 @@ package collector
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"aopod-agent/config"
 )
 
+const defaultOperationQuery = `SELECT 
+	o.request_date AS vstdate,
+	COUNT(DISTINCT o.operation_id) AS visit_operation
+FROM operation_list o
+WHERE o.request_date BETWEEN ? AND ?
+GROUP BY o.request_date
+ORDER BY o.request_date`
+
 type OperationRecord struct {
 	Vstdate        string `json:"vstdate"`
 	VisitOperation int    `json:"visit_operation"`
+}
+
+// GetOperationQuery returns the active Operation query.
+func GetOperationQuery() string {
+	queriesMutex.RLock()
+	defer queriesMutex.RUnlock()
+	if q, ok := currentQueries["operation"]; ok && strings.TrimSpace(q) != "" {
+		return q
+	}
+	return defaultOperationQuery
 }
 
 // CollectOperation queries HOSxP and returns aggregated Operation records for date range.

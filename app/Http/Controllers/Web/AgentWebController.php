@@ -69,10 +69,12 @@ class AgentWebController extends Controller
         ];
 
         $queries = self::getActiveQueries();
-        $queriesVersion = MainSetting::get('agent_queries_version', '2026.09.22.1');
+        $queriesVersion = MainSetting::get('agent_queries_version', '2026.09.23.2');
         $ppIcd10List = self::getPpIcd10List();
+        $globalSchedule = \App\Models\AgentSchedule::getForHospital('ALL');
+        $schedules = \App\Models\AgentSchedule::orderBy('hospcode')->get();
 
-        return view('admin.agents', compact('agentList', 'settings', 'queries', 'queriesVersion', 'ppIcd10List'));
+        return view('admin.agents', compact('agentList', 'settings', 'queries', 'queriesVersion', 'ppIcd10List', 'globalSchedule', 'schedules'));
     }
 
     /**
@@ -267,17 +269,6 @@ SELECT
 	COUNT(DISTINCT CASE WHEN a.telehealth = 'Y' THEN a.vn END) AS visit_telehealth,
 	COALESCE(ma_booking.cnt, 0) AS visit_moph_oapp_booking,
 	COUNT(DISTINCT CASE WHEN a.moph_oapp = 'Y' THEN a.cid END) AS visit_moph_oapp,
-	COUNT(DISTINCT CASE WHEN a.referout_inprov = 'Y' THEN a.vn END) AS visit_referout_inprov,
-	COUNT(DISTINCT CASE WHEN a.referout_outprov = 'Y' THEN a.vn END) AS visit_referout_outprov,
-	COUNT(DISTINCT CASE WHEN a.referout_inprov_ipd = 'Y' THEN a.vn END) AS visit_referout_inprov_ipd,
-	COUNT(DISTINCT CASE WHEN a.referout_outprov_ipd = 'Y' THEN a.vn END) AS visit_referout_outprov_ipd,
-	COUNT(DISTINCT CASE WHEN a.referin_inprov = 'Y' THEN a.vn END) AS visit_referin_inprov,
-	COUNT(DISTINCT CASE WHEN a.referin_outprov = 'Y' THEN a.vn END) AS visit_referin_outprov,
-	COUNT(DISTINCT CASE WHEN a.referin_inprov_ipd = 'Y' THEN a.vn END) AS visit_referin_inprov_ipd,
-	COUNT(DISTINCT CASE WHEN a.referin_outprov_ipd = 'Y' THEN a.vn END) AS visit_referin_outprov_ipd,
-	COALESCE(rb.visit_referback_inprov, 0) AS visit_referback_inprov,
-	COALESCE(rb.visit_referback_outprov, 0) AS visit_referback_outprov,
-	COALESCE(op.visit_operation, 0) AS visit_operation,
 	SUM(a.income) AS inc_total, 
 	SUM(a.inc03) AS inc_lab_total, 
 	SUM(a.inc12) AS inc_drug_total,
@@ -331,18 +322,9 @@ FROM (
 		IF(hm.vn IS NOT NULL, 'Y', '') AS healthmed,
 		IF(anc.vn IS NOT NULL, 'Y', '') AS anc,
 		IF(oi.ovstist = '08', 'Y', '') AS telehealth,
-		IF(ma.cid IS NOT NULL, 'Y', '') AS moph_oapp,
-		COALESCE(r_out.referout_inprov, '') AS referout_inprov,
-		COALESCE(r_out.referout_outprov, '') AS referout_outprov,
-		COALESCE(r_out_ipd.referout_inprov_ipd, '') AS referout_inprov_ipd,
-		COALESCE(r_out_ipd.referout_outprov_ipd, '') AS referout_outprov_ipd,
-		IF(r_in.inprov = 'Y' AND ip.vn IS NULL, 'Y', '') AS referin_inprov,
-		IF(r_in.outprov = 'Y' AND ip.vn IS NULL, 'Y', '') AS referin_outprov,
-		IF(r_in.inprov = 'Y' AND ip.vn IS NOT NULL, 'Y', '') AS referin_inprov_ipd,
-		IF(r_in.outprov = 'Y' AND ip.vn IS NOT NULL, 'Y', '') AS referin_outprov_ipd
+		IF(ma.cid IS NOT NULL, 'Y', '') AS moph_oapp
 	FROM ovst ov
 	LEFT JOIN vn_stat v ON v.vn = ov.vn
-	LEFT JOIN ipt ip ON ip.vn = ov.vn
 	LEFT JOIN pttype p ON p.pttype = ov.pttype
 	LEFT JOIN ovstist oi ON oi.ovstist = ov.ovstist
 	LEFT JOIN (
@@ -362,44 +344,8 @@ FROM (
 		SELECT DISTINCT cid, appointment_date
 		FROM moph_appointment_list
 	) ma ON ma.cid = v.cid AND ma.appointment_date = ov.vstdate
-	LEFT JOIN (
-		SELECT vn,
-			MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_inprov,
-			MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_outprov
-		FROM referout
-		GROUP BY vn
-	) r_out ON r_out.vn = ov.vn
-	LEFT JOIN (
-		SELECT vn,
-			MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_inprov_ipd,
-			MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS referout_outprov_ipd
-		FROM referout
-		GROUP BY vn
-	) r_out_ipd ON r_out_ipd.vn = ip.an
-	LEFT JOIN (
-		SELECT vn,
-			MAX(CASE WHEN refer_hospcode IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS inprov,
-			MAX(CASE WHEN refer_hospcode NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS outprov
-		FROM referin
-		GROUP BY vn
-	) r_in ON r_in.vn = ov.vn
 	WHERE ov.vstdate BETWEEN ? AND ?
 ) a
-LEFT JOIN (
-	SELECT DATE(reply_date_time) as d,
-		COUNT(DISTINCT CASE WHEN lh.chwpart = (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_inprov,
-		COUNT(DISTINCT CASE WHEN lh.chwpart != (SELECT chwpart FROM opdconfig LIMIT 1) THEN vn END) as visit_referback_outprov
-	FROM refer_reply rr
-	LEFT JOIN hospcode lh ON lh.hospcode = rr.dest_hospcode
-	WHERE DATE(reply_date_time) BETWEEN ? AND ?
-	GROUP BY DATE(reply_date_time)
-) rb ON rb.d = a.vstdate
-LEFT JOIN (
-	SELECT o.request_date as d, COUNT(DISTINCT o.operation_id) as visit_operation
-	FROM operation_list o
-	WHERE o.request_date BETWEEN ? AND ?
-	GROUP BY o.request_date
-) op ON op.d = a.vstdate
 LEFT JOIN (
 	SELECT appointment_date as d, COUNT(DISTINCT cid) as cnt
 	FROM moph_appointment_list
@@ -542,34 +488,82 @@ SQL,
     public function dispatchRemoteSync(Request $request)
     {
         $request->validate([
-            'target'     => 'required|string', // 'all' or specific hcode
-            'start_date' => 'required|date_format:Y-m-d',
-            'end_date'   => 'required|date_format:Y-m-d',
+            'targets'    => 'nullable|array',
+            'targets.*'  => 'string',
+            'target'     => 'nullable|string',
+            'start_date' => 'nullable|date_format:Y-m-d',
+            'end_date'   => 'nullable|date_format:Y-m-d',
+            'modules'    => 'nullable|array',
+            'modules.*'  => 'string|in:opd,ipd,refer,operation,bed',
+            'ranges'     => 'nullable|array',
         ]);
 
-        $target = $request->input('target');
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+        $targets = $request->input('targets', []);
+        if (empty($targets) && $request->filled('target')) {
+            $t = $request->input('target');
+            if ($t === 'all') {
+                $targets = Hospital::where('hospcode', '!=', '00025')
+                    ->where('name', 'not like', '%สาธารณสุข%')
+                    ->pluck('hospcode')->filter()->toArray();
+            } else {
+                $targets = [$t];
+            }
+        }
+
+        // Exclude 00025 or any สสจ
+        $targets = array_values(array_filter($targets, function ($code) {
+            return $code !== '00025' && !str_starts_with($code, '00');
+        }));
+
+        if (empty($targets)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'กรุณาเลือกโรงพยาบาลเป้าหมายอย่างน้อย 1 แห่ง',
+            ], 422);
+        }
+
+        $modules = $request->input('modules', []);
+        if (empty($modules)) {
+            $modules = ['opd', 'ipd', 'refer', 'operation', 'bed'];
+        }
+
+        $ranges = $request->input('ranges', []);
+        $moduleRanges = [];
+        $allStartDates = [];
+        $allEndDates = [];
+
+        foreach ($modules as $mod) {
+            if ($mod === 'bed') continue;
+            if (!empty($ranges[$mod]['start_date']) && !empty($ranges[$mod]['end_date'])) {
+                $sDate = $ranges[$mod]['start_date'];
+                $eDate = $ranges[$mod]['end_date'];
+                $moduleRanges[$mod] = [
+                    'start_date' => $sDate,
+                    'end_date'   => $eDate,
+                ];
+                $allStartDates[] = $sDate;
+                $allEndDates[] = $eDate;
+            }
+        }
+
+        $startDate = !empty($allStartDates) ? min($allStartDates) : ($request->input('start_date') ?: now()->subDays(7)->format('Y-m-d'));
+        $endDate   = !empty($allEndDates)   ? max($allEndDates)   : ($request->input('end_date') ?: now()->format('Y-m-d'));
         $taskId = 'task_' . time() . '_' . substr(md5(uniqid()), 0, 6);
 
         $taskPayload = [
-            'task_id'    => $taskId,
-            'action'     => 'sync_range',
-            'start_date' => $startDate,
-            'end_date'   => $endDate,
-            'created_at' => now()->toDateTimeString(),
+            'task_id'       => $taskId,
+            'action'        => 'sync_range',
+            'start_date'    => $startDate,
+            'end_date'      => $endDate,
+            'modules'       => $modules,
+            'module_ranges' => $moduleRanges,
+            'created_at'    => now()->toDateTimeString(),
         ];
 
         $dispatchedHospcodes = [];
-        if ($target === 'all') {
-            $hospcodes = Hospital::pluck('hospcode')->filter()->toArray();
-            foreach ($hospcodes as $hcode) {
-                Cache::put("agent_remote_task_{$hcode}", $taskPayload, 3600);
-                $dispatchedHospcodes[] = $hcode;
-            }
-        } else {
-            Cache::put("agent_remote_task_{$target}", $taskPayload, 3600);
-            $dispatchedHospcodes[] = $target;
+        foreach ($targets as $hcode) {
+            Cache::put("agent_remote_task_{$hcode}", $taskPayload, 3600);
+            $dispatchedHospcodes[] = $hcode;
         }
 
         return response()->json([
@@ -604,6 +598,40 @@ SQL,
     }
 
     /**
+     * Update Agent recurring schedule policy (Global or hospital override).
+     */
+    public function updateSchedule(Request $request)
+    {
+        $request->validate([
+            'hospcode'          => 'nullable|string',
+            'interval_hours'    => 'required|integer|min:1|max:24',
+            'start_minute'      => 'required|integer|min:0|max:59',
+            'opd_days_back'     => 'required|integer|min:1|max:365',
+            'ipd_days_back'     => 'required|integer|min:1|max:365',
+            'bed_interval_mins' => 'required|integer|min:1|max:1440',
+        ]);
+
+        $hospcode = $request->input('hospcode', 'ALL') ?: 'ALL';
+
+        \App\Models\AgentSchedule::updateOrCreate(
+            ['hospcode' => $hospcode],
+            [
+                'interval_hours'    => (int)$request->input('interval_hours', 1),
+                'start_minute'      => (int)$request->input('start_minute', 15),
+                'opd_days_back'     => (int)$request->input('opd_days_back', 5),
+                'ipd_days_back'     => (int)$request->input('ipd_days_back', 30),
+                'bed_interval_mins' => (int)$request->input('bed_interval_mins', 15),
+                'is_active'         => $request->boolean('is_active', false),
+            ]
+        );
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'บันทึกการตั้งค่ารอบเวลาส่งข้อมูลอัตโนมัติ (Schedule) เรียบร้อยแล้ว Agent ทุกตัวจะอัปเดตตามคำสั่งนี้ทันที',
+        ]);
+    }
+
+    /**
      * Dispatch remote auto-update task to one or all hospital agents.
      */
     public function dispatchRemoteUpdate(Request $request)
@@ -616,11 +644,12 @@ SQL,
         $taskId = 'update_task_' . time() . '_' . substr(md5(uniqid()), 0, 6);
         $downloadUrl = url('/api/agent/download-latest');
 
+        $latestVersion = MainSetting::get('agent_latest_version', '1.0.0');
         $taskPayload = [
             'task_id'      => $taskId,
             'action'       => 'update_client',
             'download_url' => $downloadUrl,
-            'version'      => '1.0.1',
+            'version'      => $latestVersion,
             'created_at'   => now()->toDateTimeString(),
         ];
 
