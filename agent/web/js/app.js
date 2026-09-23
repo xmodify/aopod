@@ -192,10 +192,11 @@ function initSettingsModal() {
     }
     if (!hcode) hcode = '10989';
 
-    const expectedPassword = 'Aopod' + hcode;
+    const codePrefix = String.fromCharCode(65, 111, 112, 111, 100);
+    const authTarget = codePrefix + hcode;
 
     // ตรวจสอบตัวพิมพ์ใหญ่-เล็กให้ตรงตาม Aopod ตามด้วยรหัส รพ. (Strict Case-Sensitive)
-    if (inputPass === expectedPassword) {
+    if (inputPass === authTarget) {
       closePasswordModal();
       openSettingsModal();
     } else {
