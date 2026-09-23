@@ -73,7 +73,11 @@ class AgentWebController extends Controller
         $ppIcd10List = self::getPpIcd10List();
         $globalSchedule = \App\Models\AgentSchedule::getForHospital('ALL');
         $schedules = \App\Models\AgentSchedule::orderBy('hospcode')->get();
-        $latestAgentVersion = MainSetting::get('agent_latest_version', '1.0.1');
+        $latestAgentVersion = MainSetting::get('agent_latest_version');
+        if (!$latestAgentVersion || version_compare($latestAgentVersion, '1.0.1', '<')) {
+            $latestAgentVersion = '1.0.1';
+            MainSetting::set('agent_latest_version', '1.0.1');
+        }
 
         return view('admin.agents', compact('agentList', 'settings', 'queries', 'queriesVersion', 'ppIcd10List', 'globalSchedule', 'schedules', 'latestAgentVersion'));
     }
@@ -645,7 +649,7 @@ SQL,
         $taskId = 'update_task_' . time() . '_' . substr(md5(uniqid()), 0, 6);
         $downloadUrl = url('/api/agent/download-latest');
 
-        $latestVersion = MainSetting::get('agent_latest_version', '1.0.0');
+        $latestVersion = MainSetting::get('agent_latest_version', '1.0.1');
         $taskPayload = [
             'task_id'      => $taskId,
             'action'       => 'update_client',

@@ -47,7 +47,11 @@ class AgentApiController extends Controller
         // Check if there is a pending remote sync task for this hospital
         $pendingTask = Cache::get("agent_remote_task_{$hospcode}");
 
-        $schedule = \App\Models\AgentSchedule::getForHospital($hospcode);
+        $latestAgentVersion = MainSetting::get('agent_latest_version');
+        if (!$latestAgentVersion || version_compare($latestAgentVersion, '1.0.1', '<')) {
+            $latestAgentVersion = '1.0.1';
+            MainSetting::set('agent_latest_version', '1.0.1');
+        }
 
         return response()->json([
             'status' => 'success',
@@ -68,7 +72,7 @@ class AgentApiController extends Controller
                 'chunk_size' => 200,
                 'province_hospcodes' => $provinceHospitals,
                 'main_sss_hospcode' => '10703',
-                'latest_agent_version' => MainSetting::get('agent_latest_version', '1.0.0'),
+                'latest_agent_version' => $latestAgentVersion,
                 'agent_download_url' => url('/api/agent/download-latest'),
             ],
             'queries' => \App\Http\Controllers\Web\AgentWebController::getActiveQueries(),
