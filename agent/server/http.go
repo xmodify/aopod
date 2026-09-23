@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"runtime"
 
+	"aopod-agent/autostart"
 	"aopod-agent/config"
 	"aopod-agent/database"
 	"aopod-agent/scheduler"
@@ -46,6 +47,27 @@ func (s *Server) Start(port int) error {
 		writeJSON(w, http.StatusOK, map[string]string{"status": "success", "path": logsDir})
 	})
 	mux.HandleFunc("/api/service/", s.handleService)
+	mux.HandleFunc("/api/autostart", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			var body struct {
+				Enabled bool `json:"enabled"`
+			}
+			_ = json.NewDecoder(r.Body).Decode(&body)
+			var err error
+			if body.Enabled {
+				err = autostart.Enable()
+			} else {
+				err = autostart.Disable()
+			}
+			if err != nil {
+				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+				return
+			}
+		}
+		writeJSON(w, http.StatusOK, map[string]interface{}{
+			"enabled": autostart.IsEnabled(),
+		})
+	})
 	mux.HandleFunc("/api/open-config-folder", func(w http.ResponseWriter, r *http.Request) {
 		_ = exec.Command("explorer.exe", config.GetConfigDir()).Start()
 		writeJSON(w, http.StatusOK, map[string]string{"status": "success", "path": config.GetConfigDir()})
@@ -87,9 +109,10 @@ func (s *Server) handleStatus(w http.ResponseWriter, r *http.Request) {
 		"hospital_name":   cfg.Hospital.Name,
 		"version":         config.AppVersion,
 		"db_status":       dbStatus,
-		"server_status":   serverStatus,
-		"service_running": serviceRunning,
-		"last_sync":       lastSync,
+		"server_status":     serverStatus,
+		"service_running":   serviceRunning,
+		"autostart_enabled": autostart.IsEnabled(),
+		"last_sync":         lastSync,
 		"config_dir":      config.GetConfigDir(),
 		"config_path":     config.GetConfigPath(),
 	})

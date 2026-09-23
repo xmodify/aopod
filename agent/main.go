@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"aopod-agent/autostart"
 	"aopod-agent/config"
 	"aopod-agent/database"
 	"aopod-agent/scheduler"
@@ -65,7 +66,9 @@ func main() {
 	log.Println("Starting AOPOD Agent process...")
 
 	var isServiceMode bool
+	var isAutoStart bool
 	flag.BoolVar(&isServiceMode, "service", false, "Run as background Windows Service")
+	flag.BoolVar(&isAutoStart, "autostart", false, "Run quietly in system tray on Windows boot")
 	flag.Parse()
 
 	svcConfig := &service.Config{
@@ -175,14 +178,19 @@ func main() {
 
 	log.Printf("Starting AOPOD Agent on port %d...\n", port)
 
-	// 2. Start Web Server & Cron in background goroutines
+	// 2. Ensure Windows Auto-Start (Starts automatically whenever Windows boots/restarts)
+	autostart.EnsureAutoStart()
+
+	// 3. Start Web Server & Cron in background goroutines
 	go prg.run()
 
-	// 3. Open browser
-	go func() {
-		time.Sleep(800 * time.Millisecond)
-		server.OpenBrowser(guiURL)
-	}()
+	// 4. Open browser (only if launched interactively, not when started silently on Windows boot)
+	if !isAutoStart {
+		go func() {
+			time.Sleep(800 * time.Millisecond)
+			server.OpenBrowser(guiURL)
+		}()
+	}
 
 	// 4. Run System Tray on main UI thread (Blocks until user exits from tray)
 	log.Println("Starting systray loop...")

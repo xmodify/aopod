@@ -18,6 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnTestApi')?.addEventListener('click', handleTestApi);
   document.getElementById('btnSaveConfig')?.addEventListener('click', handleSaveConfig);
   document.getElementById('btnOpenConfigFolder')?.addEventListener('click', handleOpenConfigFolder);
+  document.getElementById('chkAutoStart')?.addEventListener('change', async (e) => {
+    try {
+      await fetch('/api/autostart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: e.target.checked })
+      });
+      loadStatus();
+    } catch (err) {
+      alert('ไม่สามารถเปลี่ยนการตั้งค่า Auto-Start ได้: ' + err.message);
+    }
+  });
   document.getElementById('btnClearLogs')?.addEventListener('click', async () => {
     if (!confirm('คุณต้องการล้างและลบประวัติ Log ทั้งหมดใช่หรือไม่?')) return;
     try {
@@ -271,7 +283,14 @@ async function loadStatus() {
     document.getElementById('hospTitle').textContent = `${data.hospital_name || 'โรงพยาบาล'} (${data.hospital_code || '-'})`;
     document.getElementById('dbStatusText').textContent = data.db_status === 'connected' ? '🟢 เชื่อมต่อสำเร็จ' : '🔴 ไม่สามารถเชื่อมต่อได้';
     document.getElementById('serverStatusText').textContent = data.server_status === 'connected' ? '🟢 ออนไลน์' : '⚪ ยังไม่เชื่อมต่อ';
-    document.getElementById('serviceStatusText').textContent = data.service_running ? '🟢 กำลังทำงาน (Running)' : '⚪ หยุดทำงาน (Stopped)';
+    const autostartEl = document.getElementById('autostartStatusText');
+    if (autostartEl) {
+      autostartEl.textContent = data.autostart_enabled ? '🟢 เปิดอัตโนมัติ' : '⚪ ปิดอยู่';
+    }
+    const chkAutoStart = document.getElementById('chkAutoStart');
+    if (chkAutoStart) {
+      chkAutoStart.checked = !!data.autostart_enabled;
+    }
     document.getElementById('lastSyncText').textContent = formatThaiDateTime(data.last_sync);
     if (data.config_path && document.getElementById('cfgLocationPath')) {
       document.getElementById('cfgLocationPath').textContent = data.config_path;
