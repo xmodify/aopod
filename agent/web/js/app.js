@@ -214,7 +214,7 @@ function initSettingsModal() {
       openSettingsModal();
     } else {
       if (passwordError) {
-        passwordError.innerHTML = '❌ รหัสผ่านไม่ถูกต้อง (รหัสผ่านเริ่มต้นคือ: <code>Aopod2026</code> หรือ <code>Aopod</code>)';
+        passwordError.innerText = '❌ รหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
         passwordError.style.display = 'block';
       }
       inputSettingsPassword?.select();
