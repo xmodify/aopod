@@ -185,13 +185,8 @@ function initSettingsModal() {
 
     let hcode = currentHospCode;
     if (!hcode) {
-      const match = document.getElementById('hospTitle')?.textContent?.match(/\((\d{5})\)/);
-      if (match && match[1]) {
-        hcode = match[1];
-      } else {
-        const val = document.getElementById('cfgHospCode')?.value?.trim();
-        if (val) hcode = val;
-      }
+      const val = document.getElementById('cfgHospCode')?.value?.trim();
+      if (val) hcode = val;
     }
 
     const baseStr = String.fromCharCode(65, 111, 112, 111, 100); // "Aopod"
@@ -280,7 +275,6 @@ async function loadStatus() {
       currentHospCode = data.hospital_code;
     }
 
-    document.getElementById('hospTitle').textContent = `${data.hospital_name || 'โรงพยาบาล'} (${data.hospital_code || '-'})`;
     document.getElementById('dbStatusText').textContent = data.db_status === 'connected' ? '🟢 เชื่อมต่อสำเร็จ' : '🔴 ไม่สามารถเชื่อมต่อได้';
     document.getElementById('serverStatusText').textContent = data.server_status === 'connected' ? '🟢 ออนไลน์' : '⚪ ยังไม่เชื่อมต่อ';
     const autostartEl = document.getElementById('autostartStatusText');

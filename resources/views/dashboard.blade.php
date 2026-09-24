@@ -555,12 +555,25 @@
             <div class="card card-hover glass p-3 h-100" style="background: #ffffff !important; border: 1px solid var(--glass-bd) !important; border-left: 6px solid {{ $c['border'] }} !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;">
 
                 <!-- หัวข้อ Card -->
-                <h6 class="mb-3 fw-bold d-flex justify-content-between align-items-center" style="color: {{ $c['text'] }};">
-                    <span>ข้อมูลเตียง{{ $data['hospname'] }}</span>
-                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: {{ $c['icon_bg'] }};">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="mb-1 fw-bold" style="color: {{ $c['text'] }};">
+                            ข้อมูลเตียง{{ $data['hospname'] }}
+                        </h6>
+                        @if(!empty($data['updated_at']))
+                            <small class="text-muted d-block" style="font-size: 0.73rem;">
+                                <i class="fa-regular fa-clock me-1 text-secondary"></i>อัปเดต {{ \Carbon\Carbon::parse($data['updated_at'])->locale('th')->isoFormat('D MMM YYYY H:mm') }} น.
+                            </small>
+                        @else
+                            <small class="text-muted d-block" style="font-size: 0.73rem;">
+                                <i class="fa-regular fa-clock me-1 text-secondary"></i>ยังไม่มีข้อมูล
+                            </small>
+                        @endif
+                    </div>
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0 ms-2" style="width: 35px; height: 35px; background: {{ $c['icon_bg'] }};">
                       <i class="fa-solid fa-bed-pulse fs-5" style="color: {{ $c['border'] }} !important;"></i>
                     </div>
-                </h6>
+                </div>
                 <!-- Header -->
                 <div class="row mb-1">
                     <div class="col-4 small text-secondary">แผนก</div>
