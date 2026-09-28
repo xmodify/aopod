@@ -181,7 +181,7 @@
                                 <tr class="text-secondary small">
                                     <th class="border-0 rounded-start">รหัส / โรงพยาบาล</th>
                                     <th class="border-0 text-center">สถานะ Agent</th>
-                                    <th class="border-0">Agent URL (A-EMR)</th>
+                                    <th class="border-0">ช่องทาง A-EMR (Zero-Port)</th>
                                     <th class="border-0">ข้อมูล OPD ล่าสุด</th>
                                     <th class="border-0">ข้อมูล IPD ล่าสุด</th>
                                     <th class="border-0 text-center rounded-end">จัดการ</th>
@@ -209,7 +209,7 @@
                                                 <i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> ออนไลน์ (v{{ $item['heartbeat']['version'] ?? '1.0.0' }})
                                             </span>
                                             <div class="text-muted" style="font-size: 0.72rem; margin-top: 2px;">
-                                                {{ $item['heartbeat']['hostname'] ?? $item['heartbeat']['ip'] ?? '' }}
+                                                {{ $item['heartbeat']['hostname'] ?? '' }}
                                             </div>
                                         @else
                                             <span class="badge bg-secondary bg-opacity-10 text-secondary px-2.5 py-1.5 rounded-pill fw-semibold">
@@ -224,19 +224,26 @@
                                         @endif
                                     </td>
 
-                                    <!-- Agent URL (EMR) -->
+                                    <!-- Zero-Port Reverse EMR Channel -->
                                     <td class="py-3">
-                                        @if(!empty($item['agent_url']))
+                                        @if($item['is_online'])
                                             <div class="d-flex align-items-center gap-1.5">
-                                                <span class="badge bg-white border text-primary fw-semibold px-2.5 py-1 shadow-sm" style="font-family: monospace; font-size: 0.8rem;">
-                                                    <i class="fa-solid fa-link text-info me-1"></i>{{ $item['agent_url'] }}
+                                                <span class="badge bg-white border text-success fw-semibold px-2.5 py-1 shadow-sm" style="font-size: 0.78rem;">
+                                                    <i class="fa-solid fa-bolt text-warning me-1"></i> Zero-Port Active
                                                 </span>
                                             </div>
-                                            <div class="text-success small mt-0.5" style="font-size: 0.72rem;">
-                                                <i class="fa-solid fa-circle-check"></i> พร้อมเชื่อมต่อ A-EMR
+                                            <div class="text-secondary small mt-0.5" style="font-size: 0.72rem;">
+                                                <i class="fa-solid fa-network-wired text-muted me-1"></i> IP: {{ $item['heartbeat']['ip'] ?? '127.0.0.1' }}
                                             </div>
                                         @else
-                                            <span class="badge bg-secondary bg-opacity-10 text-muted px-2.5 py-1" style="font-size: 0.75rem;">- รอรับ Heartbeat -</span>
+                                            <span class="badge bg-secondary bg-opacity-10 text-muted px-2.5 py-1" style="font-size: 0.75rem;">
+                                                <i class="fa-solid fa-clock me-1"></i> รอ Heartbeat (ทุก 1 นาที)
+                                            </span>
+                                            @if(!empty($item['heartbeat']['ip']))
+                                                <div class="text-muted small mt-0.5" style="font-size: 0.7rem;">
+                                                    IP ล่าสุด: {{ $item['heartbeat']['ip'] }}
+                                                </div>
+                                            @endif
                                         @endif
                                     </td>
 
