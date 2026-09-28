@@ -380,15 +380,27 @@ class EmrService
             $agentUrl = ($hosp && $hosp->agent_url) ? $hosp->agent_url : env('AOPOD_AGENT_URL', 'http://127.0.0.1:8989');
             $url = rtrim($agentUrl, '/') . "/api/emr/visit?vn=" . urlencode($vn);
 
-            $response = Http::timeout(2)->withToken($hosp->token_api ?? '')->get($url);
-            if ($response instanceof \Illuminate\Http\Client\Response && $response->successful()) {
-                $resData = $response->json();
-                if (!empty($resData['data'])) {
-                    $data = $resData['data'];
-                    $data['success'] = true;
-                    $data['latency_ms'] = round((microtime(true) - $startTime) * 1000, 2);
-                    return $data;
+            try {
+                $response = Http::timeout(1.5)->withToken($hosp->token_api ?? '')->get($url);
+                if ($response instanceof \Illuminate\Http\Client\Response && $response->successful()) {
+                    $resData = $response->json();
+                    if (!empty($resData['data'])) {
+                        $data = $resData['data'];
+                        $data['success'] = true;
+                        $data['latency_ms'] = round((microtime(true) - $startTime) * 1000, 2);
+                        return $data;
+                    }
                 }
+            } catch (\Exception $ex) {
+                // Agent HTTP unavailable, continue to local fallback
+            }
+
+            // 4. Fallback to direct local HOSxP database if connected
+            $directDetail = $this->collectLocalHosxpVisitDetail($vn);
+            if ($directDetail) {
+                $directDetail['success'] = true;
+                $directDetail['latency_ms'] = round((microtime(true) - $startTime) * 1000, 2);
+                return $directDetail;
             }
 
             return [
@@ -397,10 +409,326 @@ class EmrService
             ];
         } catch (\Exception $e) {
             Log::error("A-EMR visit detail fetch error via Agent: " . $e->getMessage());
+
+            // Try direct local HOSxP fallback as ultimate failover
+            $directDetail = $this->collectLocalHosxpVisitDetail($vn);
+            if ($directDetail) {
+                $directDetail['success'] = true;
+                $directDetail['latency_ms'] = round((microtime(true) - $startTime) * 1000, 2);
+                return $directDetail;
+            }
+
             return [
                 'success' => false,
-                'message' => 'เกิดข้อผิดพลาดในการเชื่อมต่อ Agent: ' . $e->getMessage(),
+                'message' => 'เกิดข้อผิดพลาดในการเชื่อมต่อ: ' . $e->getMessage(),
             ];
+        }
+    }
+
+    /**
+     * Fallback: Query local HOSxP database directly if configured.
+     */
+    public function collectLocalHosxpVisitDetail(string $vn): ?array
+    {
+        try {
+            $cleanVN = trim($vn);
+            $an = ''; $hn = ''; $actualVN = $cleanVN;
+
+            $ovst = DB::connection('hosxp')->selectOne("SELECT an, hn, vn FROM ovst WHERE vn = ? OR an = ? LIMIT 1", [$cleanVN, $cleanVN]);
+            if ($ovst) {
+                $an = $ovst->an ?? '';
+                $hn = $ovst->hn ?? '';
+                $actualVN = $ovst->vn ?? $cleanVN;
+            }
+            if (!$an || !$hn) {
+                $ipt = DB::connection('hosxp')->selectOne("SELECT an, hn, vn FROM ipt WHERE an = ? OR vn = ? LIMIT 1", [$cleanVN, $cleanVN]);
+                if ($ipt) {
+                    $an = $ipt->an ?? $an;
+                    $hn = $ipt->hn ?? $hn;
+                    $actualVN = $ipt->vn ?? $actualVN;
+                }
+            }
+
+            $detail = [
+                'vn' => $actualVN,
+                'an' => $an,
+                'is_ipd' => !empty($an),
+                'admdate' => '',
+                'admtime' => '',
+                'dchdate' => '',
+                'dchtime' => '',
+                'los' => 1,
+                'ward_name' => '',
+                'dch_type' => '',
+                'dch_status' => '',
+                'adm_doctor' => '',
+                'dch_doctor' => '',
+                'chart_status' => '',
+                'drg' => '',
+                'rw' => 0.0,
+                'adjrw' => 0.0,
+                'total_income' => 0.0,
+                'paid_money' => 0.0,
+                'uc_money' => 0.0,
+                'medications' => [],
+                'non_drugs' => [],
+                'lab_results' => [],
+                'diagnoses' => [],
+                'procedures' => [],
+                'ipd_diagnoses' => [],
+            ];
+
+            $ipdInfo = null;
+            if ($an) {
+                $ipdInfo = DB::connection('hosxp')->selectOne("
+                    SELECT 
+                        ipt.regdate, ipt.regtime, ipt.dchdate, ipt.dchtime,
+                        w.name AS ward_name, doc_adm.name AS adm_doctor, COALESCE(doc_dch.name, doc_dx.name) AS dch_doctor,
+                        ds.name AS dch_status, dt.name AS dch_type,
+                        COALESCE(ans.drg, ipt.drg, '') AS drg,
+                        COALESCE(ans.rw, ipt.rw, 0) AS rw,
+                        COALESCE(ipt.adjrw, 0) AS adjrw,
+                        COALESCE(ans.income, 0) AS total_income,
+                        COALESCE(ans.rcpt_money, 0) AS paid_money,
+                        COALESCE(ans.uc_money, 0) AS uc_money
+                    FROM ipt
+                    LEFT JOIN an_stat ans ON ans.an = ipt.an
+                    LEFT JOIN ward w ON w.ward = ipt.ward
+                    LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.admdoctor
+                    LEFT JOIN doctor doc_dch ON doc_dch.code = ipt.dch_doctor
+                    LEFT JOIN doctor doc_dx ON doc_dx.code = ans.dx_doctor
+                    LEFT JOIN dchstts ds ON ds.dchstts = ipt.dchstts
+                    LEFT JOIN dchtype dt ON dt.dchtype = ipt.dchtype
+                    WHERE ipt.an = ?
+                    LIMIT 1
+                ", [$an]);
+
+                if ($ipdInfo) {
+                    $detail['admdate'] = $ipdInfo->regdate ?? '';
+                    $detail['admtime'] = $ipdInfo->regtime ?? '';
+                    $detail['dchdate'] = $ipdInfo->dchdate ?? '';
+                    $detail['dchtime'] = $ipdInfo->dchtime ?? '';
+                    $detail['ward_name'] = $ipdInfo->ward_name ?? '';
+                    $detail['adm_doctor'] = $ipdInfo->adm_doctor ?? '';
+                    $detail['dch_doctor'] = $ipdInfo->dch_doctor ?? '';
+                    $detail['dch_status'] = $ipdInfo->dch_status ?? '';
+                    $detail['dch_type'] = $ipdInfo->dch_type ?? '';
+                    $detail['drg'] = $ipdInfo->drg ?? '';
+                    $detail['rw'] = (float)($ipdInfo->rw ?? 0);
+                    $detail['adjrw'] = (float)($ipdInfo->adjrw ?? 0);
+                    $detail['total_income'] = (float)($ipdInfo->total_income ?? 0);
+                    $detail['paid_money'] = (float)($ipdInfo->paid_money ?? 0);
+                    $detail['uc_money'] = (float)($ipdInfo->uc_money ?? 0);
+
+                    if (!empty($ipdInfo->regdate)) {
+                        if (!empty($ipdInfo->dchdate)) {
+                            $tAdm = strtotime(substr($ipdInfo->regdate, 0, 10));
+                            $tDch = strtotime(substr($ipdInfo->dchdate, 0, 10));
+                            $days = max(1, (int)(($tDch - $tAdm) / 86400) + 1);
+                            $detail['los'] = $days;
+                        } else {
+                            $detail['los'] = 1;
+                        }
+                    }
+
+                    if (empty($ipdInfo->dchdate)) {
+                        $detail['chart_status'] = 'กำลังนอนรักษาตัวใน รพ. (Admitted)';
+                    } elseif (!empty($ipdInfo->dch_doctor) || !empty($ipdInfo->drg) || $detail['rw'] > 0) {
+                        $detail['chart_status'] = 'สรุปชาร์จแล้ว (Chart Summarized)';
+                    } else {
+                        $detail['chart_status'] = 'จำหน่ายแล้ว (รอสรุปชาร์จ)';
+                    }
+
+                    // IPD Diagnoses
+                    $ipdDiags = DB::connection('hosxp')->select("
+                        SELECT 
+                            id.diagtype, id.icd10, COALESCE(i.name, '') AS diag_name,
+                            CASE 
+                                WHEN id.diagtype = '1' THEN 'Principal Diagnosis (โรคหลัก)'
+                                WHEN id.diagtype = '2' THEN 'Comorbidity (โรคร่วม)'
+                                WHEN id.diagtype = '3' THEN 'Complication (โรคแทรก)'
+                                WHEN id.diagtype = '4' THEN 'Other (โรคอื่น)'
+                                WHEN id.diagtype = '5' THEN 'External Cause (สาเหตุภายนอก)'
+                                ELSE 'อื่นๆ'
+                            END AS diagtype_name
+                        FROM iptdiag id
+                        LEFT JOIN icd101 i ON i.code = id.icd10
+                        WHERE id.an = ?
+                        ORDER BY id.diagtype ASC
+                    ", [$an]);
+                    $detail['ipd_diagnoses'] = array_map(fn($d) => (array)$d, $ipdDiags);
+
+                    // IPD Procedures
+                    $ipdProcs = DB::connection('hosxp')->select("
+                        SELECT 
+                            iop.icd9, COALESCE(i9.name, '') AS proc_name, COALESCE(d.name, '') AS doctor_name,
+                            CASE 
+                                WHEN iop.oper_type = 1 THEN 'Principal Procedure (หัตถการหลัก IPD)'
+                                WHEN iop.oper_type = 2 THEN 'Secondary Procedure (หัตถการรอง IPD)'
+                                ELSE 'หัตถการ IPD'
+                            END AS proctype_name,
+                            'IPD' AS category
+                        FROM iptoprt iop
+                        LEFT JOIN icd9cm1 i9 ON i9.code = iop.icd9
+                        LEFT JOIN doctor d ON d.code = iop.doctor
+                        WHERE iop.an = ?
+                        ORDER BY iop.oper_type ASC
+                    ", [$an]);
+                    $detail['procedures'] = array_map(fn($p) => (array)$p, $ipdProcs);
+                }
+            }
+
+            // Medications
+            $meds = DB::connection('hosxp')->select("
+                SELECT 
+                    d.name AS drug_name,
+                    SUM(op.qty) AS qty,
+                    COALESCE(d.units, '') AS units,
+                    COALESCE(du.name1, '') AS usage1,
+                    COALESCE(du.name2, '') AS usage2,
+                    COALESCE(du.name3, '') AS usage3,
+                    COALESCE(op.sp_use, COALESCE(sp.name1, '')) AS sp_use,
+                    COALESCE(SUM(op.sum_price), 0) AS sum_price,
+                    CASE 
+                        WHEN op.item_type = 'H' THEN 'ยากลับบ้าน (Home Meds)'
+                        WHEN op.an IS NOT NULL AND op.an != '' THEN 'ยาระหว่างนอน รพ.'
+                        ELSE 'ยาผู้ป่วยนอก (OPD)'
+                    END AS med_category,
+                    COALESCE(MIN(op.vstdate), '') AS first_date,
+                    COALESCE(MAX(op.vstdate), '') AS last_date,
+                    COUNT(DISTINCT op.vstdate) AS days_count
+                FROM opitemrece op
+                JOIN drugitems d ON d.icode = op.icode
+                LEFT JOIN drugusage du ON du.drugusage = op.drugusage
+                LEFT JOIN sp_use sp ON sp.sp_use = op.sp_use
+                WHERE (op.vn = ? OR (op.an IS NOT NULL AND op.an != '' AND op.an = ?))
+                GROUP BY d.icode, d.name, d.units, med_category, du.drugusage, du.name1, du.name2, du.name3, op.sp_use, sp.name1
+                ORDER BY CASE WHEN med_category = 'ยากลับบ้าน (Home Meds)' THEN 1 WHEN med_category = 'ยาผู้ป่วยนอก (OPD)' THEN 2 ELSE 3 END ASC, d.name ASC
+            ", [$actualVN, $an]);
+            $detail['medications'] = array_map(fn($m) => (array)$m, $meds);
+
+            // Non-Drug Services
+            $nonDrugs = DB::connection('hosxp')->select("
+                SELECT 
+                    nd.name AS item_name,
+                    SUM(op.qty) AS qty,
+                    COALESCE(nd.unit, '') AS units,
+                    COALESCE(op.unitprice, 0) AS unit_price,
+                    COALESCE(SUM(op.sum_price), 0) AS sum_price,
+                    CASE 
+                        WHEN op.an IS NOT NULL AND op.an != '' THEN 'IPD'
+                        ELSE 'OPD'
+                    END AS category
+                FROM opitemrece op
+                JOIN nondrugitems nd ON nd.icode = op.icode
+                WHERE (op.vn = ? OR (op.an IS NOT NULL AND op.an != '' AND op.an = ?))
+                GROUP BY nd.icode, nd.name, nd.unit, op.unitprice, category
+                ORDER BY nd.name ASC
+            ", [$actualVN, $an]);
+            $detail['non_drugs'] = array_map(fn($nd) => (array)$nd, $nonDrugs);
+
+            // Labs
+            $admDate = !empty($ipdInfo->regdate) ? substr($ipdInfo->regdate, 0, 10) : '';
+            $dchDate = !empty($ipdInfo->dchdate) ? substr($ipdInfo->dchdate, 0, 10) : date('Y-m-d');
+            if ($an && $hn && $admDate) {
+                $labs = DB::connection('hosxp')->select("
+                    SELECT 
+                        COALESCE(i.lab_items_name, 'Lab item') AS lab_name,
+                        COALESCE(lo.lab_order_result, '') AS lab_result,
+                        COALESCE(i.lab_items_unit, '') AS lab_unit,
+                        COALESCE(i.lab_items_normal_value, '-') AS normal_value,
+                        COALESCE(lh.order_date, '') AS order_date,
+                        COALESCE(lh.order_time, '') AS order_time,
+                        COALESCE(lh.form_name, 'ผลตรวจทั่วไป') AS lab_group,
+                        CASE 
+                            WHEN (lh.ward IS NOT NULL AND lh.ward != '' AND lh.ward != '00') 
+                                 OR lh.order_department = 'IPD' 
+                                 OR lh.department = 'IPD' THEN 'IPD'
+                            ELSE 'OPD'
+                        END AS category
+                    FROM lab_order lo
+                    JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
+                    LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
+                    WHERE (lh.vn = ? OR (lh.hn = ? AND lh.order_date BETWEEN ? AND ?))
+                      AND lo.lab_order_result IS NOT NULL 
+                      AND TRIM(lo.lab_order_result) != '' 
+                      AND TRIM(lo.lab_order_result) != '-'
+                    ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
+                ", [$actualVN, $hn, $admDate, $dchDate]);
+            } else {
+                $labs = DB::connection('hosxp')->select("
+                    SELECT 
+                        COALESCE(i.lab_items_name, 'Lab item') AS lab_name,
+                        COALESCE(lo.lab_order_result, '') AS lab_result,
+                        COALESCE(i.lab_items_unit, '') AS lab_unit,
+                        COALESCE(i.lab_items_normal_value, '-') AS normal_value,
+                        COALESCE(lh.order_date, '') AS order_date,
+                        COALESCE(lh.order_time, '') AS order_time,
+                        COALESCE(lh.form_name, 'ผลตรวจทั่วไป') AS lab_group,
+                        'OPD' AS category
+                    FROM lab_order lo
+                    JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
+                    LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
+                    WHERE lh.vn = ?
+                      AND lo.lab_order_result IS NOT NULL 
+                      AND TRIM(lo.lab_order_result) != '' 
+                      AND TRIM(lo.lab_order_result) != '-'
+                    ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
+                ", [$actualVN]);
+            }
+            $detail['lab_results'] = array_map(fn($l) => (array)$l, $labs);
+
+            // OPD Diagnoses
+            $opdDiags = DB::connection('hosxp')->select("
+                SELECT 
+                    od.diagtype, od.icd10, COALESCE(i.name, '') AS diag_name,
+                    CASE 
+                        WHEN od.diagtype = '1' THEN 'Principal Diagnosis (โรคหลัก)'
+                        WHEN od.diagtype = '2' THEN 'Comorbidity (โรคร่วม)'
+                        WHEN od.diagtype = '3' THEN 'Complication (โรคแทรก)'
+                        WHEN od.diagtype = '4' THEN 'Other (โรคอื่น)'
+                        WHEN od.diagtype = '5' THEN 'External Cause (สาเหตุภายนอก)'
+                        ELSE 'อื่นๆ'
+                    END AS diagtype_name
+                FROM ovstdiag od
+                LEFT JOIN icd101 i ON i.code = od.icd10
+                WHERE od.vn = ? AND (od.icd10 REGEXP '^[A-Za-z]')
+                ORDER BY od.diagtype ASC
+            ", [$actualVN]);
+            $detail['diagnoses'] = array_map(fn($d) => (array)$d, $opdDiags);
+
+            // OPD Procedures
+            $seenProcs = [];
+            foreach ($detail['procedures'] as $p) {
+                $seenProcs[$p['icd9']] = true;
+            }
+            $opdProcs = DB::connection('hosxp')->select("
+                SELECT 
+                    od.icd10 AS icd9, COALESCE(i9.name, COALESCE(i10.name, '')) AS proc_name, COALESCE(d.name, '') AS doctor_name,
+                    CASE 
+                        WHEN od.diagtype = '1' THEN 'Principal Procedure (หัตถการหลัก)'
+                        WHEN od.diagtype = '2' THEN 'Secondary Procedure (หัตถการรอง)'
+                        ELSE 'หัตถการอื่น'
+                    END AS proctype_name,
+                    'OPD' AS category
+                FROM ovstdiag od
+                LEFT JOIN icd9cm1 i9 ON i9.code = od.icd10
+                LEFT JOIN icd101 i10 ON i10.code = od.icd10
+                LEFT JOIN doctor d ON d.code = od.doctor
+                WHERE od.vn = ? AND (od.icd10 REGEXP '^[0-9]')
+                ORDER BY od.diagtype ASC
+            ", [$actualVN]);
+            foreach ($opdProcs as $p) {
+                if (!isset($seenProcs[$p->icd9])) {
+                    $seenProcs[$p->icd9] = true;
+                    $detail['procedures'][] = (array)$p;
+                }
+            }
+
+            return $detail;
+        } catch (\Throwable $e) {
+            Log::warning("Local HOSxP direct query fallback error: " . $e->getMessage());
+            return null;
         }
     }
 

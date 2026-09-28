@@ -377,21 +377,26 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 	}
 
 	// Check if this visit has an AN or is an AN
-	var an string
+	var an, hn, actualVN string
 	_ = db.QueryRow(`
-		SELECT COALESCE(o.an, '') 
+		SELECT COALESCE(o.an, ''), COALESCE(o.hn, ''), COALESCE(o.vn, '') 
 		FROM ovst o 
-		WHERE o.vn = ? 
+		WHERE o.vn = ? OR o.an = ? 
 		LIMIT 1
-	`, cleanVN).Scan(&an)
+	`, cleanVN, cleanVN).Scan(&an, &hn, &actualVN)
 
-	if an == "" {
+	if an == "" || actualVN == "" || hn == "" {
 		_ = db.QueryRow(`
-			SELECT COALESCE(an, '') 
+			SELECT COALESCE(an, ''), COALESCE(hn, ''), COALESCE(vn, '') 
 			FROM ipt 
 			WHERE an = ? OR vn = ? 
 			LIMIT 1
-		`, cleanVN, cleanVN).Scan(&an)
+		`, cleanVN, cleanVN).Scan(&an, &hn, &actualVN)
+	}
+
+	if actualVN != "" {
+		cleanVN = actualVN
+		detail.VN = actualVN
 	}
 
 	if an != "" {
@@ -413,8 +418,9 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 				COALESCE(doc_dch.name, ''),
 				COALESCE(ds.name, ''),
 				COALESCE(dt.name, ''),
-				COALESCE(ans.drg, ''),
-				COALESCE(ans.rw, 0),
+				COALESCE(ans.drg, ipt.drg, ''),
+				COALESCE(ans.rw, ipt.rw, 0),
+				COALESCE(ipt.adjrw, 0),
 				COALESCE(ans.income, 0),
 				COALESCE(ans.rcpt_money, 0),
 				COALESCE(ans.uc_money, 0)
@@ -432,7 +438,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 			&detail.DchDate, &detail.DchTime,
 			&detail.WardName, &admDoctor, &dchDoctor,
 			&dchStatus, &dchType,
-			&drg, &rw, &income, &rcptMoney, &ucMoney,
+			&drg, &rw, &adjrw, &income, &rcptMoney, &ucMoney,
 		)
 
 		detail.AdmDoctor = admDoctor
@@ -609,28 +615,63 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 	}
 
 	// 3. Lab Results (Only tests with actual recorded results)
-	labRows, err := db.Query(`
-		SELECT 
-			COALESCE(i.lab_items_name, 'Lab item'),
-			COALESCE(lo.lab_order_result, ''),
-			COALESCE(i.lab_items_unit, ''),
-			COALESCE(i.lab_items_normal_value, '-'),
-			COALESCE(lh.order_date, ''),
-			COALESCE(lh.order_time, ''),
-			COALESCE(lh.form_name, 'ผลตรวจทั่วไป'),
-			CASE 
-				WHEN lh.an IS NOT NULL AND lh.an != '' THEN 'IPD'
-				ELSE 'OPD'
-			END AS category
-		FROM lab_order lo
-		JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
-		LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
-		WHERE (lh.vn = ? OR (lh.an IS NOT NULL AND lh.an != '' AND lh.an = ?))
-		  AND lo.lab_order_result IS NOT NULL 
-		  AND TRIM(lo.lab_order_result) != '' 
-		  AND TRIM(lo.lab_order_result) != '-'
-		ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
-	`, cleanVN, an)
+	var labQuery string
+	var labArgs []interface{}
+
+	if detail.IsIPD && hn != "" && detail.AdmDate != "" {
+		dchDateVal := detail.DchDate
+		if dchDateVal == "" {
+			dchDateVal = time.Now().Format("2006-01-02")
+		}
+		labQuery = `
+			SELECT 
+				COALESCE(i.lab_items_name, 'Lab item'),
+				COALESCE(lo.lab_order_result, ''),
+				COALESCE(i.lab_items_unit, ''),
+				COALESCE(i.lab_items_normal_value, '-'),
+				COALESCE(lh.order_date, ''),
+				COALESCE(lh.order_time, ''),
+				COALESCE(lh.form_name, 'ผลตรวจทั่วไป'),
+				CASE 
+					WHEN (lh.ward IS NOT NULL AND lh.ward != '' AND lh.ward != '00') 
+					     OR lh.order_department = 'IPD' 
+					     OR lh.department = 'IPD' THEN 'IPD'
+					ELSE 'OPD'
+				END AS category
+			FROM lab_order lo
+			JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
+			LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
+			WHERE (lh.vn = ? OR (lh.hn = ? AND lh.order_date BETWEEN ? AND ?))
+			  AND lo.lab_order_result IS NOT NULL 
+			  AND TRIM(lo.lab_order_result) != '' 
+			  AND TRIM(lo.lab_order_result) != '-'
+			ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
+		`
+		labArgs = []interface{}{cleanVN, hn, detail.AdmDate[:min(10, len(detail.AdmDate))], dchDateVal[:min(10, len(dchDateVal))]}
+	} else {
+		labQuery = `
+			SELECT 
+				COALESCE(i.lab_items_name, 'Lab item'),
+				COALESCE(lo.lab_order_result, ''),
+				COALESCE(i.lab_items_unit, ''),
+				COALESCE(i.lab_items_normal_value, '-'),
+				COALESCE(lh.order_date, ''),
+				COALESCE(lh.order_time, ''),
+				COALESCE(lh.form_name, 'ผลตรวจทั่วไป'),
+				'OPD' AS category
+			FROM lab_order lo
+			JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
+			LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
+			WHERE lh.vn = ?
+			  AND lo.lab_order_result IS NOT NULL 
+			  AND TRIM(lo.lab_order_result) != '' 
+			  AND TRIM(lo.lab_order_result) != '-'
+			ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
+		`
+		labArgs = []interface{}{cleanVN}
+	}
+
+	labRows, err := db.Query(labQuery, labArgs...)
 	if err == nil {
 		defer labRows.Close()
 		for labRows.Next() {
@@ -688,17 +729,14 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 				WHEN od.diagtype = '2' THEN 'Secondary Procedure (หัตถการรอง)'
 				ELSE 'หัตถการอื่น'
 			END AS proctype_name,
-			CASE 
-				WHEN od.an IS NOT NULL AND od.an != '' THEN 'IPD'
-				ELSE 'OPD'
-			END AS category
+			'OPD' AS category
 		FROM ovstdiag od
 		LEFT JOIN icd9cm1 i9 ON i9.code = od.icd10
 		LEFT JOIN icd101 i10 ON i10.code = od.icd10
 		LEFT JOIN doctor d ON d.code = od.doctor
-		WHERE (od.vn = ? OR (od.an IS NOT NULL AND od.an != '' AND od.an = ?)) AND (od.icd10 REGEXP '^[0-9]')
+		WHERE od.vn = ? AND (od.icd10 REGEXP '^[0-9]')
 		ORDER BY od.diagtype ASC
-	`, cleanVN, an)
+	`, cleanVN)
 	if err == nil {
 		defer procRows.Close()
 		seenProcs := make(map[string]bool)

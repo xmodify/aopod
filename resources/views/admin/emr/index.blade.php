@@ -520,9 +520,6 @@
                         <button type="button" class="modal-mode-pill" id="modeBtnOpd" onclick="switchModalMode('OPD')">
                             <i class="fa-solid fa-stethoscope me-1"></i> ข้อมูลตรวจแรกรับ (OPD)
                         </button>
-                        <button type="button" class="modal-mode-pill" id="modeBtnAll" onclick="switchModalMode('ALL')">
-                            <i class="fa-solid fa-layer-group me-1"></i> รวมทุกรายการ (All)
-                        </button>
                     </div>
                     <div id="modalIpdLosSummary" class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; padding: 0.5rem 0.85rem; font-size: 0.85rem; border-radius: 9999px;">
                         <i class="fa-solid fa-bed-pulse me-1"></i> Admit Case
@@ -1132,7 +1129,6 @@
         currentModalMode = mode;
         const btnIpd = document.getElementById('modeBtnIpd');
         const btnOpd = document.getElementById('modeBtnOpd');
-        const btnAll = document.getElementById('modeBtnAll');
         const viewOpd = document.getElementById('mViewOpdFields');
         const viewIpd = document.getElementById('mViewIpdFields');
         const cardHeader = document.getElementById('cardClinicalHeader');
@@ -1142,7 +1138,6 @@
 
         if (btnIpd) btnIpd.className = 'modal-mode-pill';
         if (btnOpd) btnOpd.className = 'modal-mode-pill';
-        if (btnAll) btnAll.className = 'modal-mode-pill';
 
         if (mode === 'IPD') {
             if (btnIpd) btnIpd.className = 'modal-mode-pill active-ipd';
@@ -1152,7 +1147,8 @@
             modalHeader.classList.add('header-ipd');
             headerIcon.innerHTML = '<i class="fa-solid fa-bed-pulse"></i>';
             modalTitle.textContent = 'รายละเอียดการรักษาผู้ป่วยใน (IPD / Admission)';
-        } else if (mode === 'OPD') {
+        } else {
+            // OPD Mode
             if (btnOpd) btnOpd.className = 'modal-mode-pill active-opd';
             viewOpd.classList.remove('d-none');
             viewIpd.classList.add('d-none');
@@ -1160,15 +1156,6 @@
             modalHeader.classList.remove('header-ipd');
             headerIcon.innerHTML = '<i class="fa-solid fa-file-medical"></i>';
             modalTitle.textContent = 'รายละเอียดการรักษาผู้ป่วยนอก (OPD)';
-        } else {
-            // ALL Mode
-            if (btnAll) btnAll.className = 'modal-mode-pill active-opd';
-            viewOpd.classList.remove('d-none');
-            viewIpd.classList.remove('d-none');
-            cardHeader.innerHTML = '<i class="fa-solid fa-layer-group text-primary"></i> ข้อมูลรวม OPD & IPD';
-            modalHeader.classList.remove('header-ipd');
-            headerIcon.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
-            modalTitle.textContent = 'รายละเอียดการรักษาทั้งหมด (OPD & IPD)';
         }
 
         if (activeModalDetail) {
@@ -1475,11 +1462,10 @@
         if (!data) return;
         const isIpd = (mode === 'IPD');
         const isOpd = (mode === 'OPD');
-        const isAll = (mode === 'ALL');
 
         // 1. Financial Summary for IPD
         const finBox = document.getElementById('mIpdFinancialSummaryBox');
-        if (!isOpd && finBox && (data.total_income > 0 || data.uc_money > 0 || data.paid_money > 0)) {
+        if (isIpd && finBox && (data.total_income > 0 || data.uc_money > 0 || data.paid_money > 0)) {
             finBox.classList.remove('d-none');
             document.getElementById('mIpdIncome').textContent = Number(data.total_income || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
             document.getElementById('mIpdUcMoney').textContent = Number(data.uc_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
@@ -1493,7 +1479,7 @@
         let filteredMeds = data.medications || [];
         if (isIpd) {
             filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ยากลับบ้าน') || (m.med_category || '').includes('นอน รพ.'));
-        } else if (isOpd) {
+        } else {
             filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ผู้ป่วยนอก (OPD)'));
         }
 
@@ -1558,7 +1544,7 @@
         let filteredNonDrugs = data.non_drugs || [];
         if (isIpd) {
             filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'IPD' || (nd.category || '') === '');
-        } else if (isOpd) {
+        } else {
             filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'OPD' || (nd.category || '') === '');
         }
 
@@ -1589,10 +1575,14 @@
         });
         if (isIpd) {
             const ipdLabs = validLabs.filter(l => (l.category || '') === 'IPD');
-            if (ipdLabs.length > 0) validLabs = ipdLabs;
-        } else if (isOpd) {
+            if (ipdLabs.length > 0) {
+                validLabs = ipdLabs;
+            }
+        } else {
             const opdLabs = validLabs.filter(l => (l.category || '') === 'OPD');
-            if (opdLabs.length > 0) validLabs = opdLabs;
+            if (opdLabs.length > 0) {
+                validLabs = opdLabs;
+            }
         }
 
         document.getElementById('modalLabCount').textContent = validLabs.length;
@@ -1600,9 +1590,15 @@
             labBody.innerHTML = '';
             validLabs.forEach((l, idx) => {
                 const tr = document.createElement('tr');
+                const catBadge = l.category === 'IPD'
+                    ? '<span class="badge" style="background:#ffedd5; color:#9a3412; font-size:0.7rem; border:1px solid #fed7aa; margin-right:4px;">IPD</span>'
+                    : '<span class="badge bg-light text-primary border" style="font-size:0.7rem; margin-right:4px;">OPD</span>';
                 tr.innerHTML = `
                     <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                    <td class="fw-bold text-dark">${escapeHtml(l.lab_name)}</td>
+                    <td>
+                        <div class="fw-bold text-dark">${catBadge}${escapeHtml(l.lab_name)}</div>
+                        <div class="small text-muted mt-0.5"><i class="fa-regular fa-clock me-1"></i>${formatThaiDateTime(l.order_date, l.order_time)} ${l.lab_group ? `<span class="badge bg-light text-secondary border ms-1">${escapeHtml(l.lab_group)}</span>` : ''}</div>
+                    </td>
                     <td class="text-center fw-bold text-primary fs-6">${escapeHtml(l.lab_result)}</td>
                     <td class="text-center text-muted small">${escapeHtml(l.lab_unit || '-')}</td>
                     <td class="small text-muted">${escapeHtml(l.normal_value || '-')}</td>
@@ -1610,7 +1606,10 @@
                 labBody.appendChild(tr);
             });
         } else {
-            labBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีรายการตรวจ Lab ที่มีผลตรวจในส่วนนี้</td></tr>';
+            const noLabText = isOpd
+                ? '<i class="fa-solid fa-circle-info me-1"></i> ไม่มีรายการตรวจ Lab ที่แผนกผู้ป่วยนอก (OPD)'
+                : '<i class="fa-solid fa-circle-info me-1"></i> ไม่มีรายการตรวจ Lab ที่มีผลตรวจในส่วนนี้';
+            labBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">${noLabText}</td></tr>`;
         }
 
         // 5. Diagnoses
@@ -1618,11 +1617,8 @@
         let displayedDiags = [];
         if (isIpd) {
             displayedDiags = (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) ? data.ipd_diagnoses : (data.diagnoses || []);
-        } else if (isOpd) {
-            displayedDiags = data.diagnoses || [];
         } else {
-            // ALL Mode
-            displayedDiags = [...(data.ipd_diagnoses || []), ...(data.diagnoses || [])];
+            displayedDiags = data.diagnoses || [];
         }
 
         document.getElementById('modalDiagCount').textContent = displayedDiags.length;
@@ -1651,7 +1647,7 @@
         if (isIpd) {
             const ipdProcs = filteredProcs.filter(p => (p.category || '') === 'IPD');
             if (ipdProcs.length > 0) filteredProcs = ipdProcs;
-        } else if (isOpd) {
+        } else {
             const opdProcs = filteredProcs.filter(p => (p.category || '') === 'OPD');
             if (opdProcs.length > 0) filteredProcs = opdProcs;
         }
