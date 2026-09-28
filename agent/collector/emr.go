@@ -45,8 +45,16 @@ type ChronicClinic struct {
 
 type VisitSummary struct {
 	VN          string  `json:"vn"`
+	AN          string  `json:"an"`
+	IsIPD       bool    `json:"is_ipd"`
 	VstDate     string  `json:"vstdate"`
 	VstTime     string  `json:"vsttime"`
+	AdmDate     string  `json:"admdate"`
+	AdmTime     string  `json:"admtime"`
+	DchDate     string  `json:"dchdate"`
+	DchTime     string  `json:"dchtime"`
+	LOS         int     `json:"los"`
+	WardName    string  `json:"ward_name"`
 	Department  string  `json:"department"`
 	Pdx         string  `json:"pdx"`
 	PdxName     string  `json:"pdx_name"`
@@ -66,24 +74,40 @@ type VisitSummary struct {
 }
 
 type VisitDetail struct {
-	VN          string           `json:"vn"`
-	LatencyMs   float64          `json:"latency_ms"`
-	Medications []PrescribedDrug `json:"medications"`
-	NonDrugs    []NonDrugItem    `json:"non_drugs"`
-	LabResults  []LabResultItem  `json:"lab_results"`
-	Diagnoses   []DiagnosisItem  `json:"diagnoses"`
-	Procedures  []ProcedureItem  `json:"procedures"`
+	VN           string           `json:"vn"`
+	AN           string           `json:"an"`
+	IsIPD        bool             `json:"is_ipd"`
+	AdmDate      string           `json:"admdate"`
+	AdmTime      string           `json:"admtime"`
+	DchDate      string           `json:"dchdate"`
+	DchTime      string           `json:"dchtime"`
+	LOS          int              `json:"los"`
+	WardName     string           `json:"ward_name"`
+	DchType      string           `json:"dch_type"`
+	DchStatus    string           `json:"dch_status"`
+	AdmDoctor    string           `json:"adm_doctor"`
+	LatencyMs    float64          `json:"latency_ms"`
+	Medications  []PrescribedDrug `json:"medications"`
+	NonDrugs     []NonDrugItem    `json:"non_drugs"`
+	LabResults   []LabResultItem  `json:"lab_results"`
+	Diagnoses    []DiagnosisItem  `json:"diagnoses"`
+	Procedures   []ProcedureItem  `json:"procedures"`
+	IpdDiagnoses []DiagnosisItem  `json:"ipd_diagnoses"`
 }
 
 type PrescribedDrug struct {
-	DrugName string  `json:"drug_name"`
-	Qty      string  `json:"qty"`
-	Units    string  `json:"units"`
-	Usage1   string  `json:"usage1"`
-	Usage2   string  `json:"usage2"`
-	Usage3   string  `json:"usage3"`
-	SpUse    string  `json:"sp_use"`
-	SumPrice float64 `json:"sum_price"`
+	DrugName    string  `json:"drug_name"`
+	Qty         string  `json:"qty"`
+	Units       string  `json:"units"`
+	Usage1      string  `json:"usage1"`
+	Usage2      string  `json:"usage2"`
+	Usage3      string  `json:"usage3"`
+	SpUse       string  `json:"sp_use"`
+	SumPrice    float64 `json:"sum_price"`
+	MedCategory string  `json:"med_category"` // "ยากลับบ้าน (Home Meds)" or "ยาระหว่างนอน รพ."
+	FirstDate   string  `json:"first_date"`
+	LastDate    string  `json:"last_date"`
+	DaysCount   int     `json:"days_count"`
 }
 
 type NonDrugItem struct {
@@ -222,15 +246,21 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 		}
 	}
 
-	// 4. 20 Recent Visits
+	// 4. 20 Recent Visits (Both OPD and IPD with Admission details)
 	visitRows, err := db.Query(`
 		SELECT 
 			o.vn, 
+			COALESCE(o.an, ''),
 			o.vstdate, 
 			o.vsttime,
+			COALESCE(ipt.admdate, ''),
+			COALESCE(ipt.admtime, ''),
+			COALESCE(ipt.dchdate, ''),
+			COALESCE(ipt.dchtime, ''),
+			COALESCE(w.name, ''),
 			COALESCE(d.department, 'แผนกตรวจทั่วไป'),
-			COALESCE(v.pdx, ''),
-			COALESCE(icd.name, ''),
+			COALESCE(v.pdx, COALESCE(id_pdx.icd10, '')),
+			COALESCE(icd.name, COALESCE(icd_ipd.name, '')),
 			COALESCE(s.cc, ''),
 			COALESCE(s.bps, 0),
 			COALESCE(s.bpd, 0),
@@ -240,15 +270,20 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 			COALESCE(s.height, 0),
 			COALESCE(s.bmi, 0),
 			COALESCE(pt.name, ''),
-			COALESCE(doc.name, doc_v.name, '')
+			COALESCE(doc.name, COALESCE(doc_v.name, COALESCE(doc_adm.name, '')))
 		FROM ovst o
+		LEFT JOIN ipt ipt ON ipt.an = o.an
+		LEFT JOIN ward w ON w.ward = ipt.ward
 		LEFT JOIN vn_stat v ON v.vn = o.vn
+		LEFT JOIN iptdiag id_pdx ON id_pdx.an = o.an AND id_pdx.diagtype = '1'
 		LEFT JOIN opdscreen s ON s.vn = o.vn
 		LEFT JOIN kskdepartment d ON d.depcode = COALESCE(o.main_dep, o.cur_dep)
 		LEFT JOIN icd101 icd ON icd.code = v.pdx
+		LEFT JOIN icd101 icd_ipd ON icd_ipd.code = id_pdx.icd10
 		LEFT JOIN pttype pt ON pt.pttype = o.pttype
 		LEFT JOIN doctor doc ON doc.code = o.doctor
 		LEFT JOIN doctor doc_v ON doc_v.code = v.dx_doctor
+		LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.adm_doctor
 		WHERE o.hn = ?
 		ORDER BY o.vstdate DESC, o.vsttime DESC
 		LIMIT 20
@@ -257,15 +292,42 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 		defer visitRows.Close()
 		for visitRows.Next() {
 			var v VisitSummary
+			var an, admDate, admTime, dchDate, dchTime, wardName string
 			if err := visitRows.Scan(
-				&v.VN, &v.VstDate, &v.VstTime, &v.Department,
-				&v.Pdx, &v.PdxName, &v.CC,
+				&v.VN, &an, &v.VstDate, &v.VstTime,
+				&admDate, &admTime, &dchDate, &dchTime, &wardName,
+				&v.Department, &v.Pdx, &v.PdxName, &v.CC,
 				&v.BPS, &v.BPD, &v.Pulse, &v.Temperature,
 				&v.BW, &v.Height, &v.BMI, &v.PttypeName, &v.DoctorName,
 			); err == nil {
 				if len(v.VstDate) > 10 {
 					v.VstDate = v.VstDate[:10]
 				}
+				v.AN = an
+				v.IsIPD = (an != "")
+				v.AdmDate = admDate
+				v.AdmTime = admTime
+				v.DchDate = dchDate
+				v.DchTime = dchTime
+				v.WardName = wardName
+
+				// Calculate Length of stay if IPD
+				if v.IsIPD && admDate != "" {
+					if dchDate != "" {
+						tAdm, e1 := time.Parse("2006-01-02", admDate[:min(10, len(admDate))])
+						tDch, e2 := time.Parse("2006-01-02", dchDate[:min(10, len(dchDate))])
+						if e1 == nil && e2 == nil {
+							days := int(tDch.Sub(tAdm).Hours()/24) + 1
+							if days < 1 {
+								days = 1
+							}
+							v.LOS = days
+						}
+					} else {
+						v.LOS = 1 // Currently admitted
+					}
+				}
+
 				v.HN = hn
 				v.HospCode = hcode
 				v.HospName = hname
@@ -280,58 +342,179 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 	return emr, nil
 }
 
-// CollectVisitDetail queries medications, non-drugs, labs, diagnoses, and procedures for a specific VN.
+// CollectVisitDetail queries medications, non-drugs, labs, diagnoses, and procedures for a specific VN or AN.
 func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 	startTime := time.Now()
+	cleanVN := strings.TrimSpace(vn)
+
 	detail := &VisitDetail{
-		VN:          vn,
-		Medications: make([]PrescribedDrug, 0),
-		NonDrugs:    make([]NonDrugItem, 0),
-		LabResults:  make([]LabResultItem, 0),
-		Diagnoses:   make([]DiagnosisItem, 0),
-		Procedures:  make([]ProcedureItem, 0),
+		VN:           cleanVN,
+		Medications:  make([]PrescribedDrug, 0),
+		NonDrugs:     make([]NonDrugItem, 0),
+		LabResults:   make([]LabResultItem, 0),
+		Diagnoses:    make([]DiagnosisItem, 0),
+		Procedures:   make([]ProcedureItem, 0),
+		IpdDiagnoses: make([]DiagnosisItem, 0),
 	}
 
-	// 1. Medications (icode LIKE '1%')
+	// Check if this visit has an AN or is an AN
+	var an string
+	_ = db.QueryRow(`
+		SELECT COALESCE(o.an, '') 
+		FROM ovst o 
+		WHERE o.vn = ? 
+		LIMIT 1
+	`, cleanVN).Scan(&an)
+
+	if an == "" {
+		_ = db.QueryRow(`
+			SELECT COALESCE(an, '') 
+			FROM ipt 
+			WHERE an = ? OR vn = ? 
+			LIMIT 1
+		`, cleanVN, cleanVN).Scan(&an)
+	}
+
+	if an != "" {
+		detail.AN = an
+		detail.IsIPD = true
+
+		// Query IPD Admission Info
+		_ = db.QueryRow(`
+			SELECT 
+				ipt.admdate,
+				ipt.admtime,
+				COALESCE(ipt.dchdate, ''),
+				COALESCE(ipt.dchtime, ''),
+				COALESCE(w.name, ''),
+				COALESCE(doc.name, ''),
+				COALESCE(ds.name, ''),
+				COALESCE(dt.name, '')
+			FROM ipt
+			LEFT JOIN ward w ON w.ward = ipt.ward
+			LEFT JOIN doctor doc ON doc.code = ipt.adm_doctor
+			LEFT JOIN dchstts ds ON ds.dchstts = ipt.dchstts
+			LEFT JOIN dchtype dt ON dt.dchtype = ipt.dchtype
+			WHERE ipt.an = ?
+			LIMIT 1
+		`, an).Scan(
+			&detail.AdmDate, &detail.AdmTime,
+			&detail.DchDate, &detail.DchTime,
+			&detail.WardName, &detail.AdmDoctor,
+			&detail.DchStatus, &detail.DchType,
+		)
+
+		if detail.AdmDate != "" {
+			if detail.DchDate != "" {
+				tAdm, e1 := time.Parse("2006-01-02", detail.AdmDate[:min(10, len(detail.AdmDate))])
+				tDch, e2 := time.Parse("2006-01-02", detail.DchDate[:min(10, len(detail.DchDate))])
+				if e1 == nil && e2 == nil {
+					days := int(tDch.Sub(tAdm).Hours()/24) + 1
+					if days < 1 {
+						days = 1
+					}
+					detail.LOS = days
+				}
+			} else {
+				detail.LOS = 1
+			}
+		}
+
+		// Query IPD Diagnoses from iptdiag
+		ipdDiagRows, err := db.Query(`
+			SELECT 
+				id.diagtype, 
+				id.icd10, 
+				COALESCE(i.name, ''),
+				CASE 
+					WHEN id.diagtype = '1' THEN 'Principal Diagnosis (โรคหลัก)'
+					WHEN id.diagtype = '2' THEN 'Comorbidity (โรคร่วม)'
+					WHEN id.diagtype = '3' THEN 'Complication (โรคแทรก)'
+					WHEN id.diagtype = '4' THEN 'Other (โรคอื่น)'
+					WHEN id.diagtype = '5' THEN 'External Cause (สาเหตุภายนอก)'
+					ELSE 'อื่นๆ'
+				END AS diagtype_name
+			FROM iptdiag id
+			LEFT JOIN icd101 i ON i.code = id.icd10
+			WHERE id.an = ?
+			ORDER BY id.diagtype ASC
+		`, an)
+		if err == nil {
+			defer ipdDiagRows.Close()
+			for ipdDiagRows.Next() {
+				var d DiagnosisItem
+				if err := ipdDiagRows.Scan(&d.DiagType, &d.Icd10, &d.DiagName, &d.DiagTypeName); err == nil {
+					detail.IpdDiagnoses = append(detail.IpdDiagnoses, d)
+				}
+			}
+		}
+	}
+
+	// 1. Medications: Smart grouped by drug, supporting Home Meds vs In-Hospital doses without restrictive icode filter
 	medRows, err := db.Query(`
 		SELECT 
 			d.name,
-			op.qty,
+			SUM(op.qty) AS qty,
 			COALESCE(d.units, ''),
 			COALESCE(du.name1, ''),
 			COALESCE(du.name2, ''),
 			COALESCE(du.name3, ''),
-			COALESCE(op.sp_use, ''),
-			COALESCE(op.sum_price, 0)
+			COALESCE(op.sp_use, COALESCE(sp.name1, '')),
+			COALESCE(SUM(op.sum_price), 0),
+			CASE 
+				WHEN op.item_type = 'H' THEN 'ยากลับบ้าน (Home Meds)'
+				WHEN op.an IS NOT NULL AND op.an != '' THEN 'ยาระหว่างนอน รพ.'
+				ELSE 'ยาผู้ป่วยนอก (OPD)'
+			END AS med_category,
+			COALESCE(MIN(op.vstdate), ''),
+			COALESCE(MAX(op.vstdate), ''),
+			COUNT(DISTINCT op.vstdate) AS days_count
 		FROM opitemrece op
 		JOIN drugitems d ON d.icode = op.icode
 		LEFT JOIN drugusage du ON du.drugusage = op.drugusage
-		WHERE op.vn = ? AND op.icode LIKE '1%'
-		ORDER BY op.item_no ASC, d.name ASC
-	`, vn)
+		LEFT JOIN sp_use sp ON sp.sp_use = op.sp_use
+		WHERE (op.vn = ? OR (op.an IS NOT NULL AND op.an != '' AND op.an = ?))
+		GROUP BY d.icode, med_category, du.drugusage, op.sp_use, sp.name1
+		ORDER BY CASE WHEN med_category = 'ยากลับบ้าน (Home Meds)' THEN 1 WHEN med_category = 'ยาผู้ป่วยนอก (OPD)' THEN 2 ELSE 3 END ASC, d.name ASC
+	`, cleanVN, an)
 	if err == nil {
 		defer medRows.Close()
 		for medRows.Next() {
 			var m PrescribedDrug
-			if err := medRows.Scan(&m.DrugName, &m.Qty, &m.Units, &m.Usage1, &m.Usage2, &m.Usage3, &m.SpUse, &m.SumPrice); err == nil {
+			var firstDate, lastDate string
+			if err := medRows.Scan(
+				&m.DrugName, &m.Qty, &m.Units,
+				&m.Usage1, &m.Usage2, &m.Usage3,
+				&m.SpUse, &m.SumPrice, &m.MedCategory,
+				&firstDate, &lastDate, &m.DaysCount,
+			); err == nil {
+				if len(firstDate) > 10 {
+					firstDate = firstDate[:10]
+				}
+				if len(lastDate) > 10 {
+					lastDate = lastDate[:10]
+				}
+				m.FirstDate = firstDate
+				m.LastDate = lastDate
 				detail.Medications = append(detail.Medications, m)
 			}
 		}
 	}
 
-	// 2. Non-Drug / Medical Services (icode LIKE '3%' OR NOT LIKE '1%')
+	// 2. Non-Drug / Medical Services
 	ndRows, err := db.Query(`
 		SELECT 
 			nd.name,
-			op.qty,
+			SUM(op.qty) AS qty,
 			COALESCE(nd.unit, ''),
 			COALESCE(op.unitprice, 0),
-			COALESCE(op.sum_price, 0)
+			COALESCE(SUM(op.sum_price), 0)
 		FROM opitemrece op
 		JOIN nondrugitems nd ON nd.icode = op.icode
-		WHERE op.vn = ? AND (op.icode LIKE '3%' OR op.icode NOT LIKE '1%')
-		ORDER BY op.item_no ASC, nd.name ASC
-	`, vn)
+		WHERE (op.vn = ? OR (op.an IS NOT NULL AND op.an != '' AND op.an = ?))
+		GROUP BY nd.icode, nd.name, nd.unit, op.unitprice
+		ORDER BY nd.name ASC
+	`, cleanVN, an)
 	if err == nil {
 		defer ndRows.Close()
 		for ndRows.Next() {
@@ -355,9 +538,9 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		FROM lab_order lo
 		JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
 		LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
-		WHERE lh.vn = ?
+		WHERE (lh.vn = ? OR (lh.an IS NOT NULL AND lh.an != '' AND lh.an = ?))
 		ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
-	`, vn)
+	`, cleanVN, an)
 	if err == nil {
 		defer labRows.Close()
 		for labRows.Next() {
@@ -371,7 +554,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		}
 	}
 
-	// 4. Diagnoses (ICD-10 letter-prefixed)
+	// 4. OPD Diagnoses (ICD-10 letter-prefixed)
 	diagRows, err := db.Query(`
 		SELECT 
 			od.diagtype, 
@@ -389,7 +572,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		LEFT JOIN icd101 i ON i.code = od.icd10
 		WHERE od.vn = ? AND (od.icd10 REGEXP '^[A-Za-z]')
 		ORDER BY od.diagtype ASC
-	`, vn)
+	`, cleanVN)
 	if err == nil {
 		defer diagRows.Close()
 		for diagRows.Next() {
@@ -400,7 +583,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		}
 	}
 
-	// 5. Procedures (ICD-9 numeric-only from ovstdiag joined with icd9cm1 / icd101)
+	// 5. Procedures (ICD-9 numeric-only from ovstdiag)
 	procRows, err := db.Query(`
 		SELECT 
 			od.icd10, 
@@ -415,9 +598,9 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		LEFT JOIN icd9cm1 i9 ON i9.code = od.icd10
 		LEFT JOIN icd101 i10 ON i10.code = od.icd10
 		LEFT JOIN doctor d ON d.code = od.doctor
-		WHERE od.vn = ? AND (od.icd10 REGEXP '^[0-9]')
+		WHERE (od.vn = ? OR (od.an IS NOT NULL AND od.an != '' AND od.an = ?)) AND (od.icd10 REGEXP '^[0-9]')
 		ORDER BY od.diagtype ASC
-	`, vn)
+	`, cleanVN, an)
 	if err == nil {
 		defer procRows.Close()
 		for procRows.Next() {

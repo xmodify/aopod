@@ -122,6 +122,15 @@
     font-size: 0.9rem;
   }
 
+  /* IPD Row Styling (Pastel Warm Amber/Rose) */
+  .vemr-row-ipd {
+    background-color: #fff7ed !important;
+    border-left: 4px solid #ea580c !important;
+  }
+  .vemr-row-ipd:hover {
+    background-color: #ffedd5 !important;
+  }
+
   .badge-hosp {
     font-size: 0.82rem;
     padding: 0.35rem 0.65rem;
@@ -135,6 +144,63 @@
     color: #ffffff;
     padding: 1.25rem 1.75rem;
     border-radius: 20px 20px 0 0;
+    transition: background 0.3s ease;
+  }
+  .rims-modal-header.header-ipd {
+    background: linear-gradient(135deg, #c2410c 0%, #ea580c 60%, #f97316 100%) !important;
+  }
+
+  .modal-mode-pill {
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.45rem 1.1rem;
+    border-radius: 9999px;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .modal-mode-pill:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+  .modal-mode-pill.active-opd {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  }
+  .modal-mode-pill.active-ipd {
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+    color: #ffffff !important;
+    border-color: #ea580c !important;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+  }
+
+  .badge-home-med {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .badge-ipd-med {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .rims-info-card {
@@ -164,7 +230,7 @@
     line-height: 1.4;
   }
   .rims-field-label {
-    width: 105px;
+    width: 110px;
     flex-shrink: 0;
     color: #64748b;
     font-weight: 500;
@@ -395,14 +461,14 @@
                     <thead>
                         <tr>
                             <th style="width: 45px;" class="text-center">ลำดับ</th>
-                            <th style="width: 155px;">โรงพยาบาล</th>
-                            <th style="width: 100px;">HN</th>
-                            <th style="width: 155px;">วันที่ / เวลา (พ.ศ.)</th>
-                            <th style="width: 145px;">แผนก / ห้องตรวจ</th>
-                            <th style="width: 160px;">แพทย์ผู้ตรวจ</th>
+                            <th style="width: 150px;">โรงพยาบาล</th>
+                            <th style="width: 105px;">HN / AN</th>
+                            <th style="width: 165px;">วันที่ / เวลา (พ.ศ.)</th>
+                            <th style="width: 155px;">แผนก / ตึกผู้ป่วย</th>
+                            <th style="width: 225px;">แพทย์ผู้ตรวจ / แพทย์เจ้าของไข้</th>
                             <th>การวินิจฉัยหลัก (PDX)</th>
-                            <th style="width: 175px;">สัญญาณชีพ (BP/PR/Temp)</th>
-                            <th style="width: 35px;" class="text-center"></th>
+                            <th style="width: 160px;">สัญญาณชีพ (BP/PR/Temp)</th>
+                            <th style="width: 38px;" class="text-center"></th>
                         </tr>
                     </thead>
                     <tbody id="vemrTableBody">
@@ -414,14 +480,14 @@
     </div>
 </div>
 
-<!-- Modal: Visit Detail (ออกแบบโครงสร้าง 3 คอลัมน์ + 5 แท็บตามรูปที่ 3) -->
+<!-- Modal: Visit Detail (โครงสร้าง Smart OPD / IPD Mode Switcher + 5 แท็บ) -->
 <div class="modal fade" id="visitDetailModal" tabindex="-1" aria-labelledby="visitDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);">
-            <!-- Modal Header (RIMS Blue Style) -->
-            <div class="rims-modal-header d-flex align-items-center justify-content-between">
+            <!-- Modal Header (RIMS Blue / Orange Style) -->
+            <div class="rims-modal-header d-flex align-items-center justify-content-between" id="rimsModalHeader">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="p-2.5 bg-white bg-opacity-20 text-white rounded-3 fs-4">
+                    <div class="p-2.5 bg-white bg-opacity-20 text-white rounded-3 fs-4" id="modalHeaderIcon">
                         <i class="fa-solid fa-file-medical"></i>
                     </div>
                     <div>
@@ -436,14 +502,31 @@
 
             <div class="modal-body p-4 bg-slate-50" style="background-color: #f8fafc;">
                 <!-- Status Banner -->
-                <div class="alert alert-success d-flex align-items-center gap-2 mb-4 py-2.5 px-3 border-0 shadow-sm" style="border-radius: 12px; background: #dcfce7; color: #15803d;">
-                    <i class="fa-solid fa-circle-check fs-5"></i>
-                    <div class="small fw-semibold">
-                        <strong>สถานะ:</strong> ดึงข้อมูลสำเร็จจากตาราง <code class="fw-bold text-dark">opitemrece</code> และฐานข้อมูล HOSxP ของโรงพยาบาลต้นทางแบบ Real-time
+                <div class="alert alert-success d-flex align-items-center justify-content-between gap-2 mb-3 py-2 px-3 border-0 shadow-sm" style="border-radius: 12px; background: #dcfce7; color: #15803d;">
+                    <div class="d-flex align-items-center gap-2 small fw-semibold">
+                        <i class="fa-solid fa-circle-check fs-5"></i>
+                        <span><strong>สถานะ:</strong> ดึงข้อมูลสำเร็จจากตาราง <code class="fw-bold text-dark">opitemrece</code> และฐานข้อมูล HOSxP แบบ Real-time</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50" id="modalFetchBadge">⚡ Live Federated</span>
+                </div>
+
+                <!-- Mode Switcher (Visible only when visit is IPD / Admission) -->
+                <div id="modalModeSwitcherContainer" class="d-none mb-3 p-2.5 bg-white rounded-4 border shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="small fw-bold text-muted me-1"><i class="fa-solid fa-layer-group"></i> มุมมองข้อมูล:</span>
+                        <button type="button" class="modal-mode-pill active-ipd" id="modeBtnIpd" onclick="switchModalMode('IPD')">
+                            <i class="fa-solid fa-bed-pulse me-1"></i> ข้อมูลการนอน รพ. (IPD)
+                        </button>
+                        <button type="button" class="modal-mode-pill" id="modeBtnOpd" onclick="switchModalMode('OPD')">
+                            <i class="fa-solid fa-stethoscope me-1"></i> ข้อมูลตรวจแรกรับ (OPD)
+                        </button>
+                    </div>
+                    <div id="modalIpdLosSummary" class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; padding: 0.5rem 0.85rem; font-size: 0.85rem; border-radius: 9999px;">
+                        <i class="fa-solid fa-bed-pulse me-1"></i> Admit Case
                     </div>
                 </div>
 
-                <!-- 3 Information Cards Grid (ตามรูปที่ 3) -->
+                <!-- 3 Information Cards Grid -->
                 <div class="row g-3 mb-4">
                     <!-- Column 1: ข้อมูลผู้ป่วย -->
                     <div class="col-12 col-md-4">
@@ -452,7 +535,7 @@
                                 <i class="fa-solid fa-user-circle text-primary"></i> ข้อมูลผู้ป่วย
                             </div>
                             <div class="rims-field-row">
-                                <div class="rims-field-label">HN:</div>
+                                <div class="rims-field-label">HN / AN:</div>
                                 <div class="rims-field-value text-primary" id="mPtHn">-</div>
                             </div>
                             <div class="rims-field-row">
@@ -482,31 +565,67 @@
                         </div>
                     </div>
 
-                    <!-- Column 2: ข้อมูลทางคลินิก -->
+                    <!-- Column 2: ข้อมูลทางคลินิก / การนอน รพ. (Dynamic OPD vs IPD) -->
                     <div class="col-12 col-md-4">
-                        <div class="rims-info-card">
-                            <div class="rims-info-card-header">
+                        <div class="rims-info-card" id="cardClinicalInfo">
+                            <div class="rims-info-card-header" id="cardClinicalHeader">
                                 <i class="fa-solid fa-stethoscope text-primary"></i> ข้อมูลทางคลินิก
                             </div>
-                            <div class="rims-field-row">
-                                <div class="rims-field-label">วันที่รับบริการ:</div>
-                                <div class="rims-field-value text-dark" id="mCliDate">-</div>
+                            
+                            <!-- OPD View Fields -->
+                            <div id="mViewOpdFields">
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">วันที่รับบริการ:</div>
+                                    <div class="rims-field-value text-dark" id="mCliDate">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">โรงพยาบาล:</div>
+                                    <div class="rims-field-value text-primary" id="mCliHospital">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">แผนก / ห้องตรวจ:</div>
+                                    <div class="rims-field-value" id="mCliDep">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">แพทย์ผู้ตรวจ:</div>
+                                    <div class="rims-field-value text-dark fw-bold" id="mCliDoctor">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">อาการสำคัญ (CC):</div>
+                                    <div class="rims-field-value text-dark" id="mCliCC">-</div>
+                                </div>
                             </div>
-                            <div class="rims-field-row">
-                                <div class="rims-field-label">โรงพยาบาล:</div>
-                                <div class="rims-field-value text-primary" id="mCliHospital">-</div>
-                            </div>
-                            <div class="rims-field-row">
-                                <div class="rims-field-label">แผนก / ห้องตรวจ:</div>
-                                <div class="rims-field-value" id="mCliDep">-</div>
-                            </div>
-                            <div class="rims-field-row">
-                                <div class="rims-field-label">แพทย์ผู้ตรวจ:</div>
-                                <div class="rims-field-value text-dark fw-bold" id="mCliDoctor">-</div>
-                            </div>
-                            <div class="rims-field-row">
-                                <div class="rims-field-label">อาการสำคัญ (CC):</div>
-                                <div class="rims-field-value text-dark" id="mCliCC">-</div>
+
+                            <!-- IPD View Fields (Admit / Dch / Ward / Doctor) -->
+                            <div id="mViewIpdFields" class="d-none">
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">วันที่ Admit:</div>
+                                    <div class="rims-field-value text-danger fw-bold" id="mIpdAdmDate">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">วันที่ Discharge:</div>
+                                    <div class="rims-field-value text-dark fw-bold" id="mIpdDchDate">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">จำนวนวันนอน:</div>
+                                    <div class="rims-field-value text-primary fw-bold" id="mIpdLos">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">หอผู้ป่วย / ตึก:</div>
+                                    <div class="rims-field-value text-dark fw-bold" id="mIpdWard">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">แพทย์เจ้าของไข้:</div>
+                                    <div class="rims-field-value text-dark fw-bold" id="mIpdDoctor">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">สถานะจำหน่าย:</div>
+                                    <div class="rims-field-value text-muted" id="mIpdDchStatus">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">อาการสำคัญ (CC):</div>
+                                    <div class="rims-field-value text-dark" id="mIpdCC">-</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -581,17 +700,17 @@
                     </ul>
 
                     <div class="tab-content" id="detailTabContent">
-                        <!-- 1. Medications Table (icode 1%) -->
+                        <!-- 1. Medications Table (Smart categorization for OPD and IPD) -->
                         <div class="tab-pane fade show active" id="meds-pane" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
                                         <tr>
-                                            <th style="width: 50px;" class="text-center">#</th>
+                                            <th style="width: 45px;" class="text-center">#</th>
                                             <th>ชื่อยา / เวชภัณฑ์</th>
-                                            <th style="width: 120px;" class="text-center">จำนวน</th>
+                                            <th style="width: 140px;" class="text-center">จำนวนรวม</th>
                                             <th>วิธีใช้ / คำแนะนำ (Drug Usage)</th>
-                                            <th style="width: 180px;">คำสั่งพิเศษ (Sp Use)</th>
+                                            <th style="width: 220px;">ช่วงวันที่ / คำสั่งพิเศษ</th>
                                         </tr>
                                     </thead>
                                     <tbody id="modalMedTableBody">
@@ -642,7 +761,7 @@
                             </div>
                         </div>
 
-                        <!-- 4. Diagnoses Table (ICD-10) -->
+                        <!-- 4. Diagnoses Table (ICD-10 OPD & IPD) -->
                         <div class="tab-pane fade" id="diag-pane" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
@@ -966,6 +1085,42 @@
         renderVisitTable(filtered);
     }
 
+    let activeModalVisit = null;
+    let activeModalDetail = null;
+    let currentModalMode = 'IPD';
+
+    function switchModalMode(mode) {
+        currentModalMode = mode;
+        const btnIpd = document.getElementById('modeBtnIpd');
+        const btnOpd = document.getElementById('modeBtnOpd');
+        const viewOpd = document.getElementById('mViewOpdFields');
+        const viewIpd = document.getElementById('mViewIpdFields');
+        const cardHeader = document.getElementById('cardClinicalHeader');
+        const modalHeader = document.getElementById('rimsModalHeader');
+        const headerIcon = document.getElementById('modalHeaderIcon');
+        const modalTitle = document.getElementById('visitDetailModalLabel');
+
+        if (mode === 'IPD') {
+            btnIpd.className = 'modal-mode-pill active-ipd';
+            btnOpd.className = 'modal-mode-pill';
+            viewOpd.classList.add('d-none');
+            viewIpd.classList.remove('d-none');
+            cardHeader.innerHTML = '<i class="fa-solid fa-bed-pulse text-danger"></i> ข้อมูลการนอน รพ. (IPD)';
+            modalHeader.classList.add('header-ipd');
+            headerIcon.innerHTML = '<i class="fa-solid fa-bed-pulse"></i>';
+            modalTitle.textContent = 'รายละเอียดการรักษาผู้ป่วยใน (IPD / Admission)';
+        } else {
+            btnOpd.className = 'modal-mode-pill active-opd';
+            btnIpd.className = 'modal-mode-pill';
+            viewOpd.classList.remove('d-none');
+            viewIpd.classList.add('d-none');
+            cardHeader.innerHTML = '<i class="fa-solid fa-stethoscope text-primary"></i> ข้อมูลตรวจแรกรับ (OPD)';
+            modalHeader.classList.remove('header-ipd');
+            headerIcon.innerHTML = '<i class="fa-solid fa-file-medical"></i>';
+            modalTitle.textContent = 'รายละเอียดการรักษาผู้ป่วยนอก (OPD)';
+        }
+    }
+
     function renderVisitTable(visits) {
         const tableBody = document.getElementById('vemrTableBody');
         const totalVisitsBadge = document.getElementById('totalVisitsBadge');
@@ -978,7 +1133,8 @@
                 const hospName = v.hospital_name || (currentPatientData.hospital ? currentPatientData.hospital.name : 'โรงพยาบาลในเครือข่าย');
                 const hospCode = v.hospital_code || (currentPatientData.hospital ? currentPatientData.hospital.code : '');
                 const hStyle = getHospitalStyle(hospCode, hospName);
-                const visitHn = v.hn || currentPatientData.patient.hn || '-';
+                const visitHn = v.hn || (currentPatientData.patient ? currentPatientData.patient.hn : '') || '-';
+                const isIpd = Boolean(v.is_ipd || v.an);
 
                 // Vital signs short summary
                 let vitalsText = [];
@@ -987,9 +1143,69 @@
                 if (v.temperature > 0) vitalsText.push(`T: ${v.temperature}°C`);
 
                 const tr = document.createElement('tr');
+                if (isIpd) {
+                    tr.className = 'vemr-row-ipd';
+                }
+
                 tr.onclick = function() {
                     openVisitDetailModal(v, index);
                 };
+
+                // Build Date Column
+                let dateColHtml = `<div><i class="fa-regular fa-calendar text-muted me-1"></i>${thaiDateFormatted}</div>`;
+                if (isIpd) {
+                    if (v.dch_date) {
+                        dateColHtml += `<div class="small text-muted mt-0.5"><i class="fa-solid fa-arrow-right-from-bracket me-1 text-secondary"></i>Dch: ${formatThaiDateTime(v.dch_date, v.dch_time)}</div>`;
+                    } else {
+                        dateColHtml += `<div class="small text-danger fw-bold mt-0.5"><i class="fa-solid fa-circle-dot me-1"></i>ยังนอน รพ.</div>`;
+                    }
+                }
+
+                // Build Department / Ward Column
+                let deptColHtml = '';
+                if (isIpd) {
+                    deptColHtml = `
+                        <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-weight:600;">
+                            <i class="fa-solid fa-bed-pulse me-1"></i> ${escapeHtml(v.ward_name || v.department || 'IPD')}
+                        </span>
+                        <div class="small fw-bold mt-1" style="color:#c2410c;">
+                            <i class="fa-solid fa-clock-rotate-left me-1"></i> นอน ${v.los || 1} วัน
+                        </div>
+                    `;
+                } else {
+                    deptColHtml = `
+                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-semibold">
+                            <i class="fa-solid fa-clinic-medical text-primary me-1"></i> ${escapeHtml(v.department || '-')}
+                        </span>
+                    `;
+                }
+
+                // Build Doctor Column (Expanded 225px width)
+                let doctorColHtml = '';
+                const docName = v.doctor_name || v.adm_doctor || '';
+                if (docName) {
+                    if (isIpd) {
+                        doctorColHtml = `
+                            <span class="fw-bold text-slate-800 d-inline-flex align-items-center gap-1.5">
+                                <i class="fa-solid fa-user-doctor" style="color:#ea580c;"></i> ${escapeHtml(docName)}
+                            </span>
+                            <div class="small text-muted mt-0.5">แพทย์เจ้าของไข้ / ผู้ตรวจ</div>
+                        `;
+                    } else {
+                        doctorColHtml = `
+                            <span class="fw-semibold text-slate-800 d-inline-flex align-items-center gap-1.5">
+                                <i class="fa-solid fa-user-doctor text-primary"></i> ${escapeHtml(docName)}
+                            </span>
+                        `;
+                    }
+                } else {
+                    doctorColHtml = `<span class="text-muted small">-</span>`;
+                }
+
+                // Build PDX Column
+                let pdxBadge = isIpd 
+                    ? `<span class="badge" style="background:#fed7aa; color:#9a3412; font-weight:700; border:1px solid #fdba74; margin-right:4px;"><i class="fa-solid fa-bed-pulse me-1"></i>IPD</span>`
+                    : `<span class="badge bg-light text-secondary border me-1">OPD</span>`;
 
                 tr.innerHTML = `
                     <td class="text-center fw-bold text-muted">${index + 1}</td>
@@ -998,20 +1214,24 @@
                             <i class="fa-solid ${hStyle.icon} me-1"></i> ${escapeHtml(hospName)}
                         </span>
                     </td>
-                    <td class="fw-bold text-dark">${escapeHtml(visitHn)}</td>
+                    <td>
+                        <div class="fw-bold text-dark">${escapeHtml(visitHn)}</div>
+                        ${isIpd && v.an ? `<div class="small fw-bold" style="color:#c2410c;"><i class="fa-solid fa-bed-pulse me-1"></i>AN: ${escapeHtml(v.an)}</div>` : ''}
+                    </td>
                     <td class="fw-semibold text-slate-800">
-                        <i class="fa-regular fa-calendar text-muted me-1"></i> ${thaiDateFormatted}
+                        ${dateColHtml}
                     </td>
                     <td>
-                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-semibold">${escapeHtml(v.department)}</span>
+                        ${deptColHtml}
                     </td>
                     <td>
-                        ${v.doctor_name ? `<span class="fw-semibold text-slate-800 d-inline-flex align-items-center gap-1.5"><i class="fa-solid fa-user-doctor text-primary"></i> ${escapeHtml(v.doctor_name)}</span>` : '<span class="text-muted small">-</span>'}
+                        ${doctorColHtml}
                     </td>
                     <td>
-                        <span class="badge bg-warning bg-opacity-20 text-dark border border-warning border-opacity-50 px-2 py-1 rounded me-1">${escapeHtml(v.pdx)}</span>
+                        ${pdxBadge}
+                        <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2 py-1 rounded me-1 fw-bold">${escapeHtml(v.pdx)}</span>
                         <span class="fw-semibold text-slate-800">${escapeHtml(v.pdx_name || '-')}</span>
-                        ${v.cc ? `<div class="small text-muted text-truncate mt-0.5" style="max-width: 240px;">CC: ${escapeHtml(v.cc)}</div>` : ''}
+                        ${v.cc ? `<div class="small text-muted text-truncate mt-0.5" style="max-width: 250px;">CC: ${escapeHtml(v.cc)}</div>` : ''}
                     </td>
                     <td>
                         <small class="fw-semibold text-danger">${vitalsText.join(' | ') || '-'}</small>
@@ -1035,14 +1255,18 @@
 
     async function openVisitDetailModal(visit, index) {
         if (!currentPatientData) return;
+        activeModalVisit = visit;
         const pt = currentPatientData.patient;
         const hospName = visit.hospital_name || (currentPatientData.hospital ? currentPatientData.hospital.name : 'โรงพยาบาลในเครือข่าย');
         const hospCode = visit.hospital_code || (currentPatientData.hospital ? currentPatientData.hospital.code : '');
         const visitHn = visit.hn || pt.hn || '-';
+        const isIpd = Boolean(visit.is_ipd || visit.an);
         const thaiDateFormatted = formatThaiDateTime(visit.vstdate, visit.vsttime);
 
         // 1. Fill Column 1 (Patient Info)
-        document.getElementById('mPtHn').textContent = visitHn;
+        document.getElementById('mPtHn').innerHTML = visit.an 
+            ? `${escapeHtml(visitHn)} <span class="badge" style="background:#fed7aa; color:#9a3412; font-size:0.75rem;">AN: ${escapeHtml(visit.an)}</span>`
+            : escapeHtml(visitHn);
         document.getElementById('mPtCid').textContent = pt.cid || '-';
         document.getElementById('mPtName').textContent = pt.full_name || '-';
         document.getElementById('mPtPttype').textContent = visit.pttype_name || pt.pttype || '-';
@@ -1064,12 +1288,37 @@
             document.getElementById('mPtClinic').textContent = '-';
         }
 
-        // 2. Fill Column 2 (Clinical Info)
+        // 2. Fill Column 2 (Clinical & Admission Info)
+        // OPD Fields
         document.getElementById('mCliDate').textContent = thaiDateFormatted;
         document.getElementById('mCliHospital').textContent = hospName;
         document.getElementById('mCliDep').textContent = visit.department || '-';
         document.getElementById('mCliDoctor').textContent = visit.doctor_name || '-';
         document.getElementById('mCliCC').textContent = visit.cc || '-';
+
+        // IPD Fields
+        const admDateStr = visit.adm_date ? formatThaiDateTime(visit.adm_date, visit.adm_time) : thaiDateFormatted;
+        const dchDateStr = visit.dch_date ? formatThaiDateTime(visit.dch_date, visit.dch_time) : 'ยังไม่จำหน่าย (Admitted)';
+        document.getElementById('mIpdAdmDate').textContent = admDateStr;
+        document.getElementById('mIpdDchDate').textContent = dchDateStr;
+        document.getElementById('mIpdLos').textContent = `${visit.los || 1} วัน`;
+        document.getElementById('mIpdWard').textContent = visit.ward_name || visit.department || 'IPD';
+        document.getElementById('mIpdDoctor').textContent = visit.doctor_name || visit.adm_doctor || '-';
+        document.getElementById('mIpdDchStatus').textContent = visit.dch_type || visit.dch_status || '-';
+        document.getElementById('mIpdCC').textContent = visit.cc || '-';
+
+        // Mode Switcher setup
+        const modeSwitcherContainer = document.getElementById('modalModeSwitcherContainer');
+        const ipdSummaryBadge = document.getElementById('modalIpdLosSummary');
+
+        if (isIpd) {
+            modeSwitcherContainer.classList.remove('d-none');
+            ipdSummaryBadge.innerHTML = `<i class="fa-solid fa-bed-pulse me-1"></i> นอน รพ. ${visit.los || 1} วัน (${formatThaiDateTime(visit.adm_date || visit.vstdate, '')} - ${visit.dch_date ? formatThaiDateTime(visit.dch_date, '') : 'ปัจจุบัน'})`;
+            switchModalMode('IPD');
+        } else {
+            modeSwitcherContainer.classList.add('d-none');
+            switchModalMode('OPD');
+        }
 
         // 3. Fill Column 3 (Vitals)
         document.getElementById('mVitBP').textContent = (visit.bps > 0 || visit.bpd > 0) ? `${visit.bps}/${visit.bpd} mmHg` : '-';
@@ -1080,10 +1329,11 @@
         document.getElementById('mVitLatency').textContent = `⚡ กำลังเชื่อมต่อ...`;
 
         // Update modal sub-title
-        document.getElementById('modalVisitMeta').innerHTML = `สืบค้นข้อมูลสดจากระบบ HOSxP <strong>${escapeHtml(hospName)}</strong> (VN: ${escapeHtml(visit.vn)})`;
+        const anMetaText = isIpd && visit.an ? ` | AN: <strong>${escapeHtml(visit.an)}</strong>` : '';
+        document.getElementById('modalVisitMeta').innerHTML = `สืบค้นข้อมูลสดจากระบบ HOSxP <strong>${escapeHtml(hospName)}</strong> (VN: ${escapeHtml(visit.vn)}${anMetaText})`;
 
         // Reset Table Contents for all 5 Tabs
-        document.getElementById('modalMedTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงรายการยาจาก opitemrece (icode 1%)...</td></tr>';
+        document.getElementById('modalMedTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงรายการยาจาก opitemrece...</td></tr>';
         document.getElementById('modalNonDrugTableBody').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงค่ารักษาพยาบาล (icode 3%)...</td></tr>';
         document.getElementById('modalLabTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงผลตรวจ Lab...</td></tr>';
         document.getElementById('modalDiagTableBody').innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงข้อมูลการวินิจฉัย...</td></tr>';
@@ -1107,25 +1357,77 @@
             const data = await response.json();
 
             if (!data.success) {
-                document.getElementById('modalMedTableBody').innerHTML = `<tr><td colspan="5" class="text-danger text-center py-3">${data.message || 'เกิดข้อผิดพลาด'}</td></tr>`;
+                document.getElementById('modalMedTableBody').innerHTML = `<tr><td colspan="5" class="text-danger text-center py-3">${data.message || 'เกิดข้อผิดพลาดในการโหลดข้อมูล'}</td></tr>`;
                 return;
             }
 
+            activeModalDetail = data;
             document.getElementById('mVitLatency').textContent = `⚡ ${data.latency_ms} ms (ดึงสด)`;
 
-            // 1. Medications (icode 1% from opitemrece)
+            // Update IPD fields if returned in detail
+            if (data.ward_name) document.getElementById('mIpdWard').textContent = data.ward_name;
+            if (data.dch_status || data.dch_type) {
+                document.getElementById('mIpdDchStatus').textContent = `${data.dch_type || ''} ${data.dch_status ? '(' + data.dch_status + ')' : ''}`.trim() || '-';
+            }
+            if (data.adm_doctor) document.getElementById('mIpdDoctor').textContent = data.adm_doctor;
+            if (data.admdate) {
+                document.getElementById('mIpdAdmDate').textContent = formatThaiDateTime(data.admdate, data.admtime);
+            }
+            if (data.dchdate) {
+                document.getElementById('mIpdDchDate').textContent = formatThaiDateTime(data.dchdate, data.dchtime);
+            }
+
+            // 1. Medications (Smart categorized: Home Meds vs In-Hospital Meds)
             const medBody = document.getElementById('modalMedTableBody');
             document.getElementById('modalMedCount').textContent = data.medications ? data.medications.length : 0;
             if (data.medications && data.medications.length > 0) {
                 medBody.innerHTML = '';
-                data.medications.forEach((m, idx) => {
+
+                // Sort: Home Meds first, then other meds
+                const sortedMeds = [...data.medications].sort((a, b) => {
+                    const isHomeA = (a.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
+                    const isHomeB = (b.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
+                    return isHomeA - isHomeB;
+                });
+
+                sortedMeds.forEach((m, idx) => {
                     const tr = document.createElement('tr');
+                    
+                    // Med Category badge
+                    let catBadge = '';
+                    if (m.med_category) {
+                        if (m.med_category.includes('ยากลับบ้าน')) {
+                            catBadge = `<span class="badge-home-med mb-1"><i class="fa-solid fa-house-medical"></i> ยากลับบ้าน</span>`;
+                        } else if (m.med_category.includes('นอน รพ.')) {
+                            catBadge = `<span class="badge-ipd-med mb-1"><i class="fa-solid fa-syringe"></i> ยาระหว่างนอน รพ.</span>`;
+                        }
+                    }
+
+                    // Date range text for IPD repeat meds
+                    let dateRangeText = '';
+                    if (m.first_date && m.last_date && m.first_date !== m.last_date) {
+                        dateRangeText = `<div class="small fw-semibold text-muted"><i class="fa-regular fa-calendar me-1"></i>${formatThaiDateTime(m.first_date, '')} - ${formatThaiDateTime(m.last_date, '')} (${m.days_count || 1} วัน)</div>`;
+                    }
+
                     tr.innerHTML = `
                         <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                        <td class="fw-bold text-slate-800">${escapeHtml(m.drug_name)}</td>
-                        <td class="text-center"><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${m.qty} ${escapeHtml(m.units)}</span></td>
-                        <td class="small text-muted">${escapeHtml(m.usage1)} ${escapeHtml(m.usage2)} ${escapeHtml(m.usage3)}</td>
-                        <td class="small text-primary fw-semibold">${escapeHtml(m.sp_use || '-')}</td>
+                        <td>
+                            ${catBadge ? `<div>${catBadge}</div>` : ''}
+                            <div class="fw-bold text-slate-800">${escapeHtml(m.drug_name)}</div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${m.qty} ${escapeHtml(m.units || '')}</span>
+                        </td>
+                        <td class="small text-muted">
+                            <div class="fw-medium text-dark">${escapeHtml(m.usage1 || '')}</div>
+                            ${m.usage2 ? `<div>${escapeHtml(m.usage2)}</div>` : ''}
+                            ${m.usage3 ? `<div>${escapeHtml(m.usage3)}</div>` : ''}
+                        </td>
+                        <td>
+                            ${dateRangeText}
+                            ${m.sp_use ? `<div class="small text-primary fw-semibold mt-0.5"><i class="fa-solid fa-circle-info me-1"></i>${escapeHtml(m.sp_use)}</div>` : ''}
+                            ${!dateRangeText && !m.sp_use ? '<span class="text-muted small">-</span>' : ''}
+                        </td>
                     `;
                     medBody.appendChild(tr);
                 });
@@ -1174,21 +1476,59 @@
                 labBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีรายการตรวจ Lab ในครั้งนี้</td></tr>';
             }
 
-            // 4. Diagnoses (ICD-10)
+            // 4. Diagnoses (ICD-10 OPD + IPD)
             const diagBody = document.getElementById('modalDiagTableBody');
-            document.getElementById('modalDiagCount').textContent = data.diagnoses ? data.diagnoses.length : 0;
-            if (data.diagnoses && data.diagnoses.length > 0) {
+            const totalDiagCount = (data.diagnoses ? data.diagnoses.length : 0) + (data.ipd_diagnoses ? data.ipd_diagnoses.length : 0);
+            document.getElementById('modalDiagCount').textContent = totalDiagCount;
+
+            if (totalDiagCount > 0) {
                 diagBody.innerHTML = '';
-                data.diagnoses.forEach((d, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                        <td><span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2.5 py-1.5 fw-bold">${escapeHtml(d.icd10)}</span></td>
-                        <td class="fw-semibold text-slate-800">${escapeHtml(d.diag_name)}</td>
-                        <td class="small text-muted">${escapeHtml(d.diagtype_name)}</td>
+
+                // IPD Diagnoses section
+                if (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) {
+                    const headerTr = document.createElement('tr');
+                    headerTr.innerHTML = `
+                        <td colspan="4" class="fw-bold py-2 px-3" style="background: #ffedd5; color: #9a3412; font-size: 0.85rem;">
+                            <i class="fa-solid fa-bed-pulse me-1"></i> การวินิจฉัยผู้ป่วยใน (IPD Diagnoses)
+                        </td>
                     `;
-                    diagBody.appendChild(tr);
-                });
+                    diagBody.appendChild(headerTr);
+
+                    data.ipd_diagnoses.forEach((d, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                            <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2.5 py-1.5 fw-bold">${escapeHtml(d.icd10)}</span></td>
+                            <td class="fw-semibold text-slate-800">${escapeHtml(d.diag_name)}</td>
+                            <td><span class="badge" style="background:#fed7aa; color:#9a3412;">${escapeHtml(d.diagtype_name || 'IPD Diag')}</span></td>
+                        `;
+                        diagBody.appendChild(tr);
+                    });
+                }
+
+                // OPD Diagnoses section
+                if (data.diagnoses && data.diagnoses.length > 0) {
+                    if (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) {
+                        const opdHeaderTr = document.createElement('tr');
+                        opdHeaderTr.innerHTML = `
+                            <td colspan="4" class="fw-bold py-2 px-3 bg-light text-primary" style="font-size: 0.85rem;">
+                                <i class="fa-solid fa-stethoscope me-1"></i> การวินิจฉัยแรกรับ / ผู้ป่วยนอก (OPD Diagnoses)
+                            </td>
+                        `;
+                        diagBody.appendChild(opdHeaderTr);
+                    }
+
+                    data.diagnoses.forEach((d, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                            <td><span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2.5 py-1.5 fw-bold">${escapeHtml(d.icd10)}</span></td>
+                            <td class="fw-semibold text-slate-800">${escapeHtml(d.diag_name)}</td>
+                            <td class="small text-muted">${escapeHtml(d.diagtype_name)}</td>
+                        `;
+                        diagBody.appendChild(tr);
+                    });
+                }
             } else {
                 diagBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">ไม่มีข้อมูลการวินิจฉัย</td></tr>';
             }
