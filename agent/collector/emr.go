@@ -263,8 +263,8 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 			COALESCE(o.an, ''),
 			o.vstdate, 
 			o.vsttime,
-			COALESCE(ipt.admdate, ''),
-			COALESCE(ipt.admtime, ''),
+			COALESCE(ipt.regdate, ''),
+			COALESCE(ipt.regtime, ''),
 			COALESCE(ipt.dchdate, ''),
 			COALESCE(ipt.dchtime, ''),
 			COALESCE(w.name, ''),
@@ -297,8 +297,8 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 		LEFT JOIN pttype pt ON pt.pttype = o.pttype
 		LEFT JOIN doctor doc ON doc.code = o.doctor
 		LEFT JOIN doctor doc_v ON doc_v.code = v.dx_doctor
-		LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.adm_doctor
-		LEFT JOIN doctor doc_dch ON doc_dch.code = COALESCE(ans.dch_doctor, COALESCE(ans.dx_doctor, ipt.dch_doctor))
+		LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.admdoctor
+		LEFT JOIN doctor doc_dch ON doc_dch.code = COALESCE(ipt.dch_doctor, ans.dx_doctor)
 		WHERE o.hn = ?
 		ORDER BY o.vstdate DESC, o.vsttime DESC
 		LIMIT 20
@@ -401,8 +401,8 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 
 		_ = db.QueryRow(`
 			SELECT 
-				ipt.admdate,
-				ipt.admtime,
+				ipt.regdate,
+				ipt.regtime,
 				COALESCE(ipt.dchdate, ''),
 				COALESCE(ipt.dchtime, ''),
 				COALESCE(w.name, ''),
@@ -412,15 +412,14 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 				COALESCE(dt.name, ''),
 				COALESCE(ans.drg, ''),
 				COALESCE(ans.rw, 0),
-				COALESCE(ans.adjrw, 0),
 				COALESCE(ans.income, 0),
 				COALESCE(ans.rcpt_money, 0),
 				COALESCE(ans.uc_money, 0)
 			FROM ipt
 			LEFT JOIN an_stat ans ON ans.an = ipt.an
 			LEFT JOIN ward w ON w.ward = ipt.ward
-			LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.adm_doctor
-			LEFT JOIN doctor doc_dch ON doc_dch.code = COALESCE(ans.dch_doctor, COALESCE(ans.dx_doctor, ipt.dch_doctor))
+			LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.admdoctor
+			LEFT JOIN doctor doc_dch ON doc_dch.code = COALESCE(ipt.dch_doctor, ans.dx_doctor)
 			LEFT JOIN dchstts ds ON ds.dchstts = ipt.dchstts
 			LEFT JOIN dchtype dt ON dt.dchtype = ipt.dchtype
 			WHERE ipt.an = ?
@@ -430,7 +429,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 			&detail.DchDate, &detail.DchTime,
 			&detail.WardName, &admDoctor, &dchDoctor,
 			&dchStatus, &dchType,
-			&drg, &rw, &adjrw, &income, &rcptMoney, &ucMoney,
+			&drg, &rw, &income, &rcptMoney, &ucMoney,
 		)
 
 		detail.AdmDoctor = admDoctor
@@ -505,15 +504,15 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 				COALESCE(i9.name, ''),
 				COALESCE(d.name, ''),
 				CASE 
-					WHEN iop.op_type = '1' THEN 'Principal Procedure (หัตถการหลัก IPD)'
-					WHEN iop.op_type = '2' THEN 'Secondary Procedure (หัตถการรอง IPD)'
+					WHEN iop.oper_type = 1 THEN 'Principal Procedure (หัตถการหลัก IPD)'
+					WHEN iop.oper_type = 2 THEN 'Secondary Procedure (หัตถการรอง IPD)'
 					ELSE 'หัตถการ IPD'
 				END AS proctype_name
 			FROM iptoprt iop
 			LEFT JOIN icd9cm1 i9 ON i9.code = iop.icd9
 			LEFT JOIN doctor d ON d.code = iop.doctor
 			WHERE iop.an = ?
-			ORDER BY iop.op_type ASC
+			ORDER BY iop.oper_type ASC
 		`, an)
 		if err == nil {
 			defer ipdProcRows.Close()
