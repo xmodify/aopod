@@ -112,17 +112,7 @@ class AgentApiController extends Controller
         // Store live heartbeat in cache for 10 minutes
         Cache::put("agent_heartbeat_{$hospcode}", $payload, 600);
 
-        // Auto sync agent_url to hospitals table
-        try {
-            $hospital = Hospital::where('hospcode', $hospcode)->first();
-            if ($hospital && $hospital->agent_url !== $agentUrl && !empty($host)) {
-                $hospital->update(['agent_url' => $agentUrl]);
-            }
-        } catch (\Exception $e) {
-            // Silently pass if table or column is not yet upgraded
-        }
-
-        return response()->json(['status' => 'success', 'message' => 'Heartbeat received', 'agent_url' => $agentUrl]);
+        return response()->json(['status' => 'success', 'message' => 'Heartbeat received']);
     }
 
     /**

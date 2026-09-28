@@ -14,7 +14,6 @@ class Hospital extends Authenticatable
         'hospcode',
         'name',
         'token_api',
-        'agent_url',
         'contact',
         'is_active',
     ];
