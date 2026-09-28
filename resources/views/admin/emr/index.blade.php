@@ -138,12 +138,12 @@
     font-weight: 600;
   }
 
-  /* Modal styling matching Image 3 (RIMS style) */
+  /* Modal styling matching Image 3 (RIMS style) - Compact & Screen-Fitting */
   .rims-modal-header {
     background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
     color: #ffffff;
-    padding: 1.25rem 1.75rem;
-    border-radius: 20px 20px 0 0;
+    padding: 0.85rem 1.25rem;
+    border-radius: 16px 16px 0 0;
     transition: background 0.3s ease;
   }
   .rims-modal-header.header-ipd {
@@ -151,9 +151,9 @@
   }
 
   .modal-mode-pill {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    padding: 0.45rem 1.1rem;
+    padding: 0.3rem 0.85rem;
     border-radius: 9999px;
     border: 1.5px solid #cbd5e1;
     background: #ffffff;
@@ -169,13 +169,13 @@
     background: #2563eb !important;
     color: #ffffff !important;
     border-color: #2563eb !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
   }
   .modal-mode-pill.active-ipd {
     background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
     color: #ffffff !important;
     border-color: #ea580c !important;
-    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
   }
 
   .badge-home-med {
@@ -183,54 +183,54 @@
     color: #15803d;
     border: 1px solid #bbf7d0;
     font-weight: 700;
-    padding: 0.25rem 0.6rem;
-    border-radius: 6px;
-    font-size: 0.76rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
   }
   .badge-ipd-med {
     background: #e0f2fe;
     color: #0369a1;
     border: 1px solid #bae6fd;
     font-weight: 600;
-    padding: 0.25rem 0.6rem;
-    border-radius: 6px;
-    font-size: 0.76rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
   }
 
   .rims-info-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 1.1rem;
+    border-radius: 10px;
+    padding: 0.55rem 0.8rem;
     height: 100%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
   }
   .rims-info-card-header {
-    font-size: 0.92rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: #1e3a8a;
-    border-bottom: 2px solid #eff6ff;
-    padding-bottom: 0.5rem;
-    margin-bottom: 0.75rem;
+    border-bottom: 1.5px solid #eff6ff;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.4rem;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .rims-field-row {
     display: flex;
-    margin-bottom: 0.45rem;
-    font-size: 0.88rem;
-    line-height: 1.4;
+    margin-bottom: 0.18rem;
+    font-size: 0.8rem;
+    line-height: 1.3;
   }
   .rims-field-label {
-    width: 110px;
+    width: 105px;
     flex-shrink: 0;
     color: #64748b;
     font-weight: 500;
@@ -243,9 +243,9 @@
 
   .rims-tab-nav .nav-link {
     font-weight: 600;
-    font-size: 0.88rem;
-    padding: 0.55rem 1rem;
-    border-radius: 10px;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
     color: #475569;
     border: 1px solid #e2e8f0;
     background: #f8fafc;
@@ -255,11 +255,42 @@
     background: #2563eb;
     color: #ffffff;
     border-color: #2563eb;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
   }
   .rims-tab-nav .nav-link.active span.badge {
     background: #ffffff !important;
     color: #2563eb !important;
+  }
+
+  /* Modal Table Compact & Sticky Header */
+  .modal-tab-table-container {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+  }
+  .modal-table thead th {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.55rem;
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 1.5px solid #e2e8f0;
+  }
+  .modal-table tbody td {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.82rem;
+    vertical-align: middle;
+  }
+  .modal-pagination-bar {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.3rem 0.65rem;
+    margin-top: 0.45rem;
   }
 </style>
 @endpush
@@ -500,18 +531,18 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div class="modal-body p-4 bg-slate-50" style="background-color: #f8fafc;">
+            <div class="modal-body p-3 bg-slate-50" style="background-color: #f8fafc;">
                 <!-- Status Banner -->
-                <div class="alert alert-success d-flex align-items-center justify-content-between gap-2 mb-3 py-2 px-3 border-0 shadow-sm" style="border-radius: 12px; background: #dcfce7; color: #15803d;">
+                <div class="alert alert-success d-flex align-items-center justify-content-between gap-2 mb-2 py-1 px-2.5 border-0 shadow-sm" style="border-radius: 10px; background: #dcfce7; color: #15803d;">
                     <div class="d-flex align-items-center gap-2 small fw-semibold">
-                        <i class="fa-solid fa-circle-check fs-5"></i>
+                        <i class="fa-solid fa-circle-check fs-6"></i>
                         <span><strong>สถานะ:</strong> ดึงข้อมูลสำเร็จจากตาราง <code class="fw-bold text-dark">opitemrece</code> และฐานข้อมูล HOSxP แบบ Real-time</span>
                     </div>
                     <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50" id="modalFetchBadge">⚡ Live Federated</span>
                 </div>
 
                 <!-- Mode Switcher (Visible only when visit is IPD / Admission) -->
-                <div id="modalModeSwitcherContainer" class="d-none mb-3 p-2.5 bg-white rounded-4 border shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div id="modalModeSwitcherContainer" class="d-none mb-2 p-1.5 bg-white rounded-3 border shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div class="d-flex align-items-center gap-2">
                         <span class="small fw-bold text-muted me-1"><i class="fa-solid fa-layer-group"></i> มุมมองข้อมูล:</span>
                         <button type="button" class="modal-mode-pill active-ipd" id="modeBtnIpd" onclick="switchModalMode('IPD')">
@@ -521,13 +552,13 @@
                             <i class="fa-solid fa-stethoscope me-1"></i> ข้อมูลผู้ป่วยนอก (OPD)
                         </button>
                     </div>
-                    <div id="modalIpdLosSummary" class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; padding: 0.5rem 0.85rem; font-size: 0.85rem; border-radius: 9999px;">
+                    <div id="modalIpdLosSummary" class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 9999px;">
                         <i class="fa-solid fa-bed-pulse me-1"></i> Admit Case
                     </div>
                 </div>
 
                 <!-- 3 Information Cards Grid -->
-                <div class="row g-3 mb-4">
+                <div class="row g-2 mb-2">
                     <!-- Column 1: ข้อมูลผู้ป่วย -->
                     <div class="col-12 col-md-4">
                         <div class="rims-info-card">
@@ -569,7 +600,7 @@
                     <div class="col-12 col-md-4">
                         <div class="rims-info-card" id="cardClinicalInfo">
                             <div class="rims-info-card-header" id="cardClinicalHeader">
-                                <i class="fa-solid fa-stethoscope text-primary"></i> ข้อมูลทางคลินิก
+                                <i class="fa-solid fa-stethoscope text-primary"></i> ข้อมูลผู้ป่วยนอก (OPD)
                             </div>
                             
                             <!-- OPD View Fields -->
@@ -677,46 +708,50 @@
                 </div>
 
                 <!-- Bottom Tabbed Details (แยก 5 แท็บ: ยา, ค่ารักษา, Lab, วินิจฉัย, หัตถการ) -->
-                <div class="bg-white p-3.5 rounded-4 border shadow-sm">
-                    <ul class="nav nav-pills rims-tab-nav mb-3 border-bottom pb-2" id="detailTab" role="tablist" style="gap: 8px;">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active d-flex align-items-center gap-1.5" id="meds-tab" data-bs-toggle="tab" data-bs-target="#meds-pane" type="button" role="tab">
-                                <i class="fa-solid fa-pills text-success"></i> รายการยา 
-                                <span class="badge bg-secondary rounded-pill px-2" id="modalMedCount">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center gap-1.5" id="nondrug-tab" data-bs-toggle="tab" data-bs-target="#nondrug-pane" type="button" role="tab">
-                                <i class="fa-solid fa-file-invoice-dollar text-primary"></i> ค่ารักษาพยาบาล 
-                                <span class="badge bg-secondary rounded-pill px-2" id="modalNonDrugCount">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center gap-1.5" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs-pane" type="button" role="tab">
-                                <i class="fa-solid fa-flask-vial text-info"></i> Lab 
-                                <span class="badge bg-secondary rounded-pill px-2" id="modalLabCount">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center gap-1.5" id="diag-tab" data-bs-toggle="tab" data-bs-target="#diag-pane" type="button" role="tab">
-                                <i class="fa-solid fa-stethoscope text-warning"></i> การวินิจฉัยโรค 
-                                <span class="badge bg-secondary rounded-pill px-2" id="modalDiagCount">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center gap-1.5" id="proc-tab" data-bs-toggle="tab" data-bs-target="#proc-pane" type="button" role="tab">
-                                <i class="fa-solid fa-hand-holding-medical text-danger"></i> หัตถการ 
-                                <span class="badge bg-secondary rounded-pill px-2" id="modalProcCount">0</span>
-                            </button>
-                        </li>
-                    </ul>
+                <div class="bg-white p-2.5 rounded-3 border shadow-sm">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 border-bottom pb-1.5">
+                        <ul class="nav nav-pills rims-tab-nav mb-0" id="detailTab" role="tablist" style="gap: 6px;">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active d-flex align-items-center gap-1.5" id="meds-tab" data-bs-toggle="tab" data-bs-target="#meds-pane" type="button" role="tab">
+                                    <i class="fa-solid fa-pills text-success"></i> รายการยา 
+                                    <span class="badge bg-secondary rounded-pill px-2" id="modalMedCount">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link d-flex align-items-center gap-1.5" id="nondrug-tab" data-bs-toggle="tab" data-bs-target="#nondrug-pane" type="button" role="tab">
+                                    <i class="fa-solid fa-file-invoice-dollar text-primary"></i> ค่ารักษาพยาบาล 
+                                    <span class="badge bg-secondary rounded-pill px-2" id="modalNonDrugCount">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link d-flex align-items-center gap-1.5" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs-pane" type="button" role="tab">
+                                    <i class="fa-solid fa-flask-vial text-info"></i> Lab 
+                                    <span class="badge bg-secondary rounded-pill px-2" id="modalLabCount">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link d-flex align-items-center gap-1.5" id="diag-tab" data-bs-toggle="tab" data-bs-target="#diag-pane" type="button" role="tab">
+                                    <i class="fa-solid fa-stethoscope text-warning"></i> การวินิจฉัยโรค 
+                                    <span class="badge bg-secondary rounded-pill px-2" id="modalDiagCount">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link d-flex align-items-center gap-1.5" id="proc-tab" data-bs-toggle="tab" data-bs-target="#proc-pane" type="button" role="tab">
+                                    <i class="fa-solid fa-hand-holding-medical text-danger"></i> หัตถการ 
+                                    <span class="badge bg-secondary rounded-pill px-2" id="modalProcCount">0</span>
+                                </button>
+                            </li>
+                        </ul>
+                        <!-- Quick Top-Right Pagination Bar -->
+                        <div id="modalTopPaginationBox" class="d-flex align-items-center gap-1"></div>
+                    </div>
 
                     <div class="tab-content" id="detailTabContent">
                         <!-- 1. Medications Table (Smart categorization for OPD and IPD) -->
                         <div class="tab-pane fade show active" id="meds-pane" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
+                            <div class="modal-tab-table-container">
+                                <table class="table table-hover align-middle mb-0 modal-table">
+                                    <thead>
                                         <tr>
                                             <th style="width: 45px;" class="text-center">#</th>
                                             <th>ชื่อยา / เวชภัณฑ์</th>
@@ -736,32 +771,32 @@
                         <!-- 2. Non-Drug / Medical Service Fees Table (icode 3% & an_stat) -->
                         <div class="tab-pane fade" id="nondrug-pane" role="tabpanel">
                             <!-- IPD Chart Financial Summary (an_stat) -->
-                            <div id="mIpdFinancialSummaryBox" class="d-none mb-3 p-3 rounded-3" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 1.5px solid #fdba74;">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="small fw-bold text-uppercase" style="color: #9a3412;">
+                            <div id="mIpdFinancialSummaryBox" class="d-none mb-2 p-2.5 rounded-3" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 1.5px solid #fdba74;">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="small fw-bold text-uppercase" style="color: #9a3412; font-size: 0.8rem;">
                                         <i class="fa-solid fa-file-invoice-dollar me-1"></i> สรุปค่ารักษาพยาบาลผู้ป่วยใน (an_stat Financial Summary)
                                     </span>
-                                    <span class="badge" style="background: #ea580c; color: #fff;">IPD an_stat</span>
+                                    <span class="badge" style="background: #ea580c; color: #fff; font-size: 0.75rem;">IPD an_stat</span>
                                 </div>
                                 <div class="row g-2 text-center">
                                     <div class="col-4 border-end" style="border-color: #fed7aa !important;">
-                                        <div class="small text-muted">ค่ารักษาพยาบาลรวม</div>
-                                        <div class="fs-6 fw-bold text-dark mt-0.5" id="mIpdIncome">0.00 บาท</div>
+                                        <div class="small text-muted" style="font-size: 0.75rem;">ค่ารักษาพยาบาลรวม</div>
+                                        <div class="small fw-bold text-dark mt-0.5" id="mIpdIncome">0.00 บาท</div>
                                     </div>
                                     <div class="col-4 border-end" style="border-color: #fed7aa !important;">
-                                        <div class="small text-muted">สิทธิเบิกได้ / เรียกเก็บ UC</div>
-                                        <div class="fs-6 fw-bold text-success mt-0.5" id="mIpdUcMoney">0.00 บาท</div>
+                                        <div class="small text-muted" style="font-size: 0.75rem;">สิทธิเบิกได้ / เรียกเก็บ UC</div>
+                                        <div class="small fw-bold text-success mt-0.5" id="mIpdUcMoney">0.00 บาท</div>
                                     </div>
                                     <div class="col-4">
-                                        <div class="small text-muted">ชำระเงินเอง</div>
-                                        <div class="fs-6 fw-bold text-danger mt-0.5" id="mIpdPaidMoney">0.00 บาท</div>
+                                        <div class="small text-muted" style="font-size: 0.75rem;">ชำระเงินเอง</div>
+                                        <div class="small fw-bold text-danger mt-0.5" id="mIpdPaidMoney">0.00 บาท</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
+                            <div class="modal-tab-table-container">
+                                <table class="table table-hover align-middle mb-0 modal-table">
+                                    <thead>
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th>รายการค่ารักษา / ค่าบริการ</th>
@@ -781,9 +816,9 @@
 
                         <!-- 3. Labs Table -->
                         <div class="tab-pane fade" id="labs-pane" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
+                            <div class="modal-tab-table-container">
+                                <table class="table table-hover align-middle mb-0 modal-table">
+                                    <thead>
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th>รายการตรวจ (Lab Test)</th>
@@ -802,9 +837,9 @@
 
                         <!-- 4. Diagnoses Table (ICD-10 OPD & IPD) -->
                         <div class="tab-pane fade" id="diag-pane" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
+                            <div class="modal-tab-table-container">
+                                <table class="table table-hover align-middle mb-0 modal-table">
+                                    <thead>
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th style="width: 130px;">รหัส ICD-10</th>
@@ -822,9 +857,9 @@
 
                         <!-- 5. Procedures Table (ICD-9) -->
                         <div class="tab-pane fade" id="proc-pane" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
+                            <div class="modal-tab-table-container">
+                                <table class="table table-hover align-middle mb-0 modal-table">
+                                    <thead>
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th style="width: 130px;">รหัสหัตถการ (ICD-9)</th>
@@ -1464,6 +1499,7 @@
     }
 
     // Modal Tab Pagination State (10 items per page)
+    let currentActiveTabKey = 'meds';
     let tabPagination = {
         meds: { page: 1, pageSize: 10, items: [] },
         nondrug: { page: 1, pageSize: 10, items: [] },
@@ -1478,13 +1514,54 @@
         if (newPage < 1 || newPage > totalPages) return;
         tabPagination[tabKey].page = newPage;
         renderTabContent(tabKey);
+        updateTopPagination();
     }
+
+    function updateTopPagination() {
+        const topBox = document.getElementById('modalTopPaginationBox');
+        if (!topBox) return;
+        const currentData = tabPagination[currentActiveTabKey];
+        if (!currentData || currentData.items.length <= currentData.pageSize) {
+            topBox.innerHTML = '';
+            return;
+        }
+        const totalPages = Math.ceil(currentData.items.length / currentData.pageSize);
+        topBox.innerHTML = `
+            <span class="small fw-bold text-muted me-1" style="font-size: 0.75rem;">
+                หน้า ${currentData.page}/${totalPages}
+            </span>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" ${currentData.page === 1 ? 'disabled' : ''} onclick="changeModalTabPage('${currentActiveTabKey}', ${currentData.page - 1})">
+                    <i class="fa-solid fa-chevron-left" style="font-size:0.65rem;"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" ${currentData.page === totalPages ? 'disabled' : ''} onclick="changeModalTabPage('${currentActiveTabKey}', ${currentData.page + 1})">
+                    <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    // Bind tab switch event to keep top pagination in sync
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('#detailTab button[data-bs-toggle="tab"]').forEach(btn => {
+            btn.addEventListener('shown.bs.tab', function(e) {
+                const target = e.target.getAttribute('data-bs-target');
+                if (target === '#meds-pane') currentActiveTabKey = 'meds';
+                else if (target === '#nondrug-pane') currentActiveTabKey = 'nondrug';
+                else if (target === '#labs-pane') currentActiveTabKey = 'labs';
+                else if (target === '#diag-pane') currentActiveTabKey = 'diag';
+                else if (target === '#proc-pane') currentActiveTabKey = 'proc';
+                updateTopPagination();
+            });
+        });
+    });
 
     function renderPaginationControls(tabKey, containerId, totalItems, currentPage, pageSize = 10) {
         const container = document.getElementById(containerId);
         if (!container) return;
         if (totalItems === 0) {
             container.innerHTML = '';
+            if (tabKey === currentActiveTabKey) updateTopPagination();
             return;
         }
         const totalPages = Math.ceil(totalItems / pageSize);
@@ -1493,10 +1570,11 @@
 
         if (totalPages <= 1) {
             container.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mt-2.5 pt-2 border-top px-2 text-muted small">
+                <div class="modal-pagination-bar d-flex justify-content-between align-items-center text-muted small">
                     <span>แสดงทั้งหมด <strong class="text-dark">${totalItems}</strong> รายการ</span>
                 </div>
             `;
+            if (tabKey === currentActiveTabKey) updateTopPagination();
             return;
         }
 
@@ -1516,20 +1594,20 @@
         let pageBtnsHtml = `
             <ul class="pagination pagination-sm mb-0">
                 <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <button type="button" class="page-link py-1 px-2.5" onclick="changeModalTabPage('${tabKey}', ${currentPage - 1})" aria-label="Previous">
-                        <i class="fa-solid fa-chevron-left" style="font-size: 0.75rem;"></i>
+                    <button type="button" class="page-link py-0.5 px-2" onclick="changeModalTabPage('${tabKey}', ${currentPage - 1})" aria-label="Previous">
+                        <i class="fa-solid fa-chevron-left" style="font-size: 0.7rem;"></i>
                     </button>
                 </li>
         `;
 
         pages.forEach(p => {
             if (p === '...') {
-                pageBtnsHtml += `<li class="page-item disabled"><span class="page-link py-1 px-2 text-muted">…</span></li>`;
+                pageBtnsHtml += `<li class="page-item disabled"><span class="page-link py-0.5 px-2 text-muted">…</span></li>`;
             } else {
                 const isActive = (p === currentPage);
                 pageBtnsHtml += `
                     <li class="page-item ${isActive ? 'active' : ''}">
-                        <button type="button" class="page-link py-1 px-2.5 fw-semibold" onclick="changeModalTabPage('${tabKey}', ${p})">${p}</button>
+                        <button type="button" class="page-link py-0.5 px-2 fw-semibold" onclick="changeModalTabPage('${tabKey}', ${p})">${p}</button>
                     </li>
                 `;
             }
@@ -1537,19 +1615,23 @@
 
         pageBtnsHtml += `
                 <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <button type="button" class="page-link py-1 px-2.5" onclick="changeModalTabPage('${tabKey}', ${currentPage + 1})" aria-label="Next">
-                        <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+                    <button type="button" class="page-link py-0.5 px-2" onclick="changeModalTabPage('${tabKey}', ${currentPage + 1})" aria-label="Next">
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i>
                     </button>
                 </li>
             </ul>
         `;
 
         container.innerHTML = `
-            <div class="d-flex flex-wrap justify-content-between align-items-center mt-2.5 pt-2 border-top px-2 gap-2 text-muted small">
+            <div class="modal-pagination-bar d-flex flex-wrap justify-content-between align-items-center gap-2 text-muted small">
                 <div>แสดง <strong class="text-dark">${startItem} - ${endItem}</strong> จากทั้งหมด <strong class="text-dark">${totalItems}</strong> รายการ</div>
                 <div>${pageBtnsHtml}</div>
             </div>
         `;
+
+        if (tabKey === currentActiveTabKey) {
+            updateTopPagination();
+        }
     }
 
     function renderTabContent(tabKey) {
