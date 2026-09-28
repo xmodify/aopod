@@ -1685,9 +1685,10 @@
                     if (m.periods.length === 1) {
                         const p = m.periods[0];
                         if (p.first_date && p.last_date && p.first_date !== p.last_date) {
-                            periodsHtml += `<div class="small fw-semibold text-slate-700"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateTime(p.first_date, '')} - ${formatThaiDateTime(p.last_date, '')} <span class="badge bg-light text-dark border ms-1" style="font-size:0.7rem;">${p.qty} ${escapeHtml(m.units)}</span></div>`;
+                            const daysText = p.days_count > 1 ? ` (${p.days_count} วัน)` : '';
+                            periodsHtml += `<div class="small fw-semibold text-slate-700"><i class="fa-regular fa-calendar-check text-primary me-1"></i>${formatThaiDateShort(p.first_date)} - ${formatThaiDateShort(p.last_date)} <span class="badge bg-light text-dark border ms-1" style="font-size:0.7rem;">${p.qty} ${escapeHtml(m.units)}${daysText}</span></div>`;
                         } else if (p.first_date) {
-                            periodsHtml += `<div class="small fw-semibold text-slate-700"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateTime(p.first_date, '')} <span class="badge bg-light text-dark border ms-1" style="font-size:0.7rem;">${p.qty} ${escapeHtml(m.units)}</span></div>`;
+                            periodsHtml += `<div class="small fw-semibold text-slate-700"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateShort(p.first_date)} <span class="badge bg-light text-dark border ms-1" style="font-size:0.7rem;">${p.qty} ${escapeHtml(m.units)}</span></div>`;
                         }
                         if (p.sp_use) {
                             periodsHtml += `<div class="small text-primary fw-semibold mt-0.5"><i class="fa-solid fa-circle-info me-1"></i>${escapeHtml(p.sp_use)}</div>`;

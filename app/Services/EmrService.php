@@ -584,25 +584,25 @@ class EmrService
                     d.name AS drug_name,
                     SUM(op.qty) AS qty,
                     COALESCE(d.units, '') AS units,
-                    COALESCE(du.name1, '') AS usage1,
-                    COALESCE(du.name2, '') AS usage2,
-                    COALESCE(du.name3, '') AS usage3,
-                    COALESCE(op.sp_use, COALESCE(sp.name1, '')) AS sp_use,
+                    MAX(COALESCE(du.name1, '')) AS usage1,
+                    MAX(COALESCE(du.name2, '')) AS usage2,
+                    MAX(COALESCE(du.name3, '')) AS usage3,
+                    MAX(COALESCE(op.sp_use, COALESCE(sp.name1, ''))) AS sp_use,
                     COALESCE(SUM(op.sum_price), 0) AS sum_price,
                     CASE 
                         WHEN op.item_type = 'H' THEN 'ยากลับบ้าน (Home Meds)'
                         WHEN op.an IS NOT NULL AND op.an != '' THEN 'ยาระหว่างนอน รพ.'
                         ELSE 'ยาผู้ป่วยนอก (OPD)'
                     END AS med_category,
-                    COALESCE(MIN(op.vstdate), '') AS first_date,
-                    COALESCE(MAX(op.vstdate), '') AS last_date,
-                    COUNT(DISTINCT op.vstdate) AS days_count
+                    COALESCE(MIN(COALESCE(op.rxdate, op.vstdate)), '') AS first_date,
+                    COALESCE(MAX(COALESCE(op.rxdate, op.vstdate)), '') AS last_date,
+                    COUNT(DISTINCT COALESCE(op.rxdate, op.vstdate)) AS days_count
                 FROM opitemrece op
                 JOIN drugitems d ON d.icode = op.icode
                 LEFT JOIN drugusage du ON du.drugusage = op.drugusage
                 LEFT JOIN sp_use sp ON sp.sp_use = op.sp_use
                 WHERE (op.vn = ? OR (op.an IS NOT NULL AND op.an != '' AND op.an = ?))
-                GROUP BY d.icode, d.name, d.units, med_category, du.drugusage, du.name1, du.name2, du.name3, op.sp_use, sp.name1
+                GROUP BY d.icode, d.name, d.units, med_category
                 ORDER BY CASE WHEN med_category = 'ยากลับบ้าน (Home Meds)' THEN 1 WHEN med_category = 'ยาผู้ป่วยนอก (OPD)' THEN 2 ELSE 3 END ASC, d.name ASC
             ", [$actualVN, $an]);
             $detail['medications'] = array_map(fn($m) => (array)$m, $meds);
