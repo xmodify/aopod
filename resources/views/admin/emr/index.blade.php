@@ -280,6 +280,20 @@
     z-index: 2;
     border-bottom: 1.5px solid #e2e8f0;
   }
+  .sortable-th {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .sortable-th:hover {
+    background-color: #e2e8f0 !important;
+    color: #1d4ed8 !important;
+  }
+  .sortable-th.sorted-active {
+    background-color: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border-bottom: 2px solid #2563eb !important;
+  }
   .modal-table tbody td {
     padding: 0.35rem 0.55rem;
     font-size: 0.82rem;
@@ -751,7 +765,7 @@
                         <div class="tab-pane fade show active" id="meds-pane" role="tabpanel">
                             <div class="modal-tab-table-container">
                                 <table class="table table-hover align-middle mb-0 modal-table">
-                                    <thead>
+                                    <thead id="modalMedTableHead">
                                         <tr>
                                             <th style="width: 45px;" class="text-center">#</th>
                                             <th>ชื่อยา / เวชภัณฑ์</th>
@@ -796,7 +810,7 @@
 
                             <div class="modal-tab-table-container">
                                 <table class="table table-hover align-middle mb-0 modal-table">
-                                    <thead>
+                                    <thead id="modalNonDrugTableHead">
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th>รายการค่ารักษา / ค่าบริการ</th>
@@ -839,7 +853,7 @@
                         <div class="tab-pane fade" id="diag-pane" role="tabpanel">
                             <div class="modal-tab-table-container">
                                 <table class="table table-hover align-middle mb-0 modal-table">
-                                    <thead>
+                                    <thead id="modalDiagTableHead">
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th style="width: 130px;">รหัส ICD-10</th>
@@ -859,7 +873,7 @@
                         <div class="tab-pane fade" id="proc-pane" role="tabpanel">
                             <div class="modal-tab-table-container">
                                 <table class="table table-hover align-middle mb-0 modal-table">
-                                    <thead>
+                                    <thead id="modalProcTableHead">
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th style="width: 130px;">รหัสหัตถการ (ICD-9)</th>
@@ -1514,21 +1528,123 @@
         }
     }
 
-    // Modal Tab Pagination State (10 items per page)
+    // Modal Tab Pagination State (10, 20, 50, all items per page + column sorting)
     let currentActiveTabKey = 'meds';
     let tabPagination = {
-        meds: { page: 1, pageSize: 10, items: [] },
-        nondrug: { page: 1, pageSize: 10, items: [] },
-        labs: { page: 1, pageSize: 10, items: [] },
-        diag: { page: 1, pageSize: 10, items: [] },
-        proc: { page: 1, pageSize: 10, items: [] }
+        meds: { page: 1, pageSize: 10, items: [], sortCol: null, sortDir: 'asc' },
+        nondrug: { page: 1, pageSize: 10, items: [], sortCol: null, sortDir: 'asc' },
+        labs: { page: 1, pageSize: 10, items: [], dates: [], sortCol: null, sortDir: 'asc' },
+        diag: { page: 1, pageSize: 10, items: [], sortCol: null, sortDir: 'asc' },
+        proc: { page: 1, pageSize: 10, items: [], sortCol: null, sortDir: 'asc' }
     };
 
     function changeModalTabPage(tabKey, newPage) {
         if (!tabPagination[tabKey]) return;
-        const totalPages = Math.ceil(tabPagination[tabKey].items.length / tabPagination[tabKey].pageSize);
+        const effectiveSize = (tabPagination[tabKey].pageSize >= 99999) ? tabPagination[tabKey].items.length : tabPagination[tabKey].pageSize;
+        const totalPages = Math.max(1, Math.ceil(tabPagination[tabKey].items.length / effectiveSize));
         if (newPage < 1 || newPage > totalPages) return;
         tabPagination[tabKey].page = newPage;
+        renderTabContent(tabKey);
+        updateTopPagination();
+    }
+
+    function changeModalPageSize(tabKey, newSize) {
+        if (!tabPagination[tabKey]) return;
+        const size = (newSize === 'all' || parseInt(newSize, 10) >= 9999) ? 999999 : parseInt(newSize, 10);
+        tabPagination[tabKey].pageSize = size;
+        tabPagination[tabKey].page = 1;
+        renderTabContent(tabKey);
+        updateTopPagination();
+    }
+
+    function getSortIcon(tabKey, colKey) {
+        const tabState = tabPagination[tabKey];
+        if (!tabState || tabState.sortCol !== colKey) {
+            return '<i class="fa-solid fa-sort text-muted opacity-40 ms-1" style="font-size: 0.7rem;"></i>';
+        }
+        if (tabState.sortDir === 'asc') {
+            return '<i class="fa-solid fa-arrow-up-short-wide text-primary ms-1" style="font-size: 0.72rem;"></i>';
+        }
+        return '<i class="fa-solid fa-arrow-down-wide-short text-primary ms-1" style="font-size: 0.72rem;"></i>';
+    }
+
+    function getSortValue(tabKey, item, colKey) {
+        if (colKey === 'idx') return item._origIndex || 0;
+
+        if (tabKey === 'meds') {
+            if (colKey === 'drug_name') return item.drug_name || '';
+            if (colKey === 'total_qty') return parseFloat(item.total_qty) || 0;
+            if (colKey === 'usage1') return ((item.usage1 || '') + ' ' + (item.usage2 || '') + ' ' + (item.usage3 || '')).trim();
+            if (colKey === 'first_date') {
+                return item.periods && item.periods[0] ? (item.periods[0].first_date || '') : '';
+            }
+        } else if (tabKey === 'nondrug') {
+            if (colKey === 'item_name') return item.item_name || '';
+            if (colKey === 'qty') return parseFloat(item.qty) || 0;
+            if (colKey === 'units') return item.units || '';
+            if (colKey === 'unit_price') return parseFloat(item.unit_price) || 0;
+            if (colKey === 'sum_price') return parseFloat(item.sum_price) || 0;
+        } else if (tabKey === 'labs') {
+            if (colKey === 'lab_name') return item.lab_name || '';
+            if (colKey.startsWith('date_')) {
+                const d = colKey.substring(5);
+                const resList = item.results_by_date ? item.results_by_date[d] : null;
+                if (resList && resList.length > 0 && resList[0].result) {
+                    const str = String(resList[0].result).trim();
+                    const num = parseFloat(str.replace(/,/g, ''));
+                    if (!isNaN(num) && /^-?\d+(\.\d+)?$/.test(str.replace(/,/g, ''))) {
+                        return num;
+                    }
+                    return str;
+                }
+                return null;
+            }
+            if (colKey === 'lab_unit') return item.lab_unit || '';
+            if (colKey === 'normal_value') return item.normal_value || '';
+        } else if (tabKey === 'diag') {
+            if (colKey === 'icd10') return item.icd10 || '';
+            if (colKey === 'diag_name') return item.diag_name || '';
+            if (colKey === 'diagtype') return item.diagtype || item.diagtype_name || '';
+        } else if (tabKey === 'proc') {
+            if (colKey === 'icd9') return item.icd9 || '';
+            if (colKey === 'name') return item.proc_name || item.name || '';
+            if (colKey === 'doctor_name') return item.doctor_name || '';
+            if (colKey === 'optype_name') return item.proctype_name || item.optype_name || item.category || '';
+        }
+
+        return item[colKey] || '';
+    }
+
+    function sortModalTab(tabKey, colKey) {
+        const tabState = tabPagination[tabKey];
+        if (!tabState || !tabState.items || tabState.items.length === 0) return;
+
+        if (tabState.sortCol === colKey) {
+            tabState.sortDir = (tabState.sortDir === 'asc') ? 'desc' : 'asc';
+        } else {
+            tabState.sortCol = colKey;
+            tabState.sortDir = 'asc';
+        }
+
+        const dir = (tabState.sortDir === 'asc') ? 1 : -1;
+
+        tabState.items.sort((a, b) => {
+            const valA = getSortValue(tabKey, a, colKey);
+            const valB = getSortValue(tabKey, b, colKey);
+
+            const isBlankA = (valA === null || valA === undefined || valA === '' || valA === '-');
+            const isBlankB = (valB === null || valB === undefined || valB === '' || valB === '-');
+            if (isBlankA && isBlankB) return 0;
+            if (isBlankA) return 1;
+            if (isBlankB) return -1;
+
+            if (typeof valA === 'number' && typeof valB === 'number') {
+                return (valA - valB) * dir;
+            }
+            return String(valA).localeCompare(String(valB), 'th', { numeric: true, sensitivity: 'base' }) * dir;
+        });
+
+        tabState.page = 1;
         renderTabContent(tabKey);
         updateTopPagination();
     }
@@ -1537,22 +1653,35 @@
         const topBox = document.getElementById('modalTopPaginationBox');
         if (!topBox) return;
         const currentData = tabPagination[currentActiveTabKey];
-        if (!currentData || currentData.items.length <= currentData.pageSize) {
+        if (!currentData || currentData.items.length === 0) {
             topBox.innerHTML = '';
             return;
         }
-        const totalPages = Math.ceil(currentData.items.length / currentData.pageSize);
+        const effectiveSize = (currentData.pageSize >= 99999) ? currentData.items.length : currentData.pageSize;
+        const totalPages = Math.max(1, Math.ceil(currentData.items.length / effectiveSize));
+        const isAll = (currentData.pageSize >= 99999);
+
         topBox.innerHTML = `
-            <span class="small fw-bold text-muted me-1" style="font-size: 0.75rem;">
-                หน้า ${currentData.page}/${totalPages}
-            </span>
-            <div class="btn-group btn-group-sm" role="group">
-                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" ${currentData.page === 1 ? 'disabled' : ''} onclick="changeModalTabPage('${currentActiveTabKey}', ${currentData.page - 1})">
-                    <i class="fa-solid fa-chevron-left" style="font-size:0.65rem;"></i>
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" ${currentData.page === totalPages ? 'disabled' : ''} onclick="changeModalTabPage('${currentActiveTabKey}', ${currentData.page + 1})">
-                    <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i>
-                </button>
+            <div class="d-flex align-items-center gap-1.5 bg-light p-1 rounded-2 border">
+                <select class="form-select form-select-sm py-0 px-1 border-0 bg-transparent text-muted fw-bold" style="width: auto; font-size: 0.72rem;" onchange="changeModalPageSize('${currentActiveTabKey}', this.value)" title="เลือกจำนวนรายการต่อหน้า">
+                    <option value="10" ${currentData.pageSize === 10 ? 'selected' : ''}>10 / หน้า</option>
+                    <option value="20" ${currentData.pageSize === 20 ? 'selected' : ''}>20 / หน้า</option>
+                    <option value="50" ${currentData.pageSize === 50 ? 'selected' : ''}>50 / หน้า</option>
+                    <option value="all" ${isAll ? 'selected' : ''}>ทั้งหมด (${currentData.items.length})</option>
+                </select>
+                ${totalPages > 1 ? `
+                    <span class="small fw-bold text-muted border-start ps-1.5" style="font-size: 0.75rem;">
+                        ${currentData.page}/${totalPages}
+                    </span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1.5" ${currentData.page === 1 ? 'disabled' : ''} onclick="changeModalTabPage('${currentActiveTabKey}', ${currentData.page - 1})">
+                            <i class="fa-solid fa-chevron-left" style="font-size:0.6rem;"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1.5" ${currentData.page === totalPages ? 'disabled' : ''} onclick="changeModalTabPage('${currentActiveTabKey}', ${currentData.page + 1})">
+                            <i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>
+                        </button>
+                    </div>
+                ` : ''}
             </div>
         `;
     }
@@ -1580,67 +1709,73 @@
             if (tabKey === currentActiveTabKey) updateTopPagination();
             return;
         }
-        const totalPages = Math.ceil(totalItems / pageSize);
-        const startItem = (currentPage - 1) * pageSize + 1;
-        const endItem = Math.min(currentPage * pageSize, totalItems);
 
-        if (totalPages <= 1) {
-            container.innerHTML = `
-                <div class="modal-pagination-bar d-flex justify-content-between align-items-center text-muted small">
-                    <span>แสดงทั้งหมด <strong class="text-dark">${totalItems}</strong> รายการ</span>
-                </div>
-            `;
-            if (tabKey === currentActiveTabKey) updateTopPagination();
-            return;
-        }
+        const effectiveSize = (pageSize >= 99999) ? totalItems : pageSize;
+        const totalPages = Math.max(1, Math.ceil(totalItems / effectiveSize));
+        const startItem = totalItems > 0 ? (currentPage - 1) * effectiveSize + 1 : 0;
+        const endItem = Math.min(currentPage * effectiveSize, totalItems);
 
-        let pages = [];
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i++) pages.push(i);
-        } else {
-            pages.push(1);
-            let start = Math.max(2, currentPage - 1);
-            let end = Math.min(totalPages - 1, currentPage + 1);
-            if (start > 2) pages.push('...');
-            for (let i = start; i <= end; i++) pages.push(i);
-            if (end < totalPages - 1) pages.push('...');
-            pages.push(totalPages);
-        }
-
-        let pageBtnsHtml = `
-            <ul class="pagination pagination-sm mb-0">
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <button type="button" class="page-link py-0.5 px-2" onclick="changeModalTabPage('${tabKey}', ${currentPage - 1})" aria-label="Previous">
-                        <i class="fa-solid fa-chevron-left" style="font-size: 0.7rem;"></i>
-                    </button>
-                </li>
-        `;
-
-        pages.forEach(p => {
-            if (p === '...') {
-                pageBtnsHtml += `<li class="page-item disabled"><span class="page-link py-0.5 px-2 text-muted">…</span></li>`;
+        let pageBtnsHtml = '';
+        if (totalPages > 1) {
+            let pages = [];
+            if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) pages.push(i);
             } else {
-                const isActive = (p === currentPage);
-                pageBtnsHtml += `
-                    <li class="page-item ${isActive ? 'active' : ''}">
-                        <button type="button" class="page-link py-0.5 px-2 fw-semibold" onclick="changeModalTabPage('${tabKey}', ${p})">${p}</button>
-                    </li>
-                `;
+                pages.push(1);
+                let start = Math.max(2, currentPage - 1);
+                let end = Math.min(totalPages - 1, currentPage + 1);
+                if (start > 2) pages.push('...');
+                for (let i = start; i <= end; i++) pages.push(i);
+                if (end < totalPages - 1) pages.push('...');
+                pages.push(totalPages);
             }
-        });
 
-        pageBtnsHtml += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <button type="button" class="page-link py-0.5 px-2" onclick="changeModalTabPage('${tabKey}', ${currentPage + 1})" aria-label="Next">
-                        <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i>
-                    </button>
-                </li>
-            </ul>
-        `;
+            pageBtnsHtml = `
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <button type="button" class="page-link py-0.5 px-2" onclick="changeModalTabPage('${tabKey}', ${currentPage - 1})" aria-label="Previous">
+                            <i class="fa-solid fa-chevron-left" style="font-size: 0.7rem;"></i>
+                        </button>
+                    </li>
+            `;
+
+            pages.forEach(p => {
+                if (p === '...') {
+                    pageBtnsHtml += `<li class="page-item disabled"><span class="page-link py-0.5 px-2 text-muted">…</span></li>`;
+                } else {
+                    const isActive = (p === currentPage);
+                    pageBtnsHtml += `
+                        <li class="page-item ${isActive ? 'active' : ''}">
+                            <button type="button" class="page-link py-0.5 px-2 fw-semibold" onclick="changeModalTabPage('${tabKey}', ${p})">${p}</button>
+                        </li>
+                    `;
+                }
+            });
+
+            pageBtnsHtml += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <button type="button" class="page-link py-0.5 px-2" onclick="changeModalTabPage('${tabKey}', ${currentPage + 1})" aria-label="Next">
+                            <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i>
+                        </button>
+                    </li>
+                </ul>
+            `;
+        }
+
+        const isAll = (pageSize >= 99999);
 
         container.innerHTML = `
             <div class="modal-pagination-bar d-flex flex-wrap justify-content-between align-items-center gap-2 text-muted small">
-                <div>แสดง <strong class="text-dark">${startItem} - ${endItem}</strong> จากทั้งหมด <strong class="text-dark">${totalItems}</strong> รายการ</div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span>แสดง</span>
+                    <select class="form-select form-select-sm py-0.5 px-2" style="width: auto; font-size: 0.75rem; border-color: #cbd5e1;" onchange="changeModalPageSize('${tabKey}', this.value)">
+                        <option value="10" ${pageSize === 10 ? 'selected' : ''}>10 รายการ</option>
+                        <option value="20" ${pageSize === 20 ? 'selected' : ''}>20 รายการ</option>
+                        <option value="50" ${pageSize === 50 ? 'selected' : ''}>50 รายการ</option>
+                        <option value="all" ${isAll ? 'selected' : ''}>ทั้งหมด (${totalItems})</option>
+                    </select>
+                    <span>| รายการที่ <strong class="text-dark">${startItem} - ${endItem}</strong> จาก <strong class="text-dark">${totalItems}</strong> รายการ</span>
+                </div>
                 <div>${pageBtnsHtml}</div>
             </div>
         `;
@@ -1659,14 +1794,29 @@
     }
 
     function renderMedsTab() {
-        const { page, pageSize, items } = tabPagination.meds;
+        const { page, pageSize, items, sortCol } = tabPagination.meds;
+        const medHead = document.getElementById('modalMedTableHead');
         const medBody = document.getElementById('modalMedTableBody');
         const isOpd = (currentModalMode === 'OPD');
+
+        if (medHead) {
+            medHead.innerHTML = `
+                <tr>
+                    <th style="width: 45px;" class="text-center sortable-th ${sortCol === 'idx' ? 'sorted-active' : ''}" onclick="sortModalTab('meds', 'idx')"># ${getSortIcon('meds', 'idx')}</th>
+                    <th class="sortable-th ${sortCol === 'drug_name' ? 'sorted-active' : ''}" onclick="sortModalTab('meds', 'drug_name')">ชื่อยา / เวชภัณฑ์ ${getSortIcon('meds', 'drug_name')}</th>
+                    <th style="width: 140px;" class="text-center sortable-th ${sortCol === 'total_qty' ? 'sorted-active' : ''}" onclick="sortModalTab('meds', 'total_qty')">จำนวนรวม ${getSortIcon('meds', 'total_qty')}</th>
+                    <th class="sortable-th ${sortCol === 'usage1' ? 'sorted-active' : ''}" onclick="sortModalTab('meds', 'usage1')">วิธีใช้ / คำแนะนำ (Drug Usage) ${getSortIcon('meds', 'usage1')}</th>
+                    <th style="width: 220px;" class="sortable-th ${sortCol === 'first_date' ? 'sorted-active' : ''}" onclick="sortModalTab('meds', 'first_date')">ช่วงวันที่ / คำสั่งพิเศษ ${getSortIcon('meds', 'first_date')}</th>
+                </tr>
+            `;
+        }
+
         if (items.length > 0) {
             medBody.innerHTML = '';
-            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            const effectiveSize = (pageSize >= 99999) ? items.length : pageSize;
+            const slice = items.slice((page - 1) * effectiveSize, page * effectiveSize);
             slice.forEach((m, i) => {
-                const idx = (page - 1) * pageSize + i + 1;
+                const idx = (page - 1) * effectiveSize + i + 1;
                 const tr = document.createElement('tr');
                 let catBadge = '';
                 if (m.med_category) {
@@ -1747,13 +1897,29 @@
     }
 
     function renderNonDrugTab() {
-        const { page, pageSize, items } = tabPagination.nondrug;
+        const { page, pageSize, items, sortCol } = tabPagination.nondrug;
+        const nonDrugHead = document.getElementById('modalNonDrugTableHead');
         const nonDrugBody = document.getElementById('modalNonDrugTableBody');
+
+        if (nonDrugHead) {
+            nonDrugHead.innerHTML = `
+                <tr>
+                    <th style="width: 50px;" class="text-center sortable-th ${sortCol === 'idx' ? 'sorted-active' : ''}" onclick="sortModalTab('nondrug', 'idx')"># ${getSortIcon('nondrug', 'idx')}</th>
+                    <th class="sortable-th ${sortCol === 'item_name' ? 'sorted-active' : ''}" onclick="sortModalTab('nondrug', 'item_name')">รายการค่ารักษา / ค่าบริการ ${getSortIcon('nondrug', 'item_name')}</th>
+                    <th style="width: 110px;" class="text-center sortable-th ${sortCol === 'qty' ? 'sorted-active' : ''}" onclick="sortModalTab('nondrug', 'qty')">จำนวน ${getSortIcon('nondrug', 'qty')}</th>
+                    <th style="width: 100px;" class="text-center sortable-th ${sortCol === 'units' ? 'sorted-active' : ''}" onclick="sortModalTab('nondrug', 'units')">หน่วย ${getSortIcon('nondrug', 'units')}</th>
+                    <th style="width: 140px;" class="text-end sortable-th ${sortCol === 'unit_price' ? 'sorted-active' : ''}" onclick="sortModalTab('nondrug', 'unit_price')">ราคา/หน่วย (บาท) ${getSortIcon('nondrug', 'unit_price')}</th>
+                    <th style="width: 140px;" class="text-end sortable-th ${sortCol === 'sum_price' ? 'sorted-active' : ''}" onclick="sortModalTab('nondrug', 'sum_price')">รวมเงิน (บาท) ${getSortIcon('nondrug', 'sum_price')}</th>
+                </tr>
+            `;
+        }
+
         if (items.length > 0) {
             nonDrugBody.innerHTML = '';
-            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            const effectiveSize = (pageSize >= 99999) ? items.length : pageSize;
+            const slice = items.slice((page - 1) * effectiveSize, page * effectiveSize);
             slice.forEach((nd, i) => {
-                const idx = (page - 1) * pageSize + i + 1;
+                const idx = (page - 1) * effectiveSize + i + 1;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="text-muted fw-bold text-center">${idx}</td>
@@ -1772,37 +1938,39 @@
     }
 
     function renderLabsTab() {
-        const { page, pageSize, items, dates } = tabPagination.labs;
+        const { page, pageSize, items, dates, sortCol } = tabPagination.labs;
         const labHead = document.getElementById('modalLabTableHead');
         const labBody = document.getElementById('modalLabTableBody');
         const isOpd = (currentModalMode === 'OPD');
         const activeDates = dates || [];
 
-        // Dynamic Lab Matrix Thead
+        // Dynamic Lab Matrix Thead with sortable headers
         let theadHtml = `
             <tr>
-                <th style="width: 45px;" class="text-center">#</th>
-                <th style="min-width: 170px;">รายการตรวจ (Lab Test)</th>
+                <th style="width: 45px;" class="text-center sortable-th ${sortCol === 'idx' ? 'sorted-active' : ''}" onclick="sortModalTab('labs', 'idx')"># ${getSortIcon('labs', 'idx')}</th>
+                <th style="min-width: 170px;" class="sortable-th ${sortCol === 'lab_name' ? 'sorted-active' : ''}" onclick="sortModalTab('labs', 'lab_name')">รายการตรวจ (Lab Test) ${getSortIcon('labs', 'lab_name')}</th>
         `;
         if (activeDates.length > 0) {
             activeDates.forEach(d => {
-                theadHtml += `<th class="text-center" style="min-width: 90px; white-space: nowrap;"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateShort(d)}</th>`;
+                const isDateSorted = (sortCol === 'date_' + d);
+                theadHtml += `<th class="text-center sortable-th ${isDateSorted ? 'sorted-active' : ''}" style="min-width: 90px; white-space: nowrap;" onclick="sortModalTab('labs', 'date_${d}')"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateShort(d)} ${getSortIcon('labs', 'date_' + d)}</th>`;
             });
         } else {
             theadHtml += `<th style="width: 150px;" class="text-center">ผลการตรวจ</th>`;
         }
         theadHtml += `
-                <th style="width: 80px;" class="text-center">หน่วย</th>
-                <th style="min-width: 120px;">ค่าอ้างอิงปกติ (Normal)</th>
+                <th style="width: 80px;" class="text-center sortable-th ${sortCol === 'lab_unit' ? 'sorted-active' : ''}" onclick="sortModalTab('labs', 'lab_unit')">หน่วย ${getSortIcon('labs', 'lab_unit')}</th>
+                <th style="min-width: 120px;" class="sortable-th ${sortCol === 'normal_value' ? 'sorted-active' : ''}" onclick="sortModalTab('labs', 'normal_value')">ค่าอ้างอิงปกติ (Normal) ${getSortIcon('labs', 'normal_value')}</th>
             </tr>
         `;
         if (labHead) labHead.innerHTML = theadHtml;
 
         if (items.length > 0) {
             labBody.innerHTML = '';
-            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            const effectiveSize = (pageSize >= 99999) ? items.length : pageSize;
+            const slice = items.slice((page - 1) * effectiveSize, page * effectiveSize);
             slice.forEach((l, i) => {
-                const idx = (page - 1) * pageSize + i + 1;
+                const idx = (page - 1) * effectiveSize + i + 1;
                 const tr = document.createElement('tr');
                 const catBadge = l.category === 'IPD'
                     ? '<span class="badge" style="background:#ffedd5; color:#9a3412; font-size:0.68rem; border:1px solid #fed7aa; margin-right:4px;">IPD</span>'
@@ -1852,14 +2020,28 @@
     }
 
     function renderDiagTab() {
-        const { page, pageSize, items } = tabPagination.diag;
+        const { page, pageSize, items, sortCol } = tabPagination.diag;
+        const diagHead = document.getElementById('modalDiagTableHead');
         const diagBody = document.getElementById('modalDiagTableBody');
         const isIpd = (currentModalMode === 'IPD');
+
+        if (diagHead) {
+            diagHead.innerHTML = `
+                <tr>
+                    <th style="width: 50px;" class="text-center sortable-th ${sortCol === 'idx' ? 'sorted-active' : ''}" onclick="sortModalTab('diag', 'idx')"># ${getSortIcon('diag', 'idx')}</th>
+                    <th style="width: 130px;" class="sortable-th ${sortCol === 'icd10' ? 'sorted-active' : ''}" onclick="sortModalTab('diag', 'icd10')">รหัส ICD-10 ${getSortIcon('diag', 'icd10')}</th>
+                    <th class="sortable-th ${sortCol === 'diag_name' ? 'sorted-active' : ''}" onclick="sortModalTab('diag', 'diag_name')">ชื่อโรค / ภาวะการวินิจฉัย ${getSortIcon('diag', 'diag_name')}</th>
+                    <th style="width: 240px;" class="sortable-th ${sortCol === 'diagtype' ? 'sorted-active' : ''}" onclick="sortModalTab('diag', 'diagtype')">ประเภทการวินิจฉัย ${getSortIcon('diag', 'diagtype')}</th>
+                </tr>
+            `;
+        }
+
         if (items.length > 0) {
             diagBody.innerHTML = '';
-            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            const effectiveSize = (pageSize >= 99999) ? items.length : pageSize;
+            const slice = items.slice((page - 1) * effectiveSize, page * effectiveSize);
             slice.forEach((d, i) => {
-                const idx = (page - 1) * pageSize + i + 1;
+                const idx = (page - 1) * effectiveSize + i + 1;
                 const tr = document.createElement('tr');
                 const badgeStyle = (d.diagtype_name || '').includes('IPD') || isIpd
                     ? 'background:#fed7aa; color:#9a3412;'
@@ -1879,20 +2061,35 @@
     }
 
     function renderProcTab() {
-        const { page, pageSize, items } = tabPagination.proc;
+        const { page, pageSize, items, sortCol } = tabPagination.proc;
+        const procHead = document.getElementById('modalProcTableHead');
         const procBody = document.getElementById('modalProcTableBody');
+
+        if (procHead) {
+            procHead.innerHTML = `
+                <tr>
+                    <th style="width: 50px;" class="text-center sortable-th ${sortCol === 'idx' ? 'sorted-active' : ''}" onclick="sortModalTab('proc', 'idx')"># ${getSortIcon('proc', 'idx')}</th>
+                    <th style="width: 130px;" class="sortable-th ${sortCol === 'icd9' ? 'sorted-active' : ''}" onclick="sortModalTab('proc', 'icd9')">รหัสหัตถการ (ICD-9) ${getSortIcon('proc', 'icd9')}</th>
+                    <th class="sortable-th ${sortCol === 'name' ? 'sorted-active' : ''}" onclick="sortModalTab('proc', 'name')">ชื่อหัตถการ / การรักษา ${getSortIcon('proc', 'name')}</th>
+                    <th style="width: 180px;" class="sortable-th ${sortCol === 'doctor_name' ? 'sorted-active' : ''}" onclick="sortModalTab('proc', 'doctor_name')">แพทย์ผู้ทำหัตถการ ${getSortIcon('proc', 'doctor_name')}</th>
+                    <th style="width: 200px;" class="sortable-th ${sortCol === 'optype_name' ? 'sorted-active' : ''}" onclick="sortModalTab('proc', 'optype_name')">ประเภทหัตถการ ${getSortIcon('proc', 'optype_name')}</th>
+                </tr>
+            `;
+        }
+
         if (items.length > 0) {
             procBody.innerHTML = '';
-            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            const effectiveSize = (pageSize >= 99999) ? items.length : pageSize;
+            const slice = items.slice((page - 1) * effectiveSize, page * effectiveSize);
             slice.forEach((p, i) => {
-                const idx = (page - 1) * pageSize + i + 1;
+                const idx = (page - 1) * effectiveSize + i + 1;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="text-muted fw-bold text-center">${idx}</td>
                     <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2.5 py-1.5 fw-bold">${escapeHtml(p.icd9)}</span></td>
-                    <td class="fw-semibold text-slate-800">${escapeHtml(p.proc_name)}</td>
+                    <td class="fw-semibold text-slate-800">${escapeHtml(p.proc_name || p.name || '')}</td>
                     <td class="small text-dark">${escapeHtml(p.doctor_name || '-')}</td>
-                    <td class="small text-muted">${escapeHtml(p.proctype_name || 'หัตถการ')}</td>
+                    <td class="small text-muted">${escapeHtml(p.proctype_name || p.optype_name || 'หัตถการ')}</td>
                 `;
                 procBody.appendChild(tr);
             });
@@ -1958,8 +2155,10 @@
             if (isHomeA !== isHomeB) return isHomeA - isHomeB;
             return (a.drug_name || '').localeCompare(b.drug_name || '');
         });
+        sortedMeds.forEach((item, idx) => { item._origIndex = idx + 1; });
 
-        tabPagination.meds = { page: 1, pageSize: 10, items: sortedMeds };
+        const prevMedPageSize = tabPagination.meds ? tabPagination.meds.pageSize : 10;
+        tabPagination.meds = { page: 1, pageSize: prevMedPageSize, items: sortedMeds, sortCol: null, sortDir: null };
         document.getElementById('modalMedCount').textContent = sortedMeds.length;
         renderMedsTab();
 
@@ -1970,7 +2169,10 @@
         } else {
             filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'OPD' || (nd.category || '') === '');
         }
-        tabPagination.nondrug = { page: 1, pageSize: 10, items: filteredNonDrugs };
+        filteredNonDrugs.forEach((item, idx) => { item._origIndex = idx + 1; });
+
+        const prevNonDrugPageSize = tabPagination.nondrug ? tabPagination.nondrug.pageSize : 10;
+        tabPagination.nondrug = { page: 1, pageSize: prevNonDrugPageSize, items: filteredNonDrugs, sortCol: null, sortDir: null };
         document.getElementById('modalNonDrugCount').textContent = filteredNonDrugs.length;
         renderNonDrugTab();
 
@@ -2023,8 +2225,10 @@
             }
             return (a.lab_name || '').localeCompare(b.lab_name || '');
         });
+        groupedLabList.forEach((item, idx) => { item._origIndex = idx + 1; });
 
-        tabPagination.labs = { page: 1, pageSize: 10, items: groupedLabList, dates: labDates };
+        const prevLabPageSize = tabPagination.labs ? tabPagination.labs.pageSize : 10;
+        tabPagination.labs = { page: 1, pageSize: prevLabPageSize, items: groupedLabList, dates: labDates, sortCol: null, sortDir: null };
         document.getElementById('modalLabCount').textContent = groupedLabList.length;
         renderLabsTab();
 
@@ -2035,7 +2239,10 @@
         } else {
             displayedDiags = data.diagnoses || [];
         }
-        tabPagination.diag = { page: 1, pageSize: 10, items: displayedDiags };
+        displayedDiags.forEach((item, idx) => { item._origIndex = idx + 1; });
+
+        const prevDiagPageSize = tabPagination.diag ? tabPagination.diag.pageSize : 10;
+        tabPagination.diag = { page: 1, pageSize: prevDiagPageSize, items: displayedDiags, sortCol: null, sortDir: null };
         document.getElementById('modalDiagCount').textContent = displayedDiags.length;
         renderDiagTab();
 
@@ -2048,7 +2255,10 @@
             const opdProcs = filteredProcs.filter(p => (p.category || '') === 'OPD');
             if (opdProcs.length > 0) filteredProcs = opdProcs;
         }
-        tabPagination.proc = { page: 1, pageSize: 10, items: filteredProcs };
+        filteredProcs.forEach((item, idx) => { item._origIndex = idx + 1; });
+
+        const prevProcPageSize = tabPagination.proc ? tabPagination.proc.pageSize : 10;
+        tabPagination.proc = { page: 1, pageSize: prevProcPageSize, items: filteredProcs, sortCol: null, sortDir: null };
         document.getElementById('modalProcCount').textContent = filteredProcs.length;
         renderProcTab();
     }
