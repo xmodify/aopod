@@ -174,4 +174,72 @@ class AgentApiController extends Controller
             'message'       => "ยืนยัน Token สำเร็จสำหรับ {$hospital->name} ({$hospital->hospcode})",
         ]);
     }
+
+    /**
+     * Long-polling endpoint for Hospital Agent to receive real-time EMR query tasks.
+     * Zero-Port Architecture: Agent initiates outbound connection.
+     */
+    public function pollEmrTask(Request $request)
+    {
+        $user = Auth::user();
+        $hospcode = $user->hospcode ?? $request->input('hospcode');
+
+        if (!$hospcode) {
+            return response()->json(['status' => 'error', 'message' => 'Missing hospcode'], 422);
+        }
+
+        // Long-poll: check Cache for up to 15 seconds (sleep 200ms interval)
+        $cacheKey = "agent_emr_task_{$hospcode}";
+        $maxIterations = 75; // 75 * 200ms = 15 seconds max execution
+        
+        for ($i = 0; $i < $maxIterations; $i++) {
+            $task = Cache::get($cacheKey);
+            if ($task) {
+                // Task found, remove from queue so it's not processed twice
+                Cache::forget($cacheKey);
+                return response()->json([
+                    'status' => 'has_task',
+                    'task'   => $task,
+                ]);
+            }
+            usleep(200000); // 200 ms
+        }
+
+        return response()->json([
+            'status' => 'no_task',
+        ]);
+    }
+
+    /**
+     * Submit EMR query result from Hospital Agent back to Central Server.
+     */
+    public function submitEmrResult(Request $request)
+    {
+        $user = Auth::user();
+        $hospcode = $user->hospcode ?? $request->input('hospcode');
+        $taskId = $request->input('task_id');
+        $data = $request->input('data');
+        $found = (bool)$request->input('found', false);
+        $success = (bool)$request->input('success', true);
+        $message = $request->input('message', '');
+
+        if (!$hospcode || !$taskId) {
+            return response()->json(['status' => 'error', 'message' => 'Missing hospcode or task_id'], 422);
+        }
+
+        $resultPayload = [
+            'hospcode'   => $hospcode,
+            'task_id'    => $taskId,
+            'success'    => $success,
+            'found'      => $found,
+            'message'    => $message,
+            'data'       => $data,
+            'updated_at' => microtime(true),
+        ];
+
+        // Store result in cache for 60 seconds
+        Cache::put("agent_emr_result_{$taskId}_{$hospcode}", $resultPayload, 60);
+
+        return response()->json(['status' => 'success', 'message' => 'EMR result received']);
+    }
 }

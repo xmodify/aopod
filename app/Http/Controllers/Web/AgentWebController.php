@@ -44,12 +44,20 @@ class AgentWebController extends Controller
                 }
             }
 
+            $agentUrl = $hosp->agent_url ?? ($heartbeat['agent_url'] ?? null);
+            if (!$agentUrl && !empty($heartbeat['ip'])) {
+                $port = $heartbeat['port'] ?? 8989;
+                $host = in_array($heartbeat['ip'], ['127.0.0.1', '::1']) ? '127.0.0.1' : $heartbeat['ip'];
+                $agentUrl = "http://{$host}:{$port}";
+            }
+
             $agentList[] = [
                 'hospital'      => $hosp,
                 'hcode'         => $hcode,
                 'name'          => $hosp->name ?? $hosp->hospname ?? $hcode,
                 'is_online'     => $isOnline,
                 'heartbeat'     => $heartbeat,
+                'agent_url'     => $agentUrl,
                 'has_token'     => !empty($hosp->token_api) || ($tokenObj !== null),
                 'token_api'     => $hosp->token_api ?? ($tokenObj->token ?? ''),
                 'token_id'      => $tokenObj->id ?? null,
@@ -99,7 +107,7 @@ class AgentWebController extends Controller
             return $fileVersion;
         }
 
-        return MainSetting::get('agent_latest_version', '1.0.2');
+        return MainSetting::get('agent_latest_version', '1.0.3');
     }
 
     /**

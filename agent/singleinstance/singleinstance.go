@@ -8,13 +8,17 @@ import (
 )
 
 var (
-	kernel32        = syscall.NewLazyDLL("kernel32.dll")
-	procCreateMutex = kernel32.NewProc("CreateMutexW")
-	procCloseHandle = kernel32.NewProc("CloseHandle")
+	kernel32             = syscall.NewLazyDLL("kernel32.dll")
+	user32               = syscall.NewLazyDLL("user32.dll")
+	procCreateMutex      = kernel32.NewProc("CreateMutexW")
+	procCloseHandle      = kernel32.NewProc("CloseHandle")
+	procGetConsoleWindow = kernel32.NewProc("GetConsoleWindow")
+	procShowWindow       = user32.NewProc("ShowWindow")
 )
 
 const (
 	ERROR_ALREADY_EXISTS = 183
+	SW_HIDE              = 0
 )
 
 var mutexHandle uintptr
@@ -76,3 +80,12 @@ func AttachParentConsole() {
 		os.Stderr = os.NewFile(uintptr(herr), "/dev/stderr")
 	}
 }
+
+// HideConsoleWindow completely hides any console window attached to this process.
+func HideConsoleWindow() {
+	hwnd, _, _ := procGetConsoleWindow.Call()
+	if hwnd != 0 {
+		procShowWindow.Call(hwnd, uintptr(SW_HIDE))
+	}
+}
+

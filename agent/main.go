@@ -71,6 +71,10 @@ func main() {
 	flag.BoolVar(&isAutoStart, "autostart", false, "Run quietly in system tray on Windows boot")
 	flag.Parse()
 
+	if len(flag.Args()) == 0 && !isServiceMode {
+		singleinstance.HideConsoleWindow()
+	}
+
 	svcConfig := &service.Config{
 		Name:        "AOPODAgent",
 		DisplayName: "AOPOD Hospital Sync Agent",

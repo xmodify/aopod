@@ -20,7 +20,8 @@ class Hospital extends Authenticatable
     ];
 
     protected $hidden = [
-        'password', // เผื่อใช้ auth แบบ password ในอนาคต
+        'token_api',
+        'password',
         'remember_token',
     ];
 

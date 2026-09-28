@@ -135,6 +135,9 @@ func StartCronScheduler() {
 
 	cronRunner.Start()
 
+	// Start real-time reverse EMR query worker (Zero-Port Architecture)
+	go StartReverseEmrWorker()
+
 	// Initial heartbeat upon startup & initial log cleanup
 	go func() {
 		time.Sleep(500 * time.Millisecond)

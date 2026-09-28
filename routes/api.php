@@ -36,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/agent/config', [\App\Http\Controllers\Api\AgentApiController::class, 'getConfig']);
     Route::post('/agent/heartbeat', [\App\Http\Controllers\Api\AgentApiController::class, 'heartbeat']);
     Route::post('/agent/task/complete', [\App\Http\Controllers\Api\AgentApiController::class, 'completeTask']);
+    Route::post('/agent/emr/poll-task', [\App\Http\Controllers\Api\AgentApiController::class, 'pollEmrTask']);
+    Route::post('/agent/emr/submit-result', [\App\Http\Controllers\Api\AgentApiController::class, 'submitEmrResult']);
 });
 
 // Public / Token-less Lookup & Download Route for Agent

@@ -181,6 +181,7 @@
                                 <tr class="text-secondary small">
                                     <th class="border-0 rounded-start">รหัส / โรงพยาบาล</th>
                                     <th class="border-0 text-center">สถานะ Agent</th>
+                                    <th class="border-0">Agent URL (A-EMR)</th>
                                     <th class="border-0">ข้อมูล OPD ล่าสุด</th>
                                     <th class="border-0">ข้อมูล IPD ล่าสุด</th>
                                     <th class="border-0 text-center rounded-end">จัดการ</th>
@@ -220,6 +221,22 @@
                                             <div class="badge bg-warning bg-opacity-10 text-warning px-2 py-0.5 mt-1" style="font-size: 0.7rem;">
                                                 <i class="fa-solid fa-spinner fa-spin me-1"></i> มีคำสั่งค้าง
                                             </div>
+                                        @endif
+                                    </td>
+
+                                    <!-- Agent URL (EMR) -->
+                                    <td class="py-3">
+                                        @if(!empty($item['agent_url']))
+                                            <div class="d-flex align-items-center gap-1.5">
+                                                <span class="badge bg-white border text-primary fw-semibold px-2.5 py-1 shadow-sm" style="font-family: monospace; font-size: 0.8rem;">
+                                                    <i class="fa-solid fa-link text-info me-1"></i>{{ $item['agent_url'] }}
+                                                </span>
+                                            </div>
+                                            <div class="text-success small mt-0.5" style="font-size: 0.72rem;">
+                                                <i class="fa-solid fa-circle-check"></i> พร้อมเชื่อมต่อ A-EMR
+                                            </div>
+                                        @else
+                                            <span class="badge bg-secondary bg-opacity-10 text-muted px-2.5 py-1" style="font-size: 0.75rem;">- รอรับ Heartbeat -</span>
                                         @endif
                                     </td>
 

@@ -3,27 +3,17 @@
 namespace App\Services;
 
 use App\Models\Hospital;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class EmrService
 {
     /**
-     * Search patient medical history by CID across local HOSxP and all hospital agents.
-     *
-     * @param string $cid 13-digit citizen ID
-     * @return array
-     */
-    /**
-     * Search patient medical history by CID across local HOSxP and all hospital agents.
-     *
-     * @param string $cid 13-digit citizen ID
-     * @return array
-     */
-    /**
-     * Search patient medical history by CID across all hospital AOPOD-Agents.
+     * Search patient medical history by CID across all hospital AOPOD-Agents (Zero-Port Architecture).
      *
      * @param string $cid 13-digit citizen ID
      * @return array
@@ -40,14 +30,14 @@ class EmrService
 
         $startTime = microtime(true);
 
-        // Query all active hospital agents in parallel
+        // Query all active hospital agents in parallel via Zero-Port reverse polling
         $resultsFromHospitals = $this->queryHospitalAgents($cleanCid);
 
         if (empty($resultsFromHospitals)) {
             return [
                 'success' => true,
                 'found' => false,
-                'message' => 'ไม่พบข้อมูลประวัติการรักษาด้วยเลขประจำตัวประชาชนนี้ หรือ AOPOD-Agent ปลายทางยังไม่ได้เปิดให้บริการ',
+                'message' => 'ไม่พบข้อมูลประวัติการรักษาด้วยเลขประจำตัวประชาชนนี้ หรือ AOPOD-Agent ปลายทางยังไม่ได้เชื่อมต่อระบบ',
                 'hospital' => ['code' => '', 'name' => 'โรงพยาบาลในเครือข่าย'],
                 'hospitals' => [],
                 'latency_ms' => round((microtime(true) - $startTime) * 1000, 2),
@@ -61,9 +51,6 @@ class EmrService
         return $aggregated;
     }
 
-    /**
-     * Aggregate patient data from multiple hospital agents.
-     */
     /**
      * Aggregate patient data from multiple hospital agents.
      */
@@ -182,7 +169,7 @@ class EmrService
     }
 
     /**
-     * Query all active Hospital Agents in parallel via HTTP.
+     * Query all active Hospital Agents via Zero-Port reverse task queue and fast long-poll pickup.
      */
     protected function queryHospitalAgents(string $cleanCid): array
     {
@@ -193,59 +180,133 @@ class EmrService
                 return $results;
             }
 
-            $responses = Http::pool(function ($pool) use ($hospitals, $cleanCid) {
-                $calls = [];
-                foreach ($hospitals as $hosp) {
-                    $agentUrl = $hosp->agent_url ?: env('AOPOD_AGENT_URL', 'http://127.0.0.1:8989');
-                    $url = rtrim($agentUrl, '/') . "/api/emr/patient?cid=" . $cleanCid;
-                    $calls[] = $pool->as($hosp->hospcode)
-                                    ->timeout(2)
-                                    ->withToken($hosp->token_api ?? '')
-                                    ->get($url);
-                }
-                return $calls;
-            });
+            $batchId = 'emr_pt_' . time() . '_' . Str::random(8);
+            $pendingHospcodes = [];
 
+            // 1. Dispatch reverse tasks into cache for all active hospital agents
+            foreach ($hospitals as $hosp) {
+                Cache::put("agent_emr_task_{$hosp->hospcode}", [
+                    'task_id'       => $batchId,
+                    'type'          => 'patient_search',
+                    'cid'           => $cleanCid,
+                    'hospital_code' => $hosp->hospcode,
+                    'timestamp'     => microtime(true),
+                ], 25);
+
+                $pendingHospcodes[$hosp->hospcode] = $hosp;
+            }
+
+            // 2. Fast wait loop checking for agent results (up to 2.5 seconds, step 35ms)
+            $maxWaitMs = 2500;
+            $intervalMs = 35;
+            $elapsedMs = 0;
             $seenHospitalCodes = [];
 
-            foreach ($responses as $hospcode => $response) {
-                if ($response instanceof \Illuminate\Http\Client\Response && $response->successful()) {
-                    $data = $response->json();
-                    if (!empty($data['found']) && !empty($data['data'])) {
-                        $retHospCode = $data['data']['hospital_code'] ?? $hospcode;
+            while ($elapsedMs < $maxWaitMs && !empty($pendingHospcodes)) {
+                foreach ($pendingHospcodes as $hCode => $hospObj) {
+                    $resultKey = "agent_emr_result_{$batchId}_{$hCode}";
+                    $cached = Cache::get($resultKey);
+                    if ($cached !== null) {
+                        unset($pendingHospcodes[$hCode]);
+                        if (!empty($cached['found']) && !empty($cached['data'])) {
+                            $data = $cached['data'];
+                            $retHospCode = $data['hospital_code'] ?? $hCode;
 
-                        // Deduplicate if multiple agent calls point to the same physical hospital
-                        if (isset($seenHospitalCodes[$retHospCode])) {
-                            continue;
+                            if (!isset($seenHospitalCodes[$retHospCode])) {
+                                $seenHospitalCodes[$retHospCode] = true;
+                                $matchedHosp = $hospitals->firstWhere('hospcode', $retHospCode) ?? $hospObj;
+                                $hospName = !empty($data['hospital_name']) ? $data['hospital_name'] : ($matchedHosp->name ?? 'โรงพยาบาลในเครือข่าย');
+
+                                $results[] = [
+                                    'success' => true,
+                                    'found'   => true,
+                                    'hospital' => [
+                                        'code' => $retHospCode,
+                                        'name' => $hospName,
+                                    ],
+                                    'patient' => [
+                                        'hn'        => $data['hn'] ?? '',
+                                        'cid'       => $data['cid'] ?? $cleanCid,
+                                        'full_name' => $data['full_name'] ?? '',
+                                        'sex'       => $data['sex'] ?? '',
+                                        'age'       => $data['age'] ?? '',
+                                        'birthday'  => $data['birthday'] ?? '',
+                                        'bloodgrp'  => $data['bloodgrp'] ?? '',
+                                        'pttype'    => $data['pttype'] ?? '',
+                                        'address'   => $data['address'] ?? '',
+                                    ],
+                                    'allergies'          => $data['allergies'] ?? [],
+                                    'clinics'            => $data['clinics'] ?? [],
+                                    'visits'             => $data['visits'] ?? [],
+                                    'total_visits_found' => $data['total_visits_found'] ?? count($data['visits'] ?? []),
+                                ];
+                            }
                         }
-                        $seenHospitalCodes[$retHospCode] = true;
+                    }
+                }
 
-                        $matchedHosp = $hospitals->firstWhere('hospcode', $retHospCode) ?? $hospitals->firstWhere('hospcode', $hospcode);
-                        $hospName = !empty($data['data']['hospital_name']) ? $data['data']['hospital_name'] : ($matchedHosp->name ?? 'โรงพยาบาลในเครือข่าย');
+                if (empty($pendingHospcodes)) {
+                    break; // All active agents have already submitted their results
+                }
 
-                        $results[] = [
-                            'success' => true,
-                            'found' => true,
-                            'hospital' => [
-                                'code' => $retHospCode,
-                                'name' => $hospName,
-                            ],
-                            'patient' => [
-                                'hn' => $data['data']['hn'],
-                                'cid' => $data['data']['cid'],
-                                'full_name' => $data['data']['full_name'],
-                                'sex' => $data['data']['sex'],
-                                'age' => $data['data']['age'],
-                                'birthday' => $data['data']['birthday'],
-                                'bloodgrp' => $data['data']['bloodgrp'],
-                                'pttype' => $data['data']['pttype'],
-                                'address' => $data['data']['address'],
-                            ],
-                            'allergies' => $data['data']['allergies'] ?? [],
-                            'clinics' => $data['data']['clinics'] ?? [],
-                            'visits' => $data['data']['visits'] ?? [],
-                            'total_visits_found' => $data['data']['total_visits_found'] ?? 0,
-                        ];
+                usleep($intervalMs * 1000);
+                $elapsedMs += $intervalMs;
+            }
+
+            // 3. Fallback: If no results found via reverse task, attempt direct HTTP pool as secondary fallback
+            if (empty($results) && !empty($pendingHospcodes)) {
+                $responses = Http::pool(function ($pool) use ($pendingHospcodes, $cleanCid) {
+                    $calls = [];
+                    foreach ($pendingHospcodes as $hosp) {
+                        if (!empty($hosp->agent_url)) {
+                            $url = rtrim($hosp->agent_url, '/') . "/api/emr/patient?cid=" . $cleanCid;
+                            $calls[] = $pool->as($hosp->hospcode)
+                                            ->timeout(1)
+                                            ->withToken($hosp->token_api ?? '')
+                                            ->get($url);
+                        }
+                    }
+                    return $calls;
+                });
+
+                foreach ($responses as $hospcode => $response) {
+                    if ($response instanceof \Illuminate\Http\Client\Response && $response->successful()) {
+                        $data = $response->json();
+                        if (!empty($data['found']) && !empty($data['data'])) {
+                            $retHospCode = $data['data']['hospital_code'] ?? $hospcode;
+
+                            if (isset($seenHospitalCodes[$retHospCode])) {
+                                continue;
+                            }
+                            $seenHospitalCodes[$retHospCode] = true;
+
+                            $matchedHosp = $hospitals->firstWhere('hospcode', $retHospCode) ?? $hospitals->firstWhere('hospcode', $hospcode);
+                            $hospName = !empty($data['data']['hospital_name']) ? $data['data']['hospital_name'] : ($matchedHosp->name ?? 'โรงพยาบาลในเครือข่าย');
+
+                            $results[] = [
+                                'success' => true,
+                                'found' => true,
+                                'hospital' => [
+                                    'code' => $retHospCode,
+                                    'name' => $hospName,
+                                ],
+                                'patient' => [
+                                    'hn' => $data['data']['hn'],
+                                    'cid' => $data['data']['cid'],
+                                    'full_name' => $data['data']['full_name'],
+                                    'sex' => $data['data']['sex'],
+                                    'age' => $data['data']['age'],
+                                    'birthday' => $data['data']['birthday'],
+                                    'bloodgrp' => $data['data']['bloodgrp'],
+                                    'pttype' => $data['data']['pttype'],
+                                    'address' => $data['data']['address'],
+                                ],
+                                'allergies' => $data['data']['allergies'] ?? [],
+                                'clinics' => $data['data']['clinics'] ?? [],
+                                'visits' => $data['data']['visits'] ?? [],
+                                'total_visits_found' => $data['data']['total_visits_found'] ?? 0,
+                            ];
+                        }
                     }
                 }
             }
@@ -276,10 +337,50 @@ class EmrService
                 $hosp = Hospital::where('is_active', true)->first();
             }
 
+            $targetHospCode = $hospitalCode ?: ($hosp->hospcode ?? '10989');
+            $taskId = 'emr_vn_' . time() . '_' . Str::random(8);
+
+            // 1. Dispatch real-time reverse task to agent
+            Cache::put("agent_emr_task_{$targetHospCode}", [
+                'task_id'       => $taskId,
+                'type'          => 'visit_detail',
+                'vn'            => $vn,
+                'hospital_code' => $targetHospCode,
+                'timestamp'     => microtime(true),
+            ], 20);
+
+            // 2. Fast wait loop for agent response (max 2.5 seconds, step 35ms)
+            $maxWaitMs = 2500;
+            $intervalMs = 35;
+            $elapsedMs = 0;
+            $resultKey = "agent_emr_result_{$taskId}_{$targetHospCode}";
+
+            while ($elapsedMs < $maxWaitMs) {
+                $cached = Cache::get($resultKey);
+                if ($cached !== null) {
+                    if (!empty($cached['found']) && !empty($cached['data'])) {
+                        $data = $cached['data'];
+                        $data['success'] = true;
+                        $data['latency_ms'] = round((microtime(true) - $startTime) * 1000, 2);
+                        return $data;
+                    }
+                    if (!empty($cached['success']) && empty($cached['found'])) {
+                        return [
+                            'success' => false,
+                            'message' => 'ไม่พบข้อมูลรายละเอียดการตรวจรักษานี้บนระบบ HOSxP',
+                        ];
+                    }
+                    break;
+                }
+                usleep($intervalMs * 1000);
+                $elapsedMs += $intervalMs;
+            }
+
+            // 3. Fallback to direct HTTP if available
             $agentUrl = ($hosp && $hosp->agent_url) ? $hosp->agent_url : env('AOPOD_AGENT_URL', 'http://127.0.0.1:8989');
             $url = rtrim($agentUrl, '/') . "/api/emr/visit?vn=" . urlencode($vn);
 
-            $response = Http::timeout(3)->withToken($hosp->token_api ?? '')->get($url);
+            $response = Http::timeout(2)->withToken($hosp->token_api ?? '')->get($url);
             if ($response instanceof \Illuminate\Http\Client\Response && $response->successful()) {
                 $resData = $response->json();
                 if (!empty($resData['data'])) {
@@ -326,3 +427,4 @@ class EmrService
         ];
     }
 }
+

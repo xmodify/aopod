@@ -30,12 +30,12 @@ use App\Http\Controllers\Auth\MophAlert2FAController;
 Route::get('/login', function () {
     return redirect()->to(url('web'));
 })->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:10,1');
 
 // 2FA MOPH Alert Routes
 Route::get('/login/verify-2fa', [MophAlert2FAController::class, 'index'])->name('auth.2fa.index');
-Route::post('/login/verify-2fa', [MophAlert2FAController::class, 'verifyOTP'])->name('auth.2fa.verify');
-Route::post('/login/resend-2fa', [MophAlert2FAController::class, 'resendOTP'])->name('auth.2fa.resend');
+Route::post('/login/verify-2fa', [MophAlert2FAController::class, 'verifyOTP'])->middleware('throttle:10,1')->name('auth.2fa.verify');
+Route::post('/login/resend-2fa', [MophAlert2FAController::class, 'resendOTP'])->middleware('throttle:5,1')->name('auth.2fa.resend');
 
 // Health ID & Provider ID Routes
 Route::prefix('auth/health-id')->name('auth.health-id.')->group(function () {
