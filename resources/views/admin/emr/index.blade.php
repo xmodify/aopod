@@ -1456,24 +1456,28 @@
                 nonDrugBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">ไม่พบรายการค่ารักษาพยาบาลในครั้งนี้</td></tr>';
             }
 
-            // 3. Labs
+            // 3. Labs (Only tests with reported results)
             const labBody = document.getElementById('modalLabTableBody');
-            document.getElementById('modalLabCount').textContent = data.lab_results ? data.lab_results.length : 0;
-            if (data.lab_results && data.lab_results.length > 0) {
+            const validLabs = (data.lab_results || []).filter(l => {
+                const res = (l.lab_result || '').trim();
+                return res !== '' && res !== '-' && res !== 'null';
+            });
+            document.getElementById('modalLabCount').textContent = validLabs.length;
+            if (validLabs.length > 0) {
                 labBody.innerHTML = '';
-                data.lab_results.forEach((l, idx) => {
+                validLabs.forEach((l, idx) => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td class="text-muted fw-bold text-center">${idx + 1}</td>
                         <td class="fw-bold text-dark">${escapeHtml(l.lab_name)}</td>
                         <td class="text-center fw-bold text-primary fs-6">${escapeHtml(l.lab_result)}</td>
-                        <td class="text-center text-muted small">${escapeHtml(l.lab_unit)}</td>
-                        <td class="small text-muted">${escapeHtml(l.normal_value)}</td>
+                        <td class="text-center text-muted small">${escapeHtml(l.lab_unit || '-')}</td>
+                        <td class="small text-muted">${escapeHtml(l.normal_value || '-')}</td>
                     `;
                     labBody.appendChild(tr);
                 });
             } else {
-                labBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีรายการตรวจ Lab ในครั้งนี้</td></tr>';
+                labBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีรายการตรวจ Lab ที่มีผลตรวจในครั้งนี้</td></tr>';
             }
 
             // 4. Diagnoses (ICD-10 OPD + IPD)

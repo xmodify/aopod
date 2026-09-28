@@ -525,20 +525,23 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		}
 	}
 
-	// 3. Lab Results
+	// 3. Lab Results (Only tests with actual recorded results)
 	labRows, err := db.Query(`
 		SELECT 
 			COALESCE(i.lab_items_name, 'Lab item'),
-			COALESCE(lo.lab_order_result, '-'),
+			COALESCE(lo.lab_order_result, ''),
 			COALESCE(i.lab_items_unit, ''),
 			COALESCE(i.lab_items_normal_value, '-'),
-			lh.order_date,
-			lh.order_time,
+			COALESCE(lh.order_date, ''),
+			COALESCE(lh.order_time, ''),
 			COALESCE(lh.form_name, 'ผลตรวจทั่วไป')
 		FROM lab_order lo
 		JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
 		LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
 		WHERE (lh.vn = ? OR (lh.an IS NOT NULL AND lh.an != '' AND lh.an = ?))
+		  AND lo.lab_order_result IS NOT NULL 
+		  AND TRIM(lo.lab_order_result) != '' 
+		  AND TRIM(lo.lab_order_result) != '-'
 		ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
 	`, cleanVN, an)
 	if err == nil {
@@ -546,6 +549,10 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		for labRows.Next() {
 			var l LabResultItem
 			if err := labRows.Scan(&l.LabName, &l.LabResult, &l.LabUnit, &l.NormalValue, &l.OrderDate, &l.OrderTime, &l.LabGroup); err == nil {
+				cleanRes := strings.TrimSpace(l.LabResult)
+				if cleanRes == "" || cleanRes == "-" {
+					continue
+				}
 				if len(l.OrderDate) > 10 {
 					l.OrderDate = l.OrderDate[:10]
 				}
