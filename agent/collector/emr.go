@@ -71,6 +71,8 @@ type VisitSummary struct {
 	HN          string  `json:"hn"`
 	HospCode    string  `json:"hospital_code"`
 	HospName    string  `json:"hospital_name"`
+	DRG         string  `json:"drg"`
+	RW          float64 `json:"rw"`
 }
 
 type VisitDetail struct {
@@ -86,6 +88,14 @@ type VisitDetail struct {
 	DchType      string           `json:"dch_type"`
 	DchStatus    string           `json:"dch_status"`
 	AdmDoctor    string           `json:"adm_doctor"`
+	DchDoctor    string           `json:"dch_doctor"`
+	ChartStatus  string           `json:"chart_status"`
+	DRG          string           `json:"drg"`
+	RW           float64          `json:"rw"`
+	AdjRW        float64          `json:"adjrw"`
+	TotalIncome  float64          `json:"total_income"`
+	PaidMoney    float64          `json:"paid_money"`
+	UcMoney      float64          `json:"uc_money"`
 	LatencyMs    float64          `json:"latency_ms"`
 	Medications  []PrescribedDrug `json:"medications"`
 	NonDrugs     []NonDrugItem    `json:"non_drugs"`
@@ -246,7 +256,7 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 		}
 	}
 
-	// 4. 20 Recent Visits (Both OPD and IPD with Admission details)
+	// 4. 20 Recent Visits (Both OPD and IPD with Admission details & Chart Summary)
 	visitRows, err := db.Query(`
 		SELECT 
 			o.vn, 
@@ -259,8 +269,8 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 			COALESCE(ipt.dchtime, ''),
 			COALESCE(w.name, ''),
 			COALESCE(d.department, 'แผนกตรวจทั่วไป'),
-			COALESCE(v.pdx, COALESCE(id_pdx.icd10, '')),
-			COALESCE(icd.name, COALESCE(icd_ipd.name, '')),
+			COALESCE(ans.pdx, COALESCE(v.pdx, COALESCE(id_pdx.icd10, ''))),
+			COALESCE(icd_ans.name, COALESCE(icd.name, COALESCE(icd_ipd.name, ''))),
 			COALESCE(s.cc, ''),
 			COALESCE(s.bps, 0),
 			COALESCE(s.bpd, 0),
@@ -270,20 +280,25 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 			COALESCE(s.height, 0),
 			COALESCE(s.bmi, 0),
 			COALESCE(pt.name, ''),
-			COALESCE(doc.name, COALESCE(doc_v.name, COALESCE(doc_adm.name, '')))
+			COALESCE(doc_dch.name, COALESCE(doc.name, COALESCE(doc_v.name, COALESCE(doc_adm.name, '')))),
+			COALESCE(ans.drg, ''),
+			COALESCE(ans.rw, 0)
 		FROM ovst o
 		LEFT JOIN ipt ipt ON ipt.an = o.an
+		LEFT JOIN an_stat ans ON ans.an = o.an
 		LEFT JOIN ward w ON w.ward = ipt.ward
 		LEFT JOIN vn_stat v ON v.vn = o.vn
 		LEFT JOIN iptdiag id_pdx ON id_pdx.an = o.an AND id_pdx.diagtype = '1'
 		LEFT JOIN opdscreen s ON s.vn = o.vn
 		LEFT JOIN kskdepartment d ON d.depcode = COALESCE(o.main_dep, o.cur_dep)
+		LEFT JOIN icd101 icd_ans ON icd_ans.code = ans.pdx
 		LEFT JOIN icd101 icd ON icd.code = v.pdx
 		LEFT JOIN icd101 icd_ipd ON icd_ipd.code = id_pdx.icd10
 		LEFT JOIN pttype pt ON pt.pttype = o.pttype
 		LEFT JOIN doctor doc ON doc.code = o.doctor
 		LEFT JOIN doctor doc_v ON doc_v.code = v.dx_doctor
 		LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.adm_doctor
+		LEFT JOIN doctor doc_dch ON doc_dch.code = COALESCE(ans.dch_doctor, COALESCE(ans.dx_doctor, ipt.dch_doctor))
 		WHERE o.hn = ?
 		ORDER BY o.vstdate DESC, o.vsttime DESC
 		LIMIT 20
@@ -299,6 +314,7 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 				&v.Department, &v.Pdx, &v.PdxName, &v.CC,
 				&v.BPS, &v.BPD, &v.Pulse, &v.Temperature,
 				&v.BW, &v.Height, &v.BMI, &v.PttypeName, &v.DoctorName,
+				&v.DRG, &v.RW,
 			); err == nil {
 				if len(v.VstDate) > 10 {
 					v.VstDate = v.VstDate[:10]
@@ -379,7 +395,10 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		detail.AN = an
 		detail.IsIPD = true
 
-		// Query IPD Admission Info
+		// Query IPD Admission Info & Chart Summary (an_stat + ipt)
+		var admDoctor, dchDoctor, dchStatus, dchType, drg string
+		var rw, adjrw, income, rcptMoney, ucMoney float64
+
 		_ = db.QueryRow(`
 			SELECT 
 				ipt.admdate,
@@ -387,12 +406,21 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 				COALESCE(ipt.dchdate, ''),
 				COALESCE(ipt.dchtime, ''),
 				COALESCE(w.name, ''),
-				COALESCE(doc.name, ''),
+				COALESCE(doc_adm.name, ''),
+				COALESCE(doc_dch.name, ''),
 				COALESCE(ds.name, ''),
-				COALESCE(dt.name, '')
+				COALESCE(dt.name, ''),
+				COALESCE(ans.drg, ''),
+				COALESCE(ans.rw, 0),
+				COALESCE(ans.adjrw, 0),
+				COALESCE(ans.income, 0),
+				COALESCE(ans.rcpt_money, 0),
+				COALESCE(ans.uc_money, 0)
 			FROM ipt
+			LEFT JOIN an_stat ans ON ans.an = ipt.an
 			LEFT JOIN ward w ON w.ward = ipt.ward
-			LEFT JOIN doctor doc ON doc.code = ipt.adm_doctor
+			LEFT JOIN doctor doc_adm ON doc_adm.code = ipt.adm_doctor
+			LEFT JOIN doctor doc_dch ON doc_dch.code = COALESCE(ans.dch_doctor, COALESCE(ans.dx_doctor, ipt.dch_doctor))
 			LEFT JOIN dchstts ds ON ds.dchstts = ipt.dchstts
 			LEFT JOIN dchtype dt ON dt.dchtype = ipt.dchtype
 			WHERE ipt.an = ?
@@ -400,9 +428,21 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		`, an).Scan(
 			&detail.AdmDate, &detail.AdmTime,
 			&detail.DchDate, &detail.DchTime,
-			&detail.WardName, &detail.AdmDoctor,
-			&detail.DchStatus, &detail.DchType,
+			&detail.WardName, &admDoctor, &dchDoctor,
+			&dchStatus, &dchType,
+			&drg, &rw, &adjrw, &income, &rcptMoney, &ucMoney,
 		)
+
+		detail.AdmDoctor = admDoctor
+		detail.DchDoctor = dchDoctor
+		detail.DchStatus = dchStatus
+		detail.DchType = dchType
+		detail.DRG = drg
+		detail.RW = rw
+		detail.AdjRW = adjrw
+		detail.TotalIncome = income
+		detail.PaidMoney = rcptMoney
+		detail.UcMoney = ucMoney
 
 		if detail.AdmDate != "" {
 			if detail.DchDate != "" {
@@ -418,6 +458,15 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 			} else {
 				detail.LOS = 1
 			}
+		}
+
+		// Determine Chart Summary Status
+		if detail.DchDate == "" {
+			detail.ChartStatus = "กำลังนอนรักษาตัวใน รพ. (Admitted)"
+		} else if dchDoctor != "" || drg != "" || rw > 0 {
+			detail.ChartStatus = "สรุปชาร์จแล้ว (Chart Summarized)"
+		} else {
+			detail.ChartStatus = "จำหน่ายแล้ว (รอสรุปชาร์จ)"
 		}
 
 		// Query IPD Diagnoses from iptdiag
@@ -445,6 +494,33 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 				var d DiagnosisItem
 				if err := ipdDiagRows.Scan(&d.DiagType, &d.Icd10, &d.DiagName, &d.DiagTypeName); err == nil {
 					detail.IpdDiagnoses = append(detail.IpdDiagnoses, d)
+				}
+			}
+		}
+
+		// Query IPD Procedures from iptoprt
+		ipdProcRows, err := db.Query(`
+			SELECT 
+				iop.icd9,
+				COALESCE(i9.name, ''),
+				COALESCE(d.name, ''),
+				CASE 
+					WHEN iop.op_type = '1' THEN 'Principal Procedure (หัตถการหลัก IPD)'
+					WHEN iop.op_type = '2' THEN 'Secondary Procedure (หัตถการรอง IPD)'
+					ELSE 'หัตถการ IPD'
+				END AS proctype_name
+			FROM iptoprt iop
+			LEFT JOIN icd9cm1 i9 ON i9.code = iop.icd9
+			LEFT JOIN doctor d ON d.code = iop.doctor
+			WHERE iop.an = ?
+			ORDER BY iop.op_type ASC
+		`, an)
+		if err == nil {
+			defer ipdProcRows.Close()
+			for ipdProcRows.Next() {
+				var p ProcedureItem
+				if err := ipdProcRows.Scan(&p.Icd9, &p.ProcName, &p.DoctorName, &p.ProcTypeName); err == nil {
+					detail.Procedures = append(detail.Procedures, p)
 				}
 			}
 		}
@@ -610,10 +686,17 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 	`, cleanVN, an)
 	if err == nil {
 		defer procRows.Close()
+		seenProcs := make(map[string]bool)
+		for _, p := range detail.Procedures {
+			seenProcs[p.Icd9] = true
+		}
 		for procRows.Next() {
 			var p ProcedureItem
 			if err := procRows.Scan(&p.Icd9, &p.ProcName, &p.DoctorName, &p.ProcTypeName); err == nil {
-				detail.Procedures = append(detail.Procedures, p)
+				if !seenProcs[p.Icd9] {
+					seenProcs[p.Icd9] = true
+					detail.Procedures = append(detail.Procedures, p)
+				}
 			}
 		}
 	}

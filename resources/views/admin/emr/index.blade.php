@@ -596,7 +596,7 @@
                                 </div>
                             </div>
 
-                            <!-- IPD View Fields (Admit / Dch / Ward / Doctor) -->
+                            <!-- IPD View Fields (Admit / Dch / Ward / Doctor / Chart Summary) -->
                             <div id="mViewIpdFields" class="d-none">
                                 <div class="rims-field-row">
                                     <div class="rims-field-label">วันที่ Admit:</div>
@@ -615,8 +615,20 @@
                                     <div class="rims-field-value text-dark fw-bold" id="mIpdWard">-</div>
                                 </div>
                                 <div class="rims-field-row">
-                                    <div class="rims-field-label">แพทย์เจ้าของไข้:</div>
-                                    <div class="rims-field-value text-dark fw-bold" id="mIpdDoctor">-</div>
+                                    <div class="rims-field-label">แพทย์ผู้รับ Admit:</div>
+                                    <div class="rims-field-value text-dark" id="mIpdAdmDoctor">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">แพทย์สรุปชาร์จ:</div>
+                                    <div class="rims-field-value text-primary fw-bold" id="mIpdDchDoctor">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">สถานะสรุปชาร์จ:</div>
+                                    <div class="rims-field-value" id="mIpdChartStatus">-</div>
+                                </div>
+                                <div class="rims-field-row">
+                                    <div class="rims-field-label">DRG / RW:</div>
+                                    <div class="rims-field-value" id="mIpdDrgRw">-</div>
                                 </div>
                                 <div class="rims-field-row">
                                     <div class="rims-field-label">สถานะจำหน่าย:</div>
@@ -720,8 +732,32 @@
                             </div>
                         </div>
 
-                        <!-- 2. Non-Drug / Medical Service Fees Table (icode 3%) -->
+                        <!-- 2. Non-Drug / Medical Service Fees Table (icode 3% & an_stat) -->
                         <div class="tab-pane fade" id="nondrug-pane" role="tabpanel">
+                            <!-- IPD Chart Financial Summary (an_stat) -->
+                            <div id="mIpdFinancialSummaryBox" class="d-none mb-3 p-3 rounded-3" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 1.5px solid #fdba74;">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-bold text-uppercase" style="color: #9a3412;">
+                                        <i class="fa-solid fa-file-invoice-dollar me-1"></i> สรุปค่ารักษาพยาบาลผู้ป่วยใน (an_stat Financial Summary)
+                                    </span>
+                                    <span class="badge" style="background: #ea580c; color: #fff;">IPD an_stat</span>
+                                </div>
+                                <div class="row g-2 text-center">
+                                    <div class="col-4 border-end" style="border-color: #fed7aa !important;">
+                                        <div class="small text-muted">ค่ารักษาพยาบาลรวม</div>
+                                        <div class="fs-6 fw-bold text-dark mt-0.5" id="mIpdIncome">0.00 บาท</div>
+                                    </div>
+                                    <div class="col-4 border-end" style="border-color: #fed7aa !important;">
+                                        <div class="small text-muted">สิทธิเบิกได้ / เรียกเก็บ UC</div>
+                                        <div class="fs-6 fw-bold text-success mt-0.5" id="mIpdUcMoney">0.00 บาท</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="small text-muted">ชำระเงินเอง</div>
+                                        <div class="fs-6 fw-bold text-danger mt-0.5" id="mIpdPaidMoney">0.00 บาท</div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
@@ -1303,7 +1339,10 @@
         document.getElementById('mIpdDchDate').textContent = dchDateStr;
         document.getElementById('mIpdLos').textContent = `${visit.los || 1} วัน`;
         document.getElementById('mIpdWard').textContent = visit.ward_name || visit.department || 'IPD';
-        document.getElementById('mIpdDoctor').textContent = visit.doctor_name || visit.adm_doctor || '-';
+        document.getElementById('mIpdAdmDoctor').textContent = visit.adm_doctor || '-';
+        document.getElementById('mIpdDchDoctor').textContent = visit.doctor_name || '-';
+        document.getElementById('mIpdChartStatus').innerHTML = '<span class="text-muted small">กำลังตรวจสอบ...</span>';
+        document.getElementById('mIpdDrgRw').textContent = visit.drg ? `${visit.drg} (RW: ${visit.rw || 0})` : '-';
         document.getElementById('mIpdDchStatus').textContent = visit.dch_type || visit.dch_status || '-';
         document.getElementById('mIpdCC').textContent = visit.cc || '-';
 
@@ -1339,6 +1378,10 @@
         document.getElementById('modalDiagTableBody').innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงข้อมูลการวินิจฉัย...</td></tr>';
         document.getElementById('modalProcTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงข้อมูลหัตถการ (ICD-9)...</td></tr>';
         
+        // Hide Financial Summary Box initially
+        const finBox = document.getElementById('mIpdFinancialSummaryBox');
+        if (finBox) finBox.classList.add('d-none');
+
         const modal = new bootstrap.Modal(document.getElementById('visitDetailModal'));
         modal.show();
 
@@ -1369,12 +1412,44 @@
             if (data.dch_status || data.dch_type) {
                 document.getElementById('mIpdDchStatus').textContent = `${data.dch_type || ''} ${data.dch_status ? '(' + data.dch_status + ')' : ''}`.trim() || '-';
             }
-            if (data.adm_doctor) document.getElementById('mIpdDoctor').textContent = data.adm_doctor;
+            if (data.adm_doctor) document.getElementById('mIpdAdmDoctor').textContent = data.adm_doctor;
+            if (data.dch_doctor) document.getElementById('mIpdDchDoctor').textContent = data.dch_doctor;
+            
+            // Chart summary status badge
+            if (data.chart_status) {
+                let cBadge = 'bg-secondary';
+                if (data.chart_status.includes('สรุปชาร์จแล้ว')) cBadge = 'bg-success';
+                else if (data.chart_status.includes('กำลังนอน')) cBadge = 'bg-info text-dark';
+                else if (data.chart_status.includes('รอสรุป')) cBadge = 'bg-warning text-dark';
+                document.getElementById('mIpdChartStatus').innerHTML = `<span class="badge ${cBadge} px-2 py-1">${escapeHtml(data.chart_status)}</span>`;
+            } else {
+                document.getElementById('mIpdChartStatus').textContent = '-';
+            }
+
+            // DRG / RW display
+            if (data.drg || data.rw > 0) {
+                document.getElementById('mIpdDrgRw').innerHTML = `
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 fw-bold">DRG: ${escapeHtml(data.drg || '-')}</span>
+                    <span class="badge bg-light text-dark border px-2 py-1">RW: ${Number(data.rw || 0).toFixed(4)}</span>
+                    ${data.adjrw > 0 ? `<span class="badge bg-light text-muted border px-1.5 py-1 small">AdjRW: ${Number(data.adjrw).toFixed(4)}</span>` : ''}
+                `;
+            } else {
+                document.getElementById('mIpdDrgRw').textContent = '-';
+            }
+
             if (data.admdate) {
                 document.getElementById('mIpdAdmDate').textContent = formatThaiDateTime(data.admdate, data.admtime);
             }
             if (data.dchdate) {
                 document.getElementById('mIpdDchDate').textContent = formatThaiDateTime(data.dchdate, data.dchtime);
+            }
+
+            // Financial Summary for IPD
+            if (isIpd && finBox && (data.total_income > 0 || data.uc_money > 0 || data.paid_money > 0)) {
+                finBox.classList.remove('d-none');
+                document.getElementById('mIpdIncome').textContent = Number(data.total_income || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+                document.getElementById('mIpdUcMoney').textContent = Number(data.uc_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+                document.getElementById('mIpdPaidMoney').textContent = Number(data.paid_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
             }
 
             // 1. Medications (Smart categorized: Home Meds vs In-Hospital Meds)
