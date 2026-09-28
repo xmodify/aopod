@@ -1987,8 +1987,8 @@
             if (opdLabs.length > 0) validLabs = opdLabs;
         }
 
-        // Extract all unique dates sorted ascending
-        const labDates = [...new Set(validLabs.map(l => (l.order_date || '').substring(0, 10)).filter(d => d))].sort();
+        // Extract all unique dates sorted descending (latest date on the left)
+        const labDates = [...new Set(validLabs.map(l => (l.order_date || '').substring(0, 10)).filter(d => d))].sort((a, b) => b.localeCompare(a));
 
         // Group tests by lab_name
         const groupedTests = {};
