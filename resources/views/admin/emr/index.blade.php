@@ -520,6 +520,9 @@
                         <button type="button" class="modal-mode-pill" id="modeBtnOpd" onclick="switchModalMode('OPD')">
                             <i class="fa-solid fa-stethoscope me-1"></i> ข้อมูลตรวจแรกรับ (OPD)
                         </button>
+                        <button type="button" class="modal-mode-pill" id="modeBtnAll" onclick="switchModalMode('ALL')">
+                            <i class="fa-solid fa-layer-group me-1"></i> รวมทุกรายการ (All)
+                        </button>
                     </div>
                     <div id="modalIpdLosSummary" class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; padding: 0.5rem 0.85rem; font-size: 0.85rem; border-radius: 9999px;">
                         <i class="fa-solid fa-bed-pulse me-1"></i> Admit Case
@@ -1129,6 +1132,7 @@
         currentModalMode = mode;
         const btnIpd = document.getElementById('modeBtnIpd');
         const btnOpd = document.getElementById('modeBtnOpd');
+        const btnAll = document.getElementById('modeBtnAll');
         const viewOpd = document.getElementById('mViewOpdFields');
         const viewIpd = document.getElementById('mViewIpdFields');
         const cardHeader = document.getElementById('cardClinicalHeader');
@@ -1136,24 +1140,39 @@
         const headerIcon = document.getElementById('modalHeaderIcon');
         const modalTitle = document.getElementById('visitDetailModalLabel');
 
+        if (btnIpd) btnIpd.className = 'modal-mode-pill';
+        if (btnOpd) btnOpd.className = 'modal-mode-pill';
+        if (btnAll) btnAll.className = 'modal-mode-pill';
+
         if (mode === 'IPD') {
-            btnIpd.className = 'modal-mode-pill active-ipd';
-            btnOpd.className = 'modal-mode-pill';
+            if (btnIpd) btnIpd.className = 'modal-mode-pill active-ipd';
             viewOpd.classList.add('d-none');
             viewIpd.classList.remove('d-none');
             cardHeader.innerHTML = '<i class="fa-solid fa-bed-pulse text-danger"></i> ข้อมูลการนอน รพ. (IPD)';
             modalHeader.classList.add('header-ipd');
             headerIcon.innerHTML = '<i class="fa-solid fa-bed-pulse"></i>';
             modalTitle.textContent = 'รายละเอียดการรักษาผู้ป่วยใน (IPD / Admission)';
-        } else {
-            btnOpd.className = 'modal-mode-pill active-opd';
-            btnIpd.className = 'modal-mode-pill';
+        } else if (mode === 'OPD') {
+            if (btnOpd) btnOpd.className = 'modal-mode-pill active-opd';
             viewOpd.classList.remove('d-none');
             viewIpd.classList.add('d-none');
             cardHeader.innerHTML = '<i class="fa-solid fa-stethoscope text-primary"></i> ข้อมูลตรวจแรกรับ (OPD)';
             modalHeader.classList.remove('header-ipd');
             headerIcon.innerHTML = '<i class="fa-solid fa-file-medical"></i>';
             modalTitle.textContent = 'รายละเอียดการรักษาผู้ป่วยนอก (OPD)';
+        } else {
+            // ALL Mode
+            if (btnAll) btnAll.className = 'modal-mode-pill active-opd';
+            viewOpd.classList.remove('d-none');
+            viewIpd.classList.remove('d-none');
+            cardHeader.innerHTML = '<i class="fa-solid fa-layer-group text-primary"></i> ข้อมูลรวม OPD & IPD';
+            modalHeader.classList.remove('header-ipd');
+            headerIcon.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
+            modalTitle.textContent = 'รายละเอียดการรักษาทั้งหมด (OPD & IPD)';
+        }
+
+        if (activeModalDetail) {
+            renderModalTabs(mode, activeModalDetail);
         }
     }
 
@@ -1444,196 +1463,215 @@
                 document.getElementById('mIpdDchDate').textContent = formatThaiDateTime(data.dchdate, data.dchtime);
             }
 
-            // Financial Summary for IPD
-            if (isIpd && finBox && (data.total_income > 0 || data.uc_money > 0 || data.paid_money > 0)) {
-                finBox.classList.remove('d-none');
-                document.getElementById('mIpdIncome').textContent = Number(data.total_income || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
-                document.getElementById('mIpdUcMoney').textContent = Number(data.uc_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
-                document.getElementById('mIpdPaidMoney').textContent = Number(data.paid_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
-            }
-
-            // 1. Medications (Smart categorized: Home Meds vs In-Hospital Meds)
-            const medBody = document.getElementById('modalMedTableBody');
-            document.getElementById('modalMedCount').textContent = data.medications ? data.medications.length : 0;
-            if (data.medications && data.medications.length > 0) {
-                medBody.innerHTML = '';
-
-                // Sort: Home Meds first, then other meds
-                const sortedMeds = [...data.medications].sort((a, b) => {
-                    const isHomeA = (a.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
-                    const isHomeB = (b.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
-                    return isHomeA - isHomeB;
-                });
-
-                sortedMeds.forEach((m, idx) => {
-                    const tr = document.createElement('tr');
-                    
-                    // Med Category badge
-                    let catBadge = '';
-                    if (m.med_category) {
-                        if (m.med_category.includes('ยากลับบ้าน')) {
-                            catBadge = `<span class="badge-home-med mb-1"><i class="fa-solid fa-house-medical"></i> ยากลับบ้าน</span>`;
-                        } else if (m.med_category.includes('นอน รพ.')) {
-                            catBadge = `<span class="badge-ipd-med mb-1"><i class="fa-solid fa-syringe"></i> ยาระหว่างนอน รพ.</span>`;
-                        }
-                    }
-
-                    // Date range text for IPD repeat meds
-                    let dateRangeText = '';
-                    if (m.first_date && m.last_date && m.first_date !== m.last_date) {
-                        dateRangeText = `<div class="small fw-semibold text-muted"><i class="fa-regular fa-calendar me-1"></i>${formatThaiDateTime(m.first_date, '')} - ${formatThaiDateTime(m.last_date, '')} (${m.days_count || 1} วัน)</div>`;
-                    }
-
-                    tr.innerHTML = `
-                        <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                        <td>
-                            ${catBadge ? `<div>${catBadge}</div>` : ''}
-                            <div class="fw-bold text-slate-800">${escapeHtml(m.drug_name)}</div>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${m.qty} ${escapeHtml(m.units || '')}</span>
-                        </td>
-                        <td class="small text-muted">
-                            <div class="fw-medium text-dark">${escapeHtml(m.usage1 || '')}</div>
-                            ${m.usage2 ? `<div>${escapeHtml(m.usage2)}</div>` : ''}
-                            ${m.usage3 ? `<div>${escapeHtml(m.usage3)}</div>` : ''}
-                        </td>
-                        <td>
-                            ${dateRangeText}
-                            ${m.sp_use ? `<div class="small text-primary fw-semibold mt-0.5"><i class="fa-solid fa-circle-info me-1"></i>${escapeHtml(m.sp_use)}</div>` : ''}
-                            ${!dateRangeText && !m.sp_use ? '<span class="text-muted small">-</span>' : ''}
-                        </td>
-                    `;
-                    medBody.appendChild(tr);
-                });
-            } else {
-                medBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่พบรายการสั่งยาในครั้งนี้</td></tr>';
-            }
-
-            // 2. Non-Drug / Medical Services (icode 3% from opitemrece)
-            const nonDrugBody = document.getElementById('modalNonDrugTableBody');
-            document.getElementById('modalNonDrugCount').textContent = data.non_drugs ? data.non_drugs.length : 0;
-            if (data.non_drugs && data.non_drugs.length > 0) {
-                nonDrugBody.innerHTML = '';
-                data.non_drugs.forEach((nd, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                        <td class="fw-bold text-slate-800">${escapeHtml(nd.item_name)}</td>
-                        <td class="text-center"><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${nd.qty}</span></td>
-                        <td class="text-center text-muted small">${escapeHtml(nd.units || '-')}</td>
-                        <td class="text-end text-muted">${Number(nd.unit_price || 0).toLocaleString('th-TH', {minimumFractionDigits: 2})}</td>
-                        <td class="text-end fw-bold text-primary">${Number(nd.sum_price || 0).toLocaleString('th-TH', {minimumFractionDigits: 2})}</td>
-                    `;
-                    nonDrugBody.appendChild(tr);
-                });
-            } else {
-                nonDrugBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">ไม่พบรายการค่ารักษาพยาบาลในครั้งนี้</td></tr>';
-            }
-
-            // 3. Labs (Only tests with reported results)
-            const labBody = document.getElementById('modalLabTableBody');
-            const validLabs = (data.lab_results || []).filter(l => {
-                const res = (l.lab_result || '').trim();
-                return res !== '' && res !== '-' && res !== 'null';
-            });
-            document.getElementById('modalLabCount').textContent = validLabs.length;
-            if (validLabs.length > 0) {
-                labBody.innerHTML = '';
-                validLabs.forEach((l, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                        <td class="fw-bold text-dark">${escapeHtml(l.lab_name)}</td>
-                        <td class="text-center fw-bold text-primary fs-6">${escapeHtml(l.lab_result)}</td>
-                        <td class="text-center text-muted small">${escapeHtml(l.lab_unit || '-')}</td>
-                        <td class="small text-muted">${escapeHtml(l.normal_value || '-')}</td>
-                    `;
-                    labBody.appendChild(tr);
-                });
-            } else {
-                labBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีรายการตรวจ Lab ที่มีผลตรวจในครั้งนี้</td></tr>';
-            }
-
-            // 4. Diagnoses (ICD-10 OPD + IPD)
-            const diagBody = document.getElementById('modalDiagTableBody');
-            const totalDiagCount = (data.diagnoses ? data.diagnoses.length : 0) + (data.ipd_diagnoses ? data.ipd_diagnoses.length : 0);
-            document.getElementById('modalDiagCount').textContent = totalDiagCount;
-
-            if (totalDiagCount > 0) {
-                diagBody.innerHTML = '';
-
-                // IPD Diagnoses section
-                if (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) {
-                    const headerTr = document.createElement('tr');
-                    headerTr.innerHTML = `
-                        <td colspan="4" class="fw-bold py-2 px-3" style="background: #ffedd5; color: #9a3412; font-size: 0.85rem;">
-                            <i class="fa-solid fa-bed-pulse me-1"></i> การวินิจฉัยผู้ป่วยใน (IPD Diagnoses)
-                        </td>
-                    `;
-                    diagBody.appendChild(headerTr);
-
-                    data.ipd_diagnoses.forEach((d, idx) => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                            <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2.5 py-1.5 fw-bold">${escapeHtml(d.icd10)}</span></td>
-                            <td class="fw-semibold text-slate-800">${escapeHtml(d.diag_name)}</td>
-                            <td><span class="badge" style="background:#fed7aa; color:#9a3412;">${escapeHtml(d.diagtype_name || 'IPD Diag')}</span></td>
-                        `;
-                        diagBody.appendChild(tr);
-                    });
-                }
-
-                // OPD Diagnoses section
-                if (data.diagnoses && data.diagnoses.length > 0) {
-                    if (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) {
-                        const opdHeaderTr = document.createElement('tr');
-                        opdHeaderTr.innerHTML = `
-                            <td colspan="4" class="fw-bold py-2 px-3 bg-light text-primary" style="font-size: 0.85rem;">
-                                <i class="fa-solid fa-stethoscope me-1"></i> การวินิจฉัยแรกรับ / ผู้ป่วยนอก (OPD Diagnoses)
-                            </td>
-                        `;
-                        diagBody.appendChild(opdHeaderTr);
-                    }
-
-                    data.diagnoses.forEach((d, idx) => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                            <td><span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2.5 py-1.5 fw-bold">${escapeHtml(d.icd10)}</span></td>
-                            <td class="fw-semibold text-slate-800">${escapeHtml(d.diag_name)}</td>
-                            <td class="small text-muted">${escapeHtml(d.diagtype_name)}</td>
-                        `;
-                        diagBody.appendChild(tr);
-                    });
-                }
-            } else {
-                diagBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">ไม่มีข้อมูลการวินิจฉัย</td></tr>';
-            }
-
-            // 5. Procedures (ICD-9)
-            const procBody = document.getElementById('modalProcTableBody');
-            document.getElementById('modalProcCount').textContent = data.procedures ? data.procedures.length : 0;
-            if (data.procedures && data.procedures.length > 0) {
-                procBody.innerHTML = '';
-                data.procedures.forEach((p, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="text-muted fw-bold text-center">${idx + 1}</td>
-                        <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2.5 py-1.5 fw-bold">${escapeHtml(p.icd9)}</span></td>
-                        <td class="fw-semibold text-slate-800">${escapeHtml(p.proc_name)}</td>
-                        <td class="small text-dark">${escapeHtml(p.doctor_name || '-')}</td>
-                        <td class="small text-muted">${escapeHtml(p.proctype_name || 'หัตถการ')}</td>
-                    `;
-                    procBody.appendChild(tr);
-                });
-            } else {
-                procBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีข้อมูลหัตถการในครั้งนี้</td></tr>';
-            }
+            // Render tabs based on currently selected mode (IPD vs OPD vs ALL)
+            renderModalTabs(currentModalMode, data);
 
         } catch (err) {
             document.getElementById('modalMedTableBody').innerHTML = `<tr><td colspan="5" class="text-danger text-center py-3">โหลดข้อมูลล้มเหลว: ${err.message}</td></tr>`;
+        }
+    }
+
+    function renderModalTabs(mode, data) {
+        if (!data) return;
+        const isIpd = (mode === 'IPD');
+        const isOpd = (mode === 'OPD');
+        const isAll = (mode === 'ALL');
+
+        // 1. Financial Summary for IPD
+        const finBox = document.getElementById('mIpdFinancialSummaryBox');
+        if (!isOpd && finBox && (data.total_income > 0 || data.uc_money > 0 || data.paid_money > 0)) {
+            finBox.classList.remove('d-none');
+            document.getElementById('mIpdIncome').textContent = Number(data.total_income || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+            document.getElementById('mIpdUcMoney').textContent = Number(data.uc_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+            document.getElementById('mIpdPaidMoney').textContent = Number(data.paid_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+        } else if (finBox) {
+            finBox.classList.add('d-none');
+        }
+
+        // 2. Medications
+        const medBody = document.getElementById('modalMedTableBody');
+        let filteredMeds = data.medications || [];
+        if (isIpd) {
+            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ยากลับบ้าน') || (m.med_category || '').includes('นอน รพ.'));
+        } else if (isOpd) {
+            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ผู้ป่วยนอก (OPD)'));
+        }
+
+        document.getElementById('modalMedCount').textContent = filteredMeds.length;
+        if (filteredMeds.length > 0) {
+            medBody.innerHTML = '';
+            const sortedMeds = [...filteredMeds].sort((a, b) => {
+                const isHomeA = (a.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
+                const isHomeB = (b.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
+                return isHomeA - isHomeB;
+            });
+
+            sortedMeds.forEach((m, idx) => {
+                const tr = document.createElement('tr');
+                let catBadge = '';
+                if (m.med_category) {
+                    if (m.med_category.includes('ยากลับบ้าน')) {
+                        catBadge = `<span class="badge-home-med mb-1"><i class="fa-solid fa-house-medical"></i> ยากลับบ้าน</span>`;
+                    } else if (m.med_category.includes('นอน รพ.')) {
+                        catBadge = `<span class="badge-ipd-med mb-1"><i class="fa-solid fa-syringe"></i> ยาระหว่างนอน รพ.</span>`;
+                    } else {
+                        catBadge = `<span class="badge bg-primary bg-opacity-10 text-primary border mb-1"><i class="fa-solid fa-stethoscope"></i> ยา OPD</span>`;
+                    }
+                }
+
+                let dateRangeText = '';
+                if (m.first_date && m.last_date && m.first_date !== m.last_date) {
+                    dateRangeText = `<div class="small fw-semibold text-muted"><i class="fa-regular fa-calendar me-1"></i>${formatThaiDateTime(m.first_date, '')} - ${formatThaiDateTime(m.last_date, '')} (${m.days_count || 1} วัน)</div>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td>
+                        ${catBadge ? `<div>${catBadge}</div>` : ''}
+                        <div class="fw-bold text-slate-800">${escapeHtml(m.drug_name)}</div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${m.qty} ${escapeHtml(m.units || '')}</span>
+                    </td>
+                    <td class="small text-muted">
+                        <div class="fw-medium text-dark">${escapeHtml(m.usage1 || '')}</div>
+                        ${m.usage2 ? `<div>${escapeHtml(m.usage2)}</div>` : ''}
+                        ${m.usage3 ? `<div>${escapeHtml(m.usage3)}</div>` : ''}
+                    </td>
+                    <td>
+                        ${dateRangeText}
+                        ${m.sp_use ? `<div class="small text-primary fw-semibold mt-0.5"><i class="fa-solid fa-circle-info me-1"></i>${escapeHtml(m.sp_use)}</div>` : ''}
+                        ${!dateRangeText && !m.sp_use ? '<span class="text-muted small">-</span>' : ''}
+                    </td>
+                `;
+                medBody.appendChild(tr);
+            });
+        } else {
+            const noMedsText = isOpd
+                ? '<i class="fa-solid fa-circle-info me-1"></i> ไม่มีรายการสั่งยาที่แผนกผู้ป่วยนอก (OPD) ก่อน Admit'
+                : 'ไม่พบรายการสั่งยาในส่วนนี้';
+            medBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">${noMedsText}</td></tr>`;
+        }
+
+        // 3. Non-Drug / Medical Services
+        const nonDrugBody = document.getElementById('modalNonDrugTableBody');
+        let filteredNonDrugs = data.non_drugs || [];
+        if (isIpd) {
+            filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'IPD' || (nd.category || '') === '');
+        } else if (isOpd) {
+            filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'OPD' || (nd.category || '') === '');
+        }
+
+        document.getElementById('modalNonDrugCount').textContent = filteredNonDrugs.length;
+        if (filteredNonDrugs.length > 0) {
+            nonDrugBody.innerHTML = '';
+            filteredNonDrugs.forEach((nd, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td class="fw-bold text-slate-800">${escapeHtml(nd.item_name)}</td>
+                    <td class="text-center"><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${nd.qty}</span></td>
+                    <td class="text-center text-muted small">${escapeHtml(nd.units || '-')}</td>
+                    <td class="text-end text-muted">${Number(nd.unit_price || 0).toLocaleString('th-TH', {minimumFractionDigits: 2})}</td>
+                    <td class="text-end fw-bold text-primary">${Number(nd.sum_price || 0).toLocaleString('th-TH', {minimumFractionDigits: 2})}</td>
+                `;
+                nonDrugBody.appendChild(tr);
+            });
+        } else {
+            nonDrugBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">ไม่พบรายการค่ารักษาพยาบาลในส่วนนี้</td></tr>';
+        }
+
+        // 4. Labs
+        const labBody = document.getElementById('modalLabTableBody');
+        let validLabs = (data.lab_results || []).filter(l => {
+            const res = (l.lab_result || '').trim();
+            return res !== '' && res !== '-' && res !== 'null';
+        });
+        if (isIpd) {
+            const ipdLabs = validLabs.filter(l => (l.category || '') === 'IPD');
+            if (ipdLabs.length > 0) validLabs = ipdLabs;
+        } else if (isOpd) {
+            const opdLabs = validLabs.filter(l => (l.category || '') === 'OPD');
+            if (opdLabs.length > 0) validLabs = opdLabs;
+        }
+
+        document.getElementById('modalLabCount').textContent = validLabs.length;
+        if (validLabs.length > 0) {
+            labBody.innerHTML = '';
+            validLabs.forEach((l, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td class="fw-bold text-dark">${escapeHtml(l.lab_name)}</td>
+                    <td class="text-center fw-bold text-primary fs-6">${escapeHtml(l.lab_result)}</td>
+                    <td class="text-center text-muted small">${escapeHtml(l.lab_unit || '-')}</td>
+                    <td class="small text-muted">${escapeHtml(l.normal_value || '-')}</td>
+                `;
+                labBody.appendChild(tr);
+            });
+        } else {
+            labBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีรายการตรวจ Lab ที่มีผลตรวจในส่วนนี้</td></tr>';
+        }
+
+        // 5. Diagnoses
+        const diagBody = document.getElementById('modalDiagTableBody');
+        let displayedDiags = [];
+        if (isIpd) {
+            displayedDiags = (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) ? data.ipd_diagnoses : (data.diagnoses || []);
+        } else if (isOpd) {
+            displayedDiags = data.diagnoses || [];
+        } else {
+            // ALL Mode
+            displayedDiags = [...(data.ipd_diagnoses || []), ...(data.diagnoses || [])];
+        }
+
+        document.getElementById('modalDiagCount').textContent = displayedDiags.length;
+        if (displayedDiags.length > 0) {
+            diagBody.innerHTML = '';
+            displayedDiags.forEach((d, idx) => {
+                const tr = document.createElement('tr');
+                const badgeStyle = (d.diagtype_name || '').includes('IPD') || isIpd
+                    ? 'background:#fed7aa; color:#9a3412;'
+                    : 'background:#e0f2fe; color:#0369a1;';
+                tr.innerHTML = `
+                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td><span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2.5 py-1.5 fw-bold">${escapeHtml(d.icd10)}</span></td>
+                    <td class="fw-semibold text-slate-800">${escapeHtml(d.diag_name)}</td>
+                    <td><span class="badge" style="${badgeStyle}">${escapeHtml(d.diagtype_name || (isIpd ? 'IPD Diag' : 'OPD Diag'))}</span></td>
+                `;
+                diagBody.appendChild(tr);
+            });
+        } else {
+            diagBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">ไม่มีข้อมูลการวินิจฉัยในส่วนนี้</td></tr>';
+        }
+
+        // 6. Procedures
+        const procBody = document.getElementById('modalProcTableBody');
+        let filteredProcs = data.procedures || [];
+        if (isIpd) {
+            const ipdProcs = filteredProcs.filter(p => (p.category || '') === 'IPD');
+            if (ipdProcs.length > 0) filteredProcs = ipdProcs;
+        } else if (isOpd) {
+            const opdProcs = filteredProcs.filter(p => (p.category || '') === 'OPD');
+            if (opdProcs.length > 0) filteredProcs = opdProcs;
+        }
+
+        document.getElementById('modalProcCount').textContent = filteredProcs.length;
+        if (filteredProcs.length > 0) {
+            procBody.innerHTML = '';
+            filteredProcs.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2.5 py-1.5 fw-bold">${escapeHtml(p.icd9)}</span></td>
+                    <td class="fw-semibold text-slate-800">${escapeHtml(p.proc_name)}</td>
+                    <td class="small text-dark">${escapeHtml(p.doctor_name || '-')}</td>
+                    <td class="small text-muted">${escapeHtml(p.proctype_name || 'หัตถการ')}</td>
+                `;
+                procBody.appendChild(tr);
+            });
+        } else {
+            procBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีข้อมูลหัตถการในส่วนนี้</td></tr>';
         }
     }
 

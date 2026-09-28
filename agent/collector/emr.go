@@ -126,6 +126,7 @@ type NonDrugItem struct {
 	Units     string  `json:"units"`
 	UnitPrice float64 `json:"unit_price"`
 	SumPrice  float64 `json:"sum_price"`
+	Category  string  `json:"category"` // "OPD" or "IPD"
 }
 
 type LabResultItem struct {
@@ -136,6 +137,7 @@ type LabResultItem struct {
 	OrderDate   string `json:"order_date"`
 	OrderTime   string `json:"order_time"`
 	LabGroup    string `json:"lab_group"`
+	Category    string `json:"category"` // "OPD" or "IPD"
 }
 
 type DiagnosisItem struct {
@@ -150,6 +152,7 @@ type ProcedureItem struct {
 	ProcName     string `json:"proc_name"`
 	DoctorName   string `json:"doctor_name"`
 	ProcTypeName string `json:"proctype_name"`
+	Category     string `json:"category"` // "OPD" or "IPD"
 }
 
 // CollectPatientEMR searches patient demographics, allergies, clinics, and 20 recent visits by CID.
@@ -519,6 +522,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 			for ipdProcRows.Next() {
 				var p ProcedureItem
 				if err := ipdProcRows.Scan(&p.Icd9, &p.ProcName, &p.DoctorName, &p.ProcTypeName); err == nil {
+					p.Category = "IPD"
 					detail.Procedures = append(detail.Procedures, p)
 				}
 			}
@@ -583,18 +587,22 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 			SUM(op.qty) AS qty,
 			COALESCE(nd.unit, ''),
 			COALESCE(op.unitprice, 0),
-			COALESCE(SUM(op.sum_price), 0)
+			COALESCE(SUM(op.sum_price), 0),
+			CASE 
+				WHEN op.an IS NOT NULL AND op.an != '' THEN 'IPD'
+				ELSE 'OPD'
+			END AS category
 		FROM opitemrece op
 		JOIN nondrugitems nd ON nd.icode = op.icode
 		WHERE (op.vn = ? OR (op.an IS NOT NULL AND op.an != '' AND op.an = ?))
-		GROUP BY nd.icode, nd.name, nd.unit, op.unitprice
+		GROUP BY nd.icode, nd.name, nd.unit, op.unitprice, category
 		ORDER BY nd.name ASC
 	`, cleanVN, an)
 	if err == nil {
 		defer ndRows.Close()
 		for ndRows.Next() {
 			var nd NonDrugItem
-			if err := ndRows.Scan(&nd.ItemName, &nd.Qty, &nd.Units, &nd.UnitPrice, &nd.SumPrice); err == nil {
+			if err := ndRows.Scan(&nd.ItemName, &nd.Qty, &nd.Units, &nd.UnitPrice, &nd.SumPrice, &nd.Category); err == nil {
 				detail.NonDrugs = append(detail.NonDrugs, nd)
 			}
 		}
@@ -609,7 +617,11 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 			COALESCE(i.lab_items_normal_value, '-'),
 			COALESCE(lh.order_date, ''),
 			COALESCE(lh.order_time, ''),
-			COALESCE(lh.form_name, 'ผลตรวจทั่วไป')
+			COALESCE(lh.form_name, 'ผลตรวจทั่วไป'),
+			CASE 
+				WHEN lh.an IS NOT NULL AND lh.an != '' THEN 'IPD'
+				ELSE 'OPD'
+			END AS category
 		FROM lab_order lo
 		JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
 		LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
@@ -623,7 +635,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		defer labRows.Close()
 		for labRows.Next() {
 			var l LabResultItem
-			if err := labRows.Scan(&l.LabName, &l.LabResult, &l.LabUnit, &l.NormalValue, &l.OrderDate, &l.OrderTime, &l.LabGroup); err == nil {
+			if err := labRows.Scan(&l.LabName, &l.LabResult, &l.LabUnit, &l.NormalValue, &l.OrderDate, &l.OrderTime, &l.LabGroup, &l.Category); err == nil {
 				cleanRes := strings.TrimSpace(l.LabResult)
 				if cleanRes == "" || cleanRes == "-" {
 					continue
@@ -675,7 +687,11 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 				WHEN od.diagtype = '1' THEN 'Principal Procedure (หัตถการหลัก)'
 				WHEN od.diagtype = '2' THEN 'Secondary Procedure (หัตถการรอง)'
 				ELSE 'หัตถการอื่น'
-			END AS proctype_name
+			END AS proctype_name,
+			CASE 
+				WHEN od.an IS NOT NULL AND od.an != '' THEN 'IPD'
+				ELSE 'OPD'
+			END AS category
 		FROM ovstdiag od
 		LEFT JOIN icd9cm1 i9 ON i9.code = od.icd10
 		LEFT JOIN icd101 i10 ON i10.code = od.icd10
@@ -691,7 +707,7 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		}
 		for procRows.Next() {
 			var p ProcedureItem
-			if err := procRows.Scan(&p.Icd9, &p.ProcName, &p.DoctorName, &p.ProcTypeName); err == nil {
+			if err := procRows.Scan(&p.Icd9, &p.ProcName, &p.DoctorName, &p.ProcTypeName, &p.Category); err == nil {
 				if !seenProcs[p.Icd9] {
 					seenProcs[p.Icd9] = true
 					detail.Procedures = append(detail.Procedures, p)
