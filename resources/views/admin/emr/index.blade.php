@@ -818,7 +818,7 @@
                         <div class="tab-pane fade" id="labs-pane" role="tabpanel">
                             <div class="modal-tab-table-container">
                                 <table class="table table-hover align-middle mb-0 modal-table">
-                                    <thead>
+                                    <thead id="modalLabTableHead">
                                         <tr>
                                             <th style="width: 50px;" class="text-center">#</th>
                                             <th>รายการตรวจ (Lab Test)</th>
@@ -913,6 +913,22 @@
                 timePart = ' ' + timeStr.substring(0, 5) + ' น.';
             }
             return `${day} ${mName} ${year}${timePart}`;
+        }
+        return dateStr;
+    }
+
+    function formatThaiDateShort(dateStr) {
+        if (!dateStr) return '-';
+        const cleanDate = dateStr.substring(0, 10);
+        const parts = cleanDate.split('-');
+        if (parts.length === 3) {
+            let year = parseInt(parts[0], 10);
+            if (year < 2400) year += 543;
+            const yearShort = (year % 100).toString().padStart(2, '0');
+            const monthIndex = parseInt(parts[1], 10) - 1;
+            const day = parseInt(parts[2], 10);
+            const mName = thaiMonthsShort[monthIndex] || parts[1];
+            return `${day} ${mName} ${yearShort}`;
         }
         return dateStr;
     }
@@ -1663,10 +1679,42 @@
                     }
                 }
 
-                let dateRangeText = '';
-                if (m.first_date && m.last_date && m.first_date !== m.last_date) {
-                    dateRangeText = `<div class="small fw-semibold text-muted"><i class="fa-regular fa-calendar me-1"></i>${formatThaiDateTime(m.first_date, '')} - ${formatThaiDateTime(m.last_date, '')} (${m.days_count || 1} วัน)</div>`;
+                // Build Periods / Dates column
+                let periodsHtml = '';
+                if (m.periods && m.periods.length > 0) {
+                    if (m.periods.length === 1) {
+                        const p = m.periods[0];
+                        if (p.first_date && p.last_date && p.first_date !== p.last_date) {
+                            periodsHtml += `<div class="small fw-semibold text-slate-700"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateTime(p.first_date, '')} - ${formatThaiDateTime(p.last_date, '')} <span class="badge bg-light text-dark border ms-1" style="font-size:0.7rem;">${p.qty} ${escapeHtml(m.units)}</span></div>`;
+                        } else if (p.first_date) {
+                            periodsHtml += `<div class="small fw-semibold text-slate-700"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateTime(p.first_date, '')} <span class="badge bg-light text-dark border ms-1" style="font-size:0.7rem;">${p.qty} ${escapeHtml(m.units)}</span></div>`;
+                        }
+                        if (p.sp_use) {
+                            periodsHtml += `<div class="small text-primary fw-semibold mt-0.5"><i class="fa-solid fa-circle-info me-1"></i>${escapeHtml(p.sp_use)}</div>`;
+                        }
+                    } else {
+                        periodsHtml = '<div class="d-flex flex-column gap-1">';
+                        m.periods.forEach((p, pIdx) => {
+                            let pDateText = '';
+                            if (p.first_date && p.last_date && p.first_date !== p.last_date) {
+                                pDateText = `${formatThaiDateShort(p.first_date)} - ${formatThaiDateShort(p.last_date)}`;
+                            } else if (p.first_date) {
+                                pDateText = `${formatThaiDateShort(p.first_date)}`;
+                            }
+                            periodsHtml += `
+                                <div class="small fw-semibold text-slate-700 d-flex align-items-center justify-content-between gap-1 p-1 bg-light rounded border" style="font-size: 0.75rem;">
+                                    <span><i class="fa-regular fa-calendar-check text-primary me-1"></i>${pDateText || `ครั้งที่ ${pIdx + 1}`}</span>
+                                    <span class="badge bg-white text-dark border">${p.qty} ${escapeHtml(m.units)}</span>
+                                </div>
+                            `;
+                        });
+                        periodsHtml += '</div>';
+                        if (m.sp_use) {
+                            periodsHtml += `<div class="small text-primary fw-semibold mt-1"><i class="fa-solid fa-circle-info me-1"></i>${escapeHtml(m.sp_use)}</div>`;
+                        }
+                    }
                 }
+                if (!periodsHtml) periodsHtml = '<span class="text-muted small">-</span>';
 
                 tr.innerHTML = `
                     <td class="text-muted fw-bold text-center">${idx}</td>
@@ -1675,7 +1723,7 @@
                         <div class="fw-bold text-slate-800">${escapeHtml(m.drug_name)}</div>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${m.qty} ${escapeHtml(m.units || '')}</span>
+                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${m.total_qty} ${escapeHtml(m.units || '')}</span>
                     </td>
                     <td class="small text-muted">
                         <div class="fw-medium text-dark">${escapeHtml(m.usage1 || '')}</div>
@@ -1683,9 +1731,7 @@
                         ${m.usage3 ? `<div>${escapeHtml(m.usage3)}</div>` : ''}
                     </td>
                     <td>
-                        ${dateRangeText}
-                        ${m.sp_use ? `<div class="small text-primary fw-semibold mt-0.5"><i class="fa-solid fa-circle-info me-1"></i>${escapeHtml(m.sp_use)}</div>` : ''}
-                        ${!dateRangeText && !m.sp_use ? '<span class="text-muted small">-</span>' : ''}
+                        ${periodsHtml}
                     </td>
                 `;
                 medBody.appendChild(tr);
@@ -1725,9 +1771,32 @@
     }
 
     function renderLabsTab() {
-        const { page, pageSize, items } = tabPagination.labs;
+        const { page, pageSize, items, dates } = tabPagination.labs;
+        const labHead = document.getElementById('modalLabTableHead');
         const labBody = document.getElementById('modalLabTableBody');
         const isOpd = (currentModalMode === 'OPD');
+        const activeDates = dates || [];
+
+        // Dynamic Lab Matrix Thead
+        let theadHtml = `
+            <tr>
+                <th style="width: 45px;" class="text-center">#</th>
+                <th style="min-width: 170px;">รายการตรวจ (Lab Test)</th>
+        `;
+        if (activeDates.length > 0) {
+            activeDates.forEach(d => {
+                theadHtml += `<th class="text-center" style="min-width: 90px; white-space: nowrap;"><i class="fa-regular fa-calendar text-primary me-1"></i>${formatThaiDateShort(d)}</th>`;
+            });
+        } else {
+            theadHtml += `<th style="width: 150px;" class="text-center">ผลการตรวจ</th>`;
+        }
+        theadHtml += `
+                <th style="width: 80px;" class="text-center">หน่วย</th>
+                <th style="min-width: 120px;">ค่าอ้างอิงปกติ (Normal)</th>
+            </tr>
+        `;
+        if (labHead) labHead.innerHTML = theadHtml;
+
         if (items.length > 0) {
             labBody.innerHTML = '';
             const slice = items.slice((page - 1) * pageSize, page * pageSize);
@@ -1735,25 +1804,48 @@
                 const idx = (page - 1) * pageSize + i + 1;
                 const tr = document.createElement('tr');
                 const catBadge = l.category === 'IPD'
-                    ? '<span class="badge" style="background:#ffedd5; color:#9a3412; font-size:0.7rem; border:1px solid #fed7aa; margin-right:4px;">IPD</span>'
-                    : '<span class="badge bg-light text-primary border" style="font-size:0.7rem; margin-right:4px;">OPD</span>';
-                tr.innerHTML = `
+                    ? '<span class="badge" style="background:#ffedd5; color:#9a3412; font-size:0.68rem; border:1px solid #fed7aa; margin-right:4px;">IPD</span>'
+                    : '<span class="badge bg-light text-primary border" style="font-size:0.68rem; margin-right:4px;">OPD</span>';
+
+                let rowHtml = `
                     <td class="text-muted fw-bold text-center">${idx}</td>
                     <td>
                         <div class="fw-bold text-dark">${catBadge}${escapeHtml(l.lab_name)}</div>
-                        <div class="small text-muted mt-0.5"><i class="fa-regular fa-clock me-1"></i>${formatThaiDateTime(l.order_date, l.order_time)} ${l.lab_group ? `<span class="badge bg-light text-secondary border ms-1">${escapeHtml(l.lab_group)}</span>` : ''}</div>
+                        ${l.lab_group ? `<div class="small text-muted" style="font-size: 0.72rem;"><span class="badge bg-light text-secondary border mt-0.5">${escapeHtml(l.lab_group)}</span></div>` : ''}
                     </td>
-                    <td class="text-center fw-bold text-primary fs-6">${escapeHtml(l.lab_result)}</td>
+                `;
+
+                if (activeDates.length > 0) {
+                    activeDates.forEach(d => {
+                        const resList = l.results_by_date[d];
+                        if (resList && resList.length > 0) {
+                            if (resList.length === 1) {
+                                rowHtml += `<td class="text-center fw-bold text-primary fs-6">${escapeHtml(resList[0].result)}</td>`;
+                            } else {
+                                const multiHtml = resList.map(r => `<div class="fw-bold text-primary"><span class="small text-muted me-0.5" style="font-size:0.68rem;">${r.time}:</span>${escapeHtml(r.result)}</div>`).join('');
+                                rowHtml += `<td class="text-center">${multiHtml}</td>`;
+                            }
+                        } else {
+                            rowHtml += `<td class="text-center text-muted small">-</td>`;
+                        }
+                    });
+                } else {
+                    rowHtml += `<td class="text-center text-muted">-</td>`;
+                }
+
+                rowHtml += `
                     <td class="text-center text-muted small">${escapeHtml(l.lab_unit || '-')}</td>
                     <td class="small text-muted">${escapeHtml(l.normal_value || '-')}</td>
                 `;
+                tr.innerHTML = rowHtml;
                 labBody.appendChild(tr);
             });
         } else {
+            const colSpan = (activeDates.length > 0 ? activeDates.length : 1) + 3;
             const noLabText = isOpd
                 ? '<i class="fa-solid fa-circle-info me-1"></i> ไม่มีรายการตรวจ Lab ที่แผนกผู้ป่วยนอก (OPD)'
                 : '<i class="fa-solid fa-circle-info me-1"></i> ไม่มีรายการตรวจ Lab ที่มีผลตรวจในส่วนนี้';
-            labBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">${noLabText}</td></tr>`;
+            labBody.innerHTML = `<tr><td colspan="${colSpan}" class="text-center text-muted py-4">${noLabText}</td></tr>`;
         }
         renderPaginationControls('labs', 'modalLabPagination', items.length, page, pageSize);
     }
@@ -1825,18 +1917,47 @@
             finBox.classList.add('d-none');
         }
 
-        // 2. Medications
+        // 2. Medications (Grouped by drug_name + med_category)
         let filteredMeds = data.medications || [];
         if (isIpd) {
             filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ยากลับบ้าน') || (m.med_category || '').includes('นอน รพ.'));
         } else {
             filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ผู้ป่วยนอก (OPD)'));
         }
-        const sortedMeds = [...filteredMeds].sort((a, b) => {
+
+        const groupedMedsMap = {};
+        filteredMeds.forEach(m => {
+            const drugKey = (m.drug_name || '').trim() + '||' + (m.med_category || '').trim();
+            if (!groupedMedsMap[drugKey]) {
+                groupedMedsMap[drugKey] = {
+                    drug_name: m.drug_name,
+                    med_category: m.med_category,
+                    units: m.units || '',
+                    usage1: m.usage1 || '',
+                    usage2: m.usage2 || '',
+                    usage3: m.usage3 || '',
+                    sp_use: m.sp_use || '',
+                    total_qty: 0,
+                    periods: []
+                };
+            }
+            groupedMedsMap[drugKey].total_qty += parseFloat(m.qty) || 0;
+            groupedMedsMap[drugKey].periods.push({
+                qty: m.qty,
+                first_date: m.first_date,
+                last_date: m.last_date,
+                days_count: m.days_count || 1,
+                sp_use: m.sp_use || ''
+            });
+        });
+
+        const sortedMeds = Object.values(groupedMedsMap).sort((a, b) => {
             const isHomeA = (a.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
             const isHomeB = (b.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
-            return isHomeA - isHomeB;
+            if (isHomeA !== isHomeB) return isHomeA - isHomeB;
+            return (a.drug_name || '').localeCompare(b.drug_name || '');
         });
+
         tabPagination.meds = { page: 1, pageSize: 10, items: sortedMeds };
         document.getElementById('modalMedCount').textContent = sortedMeds.length;
         renderMedsTab();
@@ -1852,7 +1973,7 @@
         document.getElementById('modalNonDrugCount').textContent = filteredNonDrugs.length;
         renderNonDrugTab();
 
-        // 4. Labs
+        // 4. Labs (Flowsheet Matrix: Grouped by unique test with multi-date columns)
         let validLabs = (data.lab_results || []).filter(l => {
             const res = (l.lab_result || '').trim();
             return res !== '' && res !== '-' && res !== 'null';
@@ -1864,8 +1985,46 @@
             const opdLabs = validLabs.filter(l => (l.category || '') === 'OPD');
             if (opdLabs.length > 0) validLabs = opdLabs;
         }
-        tabPagination.labs = { page: 1, pageSize: 10, items: validLabs };
-        document.getElementById('modalLabCount').textContent = validLabs.length;
+
+        // Extract all unique dates sorted ascending
+        const labDates = [...new Set(validLabs.map(l => (l.order_date || '').substring(0, 10)).filter(d => d))].sort();
+
+        // Group tests by lab_name
+        const groupedTests = {};
+        validLabs.forEach(l => {
+            const key = (l.lab_name || 'Lab Test').trim();
+            if (!groupedTests[key]) {
+                groupedTests[key] = {
+                    lab_name: l.lab_name,
+                    lab_group: l.lab_group || '',
+                    lab_unit: l.lab_unit || '',
+                    normal_value: l.normal_value || '-',
+                    category: l.category || 'OPD',
+                    results_by_date: {}
+                };
+            }
+            const d = (l.order_date || '').substring(0, 10);
+            if (d) {
+                if (!groupedTests[key].results_by_date[d]) {
+                    groupedTests[key].results_by_date[d] = [];
+                }
+                groupedTests[key].results_by_date[d].push({
+                    result: l.lab_result,
+                    time: l.order_time ? l.order_time.substring(0, 5) : '',
+                    order_date: l.order_date
+                });
+            }
+        });
+
+        const groupedLabList = Object.values(groupedTests).sort((a, b) => {
+            if (a.lab_group !== b.lab_group) {
+                return (a.lab_group || '').localeCompare(b.lab_group || '');
+            }
+            return (a.lab_name || '').localeCompare(b.lab_name || '');
+        });
+
+        tabPagination.labs = { page: 1, pageSize: 10, items: groupedLabList, dates: labDates };
+        document.getElementById('modalLabCount').textContent = groupedLabList.length;
         renderLabsTab();
 
         // 5. Diagnoses
