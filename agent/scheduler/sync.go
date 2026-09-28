@@ -368,9 +368,15 @@ func SendHeartbeat(lastSummary *sender.SyncSummary) {
 	}
 
 	hostname, _ := os.Hostname()
+	port := cfg.Web.Port
+	if port == 0 {
+		port = 8989
+	}
+
 	payload := map[string]interface{}{
 		"hospcode":      cfg.Hospital.Code,
 		"version":       config.AppVersion,
+		"port":          port,
 		"status":        "running",
 		"db_status":     dbStatus,
 		"hostname":      hostname,

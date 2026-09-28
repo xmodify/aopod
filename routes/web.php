@@ -88,6 +88,12 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
 // Manage Data Routes (Requires Web Authentication, access checked in Controller)
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/manage', [AdminController::class, 'index'])->name('manage.index');
+    
+    // A-EMR Routes
+    Route::get('/manage/emr', [\App\Http\Controllers\Web\EmrWebController::class, 'index'])->name('manage.emr.index');
+    Route::post('/manage/emr/search', [\App\Http\Controllers\Web\EmrWebController::class, 'search'])->name('manage.emr.search');
+    Route::post('/manage/emr/visit-detail', [\App\Http\Controllers\Web\EmrWebController::class, 'visitDetail'])->name('manage.emr.visit-detail');
+
     Route::get('/manage/death-data', [\App\Http\Controllers\Web\DeathDataController::class, 'index'])->name('manage.death-data.index');
     Route::post('/manage/death-data/import', [\App\Http\Controllers\Web\DeathDataController::class, 'import'])->name('manage.death-data.import');
     Route::get('/manage/birth-data', [\App\Http\Controllers\Web\BirthDataController::class, 'index'])->name('manage.birth-data.index');

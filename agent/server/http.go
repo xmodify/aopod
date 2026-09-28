@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	"aopod-agent/autostart"
+	"aopod-agent/collector"
 	"aopod-agent/config"
 	"aopod-agent/database"
 	"aopod-agent/scheduler"
@@ -41,6 +43,8 @@ func (s *Server) Start(port int) error {
 	mux.HandleFunc("/api/sync", s.handleSync)
 	mux.HandleFunc("/api/logs", s.handleLogs)
 	mux.HandleFunc("/api/logs/clear", s.handleClearLogs)
+	mux.HandleFunc("/api/emr/patient", s.handleEmrPatient)
+	mux.HandleFunc("/api/emr/visit", s.handleEmrVisit)
 	mux.HandleFunc("/api/open-logs-folder", func(w http.ResponseWriter, r *http.Request) {
 		logsDir := scheduler.GetLogsDir()
 		_ = exec.Command("explorer.exe", logsDir).Start()
@@ -279,6 +283,89 @@ func (s *Server) handleService(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, map[string]string{"status": "success", "message": fmt.Sprintf("ดำเนินการ %s Service สำเร็จ", action)})
+}
+
+func (s *Server) handleEmrPatient(w http.ResponseWriter, r *http.Request) {
+	cid := strings.TrimSpace(r.URL.Query().Get("cid"))
+	if len(cid) != 13 {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "เลขประจำตัวประชาชนต้องเป็นตัวเลข 13 หลัก",
+		})
+		return
+	}
+
+	db, err := database.GetDB()
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{
+			"success": false,
+			"message": "เชื่อมต่อฐานข้อมูล HOSxP ล้มเหลว: " + err.Error(),
+		})
+		return
+	}
+
+	emr, err := collector.CollectPatientEMR(db, cid)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if emr == nil {
+		hcode, hname := collector.GetHospitalInfo(db)
+		writeJSON(w, http.StatusOK, map[string]interface{}{
+			"success": true,
+			"found":   false,
+			"message": "ไม่พบประวัติผู้ป่วยที่โรงพยาบาลนี้",
+			"hospital": map[string]string{
+				"code": hcode,
+				"name": hname,
+			},
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"found":   true,
+		"data":    emr,
+	})
+}
+
+func (s *Server) handleEmrVisit(w http.ResponseWriter, r *http.Request) {
+	vn := strings.TrimSpace(r.URL.Query().Get("vn"))
+	if vn == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "กรุณาระบุหมายเลข VN",
+		})
+		return
+	}
+
+	db, err := database.GetDB()
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{
+			"success": false,
+			"message": "เชื่อมต่อฐานข้อมูล HOSxP ล้มเหลว: " + err.Error(),
+		})
+		return
+	}
+
+	detail, err := collector.CollectVisitDetail(db, vn)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"data":    detail,
+	})
 }
 
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {

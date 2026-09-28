@@ -262,6 +262,15 @@
         <div class="text-muted small px-3 mb-2 fw-bold text-uppercase" style="letter-spacing: 1px;">ระบบหลัก</div>
       </li>
 
+      @if(Auth::user()->canAccessEmr())
+      <li class="sidebar-menu-item">
+        <a href="{{ route('manage.emr.index') }}" class="sidebar-link {{ Request::is('manage/emr*') ? 'active' : '' }}">
+          <i class="fa-solid fa-notes-medical fs-5" style="color: #06b6d4 !important;"></i>
+          <span>A-EMR</span>
+        </a>
+      </li>
+      @endif
+
       @if(Auth::user()->isAdmin())
       <li class="sidebar-menu-item">
         <a href="{{ route('manage.users') }}" class="sidebar-link {{ Request::is('manage/users*') ? 'active' : '' }}">

@@ -87,6 +87,9 @@
                                     <span class="badge bg-secondary bg-opacity-10 text-secondary px-2.5 py-1 rounded-3 mb-1" style="font-size: 0.82rem;">User</span>
                                 @endif
                                 <div>
+                                    @if($user->allow_emr)
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-2 me-1" style="font-size: 0.75rem;" title="เข้าถึงระบบ A-EMR"><i class="fa-solid fa-notes-medical"></i> A-EMR</span>
+                                    @endif
                                     @if($user->allow_death)
                                         <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1 rounded-2 me-1" style="font-size: 0.75rem;" title="เข้าถึงข้อมูลการตาย"><i class="fa-solid fa-skull"></i> ตาย</span>
                                     @endif
@@ -127,6 +130,7 @@
                                             data-position="{{ $user->position }}"
                                             data-cid="{{ $user->cid }}"
                                             data-active="{{ $user->active }}"
+                                            data-allow-emr="{{ $user->allow_emr }}"
                                             data-allow-death="{{ $user->allow_death }}"
                                             data-allow-death-dashboard="{{ $user->allow_death_dashboard }}"
                                             data-allow-birth="{{ $user->allow_birth }}"
@@ -219,6 +223,12 @@
                     <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-lock-open text-primary me-2"></i> สิทธิ์การเข้าถึงข้อมูลพิเศษ</h6>
                     
                     <div class="row g-2">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="allow_emr" id="addUserAllowEmr" value="1">
+                                <label class="form-check-label fw-semibold text-secondary small" for="addUserAllowEmr">เข้าถึงประวัติการรักษา A-EMR (allow_emr)</label>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="allow_death" id="addUserAllowDeath" value="1">
@@ -321,6 +331,12 @@
                     <div class="row g-2">
                         <div class="col-md-6">
                             <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="allow_emr" id="editUserAllowEmr" value="1">
+                                <label class="form-check-label fw-semibold text-secondary small" for="editUserAllowEmr">เข้าถึงประวัติการรักษา A-EMR (allow_emr)</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="allow_death" id="editUserAllowDeath" value="1">
                                 <label class="form-check-label fw-semibold text-secondary small" for="editUserAllowDeath">เข้าถึงข้อมูลการตาย (allow_death)</label>
                             </div>
@@ -419,6 +435,7 @@
             const position = $(this).data('position') || '';
             const cid = $(this).data('cid') || '';
             const active = $(this).data('active');
+            const allowEmr = $(this).data('allow-emr');
             const allowDeath = $(this).data('allow-death');
             const allowDeathDashboard = $(this).data('allow-death-dashboard');
             const allowBirth = $(this).data('allow-birth');
@@ -432,6 +449,7 @@
             $('#editUserPosition').val(position);
             $('#editUserCid').val(cid);
             $('#editUserActive').prop('checked', active === 'Y' || active === '1');
+            $('#editUserAllowEmr').prop('checked', allowEmr == 1);
             $('#editUserAllowDeath').prop('checked', allowDeath == 1);
             $('#editUserAllowDeathDashboard').prop('checked', allowDeathDashboard == 1);
             $('#editUserAllowBirth').prop('checked', allowBirth == 1);

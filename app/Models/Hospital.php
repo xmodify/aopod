@@ -14,8 +14,9 @@ class Hospital extends Authenticatable
         'hospcode',
         'name',
         'token_api',
+        'agent_url',
         'contact',
-        'is_active',   // อย่าลืมเผื่อ column นี้ด้วย
+        'is_active',
     ];
 
     protected $hidden = [

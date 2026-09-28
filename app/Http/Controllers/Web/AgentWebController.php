@@ -94,16 +94,12 @@ class AgentWebController extends Controller
             }
         }
 
-        $dbVersion = MainSetting::get('agent_latest_version');
-
         if ($fileVersion) {
-            if (!$dbVersion || version_compare($fileVersion, $dbVersion, '>')) {
-                MainSetting::set('agent_latest_version', $fileVersion);
-                return $fileVersion;
-            }
+            MainSetting::set('agent_latest_version', $fileVersion);
+            return $fileVersion;
         }
 
-        return $dbVersion ?: ($fileVersion ?: '1.0.1');
+        return MainSetting::get('agent_latest_version', '1.0.2');
     }
 
     /**

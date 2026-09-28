@@ -34,6 +34,7 @@ class User extends Authenticatable
         'allow_birth',
         'allow_death_dashboard',
         'allow_birth_dashboard',
+        'allow_emr',
     ];
 
     /**
@@ -68,6 +69,16 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Check if the user has A-EMR access permission.
+     *
+     * @return bool
+     */
+    public function canAccessEmr(): bool
+    {
+        return $this->isAdmin() || (bool)$this->allow_emr;
     }
 
     /**

@@ -89,6 +89,11 @@ class AgentApiController extends Controller
             return response()->json(['message' => 'Missing hospcode'], 422);
         }
 
+        $port = (int)$request->input('port', 8989);
+        $clientIp = $request->ip();
+        $host = in_array($clientIp, ['127.0.0.1', '::1']) ? '127.0.0.1' : $clientIp;
+        $agentUrl = "http://{$host}:{$port}";
+
         $payload = [
             'hospcode' => $hospcode,
             'version' => $request->input('version', '1.0.0'),
@@ -99,14 +104,25 @@ class AgentApiController extends Controller
             'last_sync_bed' => $request->input('last_sync_bed'),
             'last_error' => $request->input('last_error'),
             'hostname' => $request->input('hostname'),
-            'ip' => $request->ip(),
+            'ip' => $clientIp,
+            'agent_url' => $agentUrl,
             'updated_at' => now()->toDateTimeString(),
         ];
 
         // Store live heartbeat in cache for 10 minutes
         Cache::put("agent_heartbeat_{$hospcode}", $payload, 600);
 
-        return response()->json(['status' => 'success', 'message' => 'Heartbeat received']);
+        // Auto sync agent_url to hospitals table
+        try {
+            $hospital = Hospital::where('hospcode', $hospcode)->first();
+            if ($hospital && $hospital->agent_url !== $agentUrl && !empty($host)) {
+                $hospital->update(['agent_url' => $agentUrl]);
+            }
+        } catch (\Exception $e) {
+            // Silently pass if table or column is not yet upgraded
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Heartbeat received', 'agent_url' => $agentUrl]);
     }
 
     /**

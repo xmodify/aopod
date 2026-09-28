@@ -63,6 +63,22 @@ return [
             ]) : [],
         ],
 
+        'hosxp' => [
+            'driver' => 'mysql',
+            'host' => env('HOSXP_DB_HOST', '127.0.0.1'),
+            'port' => env('HOSXP_DB_PORT', '3306'),
+            'database' => env('HOSXP_DB_DATABASE', 'hosxe'),
+            'username' => env('HOSXP_DB_USERNAME', 'rims'),
+            'password' => env('HOSXP_DB_PASSWORD', 'h10989'),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

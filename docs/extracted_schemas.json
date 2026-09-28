@@ -38,28 +38,28 @@
             },
             "start_minute": {
                 "type": "int(11)",
-                "null": "NO",
+                "null": "YES",
                 "key": "",
                 "default": "15",
                 "extra": ""
             },
             "opd_days_back": {
                 "type": "int(11)",
-                "null": "NO",
+                "null": "YES",
                 "key": "",
                 "default": "5",
                 "extra": ""
             },
             "ipd_days_back": {
                 "type": "int(11)",
-                "null": "NO",
+                "null": "YES",
                 "key": "",
                 "default": "30",
                 "extra": ""
             },
             "bed_interval_mins": {
                 "type": "int(11)",
-                "null": "NO",
+                "null": "YES",
                 "key": "",
                 "default": "15",
                 "extra": ""
@@ -586,6 +586,13 @@
                 "null": "YES",
                 "key": "",
                 "default": null,
+                "extra": ""
+            },
+            "agent_url": {
+                "type": "varchar(255)",
+                "null": "YES",
+                "key": "",
+                "default": "http:\/\/127.0.0.1:8989",
                 "extra": ""
             },
             "contact": {
@@ -2085,6 +2092,13 @@
                 "extra": ""
             },
             "allow_birth_dashboard": {
+                "type": "tinyint(1)",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "allow_emr": {
                 "type": "tinyint(1)",
                 "null": "NO",
                 "key": "",
