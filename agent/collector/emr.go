@@ -614,64 +614,33 @@ func CollectVisitDetail(db *sql.DB, vn string) (*VisitDetail, error) {
 		}
 	}
 
-	// 3. Lab Results (Only tests with actual recorded results)
-	var labQuery string
-	var labArgs []interface{}
-
-	if detail.IsIPD && hn != "" && detail.AdmDate != "" {
-		dchDateVal := detail.DchDate
-		if dchDateVal == "" {
-			dchDateVal = time.Now().Format("2006-01-02")
-		}
-		labQuery = `
-			SELECT 
-				COALESCE(i.lab_items_name, 'Lab item'),
-				COALESCE(lo.lab_order_result, ''),
-				COALESCE(i.lab_items_unit, ''),
-				COALESCE(i.lab_items_normal_value, '-'),
-				COALESCE(lh.order_date, ''),
-				COALESCE(lh.order_time, ''),
-				COALESCE(lh.form_name, 'ผลตรวจทั่วไป'),
-				CASE 
-					WHEN (lh.ward IS NOT NULL AND lh.ward != '' AND lh.ward != '00') 
-					     OR lh.order_department = 'IPD' 
-					     OR lh.department = 'IPD' THEN 'IPD'
-					ELSE 'OPD'
-				END AS category
-			FROM lab_order lo
-			JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
-			LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
-			WHERE (lh.vn = ? OR (lh.hn = ? AND lh.order_date BETWEEN ? AND ?))
-			  AND lo.lab_order_result IS NOT NULL 
-			  AND TRIM(lo.lab_order_result) != '' 
-			  AND TRIM(lo.lab_order_result) != '-'
-			ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
-		`
-		labArgs = []interface{}{cleanVN, hn, detail.AdmDate[:min(10, len(detail.AdmDate))], dchDateVal[:min(10, len(dchDateVal))]}
-	} else {
-		labQuery = `
-			SELECT 
-				COALESCE(i.lab_items_name, 'Lab item'),
-				COALESCE(lo.lab_order_result, ''),
-				COALESCE(i.lab_items_unit, ''),
-				COALESCE(i.lab_items_normal_value, '-'),
-				COALESCE(lh.order_date, ''),
-				COALESCE(lh.order_time, ''),
-				COALESCE(lh.form_name, 'ผลตรวจทั่วไป'),
-				'OPD' AS category
-			FROM lab_order lo
-			JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
-			LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
-			WHERE lh.vn = ?
-			  AND lo.lab_order_result IS NOT NULL 
-			  AND TRIM(lo.lab_order_result) != '' 
-			  AND TRIM(lo.lab_order_result) != '-'
-			ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
-		`
-		labArgs = []interface{}{cleanVN}
-	}
-
-	labRows, err := db.Query(labQuery, labArgs...)
+	// 3. Lab Results:
+	// In HOSxP:
+	// - lab_head.vn = vn  => OPD Lab
+	// - lab_head.vn = an  => IPD Lab
+	labQuery := `
+		SELECT 
+			COALESCE(i.lab_items_name, 'Lab item'),
+			COALESCE(lo.lab_order_result, ''),
+			COALESCE(i.lab_items_unit, ''),
+			COALESCE(i.lab_items_normal_value, '-'),
+			COALESCE(lh.order_date, ''),
+			COALESCE(lh.order_time, ''),
+			COALESCE(lh.form_name, 'ผลตรวจทั่วไป'),
+			CASE 
+				WHEN ? != '' AND lh.vn = ? THEN 'IPD'
+				ELSE 'OPD'
+			END AS category
+		FROM lab_order lo
+		JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
+		LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
+		WHERE (lh.vn = ? OR (? != '' AND lh.vn = ?))
+		  AND lo.lab_order_result IS NOT NULL 
+		  AND TRIM(lo.lab_order_result) != '' 
+		  AND TRIM(lo.lab_order_result) != '-'
+		ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
+	`
+	labRows, err := db.Query(labQuery, an, an, cleanVN, an, an)
 	if err == nil {
 		defer labRows.Close()
 		for labRows.Next() {

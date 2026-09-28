@@ -628,54 +628,31 @@ class EmrService
             $detail['non_drugs'] = array_map(fn($nd) => (array)$nd, $nonDrugs);
 
             // Labs
-            $admDate = !empty($ipdInfo->regdate) ? substr($ipdInfo->regdate, 0, 10) : '';
-            $dchDate = !empty($ipdInfo->dchdate) ? substr($ipdInfo->dchdate, 0, 10) : date('Y-m-d');
-            if ($an && $hn && $admDate) {
-                $labs = DB::connection('hosxp')->select("
-                    SELECT 
-                        COALESCE(i.lab_items_name, 'Lab item') AS lab_name,
-                        COALESCE(lo.lab_order_result, '') AS lab_result,
-                        COALESCE(i.lab_items_unit, '') AS lab_unit,
-                        COALESCE(i.lab_items_normal_value, '-') AS normal_value,
-                        COALESCE(lh.order_date, '') AS order_date,
-                        COALESCE(lh.order_time, '') AS order_time,
-                        COALESCE(lh.form_name, 'ผลตรวจทั่วไป') AS lab_group,
-                        CASE 
-                            WHEN (lh.ward IS NOT NULL AND lh.ward != '' AND lh.ward != '00') 
-                                 OR lh.order_department = 'IPD' 
-                                 OR lh.department = 'IPD' THEN 'IPD'
-                            ELSE 'OPD'
-                        END AS category
-                    FROM lab_order lo
-                    JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
-                    LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
-                    WHERE (lh.vn = ? OR (lh.hn = ? AND lh.order_date BETWEEN ? AND ?))
-                      AND lo.lab_order_result IS NOT NULL 
-                      AND TRIM(lo.lab_order_result) != '' 
-                      AND TRIM(lo.lab_order_result) != '-'
-                    ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
-                ", [$actualVN, $hn, $admDate, $dchDate]);
-            } else {
-                $labs = DB::connection('hosxp')->select("
-                    SELECT 
-                        COALESCE(i.lab_items_name, 'Lab item') AS lab_name,
-                        COALESCE(lo.lab_order_result, '') AS lab_result,
-                        COALESCE(i.lab_items_unit, '') AS lab_unit,
-                        COALESCE(i.lab_items_normal_value, '-') AS normal_value,
-                        COALESCE(lh.order_date, '') AS order_date,
-                        COALESCE(lh.order_time, '') AS order_time,
-                        COALESCE(lh.form_name, 'ผลตรวจทั่วไป') AS lab_group,
-                        'OPD' AS category
-                    FROM lab_order lo
-                    JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
-                    LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
-                    WHERE lh.vn = ?
-                      AND lo.lab_order_result IS NOT NULL 
-                      AND TRIM(lo.lab_order_result) != '' 
-                      AND TRIM(lo.lab_order_result) != '-'
-                    ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
-                ", [$actualVN]);
-            }
+            // In HOSxP:
+            // - lab_head.vn = vn  => OPD Lab
+            // - lab_head.vn = an  => IPD Lab
+            $labs = DB::connection('hosxp')->select("
+                SELECT 
+                    COALESCE(i.lab_items_name, 'Lab item') AS lab_name,
+                    COALESCE(lo.lab_order_result, '') AS lab_result,
+                    COALESCE(i.lab_items_unit, '') AS lab_unit,
+                    COALESCE(i.lab_items_normal_value, '-') AS normal_value,
+                    COALESCE(lh.order_date, '') AS order_date,
+                    COALESCE(lh.order_time, '') AS order_time,
+                    COALESCE(lh.form_name, 'ผลตรวจทั่วไป') AS lab_group,
+                    CASE 
+                        WHEN ? != '' AND lh.vn = ? THEN 'IPD'
+                        ELSE 'OPD'
+                    END AS category
+                FROM lab_order lo
+                JOIN lab_head lh ON lh.lab_order_number = lo.lab_order_number
+                LEFT JOIN lab_items i ON i.lab_items_code = lo.lab_items_code
+                WHERE (lh.vn = ? OR (? != '' AND lh.vn = ?))
+                  AND lo.lab_order_result IS NOT NULL 
+                  AND TRIM(lo.lab_order_result) != '' 
+                  AND TRIM(lo.lab_order_result) != '-'
+                ORDER BY lh.order_date DESC, lh.order_time DESC, i.lab_items_name ASC
+            ", [$an, $an, $actualVN, $an, $an]);
             $detail['lab_results'] = array_map(fn($l) => (array)$l, $labs);
 
             // OPD Diagnoses

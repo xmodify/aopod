@@ -518,7 +518,7 @@
                             <i class="fa-solid fa-bed-pulse me-1"></i> ข้อมูลการนอน รพ. (IPD)
                         </button>
                         <button type="button" class="modal-mode-pill" id="modeBtnOpd" onclick="switchModalMode('OPD')">
-                            <i class="fa-solid fa-stethoscope me-1"></i> ข้อมูลตรวจแรกรับ (OPD)
+                            <i class="fa-solid fa-stethoscope me-1"></i> ข้อมูลผู้ป่วยนอก (OPD)
                         </button>
                     </div>
                     <div id="modalIpdLosSummary" class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; padding: 0.5rem 0.85rem; font-size: 0.85rem; border-radius: 9999px;">
@@ -730,6 +730,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="modalMedPagination"></div>
                         </div>
 
                         <!-- 2. Non-Drug / Medical Service Fees Table (icode 3% & an_stat) -->
@@ -775,6 +776,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="modalNonDrugPagination"></div>
                         </div>
 
                         <!-- 3. Labs Table -->
@@ -795,6 +797,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="modalLabPagination"></div>
                         </div>
 
                         <!-- 4. Diagnoses Table (ICD-10 OPD & IPD) -->
@@ -814,6 +817,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="modalDiagPagination"></div>
                         </div>
 
                         <!-- 5. Procedures Table (ICD-9) -->
@@ -834,6 +838,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="modalProcPagination"></div>
                         </div>
                     </div>
                 </div>
@@ -1152,7 +1157,7 @@
             if (btnOpd) btnOpd.className = 'modal-mode-pill active-opd';
             viewOpd.classList.remove('d-none');
             viewIpd.classList.add('d-none');
-            cardHeader.innerHTML = '<i class="fa-solid fa-stethoscope text-primary"></i> ข้อมูลตรวจแรกรับ (OPD)';
+            cardHeader.innerHTML = '<i class="fa-solid fa-stethoscope text-primary"></i> ข้อมูลผู้ป่วยนอก (OPD)';
             modalHeader.classList.remove('header-ipd');
             headerIcon.innerHTML = '<i class="fa-solid fa-file-medical"></i>';
             modalTitle.textContent = 'รายละเอียดการรักษาผู้ป่วยนอก (OPD)';
@@ -1458,41 +1463,112 @@
         }
     }
 
-    function renderModalTabs(mode, data) {
-        if (!data) return;
-        const isIpd = (mode === 'IPD');
-        const isOpd = (mode === 'OPD');
+    // Modal Tab Pagination State (10 items per page)
+    let tabPagination = {
+        meds: { page: 1, pageSize: 10, items: [] },
+        nondrug: { page: 1, pageSize: 10, items: [] },
+        labs: { page: 1, pageSize: 10, items: [] },
+        diag: { page: 1, pageSize: 10, items: [] },
+        proc: { page: 1, pageSize: 10, items: [] }
+    };
 
-        // 1. Financial Summary for IPD
-        const finBox = document.getElementById('mIpdFinancialSummaryBox');
-        if (isIpd && finBox && (data.total_income > 0 || data.uc_money > 0 || data.paid_money > 0)) {
-            finBox.classList.remove('d-none');
-            document.getElementById('mIpdIncome').textContent = Number(data.total_income || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
-            document.getElementById('mIpdUcMoney').textContent = Number(data.uc_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
-            document.getElementById('mIpdPaidMoney').textContent = Number(data.paid_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
-        } else if (finBox) {
-            finBox.classList.add('d-none');
+    function changeModalTabPage(tabKey, newPage) {
+        if (!tabPagination[tabKey]) return;
+        const totalPages = Math.ceil(tabPagination[tabKey].items.length / tabPagination[tabKey].pageSize);
+        if (newPage < 1 || newPage > totalPages) return;
+        tabPagination[tabKey].page = newPage;
+        renderTabContent(tabKey);
+    }
+
+    function renderPaginationControls(tabKey, containerId, totalItems, currentPage, pageSize = 10) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        if (totalItems === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        const totalPages = Math.ceil(totalItems / pageSize);
+        const startItem = (currentPage - 1) * pageSize + 1;
+        const endItem = Math.min(currentPage * pageSize, totalItems);
+
+        if (totalPages <= 1) {
+            container.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mt-2.5 pt-2 border-top px-2 text-muted small">
+                    <span>แสดงทั้งหมด <strong class="text-dark">${totalItems}</strong> รายการ</span>
+                </div>
+            `;
+            return;
         }
 
-        // 2. Medications
-        const medBody = document.getElementById('modalMedTableBody');
-        let filteredMeds = data.medications || [];
-        if (isIpd) {
-            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ยากลับบ้าน') || (m.med_category || '').includes('นอน รพ.'));
+        let pages = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
         } else {
-            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ผู้ป่วยนอก (OPD)'));
+            pages.push(1);
+            let start = Math.max(2, currentPage - 1);
+            let end = Math.min(totalPages - 1, currentPage + 1);
+            if (start > 2) pages.push('...');
+            for (let i = start; i <= end; i++) pages.push(i);
+            if (end < totalPages - 1) pages.push('...');
+            pages.push(totalPages);
         }
 
-        document.getElementById('modalMedCount').textContent = filteredMeds.length;
-        if (filteredMeds.length > 0) {
-            medBody.innerHTML = '';
-            const sortedMeds = [...filteredMeds].sort((a, b) => {
-                const isHomeA = (a.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
-                const isHomeB = (b.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
-                return isHomeA - isHomeB;
-            });
+        let pageBtnsHtml = `
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <button type="button" class="page-link py-1 px-2.5" onclick="changeModalTabPage('${tabKey}', ${currentPage - 1})" aria-label="Previous">
+                        <i class="fa-solid fa-chevron-left" style="font-size: 0.75rem;"></i>
+                    </button>
+                </li>
+        `;
 
-            sortedMeds.forEach((m, idx) => {
+        pages.forEach(p => {
+            if (p === '...') {
+                pageBtnsHtml += `<li class="page-item disabled"><span class="page-link py-1 px-2 text-muted">…</span></li>`;
+            } else {
+                const isActive = (p === currentPage);
+                pageBtnsHtml += `
+                    <li class="page-item ${isActive ? 'active' : ''}">
+                        <button type="button" class="page-link py-1 px-2.5 fw-semibold" onclick="changeModalTabPage('${tabKey}', ${p})">${p}</button>
+                    </li>
+                `;
+            }
+        });
+
+        pageBtnsHtml += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <button type="button" class="page-link py-1 px-2.5" onclick="changeModalTabPage('${tabKey}', ${currentPage + 1})" aria-label="Next">
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+                    </button>
+                </li>
+            </ul>
+        `;
+
+        container.innerHTML = `
+            <div class="d-flex flex-wrap justify-content-between align-items-center mt-2.5 pt-2 border-top px-2 gap-2 text-muted small">
+                <div>แสดง <strong class="text-dark">${startItem} - ${endItem}</strong> จากทั้งหมด <strong class="text-dark">${totalItems}</strong> รายการ</div>
+                <div>${pageBtnsHtml}</div>
+            </div>
+        `;
+    }
+
+    function renderTabContent(tabKey) {
+        if (tabKey === 'meds') renderMedsTab();
+        else if (tabKey === 'nondrug') renderNonDrugTab();
+        else if (tabKey === 'labs') renderLabsTab();
+        else if (tabKey === 'diag') renderDiagTab();
+        else if (tabKey === 'proc') renderProcTab();
+    }
+
+    function renderMedsTab() {
+        const { page, pageSize, items } = tabPagination.meds;
+        const medBody = document.getElementById('modalMedTableBody');
+        const isOpd = (currentModalMode === 'OPD');
+        if (items.length > 0) {
+            medBody.innerHTML = '';
+            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            slice.forEach((m, i) => {
+                const idx = (page - 1) * pageSize + i + 1;
                 const tr = document.createElement('tr');
                 let catBadge = '';
                 if (m.med_category) {
@@ -1511,7 +1587,7 @@
                 }
 
                 tr.innerHTML = `
-                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td class="text-muted fw-bold text-center">${idx}</td>
                     <td>
                         ${catBadge ? `<div>${catBadge}</div>` : ''}
                         <div class="fw-bold text-slate-800">${escapeHtml(m.drug_name)}</div>
@@ -1538,23 +1614,20 @@
                 : 'ไม่พบรายการสั่งยาในส่วนนี้';
             medBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">${noMedsText}</td></tr>`;
         }
+        renderPaginationControls('meds', 'modalMedPagination', items.length, page, pageSize);
+    }
 
-        // 3. Non-Drug / Medical Services
+    function renderNonDrugTab() {
+        const { page, pageSize, items } = tabPagination.nondrug;
         const nonDrugBody = document.getElementById('modalNonDrugTableBody');
-        let filteredNonDrugs = data.non_drugs || [];
-        if (isIpd) {
-            filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'IPD' || (nd.category || '') === '');
-        } else {
-            filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'OPD' || (nd.category || '') === '');
-        }
-
-        document.getElementById('modalNonDrugCount').textContent = filteredNonDrugs.length;
-        if (filteredNonDrugs.length > 0) {
+        if (items.length > 0) {
             nonDrugBody.innerHTML = '';
-            filteredNonDrugs.forEach((nd, idx) => {
+            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            slice.forEach((nd, i) => {
+                const idx = (page - 1) * pageSize + i + 1;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td class="text-muted fw-bold text-center">${idx}</td>
                     <td class="fw-bold text-slate-800">${escapeHtml(nd.item_name)}</td>
                     <td class="text-center"><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">${nd.qty}</span></td>
                     <td class="text-center text-muted small">${escapeHtml(nd.units || '-')}</td>
@@ -1566,35 +1639,24 @@
         } else {
             nonDrugBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">ไม่พบรายการค่ารักษาพยาบาลในส่วนนี้</td></tr>';
         }
+        renderPaginationControls('nondrug', 'modalNonDrugPagination', items.length, page, pageSize);
+    }
 
-        // 4. Labs
+    function renderLabsTab() {
+        const { page, pageSize, items } = tabPagination.labs;
         const labBody = document.getElementById('modalLabTableBody');
-        let validLabs = (data.lab_results || []).filter(l => {
-            const res = (l.lab_result || '').trim();
-            return res !== '' && res !== '-' && res !== 'null';
-        });
-        if (isIpd) {
-            const ipdLabs = validLabs.filter(l => (l.category || '') === 'IPD');
-            if (ipdLabs.length > 0) {
-                validLabs = ipdLabs;
-            }
-        } else {
-            const opdLabs = validLabs.filter(l => (l.category || '') === 'OPD');
-            if (opdLabs.length > 0) {
-                validLabs = opdLabs;
-            }
-        }
-
-        document.getElementById('modalLabCount').textContent = validLabs.length;
-        if (validLabs.length > 0) {
+        const isOpd = (currentModalMode === 'OPD');
+        if (items.length > 0) {
             labBody.innerHTML = '';
-            validLabs.forEach((l, idx) => {
+            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            slice.forEach((l, i) => {
+                const idx = (page - 1) * pageSize + i + 1;
                 const tr = document.createElement('tr');
                 const catBadge = l.category === 'IPD'
                     ? '<span class="badge" style="background:#ffedd5; color:#9a3412; font-size:0.7rem; border:1px solid #fed7aa; margin-right:4px;">IPD</span>'
                     : '<span class="badge bg-light text-primary border" style="font-size:0.7rem; margin-right:4px;">OPD</span>';
                 tr.innerHTML = `
-                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td class="text-muted fw-bold text-center">${idx}</td>
                     <td>
                         <div class="fw-bold text-dark">${catBadge}${escapeHtml(l.lab_name)}</div>
                         <div class="small text-muted mt-0.5"><i class="fa-regular fa-clock me-1"></i>${formatThaiDateTime(l.order_date, l.order_time)} ${l.lab_group ? `<span class="badge bg-light text-secondary border ms-1">${escapeHtml(l.lab_group)}</span>` : ''}</div>
@@ -1611,26 +1673,24 @@
                 : '<i class="fa-solid fa-circle-info me-1"></i> ไม่มีรายการตรวจ Lab ที่มีผลตรวจในส่วนนี้';
             labBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">${noLabText}</td></tr>`;
         }
+        renderPaginationControls('labs', 'modalLabPagination', items.length, page, pageSize);
+    }
 
-        // 5. Diagnoses
+    function renderDiagTab() {
+        const { page, pageSize, items } = tabPagination.diag;
         const diagBody = document.getElementById('modalDiagTableBody');
-        let displayedDiags = [];
-        if (isIpd) {
-            displayedDiags = (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) ? data.ipd_diagnoses : (data.diagnoses || []);
-        } else {
-            displayedDiags = data.diagnoses || [];
-        }
-
-        document.getElementById('modalDiagCount').textContent = displayedDiags.length;
-        if (displayedDiags.length > 0) {
+        const isIpd = (currentModalMode === 'IPD');
+        if (items.length > 0) {
             diagBody.innerHTML = '';
-            displayedDiags.forEach((d, idx) => {
+            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            slice.forEach((d, i) => {
+                const idx = (page - 1) * pageSize + i + 1;
                 const tr = document.createElement('tr');
                 const badgeStyle = (d.diagtype_name || '').includes('IPD') || isIpd
                     ? 'background:#fed7aa; color:#9a3412;'
                     : 'background:#e0f2fe; color:#0369a1;';
                 tr.innerHTML = `
-                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td class="text-muted fw-bold text-center">${idx}</td>
                     <td><span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2.5 py-1.5 fw-bold">${escapeHtml(d.icd10)}</span></td>
                     <td class="fw-semibold text-slate-800">${escapeHtml(d.diag_name)}</td>
                     <td><span class="badge" style="${badgeStyle}">${escapeHtml(d.diagtype_name || (isIpd ? 'IPD Diag' : 'OPD Diag'))}</span></td>
@@ -1640,25 +1700,20 @@
         } else {
             diagBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">ไม่มีข้อมูลการวินิจฉัยในส่วนนี้</td></tr>';
         }
+        renderPaginationControls('diag', 'modalDiagPagination', items.length, page, pageSize);
+    }
 
-        // 6. Procedures
+    function renderProcTab() {
+        const { page, pageSize, items } = tabPagination.proc;
         const procBody = document.getElementById('modalProcTableBody');
-        let filteredProcs = data.procedures || [];
-        if (isIpd) {
-            const ipdProcs = filteredProcs.filter(p => (p.category || '') === 'IPD');
-            if (ipdProcs.length > 0) filteredProcs = ipdProcs;
-        } else {
-            const opdProcs = filteredProcs.filter(p => (p.category || '') === 'OPD');
-            if (opdProcs.length > 0) filteredProcs = opdProcs;
-        }
-
-        document.getElementById('modalProcCount').textContent = filteredProcs.length;
-        if (filteredProcs.length > 0) {
+        if (items.length > 0) {
             procBody.innerHTML = '';
-            filteredProcs.forEach((p, idx) => {
+            const slice = items.slice((page - 1) * pageSize, page * pageSize);
+            slice.forEach((p, i) => {
+                const idx = (page - 1) * pageSize + i + 1;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="text-muted fw-bold text-center">${idx + 1}</td>
+                    <td class="text-muted fw-bold text-center">${idx}</td>
                     <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2.5 py-1.5 fw-bold">${escapeHtml(p.icd9)}</span></td>
                     <td class="fw-semibold text-slate-800">${escapeHtml(p.proc_name)}</td>
                     <td class="small text-dark">${escapeHtml(p.doctor_name || '-')}</td>
@@ -1669,6 +1724,91 @@
         } else {
             procBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">ไม่มีข้อมูลหัตถการในส่วนนี้</td></tr>';
         }
+        renderPaginationControls('proc', 'modalProcPagination', items.length, page, pageSize);
+    }
+
+    function renderModalTabs(mode, data) {
+        if (!data) return;
+        const isIpd = (mode === 'IPD');
+        const isOpd = (mode === 'OPD');
+
+        // 1. Financial Summary for IPD
+        const finBox = document.getElementById('mIpdFinancialSummaryBox');
+        if (isIpd && finBox && (data.total_income > 0 || data.uc_money > 0 || data.paid_money > 0)) {
+            finBox.classList.remove('d-none');
+            document.getElementById('mIpdIncome').textContent = Number(data.total_income || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+            document.getElementById('mIpdUcMoney').textContent = Number(data.uc_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+            document.getElementById('mIpdPaidMoney').textContent = Number(data.paid_money || 0).toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท';
+        } else if (finBox) {
+            finBox.classList.add('d-none');
+        }
+
+        // 2. Medications
+        let filteredMeds = data.medications || [];
+        if (isIpd) {
+            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ยากลับบ้าน') || (m.med_category || '').includes('นอน รพ.'));
+        } else {
+            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ผู้ป่วยนอก (OPD)'));
+        }
+        const sortedMeds = [...filteredMeds].sort((a, b) => {
+            const isHomeA = (a.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
+            const isHomeB = (b.med_category || '').includes('ยากลับบ้าน') ? 0 : 1;
+            return isHomeA - isHomeB;
+        });
+        tabPagination.meds = { page: 1, pageSize: 10, items: sortedMeds };
+        document.getElementById('modalMedCount').textContent = sortedMeds.length;
+        renderMedsTab();
+
+        // 3. Non-Drug / Medical Services
+        let filteredNonDrugs = data.non_drugs || [];
+        if (isIpd) {
+            filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'IPD' || (nd.category || '') === '');
+        } else {
+            filteredNonDrugs = filteredNonDrugs.filter(nd => (nd.category || '') === 'OPD' || (nd.category || '') === '');
+        }
+        tabPagination.nondrug = { page: 1, pageSize: 10, items: filteredNonDrugs };
+        document.getElementById('modalNonDrugCount').textContent = filteredNonDrugs.length;
+        renderNonDrugTab();
+
+        // 4. Labs
+        let validLabs = (data.lab_results || []).filter(l => {
+            const res = (l.lab_result || '').trim();
+            return res !== '' && res !== '-' && res !== 'null';
+        });
+        if (isIpd) {
+            const ipdLabs = validLabs.filter(l => (l.category || '') === 'IPD');
+            if (ipdLabs.length > 0) validLabs = ipdLabs;
+        } else {
+            const opdLabs = validLabs.filter(l => (l.category || '') === 'OPD');
+            if (opdLabs.length > 0) validLabs = opdLabs;
+        }
+        tabPagination.labs = { page: 1, pageSize: 10, items: validLabs };
+        document.getElementById('modalLabCount').textContent = validLabs.length;
+        renderLabsTab();
+
+        // 5. Diagnoses
+        let displayedDiags = [];
+        if (isIpd) {
+            displayedDiags = (data.ipd_diagnoses && data.ipd_diagnoses.length > 0) ? data.ipd_diagnoses : (data.diagnoses || []);
+        } else {
+            displayedDiags = data.diagnoses || [];
+        }
+        tabPagination.diag = { page: 1, pageSize: 10, items: displayedDiags };
+        document.getElementById('modalDiagCount').textContent = displayedDiags.length;
+        renderDiagTab();
+
+        // 6. Procedures
+        let filteredProcs = data.procedures || [];
+        if (isIpd) {
+            const ipdProcs = filteredProcs.filter(p => (p.category || '') === 'IPD');
+            if (ipdProcs.length > 0) filteredProcs = ipdProcs;
+        } else {
+            const opdProcs = filteredProcs.filter(p => (p.category || '') === 'OPD');
+            if (opdProcs.length > 0) filteredProcs = opdProcs;
+        }
+        tabPagination.proc = { page: 1, pageSize: 10, items: filteredProcs };
+        document.getElementById('modalProcCount').textContent = filteredProcs.length;
+        renderProcTab();
     }
 
     function escapeHtml(text) {
