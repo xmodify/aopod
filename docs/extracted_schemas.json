@@ -2147,5 +2147,202 @@
                 ]
             }
         }
+    },
+    "emr_access_logs": {
+        "columns": {
+            "id": {
+                "type": "bigint(20) unsigned",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": "auto_increment"
+            },
+            "user_id": {
+                "type": "bigint(20) unsigned",
+                "null": "YES",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "username": {
+                "type": "varchar(100)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "user_name": {
+                "type": "varchar(255)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "user_role": {
+                "type": "varchar(50)",
+                "null": "NO",
+                "key": "",
+                "default": "staff",
+                "extra": ""
+            },
+            "user_hospcode": {
+                "type": "varchar(10)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "provider_id": {
+                "type": "varchar(100)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "action": {
+                "type": "varchar(50)",
+                "null": "NO",
+                "key": "MUL",
+                "default": "SEARCH_CID",
+                "extra": ""
+            },
+            "target_cid": {
+                "type": "varchar(13)",
+                "null": "YES",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "target_hn": {
+                "type": "varchar(50)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "target_vn": {
+                "type": "varchar(50)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "target_hospcode": {
+                "type": "varchar(10)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "reason": {
+                "type": "varchar(255)",
+                "null": "NO",
+                "key": "",
+                "default": "การตรวจรักษาทั่วไป",
+                "extra": ""
+            },
+            "ip_address": {
+                "type": "varchar(45)",
+                "null": "NO",
+                "key": "",
+                "default": "127.0.0.1",
+                "extra": ""
+            },
+            "user_agent": {
+                "type": "text",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "request_url": {
+                "type": "varchar(500)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "http_method": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "",
+                "default": "POST",
+                "extra": ""
+            },
+            "status": {
+                "type": "varchar(20)",
+                "null": "NO",
+                "key": "",
+                "default": "SUCCESS",
+                "extra": ""
+            },
+            "http_status_code": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": "200",
+                "extra": ""
+            },
+            "response_time_ms": {
+                "type": "int(11)",
+                "null": "YES",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "record_count": {
+                "type": "int(11)",
+                "null": "YES",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "error_message": {
+                "type": "text",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "NO",
+                "key": "MUL",
+                "default": "CURRENT_TIMESTAMP",
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "id"
+                ]
+            },
+            "idx_target_cid": {
+                "unique": false,
+                "columns": [
+                    "target_cid"
+                ]
+            },
+            "idx_user_id": {
+                "unique": false,
+                "columns": [
+                    "user_id"
+                ]
+            },
+            "idx_action": {
+                "unique": false,
+                "columns": [
+                    "action"
+                ]
+            },
+            "idx_created_at": {
+                "unique": false,
+                "columns": [
+                    "created_at"
+                ]
+            }
+        }
     }
 }

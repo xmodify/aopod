@@ -91,6 +91,7 @@ Route::middleware(['auth:web'])->group(function () {
     
     // A-EMR Routes
     Route::get('/manage/emr', [\App\Http\Controllers\Web\EmrWebController::class, 'index'])->name('manage.emr.index');
+    Route::get('/manage/emr/logs', [\App\Http\Controllers\Web\EmrWebController::class, 'logs'])->name('manage.emr.logs');
     Route::post('/manage/emr/search', [\App\Http\Controllers\Web\EmrWebController::class, 'search'])->name('manage.emr.search');
     Route::post('/manage/emr/visit-detail', [\App\Http\Controllers\Web\EmrWebController::class, 'visitDetail'])->name('manage.emr.visit-detail');
 

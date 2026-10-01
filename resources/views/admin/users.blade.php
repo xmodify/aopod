@@ -17,6 +17,43 @@
                 </button>
             </div>
 
+            <!-- Filter Toolbar -->
+            <div class="p-3 mb-3 rounded-4 border bg-light bg-opacity-50">
+                <div class="row align-items-center g-3">
+                    <div class="col-12 col-md-5 col-lg-4">
+                        <label class="form-label small fw-bold text-secondary mb-1">
+                            <i class="fa-solid fa-hospital text-primary me-1"></i> กรองตามหน่วยบริการ (รพ.)
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white"><i class="fa-solid fa-filter text-muted"></i></span>
+                            <select id="hospitalFilter" class="form-select form-select-sm">
+                                <option value="">-- แสดงสมาชิกทุกหน่วยบริการ --</option>
+                                <option value="__none__">-- สมาชิกที่ยังไม่ระบุหน่วยบริการ (-) --</option>
+                                @foreach($hospitals as $hosp)
+                                    <option value="{{ $hosp->hospcode }}">{{ $hosp->name }} ({{ $hosp->hospcode }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-3">
+                        <label class="form-label small fw-bold text-secondary mb-1">
+                            <i class="fa-solid fa-user-shield text-success me-1"></i> กรองตามสิทธิ์ (Role)
+                        </label>
+                        <select id="roleFilter" class="form-select form-select-sm">
+                            <option value="">-- ทุกสิทธิ์การใช้งาน --</option>
+                            <option value="Admin">Admin</option>
+                            <option value="User">User</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3 col-lg-2 d-flex align-items-end">
+                        <button type="button" id="resetFiltersBtn" class="btn btn-sm btn-outline-secondary w-100 fw-semibold d-flex align-items-center justify-content-center gap-1.5 shadow-sm" style="border-radius: 8px;">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>ล้างตัวกรอง</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0" id="usersTable">
                     <thead>
@@ -374,7 +411,7 @@
 <script>
     $(document).ready(function() {
         // Initialize DataTable
-        $('#usersTable').DataTable({
+        const table = $('#usersTable').DataTable({
             language: {
                 url: "{{ asset('assets/vendor/datatables/th.json') }}"
             },
@@ -383,6 +420,31 @@
             columnDefs: [
                 { orderable: false, targets: 7 } // Disable ordering on Action column
             ]
+        });
+
+        // Filter by Hospital (Column Index 2)
+        $('#hospitalFilter').on('change', function() {
+            const selectedHosp = $(this).val();
+            if (selectedHosp === '__none__') {
+                table.column(2).search('^-$', true, false).draw();
+            } else if (selectedHosp) {
+                table.column(2).search(selectedHosp).draw();
+            } else {
+                table.column(2).search('').draw();
+            }
+        });
+
+        // Filter by Role (Column Index 5)
+        $('#roleFilter').on('change', function() {
+            const role = $(this).val();
+            table.column(5).search(role ? role : '').draw();
+        });
+
+        // Reset Filters Button
+        $('#resetFiltersBtn').on('click', function() {
+            $('#hospitalFilter').val('');
+            $('#roleFilter').val('');
+            table.search('').columns().search('').draw();
         });
 
         // Handle Add User Form Submission

@@ -323,13 +323,19 @@
                         ระบบสืบค้นข้อมูลประวัติการรักษาผู้ป่วยข้ามโรงพยาบาลแบบกระจายศูนย์ (Federated On-Demand Query)
                     </p>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-3">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-3 d-none d-sm-inline-flex align-items-center">
                         <i class="fa-solid fa-shield-check me-1"></i> Zero-Storage Privacy
                     </span>
-                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2 rounded-3">
+                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2 rounded-3 d-none d-sm-inline-flex align-items-center">
                         <i class="fa-solid fa-bolt me-1"></i> Real-time Multi-Hospital
                     </span>
+                    @if(Auth::user()->isAdmin())
+                    <a href="{{ route('manage.emr.logs') }}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 fw-semibold shadow-sm" style="border-color: #cbd5e1; background: #ffffff;">
+                        <i class="fa-solid fa-shield-halved text-primary"></i>
+                        <span>ประวัติการใช้งาน (Audit Logs)</span>
+                    </a>
+                    @endif
                 </div>
             </div>
 
