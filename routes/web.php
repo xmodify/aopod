@@ -8,12 +8,19 @@ use App\Http\Controllers\Web\DashboardClaimController;
 use App\Http\Controllers\Web\DashboardReferController;
 use App\Http\Controllers\Web\DashboardOperationController;
 use App\Http\Controllers\Web\AdminController;
+use App\Http\Controllers\Auth\BmsAutoLoginController;
 
-// หน้าแรก redirect ไป web
-Route::get('/', function () {
-    // return view('dashboard');
-     return redirect()->to(url('web')); 
+// หน้าแรก (รองรับทั้ง Redirect ปกติ และ HOSxP Dashboard Launch ด้วย bms-session-id)
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    if ($request->has('bms-session-id') || $request->has('bms_session_id') || $request->has('session_id') || $request->has('session') || $request->has('code')) {
+        return app(BmsAutoLoginController::class)->handleLaunch($request);
+    }
+    return redirect()->to(url('web')); 
 });
+
+// BMS Launch Route (สำหรับเปิดโมดูล A-EMR จาก Dashboard URL และ Patient Add-on ใน HOSxP)
+Route::get('/bms/aemr', [BmsAutoLoginController::class, 'handleLaunch'])->name('bms.aemr');
+
 
 // หน้า web หลัก
 Route::match(['get','post'],'web', [DashboardController::class, 'index'])->name('web.index');
@@ -85,15 +92,20 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::get('/manage/agents/download-exe', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadExe'])->name('manage.agents.download-exe');
 });
 
+// A-EMR Routes (รองรับทั้ง Web Authentication ปกติ และ HOSxP BMS Session โดยตรวจสิทธิ์ใน Controller)
+Route::post('/manage/emr/search', [\App\Http\Controllers\Web\EmrWebController::class, 'search'])->name('manage.emr.search');
+Route::post('/manage/emr/visit-detail', [\App\Http\Controllers\Web\EmrWebController::class, 'visitDetail'])->name('manage.emr.visit-detail');
+Route::get('/emr/hosxp-viewer', [\App\Http\Controllers\Web\EmrWebController::class, 'hosxpViewer'])->name('emr.hosxp.viewer');
+Route::get('/bms/emr/viewer', [\App\Http\Controllers\Web\EmrWebController::class, 'hosxpViewer'])->name('bms.emr.viewer');
+
 // Manage Data Routes (Requires Web Authentication, access checked in Controller)
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/manage', [AdminController::class, 'index'])->name('manage.index');
     
-    // A-EMR Routes
+    // A-EMR Web Manage Routes
     Route::get('/manage/emr', [\App\Http\Controllers\Web\EmrWebController::class, 'index'])->name('manage.emr.index');
     Route::get('/manage/emr/logs', [\App\Http\Controllers\Web\EmrWebController::class, 'logs'])->name('manage.emr.logs');
-    Route::post('/manage/emr/search', [\App\Http\Controllers\Web\EmrWebController::class, 'search'])->name('manage.emr.search');
-    Route::post('/manage/emr/visit-detail', [\App\Http\Controllers\Web\EmrWebController::class, 'visitDetail'])->name('manage.emr.visit-detail');
+
 
     Route::get('/manage/death-data', [\App\Http\Controllers\Web\DeathDataController::class, 'index'])->name('manage.death-data.index');
     Route::post('/manage/death-data/import', [\App\Http\Controllers\Web\DeathDataController::class, 'import'])->name('manage.death-data.import');

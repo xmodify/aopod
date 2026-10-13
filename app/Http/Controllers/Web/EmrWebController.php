@@ -37,7 +37,8 @@ class EmrWebController extends Controller
      */
     public function search(Request $request)
     {
-        if (!auth()->check() || !auth()->user()->canAccessEmr()) {
+        $isBms = session('is_bms_auth', false);
+        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessEmr())) {
             return response()->json(['success' => false, 'message' => 'คุณไม่มีสิทธิ์เข้าถึงระบบ A-EMR'], 403);
         }
 
@@ -47,9 +48,8 @@ class EmrWebController extends Controller
         ]);
 
         $startTime = microtime(true);
-        $user = auth()->user();
         $cid = preg_replace('/\D/', '', $request->input('cid'));
-        $reason = $request->input('reason', 'การตรวจรักษาทั่วไป');
+        $reason = $request->input('reason', $isBms ? 'การตรวจรักษาทางคลินิก (เปิดผ่าน HOSxP)' : 'การตรวจรักษาทั่วไป');
 
         if (strlen($cid) !== 13) {
             return response()->json([
@@ -78,15 +78,22 @@ class EmrWebController extends Controller
             }
         }
 
-        // Save Audit Trail Log to Database
+        // Save Audit Trail Log to Database (Supports both Web User and HOSxP Session Clinician)
+        $userId = $isBms ? null : (auth()->check() ? auth()->id() : null);
+        $userName = $isBms ? session('bms_user_name', 'ผู้ใช้งาน HOSxP') : (auth()->user()->name ?? 'User');
+        $username = $isBms ? session('bms_doctor_code', 'HOSxP') : (auth()->user()->email ?? auth()->user()->name);
+        $userRole = $isBms ? session('bms_position', 'แพทย์/พยาบาล') : (auth()->user()->role ?? 'staff');
+        $userHospCode = $isBms ? session('bms_hospcode', null) : (auth()->user()->hospcode ?? null);
+        $providerId = $isBms ? (session('bms_user_cid') ?: session('bms_doctor_code')) : (auth()->user()->provider_id ?? null);
+
         try {
             EmrAccessLog::create([
-                'user_id'          => $user->id,
-                'username'         => $user->email ?? $user->name,
-                'user_name'        => $user->name,
-                'user_role'        => $user->role ?? 'staff',
-                'user_hospcode'    => $user->hospcode,
-                'provider_id'      => $user->provider_id,
+                'user_id'          => $userId,
+                'username'         => $username,
+                'user_name'        => $userName,
+                'user_role'        => $userRole,
+                'user_hospcode'    => $userHospCode,
+                'provider_id'      => $providerId,
                 'action'           => 'SEARCH_CID',
                 'target_cid'       => $cid,
                 'target_hn'        => $targetHn,
@@ -107,7 +114,7 @@ class EmrWebController extends Controller
         }
 
         // Also write to standard application log
-        Log::info("[A-EMR Audit] User: {$user->name} (ID: {$user->id}, Role: {$user->role}) searched CID: {$cid}, Status: {$status}, Reason: {$reason}, Latency: {$latencyMs}ms");
+        Log::info("[A-EMR Audit] User: {$userName} (Role: {$userRole}, Hosp: {$userHospCode}) searched CID: {$cid}, Status: {$status}, Reason: {$reason}, Latency: {$latencyMs}ms");
 
         return response()->json($result);
     }
@@ -117,7 +124,8 @@ class EmrWebController extends Controller
      */
     public function visitDetail(Request $request)
     {
-        if (!auth()->check() || !auth()->user()->canAccessEmr()) {
+        $isBms = session('is_bms_auth', false);
+        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessEmr())) {
             return response()->json(['success' => false, 'message' => 'คุณไม่มีสิทธิ์เข้าถึงระบบ A-EMR'], 403);
         }
 
@@ -128,7 +136,6 @@ class EmrWebController extends Controller
         ]);
 
         $startTime = microtime(true);
-        $user = auth()->user();
         $vn = $request->input('vn');
         $hospitalCode = $request->input('hospital_code');
         $cid = preg_replace('/\D/', '', $request->input('cid', ''));
@@ -141,15 +148,22 @@ class EmrWebController extends Controller
             $status = 'ERROR';
         }
 
+        $userId = $isBms ? null : (auth()->check() ? auth()->id() : null);
+        $userName = $isBms ? session('bms_user_name', 'ผู้ใช้งาน HOSxP') : (auth()->user()->name ?? 'User');
+        $username = $isBms ? session('bms_doctor_code', 'HOSxP') : (auth()->user()->email ?? auth()->user()->name);
+        $userRole = $isBms ? session('bms_position', 'แพทย์/พยาบาล') : (auth()->user()->role ?? 'staff');
+        $userHospCode = $isBms ? session('bms_hospcode', null) : (auth()->user()->hospcode ?? null);
+        $providerId = $isBms ? (session('bms_user_cid') ?: session('bms_doctor_code')) : (auth()->user()->provider_id ?? null);
+
         // Save Audit Trail Log for visit detail
         try {
             EmrAccessLog::create([
-                'user_id'          => $user->id,
-                'username'         => $user->email ?? $user->name,
-                'user_name'        => $user->name,
-                'user_role'        => $user->role ?? 'staff',
-                'user_hospcode'    => $user->hospcode,
-                'provider_id'      => $user->provider_id,
+                'user_id'          => $userId,
+                'username'         => $username,
+                'user_name'        => $userName,
+                'user_role'        => $userRole,
+                'user_hospcode'    => $userHospCode,
+                'provider_id'      => $providerId,
                 'action'           => 'VIEW_VISIT_DETAIL',
                 'target_cid'       => $cid ?: null,
                 'target_vn'        => $vn,
@@ -171,6 +185,7 @@ class EmrWebController extends Controller
 
         return response()->json($result);
     }
+
 
     /**
      * View Audit Logs for A-EMR (Strictly Admin Only).
@@ -318,4 +333,34 @@ class EmrWebController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    /**
+     * Dedicated A-EMR Clinical Viewer for HOSxP (Frameless / Doctor-friendly).
+     */
+    public function hosxpViewer(Request $request)
+    {
+        $isBms = session('is_bms_auth', false);
+        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessEmr())) {
+            abort(403, 'คุณไม่มีสิทธิ์เข้าถึงระบบ A-EMR กรุณาติดต่อผู้ดูแลระบบ');
+        }
+
+        $cid = preg_replace('/\D/', '', $request->input('cid', ''));
+        $hn = $request->input('hn', '');
+        $vn = $request->input('vn', '');
+
+        $currentUser = auth()->check() ? auth()->user() : (object)[
+            'name'        => session('bms_user_name', 'ผู้ใช้งาน HOSxP'),
+            'role'        => session('bms_position', 'แพทย์/พยาบาล'),
+            'hospcode'    => session('bms_hospcode', ''),
+            'provider_id' => session('bms_user_cid', session('bms_doctor_code', '')),
+        ];
+
+        return view('bms.emr.viewer', [
+            'initialCid' => $cid,
+            'initialHn'  => $hn,
+            'initialVn'  => $vn,
+            'user'       => $currentUser,
+        ]);
+    }
 }
+

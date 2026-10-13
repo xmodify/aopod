@@ -1,7 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'A-EMR Audit Logs - AOPOD')
-@section('header_title', 'A-EMR Audit Logs')
+@section('header_title')
+<span class="d-inline-flex align-items-center gap-2 flex-wrap">
+  <span>A-EMR Audit Logs</span>
+  <span class="badge bg-light text-secondary border fw-normal d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-3 shadow-2xs" 
+        style="font-size: 0.78rem; font-family: monospace; letter-spacing: 0; cursor: pointer; user-select: all;" 
+        onclick="navigator.clipboard.writeText('{{ url('/bms/aemr') }}'); const btn = this.querySelector('.copy-icon'); btn.className='fa-solid fa-check text-success copy-icon'; setTimeout(() => btn.className='fa-regular fa-copy copy-icon', 2000);"
+        title="คลิกเพื่อคัดลอก URL สำหรับตั้งค่าใน HOSxP">
+    <i class="fa-solid fa-link text-info"></i>
+    <span class="text-muted fw-semibold">HOSxP URL:</span>
+    <span class="text-primary fw-bold">{{ url('/bms/aemr') }}</span>
+    <i class="fa-regular fa-copy ms-1 text-muted copy-icon"></i>
+  </span>
+</span>
+@endsection
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/vendor/flatpickr/flatpickr.min.css') }}">

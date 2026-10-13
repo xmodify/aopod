@@ -1,37 +1,51 @@
 @extends('layouts.admin')
 
 @section('title', 'A-EMR - AOPOD')
-@section('header_title', 'A-EMR')
+@section('header_title')
+<span class="d-inline-flex align-items-center gap-2 flex-wrap">
+  <span>A-EMR</span>
+  <span class="badge bg-light text-secondary border fw-normal d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-3 shadow-2xs" 
+        style="font-size: 0.78rem; font-family: monospace; letter-spacing: 0; cursor: pointer; user-select: all;" 
+        onclick="navigator.clipboard.writeText('{{ url('/bms/aemr') }}'); const btn = this.querySelector('.copy-icon'); btn.className='fa-solid fa-check text-success copy-icon'; setTimeout(() => btn.className='fa-regular fa-copy copy-icon', 2000);"
+        title="คลิกเพื่อคัดลอก URL สำหรับตั้งค่าใน HOSxP">
+    <i class="fa-solid fa-link text-info"></i>
+    <span class="text-muted fw-semibold">HOSxP URL:</span>
+    <span class="text-primary fw-bold">{{ url('/bms/aemr') }}</span>
+    <i class="fa-regular fa-copy ms-1 text-muted copy-icon"></i>
+  </span>
+</span>
+@endsection
 
 @push('styles')
 <style>
   .emr-search-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(6, 182, 212, 0.08) 100%);
     border: 1px solid rgba(6, 182, 212, 0.25);
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
   }
 
   .emr-input-group {
-    border-radius: 16px;
+    border-radius: 10px;
     background: #ffffff;
-    border: 2px solid #e2e8f0;
-    transition: all 0.25s ease;
+    border: 1.5px solid #cbd5e1;
+    transition: all 0.2s ease;
     overflow: hidden;
   }
   .emr-input-group:focus-within {
     border-color: #06b6d4;
-    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.15);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
   }
   .emr-input-group input {
     border: none !important;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.8px;
+    padding: 0.35rem 0.5rem;
     box-shadow: none !important;
   }
   .emr-input-group input::placeholder {
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-weight: 400;
     letter-spacing: normal;
     color: #94a3b8;
@@ -40,8 +54,8 @@
   .patient-banner {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: #ffffff;
-    border-radius: 20px;
-    padding: 1.6rem 1.8rem;
+    border-radius: 14px;
+    padding: 0.75rem 1.15rem;
     position: relative;
     overflow: hidden;
   }
@@ -50,31 +64,32 @@
     position: absolute;
     top: -50%;
     right: -20%;
-    width: 320px;
-    height: 320px;
-    background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%);
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
     border-radius: 50%;
   }
 
   .allergy-alert-box {
     background: #fff1f2;
     border: 1px solid #fecdd3;
-    border-left: 5px solid #e11d48;
-    border-radius: 12px;
-    padding: 0.8rem 1rem;
+    border-left: 4px solid #e11d48;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
   }
 
   /* Hospital Source Chip in Patient Banner */
   .hosp-source-chip {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 5px;
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.28);
     border-radius: 9999px;
-    padding: 4px 12px;
+    padding: 2px 8px;
     color: #ffffff;
-    font-size: 0.83rem;
+    font-size: 0.75rem;
     font-weight: 600;
   }
   .hosp-source-chip .hosp-name-text {
@@ -84,9 +99,9 @@
   .hosp-source-chip .hosp-count-badge {
     background: #06b6d4;
     color: #0f172a;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 2px 8px;
+    padding: 1px 6px;
     border-radius: 9999px;
   }
 
@@ -94,47 +109,48 @@
   .vemr-table-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
     overflow: hidden;
   }
 
   .vemr-table thead th {
     background: #f8fafc;
     color: #475569;
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 0.9rem 0.8rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.45rem 0.55rem;
     border-bottom: 2px solid #e2e8f0;
     white-space: nowrap;
   }
 
   .vemr-table tbody tr {
-    transition: all 0.15s ease;
+    transition: all 0.12s ease;
     cursor: pointer;
   }
   .vemr-table tbody tr:hover {
     background-color: #f0fdf4 !important;
   }
   .vemr-table tbody td {
-    padding: 0.85rem 0.8rem;
+    padding: 0.42rem 0.55rem;
     vertical-align: middle;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    line-height: 1.35;
   }
 
   /* IPD Row Styling (Pastel Warm Amber/Rose) */
   .vemr-row-ipd {
     background-color: #fff7ed !important;
-    border-left: 4px solid #ea580c !important;
+    border-left: 3px solid #ea580c !important;
   }
   .vemr-row-ipd:hover {
     background-color: #ffedd5 !important;
   }
 
   .badge-hosp {
-    font-size: 0.82rem;
-    padding: 0.35rem 0.65rem;
-    border-radius: 8px;
+    font-size: 0.72rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
     font-weight: 600;
   }
 
@@ -310,39 +326,30 @@
 @endpush
 
 @section('content')
-<div class="row g-4">
-    <!-- 1. Search Box -->
+<div class="row g-3">
+    <!-- 1. Search Box (Clean & Compact) -->
     <div class="col-12">
-        <div class="emr-search-card p-4">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+        <div class="emr-search-card p-2.5 px-md-3 py-md-2.5">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
                 <div>
-                    <h4 class="fw-bold mb-1" style="color: #0f172a;">
-                        <i class="fa-solid fa-notes-medical text-info me-2"></i> A-EMR : สืบค้นประวัติการรักษา
-                    </h4>
-                    <p class="text-muted mb-0 small">
-                        ระบบสืบค้นข้อมูลประวัติการรักษาผู้ป่วยข้ามโรงพยาบาลแบบกระจายศูนย์ (Federated On-Demand Query)
-                    </p>
+                    <h6 class="fw-bold mb-0 text-slate-800 d-flex align-items-center gap-1.5" style="font-size: 0.95rem;">
+                        <i class="fa-solid fa-notes-medical text-info"></i> A-EMR : สืบค้นประวัติการรักษาผู้ป่วยข้ามโรงพยาบาล
+                    </h6>
                 </div>
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-3 d-none d-sm-inline-flex align-items-center">
-                        <i class="fa-solid fa-shield-check me-1"></i> Zero-Storage Privacy
-                    </span>
-                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2 rounded-3 d-none d-sm-inline-flex align-items-center">
-                        <i class="fa-solid fa-bolt me-1"></i> Real-time Multi-Hospital
-                    </span>
-                    @if(Auth::user()->isAdmin())
-                    <a href="{{ route('manage.emr.logs') }}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 fw-semibold shadow-sm" style="border-color: #cbd5e1; background: #ffffff;">
+                @if(Auth::user()->isAdmin())
+                <div>
+                    <a href="{{ route('manage.emr.logs') }}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-3 fw-semibold shadow-sm" style="border-color: #cbd5e1; background: #ffffff; font-size: 0.78rem;">
                         <i class="fa-solid fa-shield-halved text-primary"></i>
                         <span>ประวัติการใช้งาน (Audit Logs)</span>
                     </a>
-                    @endif
                 </div>
+                @endif
             </div>
 
             <form id="emrSearchForm" class="row g-2 align-items-center" onsubmit="handleSearch(event)">
                 <div class="col-12 col-md-9 col-lg-10">
-                    <div class="emr-input-group d-flex align-items-center px-3 py-1">
-                        <i class="fa-solid fa-id-card text-muted fs-4 me-2"></i>
+                    <div class="emr-input-group d-flex align-items-center px-2.5 py-0.5">
+                        <i class="fa-solid fa-id-card text-muted fs-6 me-2"></i>
                         <input type="text" id="cidInput" class="form-control" 
                                placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก หรือ สแกน Smart Card" 
                                maxlength="17" 
@@ -350,13 +357,13 @@
                                required 
                                autofocus>
                         <button type="button" class="btn btn-link text-muted p-0 ms-2" onclick="clearCidInput()" title="ล้างข้อมูล">
-                            <i class="fa-solid fa-xmark fs-5"></i>
+                            <i class="fa-solid fa-xmark fs-6"></i>
                         </button>
                     </div>
                 </div>
 
                 <div class="col-12 col-md-3 col-lg-2 d-grid">
-                    <button type="submit" id="searchBtn" class="btn btn-primary py-2.5 fw-bold shadow-sm" style="border-radius: 14px; background: linear-gradient(135deg, #06b6d4 0%, #0d6efd 100%); border: none; font-size: 1.05rem;">
+                    <button type="submit" id="searchBtn" class="btn btn-primary py-1.5 fw-semibold shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, #06b6d4 0%, #0d6efd 100%); border: none; font-size: 0.92rem;">
                         <span id="btnIcon"><i class="fa-solid fa-magnifying-glass me-1"></i> ค้นหา</span>
                         <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                     </button>
@@ -365,19 +372,18 @@
         </div>
     </div>
 
-    <!-- 2. State: Initial Guide -->
-    <div id="initialState" class="col-12 text-center py-5">
-        <div class="p-5 glass-card d-inline-block" style="max-width: 620px;">
-            <div class="mb-3 text-info">
-                <i class="fa-solid fa-heart-pulse" style="font-size: 4rem; opacity: 0.85;"></i>
+    <!-- 2. State: Initial Guide (Clean & Compact) -->
+    <div id="initialState" class="col-12 text-center py-3">
+        <div class="p-3.5 glass-card d-inline-block" style="max-width: 480px; border-radius: 14px;">
+            <div class="mb-2 text-info">
+                <i class="fa-solid fa-heart-pulse" style="font-size: 2.2rem; opacity: 0.85;"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-2">พร้อมสำหรับการค้นหาประวัติการรักษา (A-EMR)</h5>
-            <p class="text-secondary small mb-4">
-                กรอกเลขบัตรประชาชน 13 หลักเพื่อดึงข้อมูลประวัติการรักษา, การแพ้ยา, โรคประจำตัว, และประวัติการมารับบริการ 20 ครั้งล่าสุดจากโรงพยาบาลได้ทันที
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">พร้อมสำหรับการค้นหาประวัติการรักษา (A-EMR)</h6>
+            <p class="text-secondary small mb-2.5" style="font-size: 0.8rem;">
+                กรอกเลขบัตรประชาชน 13 หลักเพื่อดึงข้อมูลประวัติการรักษา, การแพ้ยา, โรคประจำตัว, และประวัติการรับบริการข้ามโรงพยาบาล
             </p>
-            <div class="d-flex justify-content-center gap-3 text-start small text-muted">
+            <div class="d-flex justify-content-center gap-3 text-start small text-muted" style="font-size: 0.76rem;">
                 <div><i class="fa-solid fa-circle-check text-success me-1"></i> ค้นหาข้าม รพ. อัตโนมัติ</div>
-                <div><i class="fa-solid fa-circle-check text-success me-1"></i> ดึงสดจาก opitemrece</div>
                 <div><i class="fa-solid fa-circle-check text-success me-1"></i> ปลอดภัยตาม PDPA</div>
             </div>
         </div>
@@ -385,35 +391,35 @@
 
     <!-- 3. State: Loading Skeleton -->
     <div id="loadingState" class="col-12 d-none">
-        <div class="glass-card p-4 text-center py-5">
-            <div class="spinner-grow text-info mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
-            <h5 class="fw-bold text-slate-800 mb-1">กำลังสืบค้นประวัติการรักษาจากโรงพยาบาลในเครือข่าย...</h5>
-            <p class="text-muted small mb-0">เชื่อมต่อ Agent ประจำโรงพยาบาล และดึงข้อมูลแบบ On-demand</p>
+        <div class="glass-card p-4 text-center py-4" style="border-radius: 14px;">
+            <div class="spinner-grow text-info mb-2" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+            <h6 class="fw-bold text-slate-800 mb-1" style="font-size: 0.92rem;">กำลังสืบค้นประวัติการรักษาจากโรงพยาบาลในเครือข่าย...</h6>
+            <p class="text-muted small mb-0" style="font-size: 0.78rem;">เชื่อมต่อ Agent ประจำโรงพยาบาล และดึงข้อมูลแบบ On-demand</p>
         </div>
     </div>
 
     <!-- 4. State: Not Found Alert -->
     <div id="notFoundState" class="col-12 d-none">
-        <div class="glass-card p-4 text-center border-warning border-opacity-50">
-            <i class="fa-solid fa-triangle-exclamation text-warning mb-2" style="font-size: 2.5rem;"></i>
-            <h5 class="fw-bold text-dark mb-1">ไม่พบข้อมูลประวัติการรักษา</h5>
-            <p id="notFoundMsg" class="text-secondary small mb-0">ไม่พบประวัติผู้ป่วยด้วยเลขประจำตัวประชาชนนี้ในระบบโรงพยาบาล</p>
+        <div class="glass-card p-3 text-center border-warning border-opacity-50" style="border-radius: 14px;">
+            <i class="fa-solid fa-triangle-exclamation text-warning mb-1" style="font-size: 2rem;"></i>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.92rem;">ไม่พบข้อมูลประวัติการรักษา</h6>
+            <p id="notFoundMsg" class="text-secondary small mb-0" style="font-size: 0.78rem;">ไม่พบประวัติผู้ป่วยด้วยเลขประจำตัวประชาชนนี้ในระบบโรงพยาบาล</p>
         </div>
     </div>
 
     <!-- 5. State: EMR Result Container -->
     <div id="emrResultContainer" class="col-12 d-none">
         <!-- Patient Banner (Demographics) -->
-        <div class="patient-banner mb-4">
-            <div class="row align-items-center g-3">
-                <div class="col-12 col-md-7">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="bg-info bg-opacity-20 text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 58px; height: 58px; font-size: 1.8rem; flex-shrink: 0;">
+        <div class="patient-banner mb-2.5">
+            <div class="row align-items-center g-2">
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="bg-info bg-opacity-20 text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; font-size: 1.3rem; flex-shrink: 0;">
                             <i class="fa-solid fa-user-injured"></i>
                         </div>
                         <div>
-                            <h3 class="fw-bold mb-0 text-white" id="resPatientName">-</h3>
-                            <div class="text-slate-300 small mt-1">
+                            <h5 class="fw-bold mb-0 text-white" id="resPatientName" style="font-size: 1.15rem; letter-spacing: -0.2px;">-</h5>
+                            <div class="text-slate-300 mt-0.5" style="font-size: 0.78rem; line-height: 1.3;">
                                 HN: <span class="fw-bold text-info" id="resPatientHn">-</span> | 
                                 CID: <span class="fw-bold" id="resPatientCid">-</span> |
                                 วันเกิด: <span id="resPatientBirthday" class="text-slate-200">-</span>
@@ -422,46 +428,46 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-5 text-md-end">
-                    <div class="d-flex flex-wrap justify-content-md-end gap-2">
-                        <span class="badge" style="background: rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.5rem 0.8rem; border-radius: 8px;">
+                <div class="col-12 col-md-6 text-md-end">
+                    <div class="d-flex flex-wrap justify-content-md-end gap-1.5">
+                        <span class="badge" style="background: rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.22rem 0.5rem; font-size: 0.74rem; border-radius: 6px;">
                             เพศ: <span class="fw-bold text-info" id="resPatientSex">-</span>
                         </span>
-                        <span class="badge" style="background: rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.5rem 0.8rem; border-radius: 8px;">
+                        <span class="badge" style="background: rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.22rem 0.5rem; font-size: 0.74rem; border-radius: 6px;">
                             อายุ: <span class="fw-bold text-info" id="resPatientAge">-</span>
                         </span>
-                        <span class="badge" style="background: rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.5rem 0.8rem; border-radius: 8px;">
+                        <span class="badge" style="background: rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.22rem 0.5rem; font-size: 0.74rem; border-radius: 6px;">
                             กรุ๊ปเลือด: <span class="fw-bold text-danger" id="resPatientBlood">-</span>
                         </span>
-                        <span class="badge" style="background: rgba(37, 99, 235, 0.45) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.5rem 0.8rem; border-radius: 8px;">
+                        <span class="badge" style="background: rgba(37, 99, 235, 0.45) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; padding: 0.22rem 0.5rem; font-size: 0.74rem; border-radius: 6px;">
                             สิทธิ: <span class="fw-bold" id="resPatientPttype">-</span>
                         </span>
                     </div>
-                    <div class="d-flex flex-wrap align-items-center justify-content-md-end gap-2 mt-2">
-                        <div class="small text-slate-300">
+                    <div class="d-flex flex-wrap align-items-center justify-content-md-end gap-1.5 mt-1.5">
+                        <div class="text-slate-300" style="font-size: 0.74rem;">
                             <i class="fa-solid fa-network-wired text-info me-1"></i> แหล่งข้อมูล:
                         </div>
-                        <div id="resHospitalsSummaryList" class="d-flex flex-wrap gap-1.5">
+                        <div id="resHospitalsSummaryList" class="d-flex flex-wrap gap-1">
                             <!-- Populated dynamically by JS -->
                         </div>
-                        <span class="badge" id="resLatency" style="background: rgba(34, 197, 94, 0.2) !important; color: #86efac !important; border: 1px solid rgba(34, 197, 94, 0.3) !important; padding: 5px 10px; border-radius: 9999px; font-weight: 600;">-</span>
+                        <span class="badge" id="resLatency" style="background: rgba(34, 197, 94, 0.2) !important; color: #86efac !important; border: 1px solid rgba(34, 197, 94, 0.3) !important; padding: 2px 7px; border-radius: 9999px; font-weight: 600; font-size: 0.7rem;">-</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Drug Allergy & Chronic Diseases Summary (Horizontal Split) -->
-        <div class="row g-3 mb-4">
+        <div class="row g-2 mb-2.5">
             <!-- Allergies -->
             <div class="col-12 col-lg-6">
-                <div class="glass-card p-3.5 h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6 class="fw-bold text-danger mb-0 d-flex align-items-center gap-2">
+                <div class="glass-card p-2.5 px-3 h-100" style="border-radius: 12px;">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6 class="fw-bold text-danger mb-0 d-flex align-items-center gap-1.5" style="font-size: 0.82rem;">
                             <i class="fa-solid fa-triangle-exclamation"></i> ประวัติการแพ้ยา (Drug Allergies)
                         </h6>
-                        <span id="allergyCountBadge" class="badge bg-danger rounded-pill">0</span>
+                        <span id="allergyCountBadge" class="badge bg-danger rounded-pill" style="font-size: 0.7rem; padding: 0.18rem 0.45rem;">0</span>
                     </div>
-                    <div id="allergyContentList" class="mt-2">
+                    <div id="allergyContentList" class="mt-1">
                         <!-- Filled by JS -->
                     </div>
                 </div>
@@ -469,31 +475,31 @@
 
             <!-- Chronic Clinics -->
             <div class="col-12 col-lg-6">
-                <div class="glass-card p-3.5 h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6 class="fw-bold text-primary mb-0 d-flex align-items-center gap-2">
+                <div class="glass-card p-2.5 px-3 h-100" style="border-radius: 12px;">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6 class="fw-bold text-primary mb-0 d-flex align-items-center gap-1.5" style="font-size: 0.82rem;">
                             <i class="fa-solid fa-stethoscope"></i> โรคประจำตัว / คลินิกเรื้อรัง (PMH / Chronic Conditions)
                         </h6>
-                        <span id="clinicCountBadge" class="badge bg-primary rounded-pill">0</span>
+                        <span id="clinicCountBadge" class="badge bg-primary rounded-pill" style="font-size: 0.7rem; padding: 0.18rem 0.45rem;">0</span>
                     </div>
-                    <div id="clinicContentList" class="mt-2 d-flex flex-wrap gap-2">
+                    <div id="clinicContentList" class="mt-1 d-flex flex-wrap gap-1.5">
                         <!-- Filled by JS -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Visit History Table (เหมือน vEMR ในรูปที่ 1) -->
+        <!-- Visit History Table -->
         <div class="vemr-table-card">
-            <div class="p-3.5 border-bottom bg-light">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+            <div class="py-2 px-3 border-bottom bg-light">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-1.5 mb-1">
                     <div>
-                        <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-1.5" style="font-size: 0.86rem;">
                             <i class="fa-solid fa-list-check text-primary"></i> ประวัติการมารับบริการ (Visit History)
-                        </h5>
-                        <small class="text-muted">คลิกที่แถวรายการเพื่อเปิดดูรายละเอียดประวัติการรักษา, รายการยา (opitemrece), ค่าบริการ, Lab, และหัตถการ</small>
+                        </h6>
+                        <small class="text-muted" style="font-size: 0.74rem;">คลิกที่แถวรายการเพื่อดูรายละเอียดประวัติการรักษา, รายการยา (opitemrece), ค่าบริการ, Lab, และหัตถการ</small>
                     </div>
-                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill fw-bold" id="totalVisitsBadge">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill fw-bold" id="totalVisitsBadge" style="font-size: 0.74rem;">
                         0 Visits
                     </span>
                 </div>
@@ -1063,25 +1069,38 @@
         document.getElementById('resPatientPttype').textContent = pt.pttype || '-';
         document.getElementById('resLatency').textContent = `⚡ ${data.latency_ms} ms`;
 
-        // Render Hospital Source Badges in Patient Banner
+        // Render Hospital Source Badges in Patient Banner (กรองเฉพาะ รพ. ที่มีประวัติการตรวจรักษาจริง > 0 ครั้ง)
         const hospSummaryContainer = document.getElementById('resHospitalsSummaryList');
         hospSummaryContainer.innerHTML = '';
         
         const hospitalsList = data.hospitals && data.hospitals.length > 0 
-            ? data.hospitals 
-            : [{ code: data.hospital?.code, name: data.hospital?.name || 'โรงพยาบาลในเครือข่าย', visit_count: data.total_visits_found || 0 }];
+            ? data.hospitals.filter(h => (h.visit_count || 0) > 0)
+            : ((data.total_visits_found || 0) > 0 
+                ? [{ code: data.hospital?.code, name: data.hospital?.name || 'โรงพยาบาลในเครือข่าย', visit_count: data.total_visits_found }]
+                : []);
 
-        hospitalsList.forEach(h => {
-            const hName = h.name || h.hospital_name || (data.hospital ? data.hospital.name : 'โรงพยาบาลในเครือข่าย');
+        if (hospitalsList.length > 0) {
+            hospitalsList.forEach(h => {
+                const hName = h.name || h.hospital_name || (data.hospital ? data.hospital.name : 'โรงพยาบาลในเครือข่าย');
+                const chip = document.createElement('div');
+                chip.className = 'hosp-source-chip';
+                chip.innerHTML = `
+                    <i class="fa-solid fa-hospital text-info"></i>
+                    <span class="hosp-name-text">${escapeHtml(hName)}</span>
+                    <span class="hosp-count-badge">${h.visit_count || 0} ครั้ง</span>
+                `;
+                hospSummaryContainer.appendChild(chip);
+            });
+        } else {
             const chip = document.createElement('div');
             chip.className = 'hosp-source-chip';
+            chip.style.opacity = '0.85';
             chip.innerHTML = `
-                <i class="fa-solid fa-hospital text-info"></i>
-                <span class="hosp-name-text">${escapeHtml(hName)}</span>
-                <span class="hosp-count-badge">${h.visit_count || 0} ครั้ง</span>
+                <i class="fa-solid fa-circle-info text-warning"></i>
+                <span class="hosp-name-text text-white-50">ไม่พบประวัติการตรวจรักษา</span>
             `;
             hospSummaryContainer.appendChild(chip);
-        });
+        }
 
         // 1. Allergies (Aggregated from all hospitals)
         const allergyContainer = document.getElementById('allergyContentList');
@@ -1134,7 +1153,7 @@
             `;
         }
 
-        // Setup Hospital Filter Tabs (Only shown if > 1 hospital found)
+        // Setup Hospital Filter Tabs (Only shown if > 1 hospital found with actual visits)
         renderHospitalFilterButtons(data);
 
         // 3. Render Visit History Table
@@ -1147,8 +1166,9 @@
         const buttonsContainer = document.getElementById('hospitalFilterButtons');
         buttonsContainer.innerHTML = '';
 
-        const hospitals = data.hospitals || [];
-        // Only show filter bar if there are 2 or more DIFFERENT hospitals
+        // กรองเฉพาะ รพ. ที่มีประวัติการรักษาจริง (> 0 ครั้ง) เพื่อไม่ให้สร้างปุ่ม 0 ครั้ง
+        const hospitals = (data.hospitals || []).filter(h => (h.visit_count || 0) > 0);
+        // Only show filter bar if there are 2 or more DIFFERENT hospitals with actual visits
         if (hospitals.length > 1) {
             filterContainer.style.setProperty('display', 'flex', 'important');
 
@@ -1161,7 +1181,7 @@
             allBtn.onclick = () => filterVisits('ALL');
             buttonsContainer.appendChild(allBtn);
 
-            // Per hospital buttons
+            // Per hospital buttons (เฉพาะ รพ. ที่มี visit_count > 0)
             hospitals.forEach(h => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
@@ -1280,61 +1300,62 @@
                 }
 
                 // Build Department / Ward Column
+                // Build Department / Ward Column
                 let deptColHtml = '';
                 if (isIpd) {
                     deptColHtml = `
-                        <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-weight:600;">
+                        <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-weight:600; font-size: 0.74rem; padding: 2px 6px;">
                             <i class="fa-solid fa-bed-pulse me-1"></i> ${escapeHtml(v.ward_name || v.department || 'IPD')}
                         </span>
-                        <div class="small fw-bold mt-1" style="color:#c2410c;">
+                        <div class="small fw-bold mt-0.5" style="color:#c2410c; font-size: 0.74rem;">
                             <i class="fa-solid fa-clock-rotate-left me-1"></i> นอน ${v.los || 1} วัน
                         </div>
                     `;
                 } else {
                     deptColHtml = `
-                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-semibold">
+                        <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.74rem;">
                             <i class="fa-solid fa-clinic-medical text-primary me-1"></i> ${escapeHtml(v.department || '-')}
                         </span>
                     `;
                 }
 
-                // Build Doctor Column (Expanded 225px width)
+                // Build Doctor Column
                 let doctorColHtml = '';
                 const docName = v.doctor_name || v.adm_doctor || '';
                 if (docName) {
                     if (isIpd) {
                         doctorColHtml = `
-                            <span class="fw-bold text-slate-800 d-inline-flex align-items-center gap-1.5">
+                            <span class="fw-bold text-slate-800 d-inline-flex align-items-center gap-1" style="font-size: 0.8rem;">
                                 <i class="fa-solid fa-user-doctor" style="color:#ea580c;"></i> ${escapeHtml(docName)}
                             </span>
-                            <div class="small text-muted mt-0.5">แพทย์เจ้าของไข้ / ผู้ตรวจ</div>
+                            <div class="text-muted mt-0.5" style="font-size: 0.72rem;">แพทย์เจ้าของไข้ / ผู้ตรวจ</div>
                         `;
                     } else {
                         doctorColHtml = `
-                            <span class="fw-semibold text-slate-800 d-inline-flex align-items-center gap-1.5">
+                            <span class="fw-semibold text-slate-800 d-inline-flex align-items-center gap-1" style="font-size: 0.8rem;">
                                 <i class="fa-solid fa-user-doctor text-primary"></i> ${escapeHtml(docName)}
                             </span>
                         `;
                     }
                 } else {
-                    doctorColHtml = `<span class="text-muted small">-</span>`;
+                    doctorColHtml = `<span class="text-muted" style="font-size: 0.75rem;">-</span>`;
                 }
 
                 // Build PDX Column
                 let pdxBadge = isIpd 
-                    ? `<span class="badge" style="background:#fed7aa; color:#9a3412; font-weight:700; border:1px solid #fdba74; margin-right:4px;"><i class="fa-solid fa-bed-pulse me-1"></i>IPD</span>`
-                    : `<span class="badge bg-light text-secondary border me-1">OPD</span>`;
+                    ? `<span class="badge" style="background:#fed7aa; color:#9a3412; font-weight:700; border:1px solid #fdba74; margin-right:3px; font-size: 0.68rem; padding: 2px 5px;"><i class="fa-solid fa-bed-pulse me-1"></i>IPD</span>`
+                    : `<span class="badge bg-light text-secondary border me-1" style="font-size: 0.68rem; padding: 2px 5px;">OPD</span>`;
 
                 tr.innerHTML = `
-                    <td class="text-center fw-bold text-muted">${index + 1}</td>
+                    <td class="text-center fw-bold text-muted" style="font-size: 0.78rem;">${index + 1}</td>
                     <td>
                         <span class="badge badge-hosp" style="background:${hStyle.bg}; color:${hStyle.text}; border: 1px solid ${hStyle.border};">
                             <i class="fa-solid ${hStyle.icon} me-1"></i> ${escapeHtml(hospName)}
                         </span>
                     </td>
                     <td>
-                        <div class="fw-bold text-dark">${escapeHtml(visitHn)}</div>
-                        ${isIpd && v.an ? `<div class="small fw-bold" style="color:#c2410c;"><i class="fa-solid fa-bed-pulse me-1"></i>AN: ${escapeHtml(v.an)}</div>` : ''}
+                        <div class="fw-bold text-dark" style="font-size: 0.8rem;">${escapeHtml(visitHn)}</div>
+                        ${isIpd && v.an ? `<div class="fw-bold" style="color:#c2410c; font-size: 0.72rem;"><i class="fa-solid fa-bed-pulse me-1"></i>AN: ${escapeHtml(v.an)}</div>` : ''}
                     </td>
                     <td class="fw-semibold text-slate-800">
                         ${dateColHtml}
@@ -1347,15 +1368,15 @@
                     </td>
                     <td>
                         ${pdxBadge}
-                        <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2 py-1 rounded me-1 fw-bold">${escapeHtml(v.pdx)}</span>
-                        <span class="fw-semibold text-slate-800">${escapeHtml(v.pdx_name || '-')}</span>
-                        ${v.cc ? `<div class="small text-muted text-truncate mt-0.5" style="max-width: 250px;">CC: ${escapeHtml(v.cc)}</div>` : ''}
+                        <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-1.5 py-0.5 rounded me-1 fw-bold" style="font-size: 0.72rem;">${escapeHtml(v.pdx)}</span>
+                        <span class="fw-semibold text-slate-800" style="font-size: 0.78rem;">${escapeHtml(v.pdx_name || '-')}</span>
+                        ${v.cc ? `<div class="text-muted text-truncate mt-0.5" style="max-width: 250px; font-size: 0.72rem;">CC: ${escapeHtml(v.cc)}</div>` : ''}
                     </td>
                     <td>
-                        <small class="fw-semibold text-danger">${vitalsText.join(' | ') || '-'}</small>
+                        <small class="fw-semibold text-danger" style="font-size: 0.74rem;">${vitalsText.join(' | ') || '-'}</small>
                     </td>
                     <td class="text-center text-muted">
-                        <i class="fa-solid fa-chevron-right text-primary opacity-75"></i>
+                        <i class="fa-solid fa-chevron-right text-primary opacity-75" style="font-size: 0.72rem;"></i>
                     </td>
                 `;
                 tableBody.appendChild(tr);
