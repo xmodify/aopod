@@ -132,36 +132,32 @@ type OpohIpdRecord struct {
 	IncTotal       float64 `json:"inc_total"`
 }
 
-// buildDoctorMatchClause creates SQL WHERE conditions for doctor CIDs, licenses, and names
+// buildDoctorMatchClause creates SQL WHERE conditions strictly for doctor CIDs and licenses (2-tier matching)
 func buildDoctorMatchClause(doctors []OpohDoctor) (string, map[string]OpohDoctor, map[string]OpohDoctor) {
 	cidMap := make(map[string]OpohDoctor)
 	licMap := make(map[string]OpohDoctor)
 	var cids []string
 	var lics []string
-	var nameClauses []string
 
 	for _, d := range doctors {
+		// Tier 1: CID 13 digits
 		cleanCid := strings.TrimSpace(d.CID)
 		if cleanCid != "" {
 			cidMap[cleanCid] = d
 			cids = append(cids, fmt.Sprintf("'%s'", cleanCid))
 		}
+
+		// Tier 2: License number (วxxxx)
 		cleanLic := strings.TrimSpace(d.Licenseno)
 		if cleanLic != "" {
 			licMap[cleanLic] = d
 			lics = append(lics, fmt.Sprintf("'%s'", cleanLic))
-			// Also add variant without 'ว' if starts with 'ว'
+			// Also match variant without 'ว'
 			if strings.HasPrefix(cleanLic, "ว") {
 				noV := strings.TrimPrefix(cleanLic, "ว")
 				licMap[noV] = d
 				lics = append(lics, fmt.Sprintf("'%s'", noV))
 			}
-		}
-
-		cleanFname := strings.TrimSpace(d.Fname)
-		cleanLname := strings.TrimSpace(d.Lname)
-		if cleanFname != "" && cleanLname != "" {
-			nameClauses = append(nameClauses, fmt.Sprintf("(d.name LIKE '%%%s%%' AND d.name LIKE '%%%s%%')", cleanFname, cleanLname))
 		}
 	}
 
@@ -171,9 +167,6 @@ func buildDoctorMatchClause(doctors []OpohDoctor) (string, map[string]OpohDoctor
 	}
 	if len(lics) > 0 {
 		clauses = append(clauses, fmt.Sprintf("d.licenseno IN (%s)", strings.Join(lics, ",")))
-	}
-	if len(nameClauses) > 0 {
-		clauses = append(clauses, strings.Join(nameClauses, " OR "))
 	}
 
 	if len(clauses) == 0 {
@@ -195,7 +188,6 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		ov.vstdate,
 		COALESCE(d.cid, '') AS cid,
 		COALESCE(d.licenseno, '') AS licenseno,
-		COALESCE(d.name, '') AS doc_name,
 		COUNT(DISTINCT ov.hn) AS hn_total,
 		COUNT(ov.vn) AS visit_total,
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') THEN 1 ELSE 0 END) AS visit_ucs,
@@ -216,7 +208,7 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	LEFT JOIN ipt ON ipt.vn = ov.vn
 	WHERE ov.vstdate BETWEEN ? AND ?
 	  AND (%s)
-	GROUP BY ov.vstdate, d.cid, d.licenseno, d.name
+	GROUP BY ov.vstdate, d.cid, d.licenseno
 	ORDER BY ov.vstdate ASC`, matchWhere)
 
 	rows, err := db.Query(query, startDate, endDate)
@@ -228,14 +220,13 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	var records []OpohOpdRecord
 	for rows.Next() {
 		var r OpohOpdRecord
-		var cid, lic, docName string
+		var cid, lic string
 		var vstDateRaw string
 
 		err := rows.Scan(
 			&vstDateRaw,
 			&cid,
 			&lic,
-			&docName,
 			&r.HnTotal,
 			&r.VisitTotal,
 			&r.VisitUCS,
@@ -259,10 +250,9 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 			r.Vstdate = vstDateRaw
 		}
 
-		// Match doctor: 1. CID -> 2. Licenseno -> 3. Fallback Name
+		// Match doctor: 1. CID 13 หลัก -> 2. เลข ว. (d.licenseno)
 		cid = strings.TrimSpace(cid)
 		lic = strings.TrimSpace(lic)
-		docName = strings.TrimSpace(docName)
 		var matchedDoc OpohDoctor
 		var found bool
 
@@ -271,17 +261,6 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		}
 		if !found && lic != "" {
 			matchedDoc, found = licMap[lic]
-		}
-		if !found && docName != "" {
-			for _, d := range doctors {
-				if d.Fname != "" && d.Lname != "" {
-					if strings.Contains(docName, d.Fname) && strings.Contains(docName, d.Lname) {
-						matchedDoc = d
-						found = true
-						break
-					}
-				}
-			}
 		}
 
 		if found {
@@ -313,7 +292,6 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		i.dchdate,
 		COALESCE(d.cid, '') AS cid,
 		COALESCE(d.licenseno, '') AS licenseno,
-		COALESCE(d.name, '') AS doc_name,
 		COUNT(DISTINCT i.an) AS an_total,
 		SUM(COALESCE(a.admdate, a.los, 1)) AS admdate_total,
 		SUM(COALESCE(a.rw, i.adjrw, 0)) AS adjrw_total,
@@ -325,7 +303,7 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	LEFT JOIN operation_list op ON op.an = i.an
 	WHERE i.dchdate BETWEEN ? AND ?
 	  AND (%s)
-	GROUP BY i.dchdate, d.cid, d.licenseno, d.name
+	GROUP BY i.dchdate, d.cid, d.licenseno
 	ORDER BY i.dchdate ASC`, matchWhere)
 
 	rows, err := db.Query(query, startDate, endDate)
@@ -337,14 +315,13 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	var records []OpohIpdRecord
 	for rows.Next() {
 		var r OpohIpdRecord
-		var cid, lic, docName string
+		var cid, lic string
 		var dchDateRaw string
 
 		err := rows.Scan(
 			&dchDateRaw,
 			&cid,
 			&lic,
-			&docName,
 			&r.AnTotal,
 			&r.AdmdateTotal,
 			&r.AdjrwTotal,
@@ -361,10 +338,9 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 			r.Dchdate = dchDateRaw
 		}
 
-		// Match doctor: 1. CID -> 2. Licenseno -> 3. Fallback Name
+		// Match doctor: 1. CID 13 หลัก -> 2. เลข ว. (d.licenseno)
 		cid = strings.TrimSpace(cid)
 		lic = strings.TrimSpace(lic)
-		docName = strings.TrimSpace(docName)
 		var matchedDoc OpohDoctor
 		var found bool
 
@@ -373,17 +349,6 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		}
 		if !found && lic != "" {
 			matchedDoc, found = licMap[lic]
-		}
-		if !found && docName != "" {
-			for _, d := range doctors {
-				if d.Fname != "" && d.Lname != "" {
-					if strings.Contains(docName, d.Fname) && strings.Contains(docName, d.Lname) {
-						matchedDoc = d
-						found = true
-						break
-					}
-				}
-			}
 		}
 
 		if found {
