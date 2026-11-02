@@ -149,14 +149,33 @@
         </div>
       </div>
 
-      {{-- 2. สถิติการรับบริการแพทย์เฉพาะทางรายโรงพยาบาลชุมชน (OPD) --}}
+      {{-- 2. กราฟแท่งแนวโน้มการให้บริการรายเดือน (OPD Monthly Trend) --}}
+      <div class="opoh-glass-card p-4 mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+              <i class="fa-solid fa-chart-column text-primary"></i>
+              <span>แนวโน้มการจัดบริการแพทย์เฉพาะทางรายเดือน (ปีงบประมาณ {{ $budget_year }})</span>
+            </h5>
+            <span class="text-muted small">สถิติจำนวนผู้รับบริการสะสม 12 เดือนของปีงบประมาณ จำแนกตามโรงพยาบาลชุมชน 6 แห่ง</span>
+          </div>
+          <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill small fw-semibold">
+            <i class="fa-solid fa-layer-group me-1"></i>Stacked Bar & Trendline
+          </span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="opdMonthlyChartCanvas"></canvas>
+        </div>
+      </div>
+
+      {{-- 3. สถิติการรับบริการแพทย์เฉพาะทางแยกรายสาขา (OPD) --}}
       <div class="opoh-glass-card p-4 mb-4">
         <div class="row align-items-start g-3 mb-3">
           {{-- Header Left: Title, Date text, Total Badge --}}
           <div class="col-12 col-xl-5">
             <h5 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
               <i class="fa-solid fa-hospital text-primary"></i>
-              <span>สถิติการรับบริการแพทย์เฉพาะทางรายโรงพยาบาลชุมชน (OPD)</span>
+              <span>สถิติการรับบริการแพทย์เฉพาะทางแยกรายสาขา (OPD)</span>
             </h5>
             <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
               <span class="text-muted small">
@@ -222,85 +241,77 @@
           </div>
         </div>
 
-        {{-- ตารางสถิติรายโรงพยาบาลชุมชน (OPD) --}}
+        {{-- ตารางสถิติแยกรายสาขาเฉพาะทาง (OPD) - 7 สาขาเป็นแถว และ รพ.เป็นคอลัมน์ --}}
         <div class="table-responsive rounded-4 border">
           <table class="table table-hover table-opoh align-middle mb-0">
             <thead>
               <tr>
-                <th style="width: 50px;">#</th>
-                <th class="text-start" style="min-width: 200px;">หน่วยบริการ (รพช. / รพท.)</th>
-                <th style="min-width: 120px;" class="text-end">สะสมในอดีต (ราย)</th>
-                <th style="min-width: 140px;" class="text-end bg-primary bg-opacity-10 text-primary">ช่วงที่เลือก (ราย)</th>
-                <th style="min-width: 130px;" class="text-end">สะสมรวม (ราย)</th>
-                @foreach($specialties as $code => $spec)
-                <th style="min-width: 90px;" class="text-end" title="{{ $spec['name'] }}">
-                  {{ $spec['name'] }}
-                </th>
+                <th class="text-start" style="min-width: 220px;">สาขาเฉพาะทาง (7 สาขาหลัก)</th>
+                <th style="min-width: 110px;" class="text-end">ยอดสะสม</th>
+                <th style="min-width: 120px;" class="text-end bg-primary bg-opacity-10 text-primary">ยอดตามช่วง</th>
+                @foreach($hospitalsList as $hcode => $hname)
+                <th style="min-width: 115px;" class="text-end">{{ $hname }}</th>
                 @endforeach
+                <th style="min-width: 130px;" class="text-end bg-light border-start text-secondary">
+                  รพ.อำนาจเจริญ
+                  <div class="small fw-normal text-muted" style="font-size: 0.70rem;">(ตรวจ ณ แม่ข่าย)</div>
+                </th>
               </tr>
             </thead>
             <tbody>
-              @forelse($hospitalRows as $index => $row)
+              @forelse($specialtyRows as $row)
               <tr>
-                <td class="text-center text-muted fw-bold">{{ $index + 1 }}</td>
                 <td>
-                  <div class="fw-bold text-dark">{{ $row['name'] }}</div>
-                  <span class="text-muted small">รหัส: {{ $row['hospcode'] }}</span>
+                  <div class="d-flex align-items-center gap-2.5">
+                    <div class="rounded-circle text-center d-flex align-items-center justify-content-center flex-shrink-0" style="width: 34px; height: 34px; background-color: {{ $row['color'] }}15; color: {{ $row['color'] }};">
+                      <i class="fa-solid {{ $row['icon'] }}"></i>
+                    </div>
+                    <div>
+                      <div class="fw-bold text-dark">{{ $row['name'] }}</div>
+                      <span class="badge px-1.5 py-0.5 rounded-pill fw-semibold" style="background-color: {{ $row['color'] }}15; color: {{ $row['color'] }}; font-size: 0.72rem;">
+                        รหัสสาขา: {{ $row['code'] }}
+                      </span>
+                    </div>
+                  </div>
                 </td>
-                <td class="text-end fw-semibold text-secondary">{{ number_format($row['past_visits']) }}</td>
-                <td class="text-end fw-bold text-primary bg-primary bg-opacity-10">{{ number_format($row['current_visits']) }}</td>
-                <td class="text-end fw-bolder text-success fs-6">{{ number_format($row['total_visits']) }}</td>
-                @foreach($specialties as $code => $spec)
+                <td class="text-end fw-semibold text-secondary">
+                  {{ number_format($row['cumulative']) }}
+                </td>
+                <td class="text-end fw-bold text-primary bg-primary bg-opacity-10">
+                  {{ number_format($row['period']) }}
+                </td>
+                @foreach($hospitalsList as $hcode => $hname)
                   @php
-                    $spVisits = $row['specialties'][$code] ?? 0;
+                    $hv = $row['hosp_visits'][$hcode] ?? 0;
                   @endphp
-                  <td class="text-end {{ $spVisits > 0 ? 'fw-bold text-dark' : 'text-muted opacity-50' }}">
-                    {{ $spVisits > 0 ? number_format($spVisits) : '-' }}
+                  <td class="text-end {{ $hv > 0 ? 'fw-bold text-dark' : 'text-muted opacity-50' }}">
+                    {{ $hv > 0 ? number_format($hv) : '-' }}
                   </td>
                 @endforeach
+                <td class="text-end bg-light border-start {{ $row['amnat_visits'] > 0 ? 'fw-bold text-secondary' : 'text-muted opacity-50' }}">
+                  {{ $row['amnat_visits'] > 0 ? number_format($row['amnat_visits']) : '-' }}
+                </td>
               </tr>
               @empty
               <tr>
-                <td colspan="12" class="text-center py-4 text-muted">
+                <td colspan="{{ 4 + count($hospitalsList) }}" class="text-center py-4 text-muted">
                   <i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>
-                  ยังไม่มีข้อมูลการให้บริการในโรงพยาบาลชุมชน ในช่วงเวลานี้
+                  ยังไม่มีข้อมูลการให้บริการในช่วงเวลาที่เลือก
                 </td>
               </tr>
               @endforelse
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td colspan="2" class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
-                <td class="text-end fw-bolder">{{ number_format($sumPast) }}</td>
-                <td class="text-end fw-bolder bg-primary bg-opacity-10 text-primary fs-6">{{ number_format($sumCurrent) }}</td>
-                <td class="text-end fw-bolder text-success fs-5">{{ number_format($sumCumulative) }}</td>
-                @foreach($specialties as $code => $spec)
-                  @php
-                    $colSum = 0;
-                    foreach($hospitalRows as $r) {
-                      $colSum += $r['specialties'][$code] ?? 0;
-                    }
-                  @endphp
-                  <td class="text-end fw-bold">{{ number_format($colSum) }}</td>
+                <td class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
+                <td class="text-end fw-bolder text-success fs-5">{{ number_format($specColTotals['cumulative']) }}</td>
+                <td class="text-end fw-bolder bg-primary bg-opacity-10 text-primary fs-6">{{ number_format($specColTotals['period']) }}</td>
+                @foreach($hospitalsList as $hcode => $hname)
+                <td class="text-end fw-bolder">{{ number_format($specColTotals[$hcode]) }}</td>
                 @endforeach
-              </tr>
-              <tr class="table-light text-secondary border-top" style="font-size: 0.88rem;">
-                <td class="text-center text-muted"><i class="fa-solid fa-hospital text-secondary opacity-75"></i></td>
-                <td>
-                  <span class="fw-bold text-dark">รพ.อำนาจเจริญ</span>
-                  <span class="badge bg-secondary bg-opacity-25 text-dark ms-1" style="font-size: 0.70rem;">ตรวจปกติ ณ แม่ข่าย (ข้อมูลอ้างอิง ไม่นับรวมในยอด OPOH)</span>
+                <td class="text-end fw-bolder bg-light border-start text-secondary">
+                  {{ number_format($specColTotals['amnat']) }}
                 </td>
-                <td class="text-end text-muted">{{ number_format($amnatRow['past_visits'] ?? 0) }}</td>
-                <td class="text-end fw-semibold text-secondary">{{ number_format($amnatRow['current_visits'] ?? 0) }}</td>
-                <td class="text-end fw-bold text-secondary">{{ number_format($amnatRow['total_visits'] ?? 0) }}</td>
-                @foreach($specialties as $code => $spec)
-                  @php
-                    $spVisits = $amnatRow['specialties'][$code] ?? 0;
-                  @endphp
-                  <td class="text-end {{ $spVisits > 0 ? 'text-secondary fw-semibold' : 'text-muted opacity-50' }}">
-                    {{ $spVisits > 0 ? number_format($spVisits) : '-' }}
-                  </td>
-                @endforeach
               </tr>
             </tfoot>
           </table>
@@ -468,13 +479,32 @@
         </div>
       </div>
 
-      {{-- 2. สถิติการรับบริการผู้ป่วยในแพทย์เฉพาะทางรายโรงพยาบาลชุมชน (IPD) --}}
+      {{-- 2. กราฟแท่งแนวโน้มผู้ป่วยในรายเดือน (IPD Monthly Trend) --}}
+      <div class="opoh-glass-card p-4 mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+              <i class="fa-solid fa-chart-column text-danger"></i>
+              <span>แนวโน้มผู้ป่วยใน (IPD) แพทย์เฉพาะทางรายเดือน (ปีงบประมาณ {{ $budget_year }})</span>
+            </h5>
+            <span class="text-muted small">สถิติจำนวนการรับไว้รักษาผู้ป่วยใน (AN) 12 เดือนของปีงบประมาณ จำแนกตามโรงพยาบาลชุมชน 6 แห่ง</span>
+          </div>
+          <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1 rounded-pill small fw-semibold">
+            <i class="fa-solid fa-layer-group me-1"></i>Stacked Bar & Trendline
+          </span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="ipdMonthlyChartCanvas"></canvas>
+        </div>
+      </div>
+
+      {{-- 3. สถิติการรับบริการผู้ป่วยในแพทย์เฉพาะทางแยกรายสาขา (IPD) --}}
       <div class="opoh-glass-card p-4 mb-4">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
           <div>
             <h5 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
               <i class="fa-solid fa-hospital-user text-danger"></i>
-              <span>สถิติการรับบริการผู้ป่วยในแพทย์เฉพาะทางรายโรงพยาบาลชุมชน (IPD)</span>
+              <span>สถิติการรับบริการผู้ป่วยในแพทย์เฉพาะทางแยกรายสาขา (IPD)</span>
             </h5>
             <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
               <span class="text-muted small">
@@ -493,97 +523,92 @@
           </div>
         </div>
 
-        {{-- ตารางสถิติผู้ป่วยในรายโรงพยาบาลชุมชน (IPD) --}}
+        {{-- ตารางสถิติผู้ป่วยใน (IPD) - 7 สาขาเป็นแถว และ รพ.เป็นคอลัมน์ --}}
         <div class="table-responsive rounded-4 border">
           <table class="table table-hover table-opoh align-middle mb-0">
             <thead>
               <tr>
-                <th style="width: 50px;">#</th>
-                <th class="text-start" style="min-width: 180px;">หน่วยบริการ (รพช. / รพท.)</th>
-                <th style="min-width: 110px;" class="text-end">สะสมในอดีต (ราย)</th>
-                <th style="min-width: 120px;" class="text-end bg-danger bg-opacity-10 text-danger">ช่วงที่เลือก (ราย)</th>
-                <th style="min-width: 110px;" class="text-end">สะสมรวม (ราย)</th>
-                @foreach($specialties as $code => $spec)
-                <th style="min-width: 80px;" class="text-end" title="{{ $spec['name'] }}">
-                  {{ $spec['name'] }}
-                </th>
+                <th class="text-start" style="min-width: 220px;">สาขาเฉพาะทาง (7 สาขาหลัก)</th>
+                <th style="min-width: 90px;" class="text-end">สะสม (AN)</th>
+                <th style="min-width: 100px;" class="text-end bg-danger bg-opacity-10 text-danger">ช่วงที่เลือก (AN)</th>
+                <th style="min-width: 90px;" class="text-end">วันนอน (LOS)</th>
+                <th style="min-width: 90px;" class="text-end">AdjRW รวม</th>
+                @foreach($hospitalsList as $hcode => $hname)
+                <th style="min-width: 100px;" class="text-end">{{ $hname }}</th>
                 @endforeach
-                <th style="min-width: 100px;" class="text-end text-info">วันนอนรวม (วัน)</th>
-                <th style="min-width: 90px;" class="text-end text-primary">AdjRW รวม</th>
-                <th style="min-width: 130px;" class="text-end text-success">ค่ารักษารวม (บาท)</th>
+                <th style="min-width: 120px;" class="text-end">ค่ารักษารวม (บาท)</th>
+                <th style="min-width: 130px;" class="text-end bg-light border-start text-secondary">
+                  รพ.อำนาจเจริญ
+                  <div class="small fw-normal text-muted" style="font-size: 0.70rem;">(ตรวจ ณ แม่ข่าย)</div>
+                </th>
               </tr>
             </thead>
             <tbody>
-              @forelse($ipdHospitalRows as $index => $row)
+              @forelse($ipdSpecialtyRows as $row)
               <tr>
-                <td class="text-center text-muted fw-bold">{{ $index + 1 }}</td>
                 <td>
-                  <div class="fw-bold text-dark">{{ $row['name'] }}</div>
-                  <span class="text-muted small">รหัส: {{ $row['hospcode'] }}</span>
+                  <div class="d-flex align-items-center gap-2.5">
+                    <div class="rounded-circle text-center d-flex align-items-center justify-content-center flex-shrink-0" style="width: 34px; height: 34px; background-color: {{ $row['color'] }}15; color: {{ $row['color'] }};">
+                      <i class="fa-solid {{ $row['icon'] }}"></i>
+                    </div>
+                    <div>
+                      <div class="fw-bold text-dark">{{ $row['name'] }}</div>
+                      <span class="badge px-1.5 py-0.5 rounded-pill fw-semibold" style="background-color: {{ $row['color'] }}15; color: {{ $row['color'] }}; font-size: 0.72rem;">
+                        รหัสสาขา: {{ $row['code'] }}
+                      </span>
+                    </div>
+                  </div>
                 </td>
-                <td class="text-end fw-semibold text-secondary">{{ number_format($row['past_ans']) }}</td>
-                <td class="text-end fw-bold text-danger bg-danger bg-opacity-10">{{ number_format($row['current_ans']) }}</td>
-                <td class="text-end fw-bolder text-dark fs-6">{{ number_format($row['total_ans']) }}</td>
-                @foreach($specialties as $code => $spec)
+                <td class="text-end fw-semibold text-secondary">
+                  {{ number_format($row['cumulative']) }}
+                </td>
+                <td class="text-end fw-bold text-danger bg-danger bg-opacity-10">
+                  {{ number_format($row['period']) }}
+                </td>
+                <td class="text-end text-secondary">
+                  {{ number_format($row['los']) }}
+                </td>
+                <td class="text-end text-secondary">
+                  {{ number_format($row['rw'], 4) }}
+                </td>
+                @foreach($hospitalsList as $hcode => $hname)
                   @php
-                    $spAns = $row['specialties'][$code] ?? 0;
+                    $ha = $row['hosp_ans'][$hcode] ?? 0;
                   @endphp
-                  <td class="text-end {{ $spAns > 0 ? 'fw-bold text-dark' : 'text-muted opacity-50' }}">
-                    {{ $spAns > 0 ? number_format($spAns) : '-' }}
+                  <td class="text-end {{ $ha > 0 ? 'fw-bold text-danger' : 'text-muted opacity-50' }}">
+                    {{ $ha > 0 ? number_format($ha) : '-' }}
                   </td>
                 @endforeach
-                <td class="text-end fw-semibold text-info">{{ $row['total_los'] > 0 ? number_format($row['total_los']) : '-' }}</td>
-                <td class="text-end fw-semibold text-primary">{{ $row['total_rw'] > 0 ? number_format($row['total_rw'], 4) : '-' }}</td>
-                <td class="text-end fw-bold text-success">{{ $row['total_inc'] > 0 ? number_format($row['total_inc'], 2) : '-' }}</td>
+                <td class="text-end fw-bold text-dark">
+                  {{ number_format($row['inc'], 2) }}
+                </td>
+                <td class="text-end bg-light border-start {{ $row['amnat_ans'] > 0 ? 'fw-bold text-secondary' : 'text-muted opacity-50' }}">
+                  {{ $row['amnat_ans'] > 0 ? number_format($row['amnat_ans']) : '-' }}
+                </td>
               </tr>
               @empty
               <tr>
-                <td colspan="15" class="text-center py-4 text-muted">
+                <td colspan="{{ 7 + count($hospitalsList) }}" class="text-center py-4 text-muted">
                   <i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>
-                  ยังไม่มีข้อมูลผู้ป่วยใน (IPD) ในโรงพยาบาลชุมชน ในช่วงเวลานี้
+                  ยังไม่มีข้อมูลผู้ป่วยใน (IPD) ในช่วงเวลาที่เลือก
                 </td>
               </tr>
               @endforelse
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td colspan="2" class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
-                <td class="text-end fw-bolder">{{ number_format($ipdSumPast) }}</td>
-                <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger fs-6">{{ number_format($ipdSumCurrent) }}</td>
-                <td class="text-end fw-bolder text-dark fs-5">{{ number_format($ipdSumCumulative) }}</td>
-                @foreach($specialties as $code => $spec)
-                  @php
-                    $colIpdSum = 0;
-                    foreach($ipdHospitalRows as $r) {
-                      $colIpdSum += $r['specialties'][$code] ?? 0;
-                    }
-                  @endphp
-                  <td class="text-end fw-bold">{{ number_format($colIpdSum) }}</td>
+                <td class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
+                <td class="text-end fw-bolder text-dark fs-5">{{ number_format($ipdSpecColTotals['cumulative']) }}</td>
+                <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger fs-6">{{ number_format($ipdSpecColTotals['period']) }}</td>
+                <td class="text-end fw-bolder">{{ number_format($ipdSpecColTotals['los']) }}</td>
+                <td class="text-end fw-bolder">{{ number_format($ipdSpecColTotals['rw'], 4) }}</td>
+                @foreach($hospitalsList as $hcode => $hname)
+                <td class="text-end fw-bolder">{{ number_format($ipdSpecColTotals[$hcode]) }}</td>
                 @endforeach
-                <td class="text-end fw-bold text-info">{{ number_format($ipdSumLos) }}</td>
-                <td class="text-end fw-bold text-primary">{{ number_format($ipdSumRw, 4) }}</td>
-                <td class="text-end fw-bold text-success">฿{{ number_format($ipdSumInc, 2) }}</td>
-              </tr>
-              <tr class="table-light text-secondary border-top" style="font-size: 0.88rem;">
-                <td class="text-center text-muted"><i class="fa-solid fa-hospital text-secondary opacity-75"></i></td>
-                <td>
-                  <span class="fw-bold text-dark">รพ.อำนาจเจริญ</span>
-                  <span class="badge bg-secondary bg-opacity-25 text-dark ms-1" style="font-size: 0.70rem;">ตรวจปกติ ณ แม่ข่าย (ข้อมูลอ้างอิง ไม่นับรวมในยอด OPOH)</span>
+                <td class="text-end fw-bolder text-dark">฿{{ number_format($ipdSpecColTotals['inc'], 2) }}</td>
+                <td class="text-end fw-bolder bg-light border-start text-secondary">
+                  {{ number_format($ipdSpecColTotals['amnat']) }}
                 </td>
-                <td class="text-end text-muted">{{ number_format($ipdAmnatRow['past_ans'] ?? 0) }}</td>
-                <td class="text-end fw-semibold text-secondary">{{ number_format($ipdAmnatRow['current_ans'] ?? 0) }}</td>
-                <td class="text-end fw-bold text-secondary">{{ number_format($ipdAmnatRow['total_ans'] ?? 0) }}</td>
-                @foreach($specialties as $code => $spec)
-                  @php
-                    $spAns = $ipdAmnatRow['specialties'][$code] ?? 0;
-                  @endphp
-                  <td class="text-end {{ $spAns > 0 ? 'text-secondary fw-semibold' : 'text-muted opacity-50' }}">
-                    {{ $spAns > 0 ? number_format($spAns) : '-' }}
-                  </td>
-                @endforeach
-                <td class="text-end text-muted">{{ $ipdAmnatRow['total_los'] > 0 ? number_format($ipdAmnatRow['total_los']) : '-' }}</td>
-                <td class="text-end text-muted">{{ $ipdAmnatRow['total_rw'] > 0 ? number_format($ipdAmnatRow['total_rw'], 4) : '-' }}</td>
-                <td class="text-end text-muted">{{ $ipdAmnatRow['total_inc'] > 0 ? '฿' . number_format($ipdAmnatRow['total_inc'], 2) : '-' }}</td>
               </tr>
             </tfoot>
           </table>
@@ -680,6 +705,111 @@
     // เมื่อพิมพ์หรือเลือกวันที่เอง ให้ตั้ง filter_type เป็น custom
     $('#start_date, #end_date').on('change', function() {
       $('#filter_type').val('custom');
+    });
+
+    // 4. กราฟแท่งแนวโน้มรายเดือน (Monthly Trend Charts)
+    const opdChartData = @json($opdMonthlyChart);
+    const ipdChartData = @json($ipdMonthlyChart);
+
+    let opdChart = null;
+    let ipdChart = null;
+
+    function initOpdChart() {
+      const ctx = document.getElementById('opdMonthlyChartCanvas');
+      if (!ctx || opdChart) return;
+      opdChart = new Chart(ctx, {
+        data: opdChartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                boxWidth: 12,
+                font: { family: 'Noto Sans Thai, sans-serif', size: 12 }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              titleFont: { family: 'Noto Sans Thai, sans-serif' },
+              bodyFont: { family: 'Noto Sans Thai, sans-serif' },
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false },
+              ticks: { font: { family: 'Noto Sans Thai, sans-serif' } }
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,0.06)' },
+              ticks: { font: { family: 'Noto Sans Thai, sans-serif' } }
+            }
+          }
+        }
+      });
+    }
+
+    function initIpdChart() {
+      const ctx = document.getElementById('ipdMonthlyChartCanvas');
+      if (!ctx || ipdChart) return;
+      ipdChart = new Chart(ctx, {
+        data: ipdChartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                boxWidth: 12,
+                font: { family: 'Noto Sans Thai, sans-serif', size: 12 }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              titleFont: { family: 'Noto Sans Thai, sans-serif' },
+              bodyFont: { family: 'Noto Sans Thai, sans-serif' },
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false },
+              ticks: { font: { family: 'Noto Sans Thai, sans-serif' } }
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,0.06)' },
+              ticks: { font: { family: 'Noto Sans Thai, sans-serif' } }
+            }
+          }
+        }
+      });
+    }
+
+    // เริ่มต้นแสดงกราฟ OPD ทันที
+    initOpdChart();
+
+    // แสดงกราฟ IPD เมื่อคลิกแท็บผู้ป่วยใน (IPD)
+    $('#pills-ipd-tab').on('shown.bs.tab', function() {
+      initIpdChart();
     });
   });
 </script>
