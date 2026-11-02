@@ -671,21 +671,48 @@
                 @csrf
                 <div class="modal-body px-4 py-3">
                     
-                    <!-- 1. เลือกโรงพยาบาลเป้าหมาย (Target Hospitals) Dropdown -->
-                    <div class="mb-3">
-                        <label class="form-label fw-bold text-dark small mb-1.5" for="modalTargetHospcode">
-                            <i class="fa-solid fa-hospital text-success me-1"></i> เลือกโรงพยาบาลเป้าหมาย (Target Hospitals):
-                        </label>
-                        <select class="form-select bg-white shadow-xs py-2" name="target" id="modalTargetHospcode" style="border-radius: 10px; font-weight: 500;">
-                            <option value="all" selected>🏢 ทุกโรงพยาบาลในจังหวัดอำนาจเจริญ (7 แห่ง)</option>
+                    <!-- 1. เลือกโรงพยาบาลเป้าหมาย (Target Hospitals) แบบติ๊กเลือกได้หลายแห่ง -->
+                    <div class="mb-3 p-3 rounded-3 border bg-light bg-opacity-50">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label class="form-label fw-bold text-dark small mb-0">
+                                <i class="fa-solid fa-hospital text-success me-1"></i> เลือกโรงพยาบาลเป้าหมาย (เลือกได้หลายแห่ง):
+                            </label>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <button type="button" class="btn btn-xs btn-outline-success fw-bold py-0.5 px-2 rounded-pill" id="btnSelectAllHosps" style="font-size: 0.75rem;">
+                                    <i class="fa-solid fa-check-double me-1"></i> เลือกทั้งหมด
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary fw-bold py-0.5 px-2 rounded-pill" id="btnClearAllHosps" style="font-size: 0.75rem;">
+                                    <i class="fa-solid fa-xmark me-1"></i> ล้างการเลือก
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
                             @foreach($agentList as $item)
                                 @if($item['hcode'] !== '00025' && !str_contains($item['name'], 'สาธารณสุข'))
-                                <option value="{{ $item['hcode'] }}">
-                                    {{ $item['hcode'] }} - {{ $item['name'] }} {{ $item['is_online'] ? '(ออนไลน์)' : '(ยังไม่เชื่อมต่อ)' }}
-                                </option>
+                                <div class="col-12 col-sm-6 col-md-4">
+                                    <label class="card h-100 p-2 border cursor-pointer target-hosp-card position-relative {{ $item['is_online'] ? 'border-success-subtle bg-white' : 'border-secondary-subtle bg-white opacity-75' }}" style="border-radius: 10px; transition: all 0.2s;" for="hosp_cb_{{ $item['hcode'] }}">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <input class="form-check-input mt-0 target-hosp-checkbox flex-shrink-0" type="checkbox" name="targets[]" value="{{ $item['hcode'] }}" id="hosp_cb_{{ $item['hcode'] }}" checked>
+                                            <div class="flex-grow-1 text-truncate">
+                                                <div class="fw-bold text-dark text-truncate" style="font-size: 0.82rem;" title="{{ $item['name'] }}">
+                                                    {{ $item['name'] }}
+                                                </div>
+                                                <div class="d-flex align-items-center gap-1 mt-0.5">
+                                                    <span class="font-monospace text-muted" style="font-size: 0.72rem;">{{ $item['hcode'] }}</span>
+                                                    @if($item['is_online'])
+                                                        <span class="badge bg-success bg-opacity-15 text-success rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">ออนไลน์</span>
+                                                    @else
+                                                        <span class="badge bg-secondary bg-opacity-15 text-secondary rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">ยังไม่เชื่อมต่อ</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
                                 @endif
                             @endforeach
-                        </select>
+                        </div>
                     </div>
 
                     <!-- 2. เลือกประเภทข้อมูลที่ต้องการดึง (1 คิวรี่ต่อ 1 แถว) -->
@@ -1086,15 +1113,35 @@ $(document).ready(function() {
         });
     });
 
+    // Target Hospital Checkboxes: Select All / Clear All
+    $('#btnSelectAllHosps').on('click', function(e) {
+        e.preventDefault();
+        $('.target-hosp-checkbox').prop('checked', true).trigger('change');
+    });
+
+    $('#btnClearAllHosps').on('click', function(e) {
+        e.preventDefault();
+        $('.target-hosp-checkbox').prop('checked', false).trigger('change');
+    });
+
+    $('.target-hosp-checkbox').on('change', function() {
+        const $card = $(this).closest('.target-hosp-card');
+        if ($(this).is(':checked')) {
+            $card.addClass('border-success shadow-xs bg-white').css('border-width', '2px');
+        } else {
+            $card.removeClass('border-success shadow-xs').css('border-width', '1px');
+        }
+    }).trigger('change');
+
     // Submit Remote Sync
     $('#remoteSyncForm').on('submit', function(e) {
         e.preventDefault();
 
-        const target = $('#modalTargetHospcode').val();
-        if (!target) {
+        const selectedTargets = $('.target-hosp-checkbox:checked').map(function() { return $(this).val(); }).get();
+        if (selectedTargets.length === 0) {
             Swal.fire({
                 title: 'แจ้งเตือน',
-                text: 'กรุณาเลือกโรงพยาบาลเป้าหมาย',
+                text: 'กรุณาเลือกโรงพยาบาลเป้าหมายอย่างน้อย 1 แห่ง',
                 icon: 'warning',
                 confirmButtonColor: '#18a573'
             });
