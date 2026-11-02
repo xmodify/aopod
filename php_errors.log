@@ -1,0 +1,6 @@
+[02-Nov-2026 07:03:14 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[02-Nov-2026 07:03:31 UTC] PHP Warning:  require(C:\Users\LENOVO\.gemini\antigravity\brain\a45c2da7-6ca5-4d0d-b9aa-a229e318a87c\scratch/../../../../../vendor/autoload.php): Failed to open stream: No such file or directory in C:\Users\LENOVO\.gemini\antigravity\brain\a45c2da7-6ca5-4d0d-b9aa-a229e318a87c\scratch\test_opoh.php on line 2
+[02-Nov-2026 07:03:31 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\LENOVO\.gemini\antigravity\brain\a45c2da7-6ca5-4d0d-b9aa-a229e318a87c\scratch/../../../../../vendor/autoload.php' (include_path='.;C:\php\pear') in C:\Users\LENOVO\.gemini\antigravity\brain\a45c2da7-6ca5-4d0d-b9aa-a229e318a87c\scratch\test_opoh.php:2
+Stack trace:
+#0 {main}
+  thrown in C:\Users\LENOVO\.gemini\antigravity\brain\a45c2da7-6ca5-4d0d-b9aa-a229e318a87c\scratch\test_opoh.php on line 2
