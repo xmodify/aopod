@@ -15,7 +15,7 @@ var (
 
 // GetDSN builds standard MySQL DSN string from config.
 func GetDSN(dbCfg config.DatabaseConfig) string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4,utf8&parseTime=true&loc=Local&timeout=10s&readTimeout=60s",
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4,utf8&parseTime=true&loc=Local&timeout=15s&readTimeout=300s",
 		dbCfg.Username,
 		dbCfg.Password,
 		dbCfg.Host,
