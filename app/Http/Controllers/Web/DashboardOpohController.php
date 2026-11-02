@@ -59,16 +59,16 @@ class DashboardOpohController extends Controller
             $current_end   = $request->input('end_date', $endOfWeek);
         }
 
-        // 3. Target Hospitals definition
-        $hospitalsMap = [
+        // 3. Target Community Hospitals definition (รพช. 6 แห่ง สำหรับตัวชี้วัด OPOH)
+        $communityHospitals = [
             '10990' => ['name' => 'รพ.ลืออำนาจ', 'order' => 1],
             '10986' => ['name' => 'รพ.ปทุมราชวงศา', 'order' => 2],
             '10989' => ['name' => 'รพ.หัวตะพาน', 'order' => 3],
             '10988' => ['name' => 'รพ.เสนางคนิคม', 'order' => 4],
             '10987' => ['name' => 'รพ.พนา', 'order' => 5],
             '10985' => ['name' => 'รพ.ชานุมาน', 'order' => 6],
-            '10703' => ['name' => 'รพ.อำนาจเจริญ (แม่ข่าย)', 'order' => 7],
         ];
+        $communityCodes = array_keys($communityHospitals);
 
         // 4. Main Specialties (7 สาขาหลัก)
         $specialties = [
@@ -85,10 +85,11 @@ class DashboardOpohController extends Controller
         // ยอดสะสม fix เริ่มต้นจาก ต.ค. 68 (2025-10-01) ถึง $current_end
         $cumulative_start = '2025-10-01';
 
-        // 5.1 Cumulative total cards by specialty (ตั้งแต่ ต.ค. 68)
+        // 5.1 Cumulative total cards by specialty (รพช. 6 แห่ง ตั้งแต่ ต.ค. 68)
         $specialtyStats = DB::table('opoh_opd_service')
             ->where('vstdate', '>=', $cumulative_start)
             ->where('vstdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
             ->selectRaw("
                 spclty_code,
                 COALESCE(SUM(visit_total), 0) AS total_visits,
@@ -149,13 +150,13 @@ class DashboardOpohController extends Controller
             ->pluck('total_visits', 'hospcode')
             ->toArray();
 
-        // Build Hospital Rows
+        // Build Hospital Rows (เฉพาะ รพช. 6 แห่ง เป็นยอดบริการ OPOH)
         $hospitalRows = [];
         $sumPast = 0;
         $sumCurrent = 0;
         $sumCumulative = 0;
 
-        foreach ($hospitalsMap as $code => $info) {
+        foreach ($communityHospitals as $code => $info) {
             $past = (int)($pastStatsByHosp[$code] ?? 0);
             $curr = (int)($currentStatsByHosp[$code] ?? 0);
             $total = (int)($totalStatsByHosp[$code] ?? ($past + $curr));
@@ -174,9 +175,23 @@ class DashboardOpohController extends Controller
             ];
         }
 
-        // 5.3 Financial & Scheme Totals (Current Period & Cumulative)
+        // ข้อมูลอ้างอิง รพ.อำนาจเจริญ (ตรวจ ณ รพ.แม่ข่าย 10703 ไม่รวมในยอด OPOH)
+        $amnatPast = (int)($pastStatsByHosp['10703'] ?? 0);
+        $amnatCurr = (int)($currentStatsByHosp['10703'] ?? 0);
+        $amnatTotal = (int)($totalStatsByHosp['10703'] ?? ($amnatPast + $amnatCurr));
+        $amnatRow = [
+            'hospcode'       => '10703',
+            'name'           => 'รพ.อำนาจเจริญ (แม่ข่าย)',
+            'past_visits'    => $amnatPast,
+            'current_visits' => $amnatCurr,
+            'total_visits'   => $amnatTotal,
+            'specialties'    => $hospSpecialtyMatrix['10703'] ?? [],
+        ];
+
+        // 5.3 Financial & Scheme Totals (Current Period & Cumulative เฉพาะ รพช. 6 แห่ง)
         $summary = DB::table('opoh_opd_service')
             ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
             ->selectRaw("
                 COALESCE(SUM(visit_total), 0)     AS visit_total,
                 COALESCE(SUM(hn_total), 0)        AS hn_total,
@@ -193,10 +208,11 @@ class DashboardOpohController extends Controller
             ")
             ->first();
 
-        // 5.4 Cumulative Financial Summary (ตั้งแต่ 2025-10-01 ถึง $current_end)
+        // 5.4 Cumulative Financial Summary (ตั้งแต่ 2025-10-01 ถึง $current_end เฉพาะ รพช. 6 แห่ง)
         $fiscalSummary = DB::table('opoh_opd_service')
             ->where('vstdate', '>=', $cumulative_start)
             ->where('vstdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
             ->selectRaw("
                 COALESCE(SUM(visit_total), 0)     AS visit_total,
                 COALESCE(SUM(inc_total), 0)       AS inc_total,
@@ -208,9 +224,10 @@ class DashboardOpohController extends Controller
             ->first();
 
         // 5.5 IPD Aggregations (ผู้ป่วยใน)
-        // Cumulative IPD cards by specialty (ยอดสะสมถึง $current_end)
+        // Cumulative IPD cards by specialty (รพช. 6 แห่ง ยอดสะสมถึง $current_end)
         $ipdSpecialtyStats = DB::table('opoh_ipd_service')
             ->where('dchdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
             ->selectRaw("spclty_code, COALESCE(SUM(an_total), 0) AS total_ans")
             ->groupBy('spclty_code')
             ->pluck('total_ans', 'spclty_code')
@@ -269,7 +286,7 @@ class DashboardOpohController extends Controller
             $ipdTotalStatsByHosp[$row->hospcode] = $row;
         }
 
-        // Build IPD Hospital Rows
+        // Build IPD Hospital Rows (เฉพาะ รพช. 6 แห่ง เป็นยอดบริการ OPOH)
         $ipdHospitalRows = [];
         $ipdSumPast = 0;
         $ipdSumCurrent = 0;
@@ -278,7 +295,7 @@ class DashboardOpohController extends Controller
         $ipdSumRw = 0;
         $ipdSumInc = 0;
 
-        foreach ($hospitalsMap as $code => $info) {
+        foreach ($communityHospitals as $code => $info) {
             $past = (int)($ipdPastStatsByHosp[$code] ?? 0);
             $curr = (int)($ipdCurrentStatsByHosp[$code]->current_ans ?? 0);
             $total = (int)($ipdTotalStatsByHosp[$code]->total_ans ?? ($past + $curr));
@@ -305,6 +322,25 @@ class DashboardOpohController extends Controller
                 'specialties'  => $ipdHospSpecialtyMatrix[$code] ?? [],
             ];
         }
+
+        // ข้อมูลอ้างอิง รพ.อำนาจเจริญ (IPD ณ รพ.แม่ข่าย 10703 ไม่รวมในยอด OPOH)
+        $ipdAmnatPast = (int)($ipdPastStatsByHosp['10703'] ?? 0);
+        $ipdAmnatCurr = (int)($ipdCurrentStatsByHosp['10703']->current_ans ?? 0);
+        $ipdAmnatTotal = (int)($ipdTotalStatsByHosp['10703']->total_ans ?? ($ipdAmnatPast + $ipdAmnatCurr));
+        $ipdAmnatLos = (int)($ipdTotalStatsByHosp['10703']->total_los ?? 0);
+        $ipdAmnatRw = (float)($ipdTotalStatsByHosp['10703']->total_rw ?? 0.0);
+        $ipdAmnatInc = (float)($ipdTotalStatsByHosp['10703']->total_inc ?? 0.0);
+        $ipdAmnatRow = [
+            'hospcode'     => '10703',
+            'name'         => 'รพ.อำนาจเจริญ (แม่ข่าย)',
+            'past_ans'     => $ipdAmnatPast,
+            'current_ans'  => $ipdAmnatCurr,
+            'total_ans'    => $ipdAmnatTotal,
+            'total_los'    => $ipdAmnatLos,
+            'total_rw'     => $ipdAmnatRw,
+            'total_inc'    => $ipdAmnatInc,
+            'specialties'  => $ipdHospSpecialtyMatrix['10703'] ?? [],
+        ];
 
         // 6. Doctor Roster for Management Modal
         $doctors = OpohDoctor::orderBy('spclty_code')->orderBy('id')->get();
@@ -334,6 +370,7 @@ class DashboardOpohController extends Controller
             'specialties',
             'specialtyStats',
             'hospitalRows',
+            'amnatRow',
             'sumPast',
             'sumCurrent',
             'sumCumulative',
@@ -341,6 +378,7 @@ class DashboardOpohController extends Controller
             'fiscalSummary',
             'ipdSpecialtyStats',
             'ipdHospitalRows',
+            'ipdAmnatRow',
             'ipdSumPast',
             'ipdSumCurrent',
             'ipdSumCumulative',
@@ -421,6 +459,7 @@ class DashboardOpohController extends Controller
             '10989' => 'รพ.หัวตะพาน',
             '10990' => 'รพ.ลืออำนาจ',
         ];
+        $communityCodes = array_keys($hospitalsList);
 
         $cumulative_start = '2025-10-01'; // 1 ต.ค. 2568
 
@@ -435,24 +474,35 @@ class DashboardOpohController extends Controller
         $totalDoctors = $allDoctors->count();
         $activeDoctors = $allDoctors->where('is_active', 'Y')->count();
 
-        // 4.1 Cumulative visits per doctor (1 ต.ค. 68 - $current_end)
+        // 4.1 Cumulative visits per doctor (1 ต.ค. 68 - $current_end) เฉพาะ รพช. 6 แห่ง
         $docCumulativeVisits = DB::table('opoh_opd_service')
             ->where('vstdate', '>=', $cumulative_start)
             ->where('vstdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
             ->pluck(DB::raw('COALESCE(SUM(visit_total), 0)'), 'doctor_id')
             ->toArray();
 
-        // 4.2 Current period visits per doctor ($current_start - $current_end)
+        // 4.2 Current period visits per doctor ($current_start - $current_end) เฉพาะ รพช. 6 แห่ง
         $docPeriodVisits = DB::table('opoh_opd_service')
             ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
             ->pluck(DB::raw('COALESCE(SUM(visit_total), 0)'), 'doctor_id')
             ->toArray();
 
-        // 4.3 Current period by doctor and hospcode
+        // 4.3 Amnat Charoen (10703) visits per doctor (ตรวจ ณ รพ.แม่ข่าย ช่วงที่เลือก)
+        $docAmnatPeriodVisits = DB::table('opoh_opd_service')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->where('hospcode', '10703')
+            ->whereNotNull('doctor_id')
+            ->groupBy('doctor_id')
+            ->pluck(DB::raw('COALESCE(SUM(visit_total), 0)'), 'doctor_id')
+            ->toArray();
+
+        // 4.4 Current period by doctor and hospcode
         $docHospMatrixRaw = DB::table('opoh_opd_service')
             ->whereBetween('vstdate', [$current_start, $current_end])
             ->whereNotNull('doctor_id')
@@ -470,6 +520,7 @@ class DashboardOpohController extends Controller
         $colTotals = [
             'cumulative' => 0,
             'period'     => 0,
+            'amnat'      => 0,
         ];
         foreach ($hospitalsList as $hcode => $hname) {
             $colTotals[$hcode] = 0;
@@ -478,9 +529,11 @@ class DashboardOpohController extends Controller
         foreach ($doctors as $doc) {
             $cumul = (int)($docCumulativeVisits[$doc->id] ?? 0);
             $period = (int)($docPeriodVisits[$doc->id] ?? 0);
+            $amnatVisits = (int)($docAmnatPeriodVisits[$doc->id] ?? 0);
 
             $colTotals['cumulative'] += $cumul;
             $colTotals['period'] += $period;
+            $colTotals['amnat'] += $amnatVisits;
 
             $hospVisits = [];
             foreach ($hospitalsList as $hcode => $hname) {
@@ -494,12 +547,14 @@ class DashboardOpohController extends Controller
                 'cumulative'   => $cumul,
                 'period'       => $period,
                 'hosp_visits'  => $hospVisits,
+                'amnat_visits' => $amnatVisits,
             ];
         }
 
-        // 4.4 IPD Doctor Visit Statistics
+        // 4.5 IPD Doctor Visit Statistics
         $docCumulativeIpd = DB::table('opoh_ipd_service')
             ->where('dchdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
             ->pluck(DB::raw('COALESCE(SUM(an_total), 0)'), 'doctor_id')
@@ -507,6 +562,7 @@ class DashboardOpohController extends Controller
 
         $docPeriodIpd = DB::table('opoh_ipd_service')
             ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
             ->pluck(DB::raw('COALESCE(SUM(an_total), 0)'), 'doctor_id')
@@ -514,6 +570,7 @@ class DashboardOpohController extends Controller
 
         $docPeriodLos = DB::table('opoh_ipd_service')
             ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
             ->pluck(DB::raw('COALESCE(SUM(admdate_total), 0)'), 'doctor_id')
@@ -521,6 +578,7 @@ class DashboardOpohController extends Controller
 
         $docPeriodRw = DB::table('opoh_ipd_service')
             ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
             ->pluck(DB::raw('COALESCE(SUM(adjrw_total), 0)'), 'doctor_id')
@@ -528,9 +586,19 @@ class DashboardOpohController extends Controller
 
         $docPeriodInc = DB::table('opoh_ipd_service')
             ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
             ->pluck(DB::raw('COALESCE(SUM(inc_total), 0)'), 'doctor_id')
+            ->toArray();
+
+        // Amnat Charoen (10703) IPD visits per doctor (ตรวจ ณ รพ.แม่ข่าย ช่วงที่เลือก)
+        $docAmnatPeriodIpd = DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->where('hospcode', '10703')
+            ->whereNotNull('doctor_id')
+            ->groupBy('doctor_id')
+            ->pluck(DB::raw('COALESCE(SUM(an_total), 0)'), 'doctor_id')
             ->toArray();
 
         $docHospIpdMatrixRaw = DB::table('opoh_ipd_service')
@@ -552,6 +620,7 @@ class DashboardOpohController extends Controller
             'los'        => 0,
             'rw'         => 0.0,
             'inc'        => 0.0,
+            'amnat'      => 0,
         ];
         foreach ($hospitalsList as $hcode => $hname) {
             $colIpdTotals[$hcode] = 0;
@@ -563,12 +632,14 @@ class DashboardOpohController extends Controller
             $los = (int)($docPeriodLos[$doc->id] ?? 0);
             $rw = (float)($docPeriodRw[$doc->id] ?? 0.0);
             $inc = (float)($docPeriodInc[$doc->id] ?? 0.0);
+            $amnatAns = (int)($docAmnatPeriodIpd[$doc->id] ?? 0);
 
             $colIpdTotals['cumulative'] += $cumul;
             $colIpdTotals['period'] += $period;
             $colIpdTotals['los'] += $los;
             $colIpdTotals['rw'] += $rw;
             $colIpdTotals['inc'] += $inc;
+            $colIpdTotals['amnat'] += $amnatAns;
 
             $hospAns = [];
             foreach ($hospitalsList as $hcode => $hname) {
@@ -585,6 +656,7 @@ class DashboardOpohController extends Controller
                 'rw'           => $rw,
                 'inc'          => $inc,
                 'hosp_ans'     => $hospAns,
+                'amnat_ans'    => $amnatAns,
             ];
         }
 

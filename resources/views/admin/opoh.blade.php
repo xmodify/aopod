@@ -270,6 +270,10 @@
                                     @foreach($hospitalsList as $hcode => $hname)
                                         <th style="min-width: 110px;" class="text-end">{{ $hname }}</th>
                                     @endforeach
+                                    <th style="min-width: 130px;" class="text-end bg-light border-start text-secondary">
+                                        รพ.อำนาจเจริญ
+                                        <div class="small fw-normal text-muted" style="font-size: 0.70rem;">(ตรวจ ณ แม่ข่าย)</div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -304,16 +308,19 @@
                                     </td>
                                     @foreach($hospitalsList as $hcode => $hname)
                                         @php
-                                            $hv = $row['hosp_visits'][$hcode] ?? 0;
+                                             $hv = $row['hosp_visits'][$hcode] ?? 0;
                                         @endphp
                                         <td class="text-end {{ $hv > 0 ? 'fw-bold text-dark' : 'text-muted opacity-50' }}">
                                             {{ $hv > 0 ? number_format($hv) : '-' }}
                                         </td>
                                     @endforeach
+                                    <td class="text-end bg-light border-start {{ $row['amnat_visits'] > 0 ? 'fw-bold text-secondary' : 'text-muted opacity-50' }}">
+                                        {{ $row['amnat_visits'] > 0 ? number_format($row['amnat_visits']) : '-' }}
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="{{ 3 + count($hospitalsList) }}" class="text-center py-4 text-muted">
+                                    <td colspan="{{ 4 + count($hospitalsList) }}" class="text-center py-4 text-muted">
                                         <i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>
                                         ยังไม่มีข้อมูลการออกตรวจในช่วงเวลาที่เลือก
                                     </td>
@@ -322,12 +329,15 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td class="text-end fw-bold">รวมทั้งหมด</td>
+                                    <td class="text-end fw-bold">รวมทั้งหมด (รพช.)</td>
                                     <td class="text-end fw-bolder">{{ number_format($colTotals['cumulative']) }}</td>
                                     <td class="text-end fw-bolder bg-primary bg-opacity-10 text-primary">{{ number_format($colTotals['period']) }}</td>
                                     @foreach($hospitalsList as $hcode => $hname)
                                         <td class="text-end fw-bolder">{{ number_format($colTotals[$hcode]) }}</td>
                                     @endforeach
+                                    <td class="text-end fw-bolder bg-light border-start text-secondary">
+                                        {{ number_format($colTotals['amnat']) }}
+                                    </td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -349,6 +359,10 @@
                                         <th style="min-width: 100px;" class="text-end">{{ $hname }}</th>
                                     @endforeach
                                     <th style="min-width: 120px;" class="text-end">ค่ารักษารวม (บาท)</th>
+                                    <th style="min-width: 130px;" class="text-end bg-light border-start text-secondary">
+                                        รพ.อำนาจเจริญ
+                                        <div class="small fw-normal text-muted" style="font-size: 0.70rem;">(ตรวจ ณ แม่ข่าย)</div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -398,10 +412,13 @@
                                     <td class="text-end fw-bold text-dark">
                                         {{ number_format($row['inc'], 2) }}
                                     </td>
+                                    <td class="text-end bg-light border-start {{ $row['amnat_ans'] > 0 ? 'fw-bold text-secondary' : 'text-muted opacity-50' }}">
+                                        {{ $row['amnat_ans'] > 0 ? number_format($row['amnat_ans']) : '-' }}
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="{{ 6 + count($hospitalsList) }}" class="text-center py-4 text-muted">
+                                    <td colspan="{{ 7 + count($hospitalsList) }}" class="text-center py-4 text-muted">
                                         <i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>
                                         ยังไม่มีข้อมูลการจำหน่ายผู้ป่วยใน (IPD) ในช่วงเวลาที่เลือก
                                     </td>
@@ -410,7 +427,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td class="text-end fw-bold">รวมทั้งหมด</td>
+                                    <td class="text-end fw-bold">รวมทั้งหมด (รพช.)</td>
                                     <td class="text-end fw-bolder">{{ number_format($colIpdTotals['cumulative']) }}</td>
                                     <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger">{{ number_format($colIpdTotals['period']) }}</td>
                                     <td class="text-end fw-bolder">{{ number_format($colIpdTotals['los']) }}</td>
@@ -419,6 +436,9 @@
                                         <td class="text-end fw-bolder">{{ number_format($colIpdTotals[$hcode]) }}</td>
                                     @endforeach
                                     <td class="text-end fw-bolder text-dark">{{ number_format($colIpdTotals['inc'], 2) }}</td>
+                                    <td class="text-end fw-bolder bg-light border-start text-secondary">
+                                        {{ number_format($colIpdTotals['amnat']) }}
+                                    </td>
                                 </tr>
                             </tfoot>
                         </table>

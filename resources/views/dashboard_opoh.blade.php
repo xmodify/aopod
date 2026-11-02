@@ -270,7 +270,7 @@
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td colspan="2" class="text-end fw-bold">ยอดรวมทั้งหมด</td>
+                <td colspan="2" class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
                 <td class="text-end fw-bolder">{{ number_format($sumPast) }}</td>
                 <td class="text-end fw-bolder bg-primary bg-opacity-10 text-primary fs-6">{{ number_format($sumCurrent) }}</td>
                 <td class="text-end fw-bolder text-success fs-5">{{ number_format($sumCumulative) }}</td>
@@ -282,6 +282,24 @@
                     }
                   @endphp
                   <td class="text-end fw-bold">{{ number_format($colSum) }}</td>
+                @endforeach
+              </tr>
+              <tr class="table-light text-secondary border-top" style="font-size: 0.88rem;">
+                <td class="text-center text-muted"><i class="fa-solid fa-hospital text-secondary opacity-75"></i></td>
+                <td>
+                  <span class="fw-bold text-dark">รพ.อำนาจเจริญ</span>
+                  <span class="badge bg-secondary bg-opacity-25 text-dark ms-1" style="font-size: 0.70rem;">ตรวจปกติ ณ แม่ข่าย (ข้อมูลอ้างอิง ไม่นับรวมในยอด OPOH)</span>
+                </td>
+                <td class="text-end text-muted">{{ number_format($amnatRow['past_visits'] ?? 0) }}</td>
+                <td class="text-end fw-semibold text-secondary">{{ number_format($amnatRow['current_visits'] ?? 0) }}</td>
+                <td class="text-end fw-bold text-secondary">{{ number_format($amnatRow['total_visits'] ?? 0) }}</td>
+                @foreach($specialties as $code => $spec)
+                  @php
+                    $spVisits = $amnatRow['specialties'][$code] ?? 0;
+                  @endphp
+                  <td class="text-end {{ $spVisits > 0 ? 'text-secondary fw-semibold' : 'text-muted opacity-50' }}">
+                    {{ $spVisits > 0 ? number_format($spVisits) : '-' }}
+                  </td>
                 @endforeach
               </tr>
             </tfoot>
@@ -529,7 +547,7 @@
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td colspan="2" class="text-end fw-bold">ยอดรวมทั้งหมด</td>
+                <td colspan="2" class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
                 <td class="text-end fw-bolder">{{ number_format($ipdSumPast) }}</td>
                 <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger fs-6">{{ number_format($ipdSumCurrent) }}</td>
                 <td class="text-end fw-bolder text-dark fs-5">{{ number_format($ipdSumCumulative) }}</td>
@@ -545,6 +563,27 @@
                 <td class="text-end fw-bold text-info">{{ number_format($ipdSumLos) }}</td>
                 <td class="text-end fw-bold text-primary">{{ number_format($ipdSumRw, 4) }}</td>
                 <td class="text-end fw-bold text-success">฿{{ number_format($ipdSumInc, 2) }}</td>
+              </tr>
+              <tr class="table-light text-secondary border-top" style="font-size: 0.88rem;">
+                <td class="text-center text-muted"><i class="fa-solid fa-hospital text-secondary opacity-75"></i></td>
+                <td>
+                  <span class="fw-bold text-dark">รพ.อำนาจเจริญ</span>
+                  <span class="badge bg-secondary bg-opacity-25 text-dark ms-1" style="font-size: 0.70rem;">ตรวจปกติ ณ แม่ข่าย (ข้อมูลอ้างอิง ไม่นับรวมในยอด OPOH)</span>
+                </td>
+                <td class="text-end text-muted">{{ number_format($ipdAmnatRow['past_ans'] ?? 0) }}</td>
+                <td class="text-end fw-semibold text-secondary">{{ number_format($ipdAmnatRow['current_ans'] ?? 0) }}</td>
+                <td class="text-end fw-bold text-secondary">{{ number_format($ipdAmnatRow['total_ans'] ?? 0) }}</td>
+                @foreach($specialties as $code => $spec)
+                  @php
+                    $spAns = $ipdAmnatRow['specialties'][$code] ?? 0;
+                  @endphp
+                  <td class="text-end {{ $spAns > 0 ? 'text-secondary fw-semibold' : 'text-muted opacity-50' }}">
+                    {{ $spAns > 0 ? number_format($spAns) : '-' }}
+                  </td>
+                @endforeach
+                <td class="text-end text-muted">{{ $ipdAmnatRow['total_los'] > 0 ? number_format($ipdAmnatRow['total_los']) : '-' }}</td>
+                <td class="text-end text-muted">{{ $ipdAmnatRow['total_rw'] > 0 ? number_format($ipdAmnatRow['total_rw'], 4) : '-' }}</td>
+                <td class="text-end text-muted">{{ $ipdAmnatRow['total_inc'] > 0 ? '฿' . number_format($ipdAmnatRow['total_inc'], 2) : '-' }}</td>
               </tr>
             </tfoot>
           </table>
