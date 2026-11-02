@@ -21,7 +21,8 @@ class SchemaUpgradeService
         }
         
         if ($colDef['default'] !== null) {
-            if (strtoupper($colDef['default']) === 'CURRENT_TIMESTAMP') {
+            $defUpper = strtoupper($colDef['default']);
+            if ($defUpper === 'CURRENT_TIMESTAMP' || $defUpper === 'CURRENT_TIMESTAMP()') {
                 $sql .= " DEFAULT CURRENT_TIMESTAMP";
             } else {
                 $sql .= " DEFAULT " . DB::getPdo()->quote($colDef['default']);

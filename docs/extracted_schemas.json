@@ -2500,6 +2500,20 @@
                 "default": null,
                 "extra": ""
             },
+            "doctor_id": {
+                "type": "bigint(20) unsigned",
+                "null": "YES",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "licenseno": {
+                "type": "varchar(20)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
             "specialty_name": {
                 "type": "varchar(100)",
                 "null": "NO",
@@ -2618,7 +2632,8 @@
                 "columns": [
                     "hospcode",
                     "vstdate",
-                    "spclty_code"
+                    "spclty_code",
+                    "doctor_id"
                 ]
             },
             "idx_vstdate": {
@@ -2631,6 +2646,13 @@
                 "unique": false,
                 "columns": [
                     "hospcode"
+                ]
+            },
+            "idx_doctor": {
+                "unique": false,
+                "columns": [
+                    "doctor_id",
+                    "licenseno"
                 ]
             }
         }
@@ -2661,6 +2683,20 @@
             "spclty_code": {
                 "type": "varchar(10)",
                 "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "doctor_id": {
+                "type": "bigint(20) unsigned",
+                "null": "YES",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "licenseno": {
+                "type": "varchar(20)",
+                "null": "YES",
                 "key": "",
                 "default": null,
                 "extra": ""
@@ -2734,7 +2770,14 @@
                 "columns": [
                     "hospcode",
                     "dchdate",
-                    "spclty_code"
+                    "spclty_code",
+                    "doctor_id"
+                ]
+            },
+            "idx_ipd_doctor": {
+                "unique": false,
+                "columns": [
+                    "doctor_id"
                 ]
             }
         }
