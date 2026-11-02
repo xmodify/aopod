@@ -527,7 +527,7 @@ SQL,
             'start_date' => 'nullable|date_format:Y-m-d',
             'end_date'   => 'nullable|date_format:Y-m-d',
             'modules'    => 'nullable|array',
-            'modules.*'  => 'string|in:opd,ipd,refer,operation,bed',
+            'modules.*'  => 'string|in:opd,ipd,refer,operation,bed,opoh',
             'ranges'     => 'nullable|array',
         ]);
 

@@ -827,6 +827,33 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- 6. ข้อมูลบริการ OPOH (One Province One Hospital) -->
+                            <div class="p-2.5 px-3 rounded-3 border bg-white shadow-xs module-card" id="card_opoh" style="transition: all 0.2s;">
+                                <div class="row align-items-center g-2">
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-check d-flex align-items-center gap-2 m-0 cursor-pointer user-select-none">
+                                            <input class="form-check-input mt-0 module-checkbox" type="checkbox" name="modules[]" value="opoh" id="modOpoh" data-mod="opoh" checked>
+                                            <span class="fw-bold text-dark small">
+                                                <i class="fa-solid fa-user-doctor text-primary me-1.5"></i> ข้อมูลบริการ OPOH (หมุนเวียนออกตรวจ)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-7">
+                                        <div class="d-flex align-items-center gap-1.5 date-range-group" id="date_group_opoh">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[opoh][start_date]" id="opoh_start_date" class="form-control form-control-sm bg-white border-start-0" placeholder="เริ่มต้น" style="font-size: 0.8rem;">
+                                            </div>
+                                            <span class="text-secondary small px-1 flex-shrink-0">ถึง</span>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light text-secondary border-end-0 py-1 px-2" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-day"></i></span>
+                                                <input type="text" name="ranges[opoh][end_date]" id="opoh_end_date" class="form-control form-control-sm bg-white border-start-0" placeholder="สิ้นสุด" style="font-size: 0.8rem;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Quick Date Range Presets -->
@@ -1003,11 +1030,12 @@ $(document).ready(function() {
         moduleDatePickers[mod] = { start: sPicker, end: ePicker };
     }
 
-    // OPD (7 วัน), IPD (30 วัน), Refer (7 วัน), Operation (7 วัน)
+    // OPD (7 วัน), IPD (30 วัน), Refer (7 วัน), Operation (7 วัน), OPOH (30 วัน)
     initModuleDateRange('opd', 7);
     initModuleDateRange('ipd', 30);
     initModuleDateRange('refer', 7);
     initModuleDateRange('operation', 7);
+    initModuleDateRange('opoh', 30);
 
     // 3. Module Checkbox Toggle & Visual State
     function updateModuleCardState($cb) {
@@ -1050,7 +1078,7 @@ $(document).ready(function() {
             start.setDate(end.getDate() - days);
         }
 
-        ['opd', 'ipd', 'refer', 'operation'].forEach(mod => {
+        ['opd', 'ipd', 'refer', 'operation', 'opoh'].forEach(mod => {
             if (moduleDatePickers[mod]) {
                 if (moduleDatePickers[mod].start) moduleDatePickers[mod].start.setDate(start, true);
                 if (moduleDatePickers[mod].end) moduleDatePickers[mod].end.setDate(end, true);
