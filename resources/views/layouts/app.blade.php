@@ -112,6 +112,11 @@
       color: #7c3aed !important;
       border: 1px solid rgba(139, 92, 246, 0.15) !important;
     }
+    .nav-menu-link.active-opoh {
+      background: rgba(2, 132, 199, 0.08) !important;
+      color: #0284c7 !important;
+      border: 1px solid rgba(2, 132, 199, 0.15) !important;
+    }
     .nav-menu-link.active-claim {
       background: rgba(245, 158, 11, 0.08) !important;
       color: #d97706 !important;
@@ -371,7 +376,7 @@
                       <i class="fa-solid fa-bed-pulse fs-5" style="color: #f43f5e;"></i> IPD
                   </a>
         
-                  <a class="nav-menu-link {{ Request::is('web/opd') ? 'active-opd' : '' }}" href="{{ url('web/opd') }}">
+<a class="nav-menu-link {{ Request::is('web/opd') ? 'active-opd' : '' }}" href="{{ url('web/opd') }}">
                       <i class="fa-solid fa-address-card fs-5" style="color: #10b981;"></i> OPD
                   </a>
         
@@ -381,6 +386,10 @@
         
                   <a class="nav-menu-link {{ Request::is('web/operation') ? 'active-op' : '' }}" href="{{ url('web/operation') }}">
                       <i class="fa-solid fa-heart-pulse fs-5" style="color: #8b5cf6;"></i> ผ่าตัด
+                  </a>
+        
+                  <a class="nav-menu-link {{ Request::is('web/opoh*') ? 'active-opoh' : '' }}" href="{{ url('web/opoh') }}">
+                      <i class="fa-solid fa-user-doctor fs-5" style="color: #0284c7;"></i> OPOH
                   </a>
         
                   <a class="nav-menu-link {{ Request::is('web/claim') ? 'active-claim' : '' }}" href="{{ url('web/claim') }}">

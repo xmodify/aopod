@@ -271,11 +271,11 @@
       </li>
       @endif
 
-      @if(Auth::user()->isAdmin())
+      @if(Auth::user()->canAccessOpoh())
       <li class="sidebar-menu-item">
-        <a href="{{ route('manage.users') }}" class="sidebar-link {{ Request::is('manage/users*') ? 'active' : '' }}">
-          <i class="fa-solid fa-user-gear fs-5" style="color: #0d6efd !important;"></i>
-          <span>จัดการสมาชิก</span>
+        <a href="{{ route('manage.opoh.index') }}" class="sidebar-link {{ Request::is('manage/opoh*') ? 'active' : '' }}">
+          <i class="fa-solid fa-user-doctor fs-5" style="color: #0284c7 !important;"></i>
+          <span>บริการ OPOH</span>
         </a>
       </li>
       @endif
@@ -303,6 +303,12 @@
         <a href="{{ route('manage.agents') }}" class="sidebar-link {{ Request::is('manage/agents*') ? 'active' : '' }}">
           <i class="fa-solid fa-robot fs-5" style="color: #0d6efd !important;"></i>
           <span>จัดการ Agent รพ.</span>
+        </a>
+      </li>
+      <li class="sidebar-menu-item">
+        <a href="{{ route('manage.users') }}" class="sidebar-link {{ Request::is('manage/users*') ? 'active' : '' }}">
+          <i class="fa-solid fa-user-gear fs-5" style="color: #0d6efd !important;"></i>
+          <span>จัดการสมาชิก</span>
         </a>
       </li>
       <li class="sidebar-menu-item">

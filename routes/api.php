@@ -38,10 +38,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/agent/task/complete', [\App\Http\Controllers\Api\AgentApiController::class, 'completeTask']);
     Route::post('/agent/emr/poll-task', [\App\Http\Controllers\Api\AgentApiController::class, 'pollEmrTask']);
     Route::post('/agent/emr/submit-result', [\App\Http\Controllers\Api\AgentApiController::class, 'submitEmrResult']);
+    // OPOH Ingest API
+    Route::post('/opoh/opd', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestOpd']);
+    Route::post('/opoh/ipd', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestIpd']);
 });
 
 // Public / Token-less Lookup & Download Route for Agent
 Route::get('/agent/lookups/icd10', [\App\Http\Controllers\Api\AgentApiController::class, 'getIcd10Lookup']);
+Route::get('/agent/opoh-doctors', [\App\Http\Controllers\Api\OpohApiController::class, 'getDoctors']);
 Route::get('/agent/download-latest', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadExe']);
 
 Route::post('/death-data', [\App\Http\Controllers\Api\DeathApiController::class, 'getDeathData']);

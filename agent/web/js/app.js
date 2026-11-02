@@ -486,7 +486,11 @@ async function handleSyncNow() {
       const bedText = (result.bed_dep && result.bed_dep.total_sent > 0) 
         ? `${result.bed_dep.total_sent} แผนก` 
         : 'เรียบร้อย';
-      alert(`✅ ${result.message}\n- เตียง: ส่งสำเร็จ ${bedText}\n- IPD: ส่งสำเร็จ ${result.ipd?.total_sent || 0} รายการ\n- OPD: ส่งสำเร็จ ${result.opd?.total_sent || 0} รายการ\n- Refer: ส่งสำเร็จ ${result.refer?.total_sent || 0} รายการ\n- ผ่าตัด (Operation): ส่งสำเร็จ ${result.operation?.total_sent || 0} รายการ`);
+      let opohText = '';
+      if ((result.opoh_opd?.total_sent || 0) > 0 || (result.opoh_ipd?.total_sent || 0) > 0) {
+        opohText = `\n- OPOH: ส่งสำเร็จ OPD ${result.opoh_opd?.total_sent || 0} / IPD ${result.opoh_ipd?.total_sent || 0} รายการ`;
+      }
+      alert(`✅ ${result.message}\n- เตียง: ส่งสำเร็จ ${bedText}\n- IPD: ส่งสำเร็จ ${result.ipd?.total_sent || 0} รายการ\n- OPD: ส่งสำเร็จ ${result.opd?.total_sent || 0} รายการ\n- Refer: ส่งสำเร็จ ${result.refer?.total_sent || 0} รายการ\n- ผ่าตัด (Operation): ส่งสำเร็จ ${result.operation?.total_sent || 0} รายการ${opohText}`);
     } else {
       alert(`⚠️ การส่งข้อมูล: ${result.message}`);
     }

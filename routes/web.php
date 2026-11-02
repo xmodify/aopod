@@ -29,6 +29,7 @@ Route::match(['get','post'],'web/opd', [DashboardOPDController::class, 'index'])
 Route::match(['get','post'],'web/claim', [DashboardClaimController::class, 'index']);
 Route::match(['get','post'],'web/refer', [DashboardReferController::class, 'index']);
 Route::match(['get','post'],'web/operation', [DashboardOperationController::class, 'index']);
+Route::match(['get','post'],'web/opoh', [\App\Http\Controllers\Web\DashboardOpohController::class, 'index'])->name('web.opoh');
 
 use App\Http\Controllers\Auth\ProviderIdAuthController;
 use App\Http\Controllers\Auth\MophAlert2FAController;
@@ -111,4 +112,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/manage/death-data/import', [\App\Http\Controllers\Web\DeathDataController::class, 'import'])->name('manage.death-data.import');
     Route::get('/manage/birth-data', [\App\Http\Controllers\Web\BirthDataController::class, 'index'])->name('manage.birth-data.index');
     Route::post('/manage/birth-data/import', [\App\Http\Controllers\Web\BirthDataController::class, 'import'])->name('manage.birth-data.import');
+
+    // OPOH Doctor Management Routes
+    Route::get('/manage/opoh', [\App\Http\Controllers\Web\DashboardOpohController::class, 'manageIndex'])->name('manage.opoh.index');
+    Route::get('/manage/opoh/doctors-list', [\App\Http\Controllers\Web\DashboardOpohController::class, 'getDoctorsList'])->name('manage.opoh.doctors.list');
+    Route::post('/manage/opoh/doctors', [\App\Http\Controllers\Web\DashboardOpohController::class, 'storeDoctor'])->name('manage.opoh.doctors.store');
+    Route::match(['put', 'post'], '/manage/opoh/doctors/{id}', [\App\Http\Controllers\Web\DashboardOpohController::class, 'updateDoctor'])->name('manage.opoh.doctors.update');
+    Route::delete('/manage/opoh/doctors/{id}', [\App\Http\Controllers\Web\DashboardOpohController::class, 'deleteDoctor'])->name('manage.opoh.doctors.delete');
+    Route::post('/manage/opoh/doctors/{id}/toggle', [\App\Http\Controllers\Web\DashboardOpohController::class, 'toggleDoctorStatus'])->name('manage.opoh.doctors.toggle');
 });

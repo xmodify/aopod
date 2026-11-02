@@ -137,8 +137,12 @@
                                         <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-2 me-1" style="font-size: 0.75rem;" title="เข้าถึงข้อมูลการเกิด"><i class="fa-solid fa-baby"></i> เกิด</span>
                                     @endif
                                     @if($user->allow_birth_dashboard)
-                                        <span class="badge bg-info bg-opacity-10 text-info px-2 py-1 rounded-2" style="font-size: 0.75rem;" title="แดชบอร์ดการเกิด"><i class="fa-solid fa-chart-line"></i> DB-เกิด</span>
+                                        <span class="badge bg-info bg-opacity-10 text-info px-2 py-1 rounded-2 me-1" style="font-size: 0.75rem;" title="แดชบอร์ดการเกิด"><i class="fa-solid fa-chart-line"></i> DB-เกิด</span>
                                     @endif
+                                    @if($user->allow_opoh)
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-2 me-1" style="font-size: 0.75rem;" title="จัดการแพทย์ OPOH"><i class="fa-solid fa-user-doctor"></i> OPOH</span>
+                                    @endif
+                                    
                                 </div>
                             </td>
                             <td>
@@ -172,6 +176,7 @@
                                             data-allow-death-dashboard="{{ $user->allow_death_dashboard }}"
                                             data-allow-birth="{{ $user->allow_birth }}"
                                             data-allow-birth-dashboard="{{ $user->allow_birth_dashboard }}"
+                                            data-allow-opoh="{{ $user->allow_opoh }}"
                                             style="border-radius: 8px;"
                                             aria-label="Edit User">
                                         <i class="fa-solid fa-user-pen text-primary"></i>
@@ -290,6 +295,13 @@
                                 <label class="form-check-label fw-semibold text-secondary small" for="addUserAllowBirthDashboard">เข้าถึงแดชบอร์ดการเกิด (allow_birth_dashboard)</label>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="allow_opoh" id="addUserAllowOpoh" value="1">
+                                <label class="form-check-label fw-semibold text-secondary small" for="addUserAllowOpoh">จัดการแพทย์ AOPH (allow_opoh)</label>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0 pb-4 px-4">
@@ -396,6 +408,13 @@
                                 <label class="form-check-label fw-semibold text-secondary small" for="editUserAllowBirthDashboard">เข้าถึงแดชบอร์ดการเกิด (allow_birth_dashboard)</label>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="allow_opoh" id="editUserAllowOpoh" value="1">
+                                <label class="form-check-label fw-semibold text-secondary small" for="editUserAllowOpoh">จัดการแพทย์ AOPH (allow_opoh)</label>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0 pb-4 px-4">
@@ -502,6 +521,7 @@
             const allowDeathDashboard = $(this).data('allow-death-dashboard');
             const allowBirth = $(this).data('allow-birth');
             const allowBirthDashboard = $(this).data('allow-birth-dashboard');
+            const allowOpoh = $(this).data('allow-opoh');
 
             $('#editUserId').val(id);
             $('#editUserName').val(name);
@@ -516,7 +536,8 @@
             $('#editUserAllowDeathDashboard').prop('checked', allowDeathDashboard == 1);
             $('#editUserAllowBirth').prop('checked', allowBirth == 1);
             $('#editUserAllowBirthDashboard').prop('checked', allowBirthDashboard == 1);
-
+            $('#editUserAllowOpoh').prop('checked', allowOpoh == 1);
+            
             $('#editUserModal').modal('show');
         });
 

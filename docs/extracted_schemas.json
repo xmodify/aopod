@@ -592,7 +592,7 @@
                 "type": "varchar(255)",
                 "null": "YES",
                 "key": "",
-                "default": "http:\/\/127.0.0.1:8989",
+                "default": "http://127.0.0.1:8989",
                 "extra": ""
             },
             "contact": {
@@ -2105,6 +2105,13 @@
                 "default": "0",
                 "extra": ""
             },
+            "allow_opoh": {
+                "type": "tinyint(1)",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
             "active": {
                 "type": "char(1)",
                 "null": "NO",
@@ -2308,7 +2315,7 @@
                 "type": "timestamp",
                 "null": "NO",
                 "key": "MUL",
-                "default": "CURRENT_TIMESTAMP",
+                "default": "current_timestamp()",
                 "extra": ""
             }
         },
@@ -2341,6 +2348,393 @@
                 "unique": false,
                 "columns": [
                     "created_at"
+                ]
+            }
+        }
+    },
+    "opoh_doctors": {
+        "columns": {
+            "id": {
+                "type": "bigint(20) unsigned",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": "auto_increment"
+            },
+            "pname": {
+                "type": "varchar(50)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "fname": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "lname": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "doctor_name": {
+                "type": "varchar(150)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "cid": {
+                "type": "varchar(13)",
+                "null": "YES",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "licenseno": {
+                "type": "varchar(20)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "spclty_code": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "specialty_name": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "position": {
+                "type": "varchar(150)",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "is_active": {
+                "type": "enum('Y','N')",
+                "null": "NO",
+                "key": "",
+                "default": "Y",
+                "extra": ""
+            },
+            "created_by": {
+                "type": "bigint(20) unsigned",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "id"
+                ]
+            },
+            "idx_doctor_lookup": {
+                "unique": false,
+                "columns": [
+                    "cid",
+                    "licenseno",
+                    "is_active"
+                ]
+            }
+        }
+    },
+    "opoh_opd_service": {
+        "columns": {
+            "id": {
+                "type": "bigint(20) unsigned",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": "auto_increment"
+            },
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "vstdate": {
+                "type": "date",
+                "null": "NO",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "spclty_code": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "specialty_name": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "hn_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_ucs": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_ofc": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_lgo": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_sss": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "visit_other": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "inc_total": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_drug_total": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_lab_total": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "refer_to_origin": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admit_ipd": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "id"
+                ]
+            },
+            "uk_opoh_opd": {
+                "unique": true,
+                "columns": [
+                    "hospcode",
+                    "vstdate",
+                    "spclty_code"
+                ]
+            },
+            "idx_vstdate": {
+                "unique": false,
+                "columns": [
+                    "vstdate"
+                ]
+            },
+            "idx_hospcode": {
+                "unique": false,
+                "columns": [
+                    "hospcode"
+                ]
+            }
+        }
+    },
+    "opoh_ipd_service": {
+        "columns": {
+            "id": {
+                "type": "bigint(20) unsigned",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": "auto_increment"
+            },
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "dchdate": {
+                "type": "date",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "spclty_code": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "specialty_name": {
+                "type": "varchar(100)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "an_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "adjrw_total": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "operation_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "inc_total": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "id"
+                ]
+            },
+            "uk_opoh_ipd": {
+                "unique": true,
+                "columns": [
+                    "hospcode",
+                    "dchdate",
+                    "spclty_code"
                 ]
             }
         }

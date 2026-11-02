@@ -205,8 +205,37 @@ func PerformSyncSelectiveWithRanges(startDate, endDate string, modules []string,
 		}
 	}
 
+	// 8. OPOH (One Province One Hospital - แพทย์เฉพาะทางหมุนเวียนออกตรวจ รพช.)
+	if shouldSync("opoh") {
+		sDate, eDate := getDates("opoh")
+		doctors, docErr := collector.FetchOpohDoctors(cfg.Hospital.ServerURL, cfg.Hospital.Token)
+		if docErr != nil {
+			AddLog("WARNING", fmt.Sprintf("ไม่สามารถโหลดรายชื่อแพทย์ OPOH จากเซิร์ฟเวอร์: %v", docErr))
+		} else if len(doctors) > 0 {
+			// 8.1 OPD OPOH
+			opohOpdRecords, err := collector.CollectOpohOPD(db, doctors, sDate, eDate)
+			if err != nil {
+				AddLog("ERROR", fmt.Sprintf("เกิดข้อผิดพลาดในการ Query OPOH OPD (%s ถึง %s): %s", sDate, eDate, err.Error()))
+			} else if len(opohOpdRecords) > 0 {
+				opohOpdResult, _ := sender.SendChunks(opohOpdRecords, "/api/opoh/opd", func(r collector.OpohOpdRecord) string { return r.Vstdate }, "OPOH_OPD")
+				summary.OpohOPD = opohOpdResult
+				AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยนอก (%s ถึง %s): %d รายการสำเร็จ (ล้มเหลว: %d)", sDate, eDate, opohOpdResult.TotalSent, opohOpdResult.TotalFailed))
+			}
+
+			// 8.2 IPD OPOH
+			opohIpdRecords, err := collector.CollectOpohIPD(db, doctors, sDate, eDate)
+			if err != nil {
+				AddLog("ERROR", fmt.Sprintf("เกิดข้อผิดพลาดในการ Query OPOH IPD (%s ถึง %s): %s", sDate, eDate, err.Error()))
+			} else if len(opohIpdRecords) > 0 {
+				opohIpdResult, _ := sender.SendChunks(opohIpdRecords, "/api/opoh/ipd", func(r collector.OpohIpdRecord) string { return r.Dchdate }, "OPOH_IPD")
+				summary.OpohIPD = opohIpdResult
+				AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยใน (%s ถึง %s): %d รายการสำเร็จ (ล้มเหลว: %d)", sDate, eDate, opohIpdResult.TotalSent, opohIpdResult.TotalFailed))
+			}
+		}
+	}
+
 	summary.DurationMs = time.Since(startTime).Milliseconds()
-	if summary.OPD.TotalFailed > 0 || summary.IPD.TotalFailed > 0 || summary.Refer.TotalFailed > 0 || summary.Operation.TotalFailed > 0 {
+	if summary.OPD.TotalFailed > 0 || summary.IPD.TotalFailed > 0 || summary.Refer.TotalFailed > 0 || summary.Operation.TotalFailed > 0 || summary.OpohOPD.TotalFailed > 0 || summary.OpohIPD.TotalFailed > 0 {
 		summary.Success = false
 		summary.Message = "ส่งข้อมูลสำเร็จบางส่วน มีบาง Batch ล้มเหลว"
 	} else {
@@ -299,6 +328,26 @@ func PerformHourlySync(opdDaysBack, ipdDaysBack int) (*sender.SyncSummary, error
 		opResult, _ := sender.SendChunks(opRecords, "/api/operation", func(r collector.OperationRecord) string { return r.Vstdate }, "OPERATION")
 		summary.Operation = opResult
 		AddLog("INFO", fmt.Sprintf("ส่งข้อมูลผ่าตัด (Operation): %d วัน สำเร็จ", len(opRecords)))
+	}
+
+	// 7. OPOH (One Province One Hospital - แพทย์เฉพาะทางหมุนเวียนออกตรวจ รพช.)
+	doctors, docErr := collector.FetchOpohDoctors(cfg.Hospital.ServerURL, cfg.Hospital.Token)
+	if docErr == nil && len(doctors) > 0 {
+		// 7.1 OPD OPOH (opdStart to today)
+		opohOpdRecords, err := collector.CollectOpohOPD(db, doctors, opdStart, today)
+		if err == nil && len(opohOpdRecords) > 0 {
+			opohOpdResult, _ := sender.SendChunks(opohOpdRecords, "/api/opoh/opd", func(r collector.OpohOpdRecord) string { return r.Vstdate }, "OPOH_OPD")
+			summary.OpohOPD = opohOpdResult
+			AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยนอก: %d รายการ สำเร็จ", len(opohOpdRecords)))
+		}
+
+		// 7.2 IPD OPOH (ipdStart to today)
+		opohIpdRecords, err := collector.CollectOpohIPD(db, doctors, ipdStart, today)
+		if err == nil && len(opohIpdRecords) > 0 {
+			opohIpdResult, _ := sender.SendChunks(opohIpdRecords, "/api/opoh/ipd", func(r collector.OpohIpdRecord) string { return r.Dchdate }, "OPOH_IPD")
+			summary.OpohIPD = opohIpdResult
+			AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยใน: %d รายการ สำเร็จ", len(opohIpdRecords)))
+		}
 	}
 
 	summary.DurationMs = time.Since(startTime).Milliseconds()

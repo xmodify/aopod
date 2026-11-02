@@ -35,6 +35,7 @@ class User extends Authenticatable
         'allow_death_dashboard',
         'allow_birth_dashboard',
         'allow_emr',
+        'allow_opoh',
     ];
 
     /**
@@ -122,6 +123,26 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if the user has OPOH doctor management permission.
+     *
+     * @return bool
+     */
+    public function canAccessOpoh(): bool
+    {
+        return $this->isAdmin() || (bool)$this->allow_opoh;
+    }
+
+    /**
+     * Check if the user has OPOH dashboard access permission.
+     *
+     * @return bool
+     */
+    public function canAccessOpohDashboard(): bool
+    {
+        return true;
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
@@ -143,6 +164,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'moph_token_expire' => 'datetime',
             'password' => 'hashed',
+            'allow_opoh' => 'boolean',
         ];
     }
 }

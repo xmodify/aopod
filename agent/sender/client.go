@@ -33,6 +33,8 @@ type SyncSummary struct {
 	Operation  BatchResult `json:"operation"`
 	Bed        BatchResult `json:"bed"`
 	BedDep     BatchResult `json:"bed_dep"`
+	OpohOPD    BatchResult `json:"opoh_opd"`
+	OpohIPD    BatchResult `json:"opoh_ipd"`
 	Message    string      `json:"message"`
 }
 

@@ -325,6 +325,7 @@ class AdminController extends Controller
             'allow_birth' => ['nullable'],
             'allow_birth_dashboard' => ['nullable'],
             'allow_emr' => ['nullable'],
+            'allow_opoh' => ['nullable'],
         ]);
 
         try {
@@ -342,6 +343,7 @@ class AdminController extends Controller
                 'allow_birth' => $request->has('allow_birth') ? 1 : 0,
                 'allow_birth_dashboard' => $request->has('allow_birth_dashboard') ? 1 : 0,
                 'allow_emr' => $request->has('allow_emr') ? 1 : 0,
+                'allow_opoh' => $request->has('allow_opoh') ? 1 : 0,
             ]);
 
             return response()->json(['success' => true, 'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว']);
@@ -372,6 +374,7 @@ class AdminController extends Controller
             'allow_birth' => ['nullable'],
             'allow_birth_dashboard' => ['nullable'],
             'allow_emr' => ['nullable'],
+            'allow_opoh' => ['nullable'],
         ]);
 
         try {
@@ -387,6 +390,7 @@ class AdminController extends Controller
             $user->allow_birth = $request->has('allow_birth') ? 1 : 0;
             $user->allow_birth_dashboard = $request->has('allow_birth_dashboard') ? 1 : 0;
             $user->allow_emr = $request->has('allow_emr') ? 1 : 0;
+            $user->allow_opoh = $request->has('allow_opoh') ? 1 : 0;
             if ($request->password) {
                 $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
             }
