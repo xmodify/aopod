@@ -330,8 +330,8 @@ class SchemaUpgradeService
             $mainSettings = $seeds['main_setting'];
             $totalSettings = count($mainSettings);
             foreach ($mainSettings as $index => $row) {
-                $subPercent = 91 + (int)(($index / $totalSettings) * 8); // 91% to 99%
-                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน (ipd_bed_type, budget_year, main_setting)...', "กำลังซิงค์ค่าตั้งค่าระบบ: {$row['name']}...", $changes, []);
+                $subPercent = 91 + (int)(($index / $totalSettings) * 4); // 91% to 95%
+                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน...', "กำลังซิงค์ค่าตั้งค่าระบบ: {$row['name']}...", $changes, []);
                 
                 $exists = DB::table('main_setting')->where('name', $row['name'])->exists();
                 if (!$exists) {
@@ -344,6 +344,35 @@ class SchemaUpgradeService
                 }
             }
             $seedsSummary[] = "main_setting ({$totalSettings} รายการ)";
+        }
+
+        // Import opoh_doctors (ทำเนียบแพทย์เฉพาะทางออกตรวจ รพช.)
+        if (isset($seeds['opoh_doctors']) && count($seeds['opoh_doctors']) > 0 && Schema::hasTable('opoh_doctors')) {
+            $doctors = $seeds['opoh_doctors'];
+            $totalDocs = count($doctors);
+            $insertedDocs = 0;
+            foreach ($doctors as $index => $doc) {
+                $subPercent = 95 + (int)(($index / max(1, $totalDocs)) * 4); // 95% to 99%
+                $onProgress($subPercent, 2, 'ขั้นตอนที่ 2/2: นำเข้า/ซิงค์ข้อมูลพื้นฐาน...', "กำลังซิงค์ทำเนียบแพทย์ OPOH: {$doc['doctor_name']}...", $changes, []);
+
+                // Match existing doctor by CID or (fname + lname)
+                $exists = false;
+                if (!empty($doc['cid'])) {
+                    $exists = DB::table('opoh_doctors')->where('cid', $doc['cid'])->exists();
+                }
+                if (!$exists) {
+                    $exists = DB::table('opoh_doctors')->where('fname', $doc['fname'])->where('lname', $doc['lname'])->exists();
+                }
+
+                if (!$exists) {
+                    $row = $doc;
+                    $row['created_at'] = now();
+                    $row['updated_at'] = now();
+                    DB::table('opoh_doctors')->insert($row);
+                    $insertedDocs++;
+                }
+            }
+            $seedsSummary[] = "opoh_doctors ({$totalDocs} ท่าน" . ($insertedDocs > 0 ? ", เพิ่มใหม่ {$insertedDocs}" : "") . ")";
         }
 
         // Complete Step 2 & Finish
