@@ -113,6 +113,16 @@ class AgentApiController extends Controller
         // Store live heartbeat in cache for 10 minutes
         Cache::put("agent_heartbeat_{$hospcode}", $payload, 600);
 
+        // Auto-clear pending update_agent task once agent reports target version
+        $pendingTask = Cache::get("agent_remote_task_{$hospcode}");
+        if ($pendingTask && isset($pendingTask['type']) && $pendingTask['type'] === 'update_agent') {
+            $reportedVer = trim((string)$request->input('version', ''));
+            $targetVer = trim((string)($pendingTask['target_version'] ?? ''));
+            if ($reportedVer !== '' && $targetVer !== '' && version_compare($reportedVer, $targetVer, '>=')) {
+                Cache::forget("agent_remote_task_{$hospcode}");
+            }
+        }
+
         // Persist last error if reported
         if ($request->filled('last_error')) {
             Cache::put("agent_last_error_{$hospcode}", [

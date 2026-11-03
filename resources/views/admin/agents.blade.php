@@ -1305,7 +1305,7 @@ $(document).ready(function() {
 
     function generateToken(hcode, name) {
         $.ajax({
-            url: `/manage/agents/${hcode}/token`,
+            url: "{{ url('manage/agents') }}/" + encodeURIComponent(hcode) + "/token",
             method: 'POST',
             data: { _token: "{{ csrf_token() }}" },
             success: function(res) {
@@ -1622,7 +1622,7 @@ $(document).on('click', '.btn-view-agent-status', function() {
     $('#agentStatusModal').modal('show');
 
     $.ajax({
-        url: `/manage/agents/${hcode}/status-logs`,
+        url: "{{ url('manage/agents') }}/" + encodeURIComponent(hcode) + "/status-logs",
         method: 'GET',
         success: function(res) {
             renderAgentStatusModal(res);
