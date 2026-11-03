@@ -74,10 +74,22 @@ func AttachParentConsole() {
 	procAttachConsole := kernel32.NewProc("AttachConsole")
 	r, _, _ := procAttachConsole.Call(^uintptr(0)) // ATTACH_PARENT_PROCESS = -1
 	if r != 0 {
-		hout, _ := syscall.GetStdHandle(syscall.STD_OUTPUT_HANDLE)
-		herr, _ := syscall.GetStdHandle(syscall.STD_ERROR_HANDLE)
-		os.Stdout = os.NewFile(uintptr(hout), "/dev/stdout")
-		os.Stderr = os.NewFile(uintptr(herr), "/dev/stderr")
+		conout, err := syscall.CreateFile(
+			syscall.StringToUTF16Ptr("CONOUT$"),
+			syscall.GENERIC_READ|syscall.GENERIC_WRITE,
+			syscall.FILE_SHARE_WRITE,
+			nil,
+			syscall.OPEN_EXISTING,
+			0,
+			0,
+		)
+		if err == nil {
+			procSetStdHandle := kernel32.NewProc("SetStdHandle")
+			procSetStdHandle.Call(^uintptr(10), uintptr(conout)) // STD_OUTPUT_HANDLE = -11
+			procSetStdHandle.Call(^uintptr(11), uintptr(conout)) // STD_ERROR_HANDLE = -12
+			os.Stdout = os.NewFile(uintptr(conout), "/dev/stdout")
+			os.Stderr = os.NewFile(uintptr(conout), "/dev/stderr")
+		}
 	}
 }
 
