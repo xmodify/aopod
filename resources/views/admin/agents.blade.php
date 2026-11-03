@@ -1245,6 +1245,40 @@ $(document).ready(function() {
         });
     });
 
+    // Helper: Open Remote Sync modal pre-targeted to a specific hospital and module
+    window.openRemoteSyncForHosp = function(hcode, name, mod = 'opd', startDate = null) {
+        $('#agentStatusModal').modal('hide');
+        setTimeout(() => {
+            // Uncheck all hosps, check only target hcode
+            $('.target-hosp-checkbox').prop('checked', false).trigger('change');
+            if (hcode) {
+                const $hcb = $(`#hosp_cb_${hcode}`);
+                if ($hcb.length) $hcb.prop('checked', true).trigger('change');
+            }
+
+            // If specific module requested, check only that module
+            if (mod) {
+                $('.module-checkbox').prop('checked', false).trigger('change');
+                const $mcb = $(`#mod${mod.charAt(0).toUpperCase() + mod.slice(1)}`);
+                if ($mcb.length) $mcb.prop('checked', true).trigger('change');
+            }
+
+            // If startDate is given, calculate safe batch range (10-14 days)
+            if (startDate && moduleDatePickers[mod]) {
+                const s = new Date(startDate);
+                s.setDate(s.getDate() + 1); // start from the day after last synced
+                let e = new Date(s);
+                e.setDate(e.getDate() + 13); // chunk 14 days
+                if (e > new Date()) e = new Date();
+                
+                if (moduleDatePickers[mod].start) moduleDatePickers[mod].start.setDate(s, true);
+                if (moduleDatePickers[mod].end) moduleDatePickers[mod].end.setDate(e, true);
+            }
+
+            $('#remoteSyncModal').modal('show');
+        }, 350);
+    };
+
     // View Token Modal Open
     $(document).on('click', '.btn-view-token', function() {
         currentModalHcode = $(this).data('hcode');
@@ -1659,7 +1693,7 @@ function renderAgentStatusModal(res) {
                 </div>
             </div>
         `;
-    } else if (res.hcode === '10703' && sync.opd_date && (!sync.opd_sync || new Date(sync.opd_sync) < new Date(Date.now() - 7*86400000))) {
+    } else if (sync.opd_date && (!sync.opd_sync || new Date(sync.opd_date) < new Date(Date.now() - 5*86400000))) {
         errHtml = `
             <div class="alert alert-warning border-warning border-opacity-25 rounded-3 mb-3 p-3">
                 <div class="d-flex align-items-center gap-2 fw-bold text-warning mb-1">
@@ -1667,7 +1701,12 @@ function renderAgentStatusModal(res) {
                     <span>ตรวจพบข้อมูล OPD ล่าสุดหยุดซิงค์ (วันที่ล่าสุด: ${sync.opd_date})</span>
                 </div>
                 <div class="small text-secondary mt-1">
-                    ข้อมูล IPD และ Refer ซิงค์ได้ปกติ แต่วันที่ของ OPD ค้าง เกิดจากคำสั่ง Query OPD เดิมมีขนาดตารางประวัติสะสม 20 ล้านแถว ทำให้เกิด Timeout ตอนประมวลผลบนเซิร์ฟเวอร์ HOSxP ของ รพ.อำนาจเจริญ
+                    ข้อมูล IPD, Refer และผ่าตัด ซิงค์ได้ปกติ แต่วันที่ของ OPD ค้างจากช่วงก่อนหน้าที่คิวรี่หลุด Timeout สามารถกดปุ่มด้านล่างเพื่อสั่งดึงข้อมูลย้อนหลังแบ่งเป็นช่วงละ 10-14 วันจากส่วนกลางได้ทันที (ระบบตั้งค่าให้อัตโนมัติ)
+                </div>
+                <div class="mt-2.5 pt-1">
+                    <button type="button" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3 shadow-xs" onclick="openRemoteSyncForHosp('${res.hcode}', '${res.name}', 'opd', '${sync.opd_date}')">
+                        <i class="fa-solid fa-paper-plane me-1"></i> เปิดหน้าต่างสั่งดึง OPD ย้อนหลังช่วงที่ขาด (Remote Sync)
+                    </button>
                 </div>
             </div>
         `;
@@ -1773,15 +1812,20 @@ $('#btnForceSyncThisHosp').on('click', function() {
     if (!hcode) return;
 
     Swal.fire({
-        title: `สั่ง Sync ข้อมูลด่วน?`,
-        text: `ระบบจะส่งคำสั่งไปยัง Agent ของ ${name} (${hcode}) ให้ดึงและส่งข้อมูลทันที`,
+        title: `สั่ง Sync ข้อมูล: ${name}`,
+        text: `เลือกรูปแบบการส่งคำสั่งดึงข้อมูลไปยัง Agent (${hcode})`,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'ยืนยันสั่ง Sync',
+        showDenyButton: true,
+        confirmButtonText: '<i class="fa-solid fa-calendar-days me-1"></i> กำหนดช่วงวันที่เอง',
+        denyButtonText: '<i class="fa-solid fa-bolt me-1"></i> ดึงด่วน 7 วันล่าสุด',
         cancelButtonText: 'ยกเลิก',
-        confirmButtonColor: '#18a573'
+        confirmButtonColor: '#18a573',
+        denyButtonColor: '#0d6efd'
     }).then((result) => {
         if (result.isConfirmed) {
+            openRemoteSyncForHosp(hcode, name);
+        } else if (result.isDenied) {
             $.ajax({
                 url: "{{ route('manage.agents.remote-sync') }}",
                 method: "POST",
