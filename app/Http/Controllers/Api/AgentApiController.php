@@ -103,6 +103,7 @@ class AgentApiController extends Controller
             'last_sync_ipd' => $request->input('last_sync_ipd'),
             'last_sync_bed' => $request->input('last_sync_bed'),
             'last_error' => $request->input('last_error'),
+            'recent_logs' => $request->input('recent_logs', []),
             'hostname' => $request->input('hostname'),
             'ip' => $clientIp,
             'agent_url' => $agentUrl,
@@ -111,6 +112,19 @@ class AgentApiController extends Controller
 
         // Store live heartbeat in cache for 10 minutes
         Cache::put("agent_heartbeat_{$hospcode}", $payload, 600);
+
+        // Persist last error if reported
+        if ($request->filled('last_error')) {
+            Cache::put("agent_last_error_{$hospcode}", [
+                'error'     => $request->input('last_error'),
+                'timestamp' => now()->toDateTimeString(),
+            ], 86400 * 30);
+        }
+
+        // Store recent logs if provided
+        if ($request->has('recent_logs') && is_array($request->input('recent_logs'))) {
+            Cache::put("agent_log_history_{$hospcode}", $request->input('recent_logs'), 86400 * 7);
+        }
 
         return response()->json(['status' => 'success', 'message' => 'Heartbeat received']);
     }

@@ -231,11 +231,21 @@ func PerformSyncSelectiveWithRanges(startDate, endDate string, modules []string,
 				summary.OpohIPD = opohIpdResult
 				AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยใน (%s ถึง %s): %d รายการสำเร็จ (ล้มเหลว: %d)", sDate, eDate, opohIpdResult.TotalSent, opohIpdResult.TotalFailed))
 			}
+
+			// 8.3 Surgery & Operation OPOH (Tab 3: Surgery)
+			opohOperRecords, err := collector.CollectOpohOperations(db, doctors, sDate, eDate)
+			if err != nil {
+				AddLog("ERROR", fmt.Sprintf("เกิดข้อผิดพลาดในการ Query OPOH Operation (%s ถึง %s): %s", sDate, eDate, err.Error()))
+			} else if len(opohOperRecords) > 0 {
+				opohOperResult, _ := sender.SendChunks(opohOperRecords, "/api/opoh/operation", func(r collector.OpohOperationRecord) string { return r.OperationDate }, "OPOH_OPER")
+				summary.OpohOperation = opohOperResult
+				AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH การผ่าตัด/หัตถการ (%s ถึง %s): %d รายการสำเร็จ (ล้มเหลว: %d)", sDate, eDate, opohOperResult.TotalSent, opohOperResult.TotalFailed))
+			}
 		}
 	}
 
 	summary.DurationMs = time.Since(startTime).Milliseconds()
-	if summary.OPD.TotalFailed > 0 || summary.IPD.TotalFailed > 0 || summary.Refer.TotalFailed > 0 || summary.Operation.TotalFailed > 0 || summary.OpohOPD.TotalFailed > 0 || summary.OpohIPD.TotalFailed > 0 {
+	if summary.OPD.TotalFailed > 0 || summary.IPD.TotalFailed > 0 || summary.Refer.TotalFailed > 0 || summary.Operation.TotalFailed > 0 || summary.OpohOPD.TotalFailed > 0 || summary.OpohIPD.TotalFailed > 0 || summary.OpohOperation.TotalFailed > 0 {
 		summary.Success = false
 		summary.Message = "ส่งข้อมูลสำเร็จบางส่วน มีบาง Batch ล้มเหลว"
 	} else {
@@ -348,6 +358,14 @@ func PerformHourlySync(opdDaysBack, ipdDaysBack int) (*sender.SyncSummary, error
 			summary.OpohIPD = opohIpdResult
 			AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยใน: %d รายการ สำเร็จ", len(opohIpdRecords)))
 		}
+
+		// 7.3 Surgery & Operation OPOH (opdStart to today)
+		opohOperRecords, err := collector.CollectOpohOperations(db, doctors, opdStart, today)
+		if err == nil && len(opohOperRecords) > 0 {
+			opohOperResult, _ := sender.SendChunks(opohOperRecords, "/api/opoh/operation", func(r collector.OpohOperationRecord) string { return r.OperationDate }, "OPOH_OPER")
+			summary.OpohOperation = opohOperResult
+			AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH การผ่าตัด/หัตถการ: %d รายการ สำเร็จ", len(opohOperRecords)))
+		}
 	}
 
 	summary.DurationMs = time.Since(startTime).Milliseconds()
@@ -416,6 +434,21 @@ func SendHeartbeat(lastSummary *sender.SyncSummary) {
 		lastError = lastSummary.Message
 	}
 
+	allLogs := GetRecentLogs()
+	if lastError == "" {
+		for i := len(allLogs) - 1; i >= 0 && i >= len(allLogs)-30; i-- {
+			if allLogs[i].Level == "ERROR" {
+				lastError = allLogs[i].Message
+				break
+			}
+		}
+	}
+
+	recentLogsSlice := allLogs
+	if len(recentLogsSlice) > 20 {
+		recentLogsSlice = recentLogsSlice[len(recentLogsSlice)-20:]
+	}
+
 	hostname, _ := os.Hostname()
 	port := cfg.Web.Port
 	if port == 0 {
@@ -433,6 +466,7 @@ func SendHeartbeat(lastSummary *sender.SyncSummary) {
 		"last_sync_ipd": time.Now().Format("2006-01-02 15:04:05"),
 		"last_sync_bed": time.Now().Format("2006-01-02 15:04:05"),
 		"last_error":    lastError,
+		"recent_logs":   recentLogsSlice,
 	}
 
 	jsonData, _ := json.Marshal(payload)

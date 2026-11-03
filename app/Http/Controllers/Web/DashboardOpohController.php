@@ -114,11 +114,19 @@ class DashboardOpohController extends Controller
             $specHospMatrix[$m->spclty_code][$m->hospcode] = (int)$m->visits;
         }
 
+        $specialtyPeriodInc = DB::table('opoh_opd_service')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->groupBy('spclty_code')
+            ->pluck(DB::raw('COALESCE(SUM(inc_total), 0)'), 'spclty_code')
+            ->toArray();
+
         // Build Specialty Rows for OPD Table (7 สาขาเป็นแถว และ รพ.เป็นคอลัมน์)
         $specialtyRows = [];
         $specColTotals = [
             'cumulative' => 0,
             'period'     => 0,
+            'inc'        => 0,
             'amnat'      => 0,
         ];
         foreach ($hospitalsList as $hcode => $hname) {
@@ -128,10 +136,12 @@ class DashboardOpohController extends Controller
         foreach ($specialties as $code => $spec) {
             $cumul = (int)($specialtyStats[$code] ?? 0);
             $period = (int)($specialtyPeriodVisits[$code] ?? 0);
+            $inc = (float)($specialtyPeriodInc[$code] ?? 0);
             $amnatVisits = (int)($specHospMatrix[$code]['10703'] ?? 0);
 
             $specColTotals['cumulative'] += $cumul;
             $specColTotals['period'] += $period;
+            $specColTotals['inc'] += $inc;
             $specColTotals['amnat'] += $amnatVisits;
 
             $hospVisits = [];
@@ -148,6 +158,7 @@ class DashboardOpohController extends Controller
                 'icon'         => $spec['icon'],
                 'cumulative'   => $cumul,
                 'period'       => $period,
+                'inc'          => $inc,
                 'hosp_visits'  => $hospVisits,
                 'amnat_visits' => $amnatVisits,
             ];
@@ -169,6 +180,7 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(visit_lgo), 0)       AS visit_lgo,
                 COALESCE(SUM(visit_sss), 0)       AS visit_sss,
                 COALESCE(SUM(visit_other), 0)     AS visit_other,
+                COALESCE(SUM(visit_telemed), 0)   AS visit_telemed,
                 COALESCE(SUM(inc_total), 0)       AS inc_total,
                 COALESCE(SUM(inc_drug_total), 0)  AS inc_drug_total,
                 COALESCE(SUM(inc_lab_total), 0)   AS inc_lab_total,
@@ -177,12 +189,16 @@ class DashboardOpohController extends Controller
             ")
             ->first();
 
+        $sumTelemed = (int)($summary->visit_telemed ?? 0);
+        $sumOnsite  = max(0, $sumCurrent - $sumTelemed);
+
         $fiscalSummary = DB::table('opoh_opd_service')
             ->where('vstdate', '>=', $cumulative_start)
             ->where('vstdate', '<=', $current_end)
             ->whereIn('hospcode', $communityCodes)
             ->selectRaw("
                 COALESCE(SUM(visit_total), 0)     AS visit_total,
+                COALESCE(SUM(visit_telemed), 0)   AS visit_telemed,
                 COALESCE(SUM(inc_total), 0)       AS inc_total,
                 COALESCE(SUM(inc_drug_total), 0)  AS inc_drug_total,
                 COALESCE(SUM(inc_lab_total), 0)   AS inc_lab_total,
@@ -404,6 +420,7 @@ class DashboardOpohController extends Controller
                 'label' => $hname,
                 'backgroundColor' => $hospColors[$hcode] ?? '#64748b',
                 'borderRadius' => 4,
+                'minBarLength' => 4,
                 'data' => $data,
                 'stack' => 'stack0',
             ];
@@ -416,8 +433,8 @@ class DashboardOpohController extends Controller
             'backgroundColor' => 'rgba(225, 29, 72, 0.08)',
             'borderWidth' => 3,
             'pointBackgroundColor' => '#e11d48',
-            'pointRadius' => 4,
-            'pointHoverRadius' => 6,
+            'pointRadius' => 5,
+            'pointHoverRadius' => 7,
             'tension' => 0.3,
             'fill' => false,
             'data' => array_values($monthlyIpdTotals),
@@ -427,6 +444,718 @@ class DashboardOpohController extends Controller
             'labels' => $monthLabels,
             'datasets' => $ipdChartDatasets,
         ];
+
+        // 5.7 Operation / Surgery Service Aggregations (Tab 3: ผ่าตัดและหัตถการ)
+        $active_tab = $request->input('active_tab', 'opd');
+        if (!in_array($active_tab, ['opd', 'ipd', 'operation'])) {
+            $active_tab = 'opd';
+        }
+
+        $opSummary = DB::table('opoh_operation_service')
+            ->whereBetween('operation_date', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(case_total), 0) as total,
+                COALESCE(SUM(CASE WHEN op_type = 'IPD' THEN case_total ELSE 0 END), 0) as total_ipd,
+                COALESCE(SUM(CASE WHEN op_type = 'ODS' THEN case_total ELSE 0 END), 0) as total_ods,
+                COALESCE(SUM(inc_total), 0) as total_inc
+            ")
+            ->first();
+
+        $opSumCumulative = (int)DB::table('opoh_operation_service')
+            ->where('operation_date', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('case_total');
+
+        // Top 5 Diagnoses & Operations for Right-Hand (5-Col) Cards
+        $topOpdDiagnoses = DB::table('opoh_opd_diagnoses')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw('icd10, diag_name, COALESCE(SUM(case_total), 0) as total')
+            ->groupBy('icd10', 'diag_name')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        $topIpdDiagnoses = DB::table('opoh_ipd_diagnoses')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw('icd10, diag_name, COALESCE(SUM(case_total), 0) as total')
+            ->groupBy('icd10', 'diag_name')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        $topOperations = DB::table('opoh_operation_service')
+            ->whereBetween('operation_date', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw('icd9, operation_name, COALESCE(SUM(case_total), 0) as total')
+            ->groupBy('icd9', 'operation_name')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        // Operation Monthly Data for Chart (Tab 3)
+        $monthlyOpRaw = DB::table('opoh_operation_service')
+            ->whereBetween('operation_date', [$fiscal_start, $fiscal_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("hospcode, DATE_FORMAT(operation_date, '%Y-%m') as ym, COALESCE(SUM(case_total), 0) as cases")
+            ->groupBy('hospcode', 'ym')
+            ->get();
+
+        $monthlyOpMatrix = [];
+        foreach ($monthlyOpRaw as $row) {
+            $monthlyOpMatrix[$row->hospcode][$row->ym] = (int)$row->cases;
+        }
+
+        $opChartDatasets = [];
+        $monthlyOpTotals = array_fill_keys($monthKeys, 0);
+
+        foreach ($hospitalsList as $hcode => $hname) {
+            $data = [];
+            foreach ($monthKeys as $ym) {
+                $val = $monthlyOpMatrix[$hcode][$ym] ?? 0;
+                $data[] = $val;
+                $monthlyOpTotals[$ym] += $val;
+            }
+            $opChartDatasets[] = [
+                'type' => 'bar',
+                'label' => $hname,
+                'backgroundColor' => $hospColors[$hcode] ?? '#64748b',
+                'borderRadius' => 4,
+                'minBarLength' => 4,
+                'data' => $data,
+                'stack' => 'stack0',
+            ];
+        }
+
+        $opChartDatasets[] = [
+            'type' => 'line',
+            'label' => 'ยอดรวมผ่าตัด (เคส)',
+            'borderColor' => '#8b5cf6',
+            'backgroundColor' => 'rgba(139, 92, 246, 0.08)',
+            'borderWidth' => 3,
+            'pointBackgroundColor' => '#8b5cf6',
+            'pointRadius' => 5,
+            'pointHoverRadius' => 7,
+            'tension' => 0.3,
+            'fill' => false,
+            'data' => array_values($monthlyOpTotals),
+        ];
+
+        $opMonthlyChart = [
+            'labels' => $monthLabels,
+            'datasets' => $opChartDatasets,
+        ];
+
+        // 4 Surgical Specialties for Tab 3: จักษุ (08), ศัลยกรรมทั่วไป (02), ศัลยกรรมกระดูก (06), สูตินรีเวชกรรม (03)
+        $surgicalSpecialties = [
+            '08' => $specialties['08'],
+            '02' => $specialties['02'],
+            '06' => $specialties['06'],
+            '03' => $specialties['03'],
+        ];
+
+        $opSpecHospMatrixRaw = DB::table('opoh_operation_service')
+            ->whereBetween('operation_date', [$current_start, $current_end])
+            ->groupBy('spclty_code', 'hospcode')
+            ->selectRaw('spclty_code, hospcode, COALESCE(SUM(case_total), 0) as cases')
+            ->get();
+
+        $opSpecHospMatrix = [];
+        foreach ($opSpecHospMatrixRaw as $m) {
+            $opSpecHospMatrix[$m->spclty_code][$m->hospcode] = (int)$m->cases;
+        }
+
+        // Dynamically include any other specialty that has operations recorded so nothing is ever omitted
+        foreach ($opSpecHospMatrix as $code => $hospData) {
+            if (!isset($surgicalSpecialties[$code])) {
+                $surgicalSpecialties[$code] = $specialties[$code] ?? [
+                    'name'  => 'สาขา ' . $code,
+                    'color' => '#64748b',
+                    'icon'  => 'fa-notes-medical',
+                ];
+            }
+        }
+
+        $opSpecialtyRows = [];
+        $opSpecColTotals = [
+            'period' => 0,
+            'amnat'  => 0,
+        ];
+        foreach ($hospitalsList as $hcode => $hname) {
+            $opSpecColTotals[$hcode] = 0;
+        }
+
+        foreach ($surgicalSpecialties as $code => $spec) {
+            $period = 0;
+            $hospCases = [];
+            foreach ($hospitalsList as $hcode => $hname) {
+                $cnt = (int)($opSpecHospMatrix[$code][$hcode] ?? 0);
+                $hospCases[$hcode] = $cnt;
+                $opSpecColTotals[$hcode] += $cnt;
+                $period += $cnt;
+            }
+            $amnatCases = (int)($opSpecHospMatrix[$code]['10703'] ?? 0);
+            $opSpecColTotals['period'] += $period;
+            $opSpecColTotals['amnat'] += $amnatCases;
+
+            $opSpecialtyRows[] = [
+                'code'        => $code,
+                'name'        => $spec['name'],
+                'color'       => $spec['color'],
+                'icon'        => $spec['icon'],
+                'period'      => $period,
+                'hosp_cases'  => $hospCases,
+                'amnat_cases' => $amnatCases,
+            ];
+        }
+
+        // 5.8 การจัดสรรและสรุปข้อมูลแยกตาม 6 สิทธิการรักษามาตรฐาน (OPD, IPD, Surgery)
+        $rightsConfig = [
+            'ucs_incup' => [
+                'name'  => 'ประกันสุขภาพ ในจังหวัด',
+                'sub'   => 'สิทธิบัตรทอง (UCS ใน CUP)',
+                'badge' => 'UC ในจังหวัด',
+                'color' => '#0284c7',
+                'bg'    => 'rgba(2, 132, 199, 0.08)',
+                'icon'  => 'fa-id-card',
+                'rate'  => 8350, // Base Rate DRG (บาท/AdjRW)
+            ],
+            'ucs_outprov' => [
+                'name'  => 'ประกันสุขภาพ ต่างจังหวัด',
+                'sub'   => 'สิทธิบัตรทอง (UCS นอก CUP/ต่างจังหวัด)',
+                'badge' => 'UC ต่างจังหวัด',
+                'color' => '#0891b2',
+                'bg'    => 'rgba(8, 145, 178, 0.08)',
+                'icon'  => 'fa-map-location-dot',
+                'rate'  => 8350,
+            ],
+            'ofc' => [
+                'name'  => 'ข้าราชการ',
+                'sub'   => 'เบิกจ่ายตรงกรมบัญชีกลาง (OFC)',
+                'badge' => 'ข้าราชการ (OFC)',
+                'color' => '#16a34a',
+                'bg'    => 'rgba(22, 163, 74, 0.08)',
+                'icon'  => 'fa-building-columns',
+                'rate'  => 10500,
+            ],
+            'lgo' => [
+                'name'  => 'อปท.',
+                'sub'   => 'องค์กรปกครองส่วนท้องถิ่น (LGO)',
+                'badge' => 'อปท. (LGO)',
+                'color' => '#ea580c',
+                'bg'    => 'rgba(234, 88, 12, 0.08)',
+                'icon'  => 'fa-landmark',
+                'rate'  => 10500,
+            ],
+            'sss' => [
+                'name'  => 'ประกันสังคม',
+                'sub'   => 'ผู้ประกันตน ม.33, 39, 40 (SSS)',
+                'badge' => 'ประกันสังคม (SSS)',
+                'color' => '#9333ea',
+                'bg'    => 'rgba(147, 51, 234, 0.08)',
+                'icon'  => 'fa-hospital-user',
+                'rate'  => 12000,
+            ],
+            'other' => [
+                'name'  => 'อื่น ๆ',
+                'sub'   => 'จ่ายเงินเอง, พ.ร.บ., ต่างด้าว, อื่นๆ',
+                'badge' => 'ชำระเงิน/อื่น ๆ',
+                'color' => '#64748b',
+                'bg'    => 'rgba(100, 116, 139, 0.08)',
+                'icon'  => 'fa-users',
+                'rate'  => 0,
+            ],
+        ];
+
+        // 5.8.1 OPD 6 Rights Summary
+        $opdRawRights = DB::table('opoh_opd_service')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(visit_ucs_incup), 0)   AS v_ucs_incup,
+                COALESCE(SUM(visit_ucs_outprov), 0) AS v_ucs_outprov,
+                COALESCE(SUM(visit_ucs), 0)         AS v_ucs_total,
+                COALESCE(SUM(visit_ofc), 0)         AS v_ofc,
+                COALESCE(SUM(visit_lgo), 0)         AS v_lgo,
+                COALESCE(SUM(visit_sss), 0)         AS v_sss,
+                COALESCE(SUM(visit_other), 0)       AS v_other,
+                COALESCE(SUM(visit_total), 0)       AS v_total,
+
+                COALESCE(SUM(inc_ucs_incup), 0)     AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)   AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)           AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)           AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)           AS inc_sss,
+                COALESCE(SUM(inc_other), 0)         AS inc_other,
+                COALESCE(SUM(inc_total), 0)         AS inc_total
+            ")
+            ->first();
+
+        $opdVisitsTotal = (int)($opdRawRights->v_total ?? 0);
+        $opdIncTotal    = (float)($opdRawRights->inc_total ?? 0.0);
+
+        // Fallback if legacy records had total visit_ucs but not yet split
+        $vUcsIncup   = (int)($opdRawRights->v_ucs_incup ?? 0);
+        $vUcsOutprov = (int)($opdRawRights->v_ucs_outprov ?? 0);
+        if ($vUcsIncup == 0 && $vUcsOutprov == 0 && ($opdRawRights->v_ucs_total ?? 0) > 0) {
+            $vUcsIncup = (int)$opdRawRights->v_ucs_total;
+        }
+
+        $sumRightsInc = (float)($opdRawRights->inc_ucs_incup ?? 0)
+                      + (float)($opdRawRights->inc_ucs_outprov ?? 0)
+                      + (float)($opdRawRights->inc_ofc ?? 0)
+                      + (float)($opdRawRights->inc_lgo ?? 0)
+                      + (float)($opdRawRights->inc_sss ?? 0)
+                      + (float)($opdRawRights->inc_other ?? 0);
+
+        $incUcsIncup   = (float)($opdRawRights->inc_ucs_incup ?? 0.0);
+        $incUcsOutprov = (float)($opdRawRights->inc_ucs_outprov ?? 0.0);
+        $incOfc        = (float)($opdRawRights->inc_ofc ?? 0.0);
+        $incLgo        = (float)($opdRawRights->inc_lgo ?? 0.0);
+        $incSss        = (float)($opdRawRights->inc_sss ?? 0.0);
+        $incOther      = (float)($opdRawRights->inc_other ?? 0.0);
+
+        if ($sumRightsInc == 0 && $opdIncTotal > 0 && $opdVisitsTotal > 0) {
+            $incUcsIncup = round($opdIncTotal * ($vUcsIncup / $opdVisitsTotal), 2);
+            $incOfc      = round($opdIncTotal * ((int)($opdRawRights->v_ofc ?? 0) / $opdVisitsTotal), 2);
+            $incLgo      = round($opdIncTotal * ((int)($opdRawRights->v_lgo ?? 0) / $opdVisitsTotal), 2);
+            $incSss      = round($opdIncTotal * ((int)($opdRawRights->v_sss ?? 0) / $opdVisitsTotal), 2);
+            $incOther    = round($opdIncTotal * ((int)($opdRawRights->v_other ?? 0) / $opdVisitsTotal), 2);
+        }
+
+        $opdRightsRows = [
+            'ucs_incup'   => ['visits' => $vUcsIncup, 'inc' => $incUcsIncup],
+            'ucs_outprov' => ['visits' => $vUcsOutprov, 'inc' => $incUcsOutprov],
+            'ofc'         => ['visits' => (int)($opdRawRights->v_ofc ?? 0), 'inc' => $incOfc],
+            'lgo'         => ['visits' => (int)($opdRawRights->v_lgo ?? 0), 'inc' => $incLgo],
+            'sss'         => ['visits' => (int)($opdRawRights->v_sss ?? 0), 'inc' => $incSss],
+            'other'       => ['visits' => (int)($opdRawRights->v_other ?? 0), 'inc' => $incOther],
+        ];
+
+        // 5.8.2 IPD 6 Rights Summary (แยกตาม AdjRW และ CMI สำหรับ Clearing)
+        $ipdRawRights = DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(an_ucs_incup), 0)        AS an_ucs_incup,
+                COALESCE(SUM(an_ucs_outprov), 0)      AS an_ucs_outprov,
+                COALESCE(SUM(an_ofc), 0)              AS an_ofc,
+                COALESCE(SUM(an_lgo), 0)              AS an_lgo,
+                COALESCE(SUM(an_sss), 0)              AS an_sss,
+                COALESCE(SUM(an_other), 0)            AS an_other,
+                COALESCE(SUM(an_total), 0)            AS an_total,
+
+                COALESCE(SUM(admdate_ucs_incup), 0)   AS los_ucs_incup,
+                COALESCE(SUM(admdate_ucs_outprov), 0) AS los_ucs_outprov,
+                COALESCE(SUM(admdate_ofc), 0)         AS los_ofc,
+                COALESCE(SUM(admdate_lgo), 0)         AS los_lgo,
+                COALESCE(SUM(admdate_sss), 0)         AS los_sss,
+                COALESCE(SUM(admdate_other), 0)       AS los_other,
+                COALESCE(SUM(admdate_total), 0)       AS los_total,
+
+                COALESCE(SUM(adjrw_ucs_incup), 0)     AS adjrw_ucs_incup,
+                COALESCE(SUM(adjrw_ucs_outprov), 0)   AS adjrw_ucs_outprov,
+                COALESCE(SUM(adjrw_ofc), 0)           AS adjrw_ofc,
+                COALESCE(SUM(adjrw_lgo), 0)           AS adjrw_lgo,
+                COALESCE(SUM(adjrw_sss), 0)           AS adjrw_sss,
+                COALESCE(SUM(adjrw_other), 0)         AS adjrw_other,
+                COALESCE(SUM(adjrw_total), 0)         AS adjrw_total,
+
+                COALESCE(SUM(inc_ucs_incup), 0)       AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)     AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)             AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)             AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)             AS inc_sss,
+                COALESCE(SUM(inc_other), 0)           AS inc_other,
+                COALESCE(SUM(inc_total), 0)           AS inc_total
+            ")
+            ->first();
+
+        $ipdAnsTotal   = (int)($ipdRawRights->an_total ?? 0);
+        $ipdLosTotal   = (int)($ipdRawRights->los_total ?? 0);
+        $ipdRwTotal    = (float)($ipdRawRights->adjrw_total ?? 0.0);
+        $ipdIncTotal   = (float)($ipdRawRights->inc_total ?? 0.0);
+
+        // Fallback for legacy IPD records
+        $anUcsIncup    = (int)($ipdRawRights->an_ucs_incup ?? 0);
+        $anUcsOutprov  = (int)($ipdRawRights->an_ucs_outprov ?? 0);
+        $losUcsIncup   = (int)($ipdRawRights->los_ucs_incup ?? 0);
+        $adjrwUcsIncup = (float)($ipdRawRights->adjrw_ucs_incup ?? 0.0);
+        $incUcsIncup   = (float)($ipdRawRights->inc_ucs_incup ?? 0.0);
+
+        $allRightsSum = $anUcsIncup + $anUcsOutprov + (int)($ipdRawRights->an_ofc ?? 0) + (int)($ipdRawRights->an_lgo ?? 0) + (int)($ipdRawRights->an_sss ?? 0) + (int)($ipdRawRights->an_other ?? 0);
+        if ($allRightsSum == 0 && $ipdAnsTotal > 0) {
+            $anUcsIncup    = $ipdAnsTotal;
+            $losUcsIncup   = $ipdLosTotal;
+            $adjrwUcsIncup = $ipdRwTotal;
+            $incUcsIncup   = $ipdIncTotal;
+        }
+
+        $ipdRightsRows = [
+            'ucs_incup'   => [
+                'ans'   => $anUcsIncup,
+                'los'   => $losUcsIncup,
+                'adjrw' => $adjrwUcsIncup,
+                'cmi'   => $anUcsIncup > 0 ? ($adjrwUcsIncup / $anUcsIncup) : 0,
+                'inc'   => $incUcsIncup,
+            ],
+            'ucs_outprov' => [
+                'ans'   => $anUcsOutprov,
+                'los'   => (int)($ipdRawRights->los_ucs_outprov ?? 0),
+                'adjrw' => (float)($ipdRawRights->adjrw_ucs_outprov ?? 0.0),
+                'cmi'   => $anUcsOutprov > 0 ? ((float)($ipdRawRights->adjrw_ucs_outprov ?? 0.0) / $anUcsOutprov) : 0,
+                'inc'   => (float)($ipdRawRights->inc_ucs_outprov ?? 0.0),
+            ],
+            'ofc'         => [
+                'ans'   => (int)($ipdRawRights->an_ofc ?? 0),
+                'los'   => (int)($ipdRawRights->los_ofc ?? 0),
+                'adjrw' => (float)($ipdRawRights->adjrw_ofc ?? 0.0),
+                'cmi'   => (int)($ipdRawRights->an_ofc ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_ofc ?? 0.0) / (int)$ipdRawRights->an_ofc) : 0,
+                'inc'   => (float)($ipdRawRights->inc_ofc ?? 0.0),
+            ],
+            'lgo'         => [
+                'ans'   => (int)($ipdRawRights->an_lgo ?? 0),
+                'los'   => (int)($ipdRawRights->los_lgo ?? 0),
+                'adjrw' => (float)($ipdRawRights->adjrw_lgo ?? 0.0),
+                'cmi'   => (int)($ipdRawRights->an_lgo ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_lgo ?? 0.0) / (int)$ipdRawRights->an_lgo) : 0,
+                'inc'   => (float)($ipdRawRights->inc_lgo ?? 0.0),
+            ],
+            'sss'         => [
+                'ans'   => (int)($ipdRawRights->an_sss ?? 0),
+                'los'   => (int)($ipdRawRights->los_sss ?? 0),
+                'adjrw' => (float)($ipdRawRights->adjrw_sss ?? 0.0),
+                'cmi'   => (int)($ipdRawRights->an_sss ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_sss ?? 0.0) / (int)$ipdRawRights->an_sss) : 0,
+                'inc'   => (float)($ipdRawRights->inc_sss ?? 0.0),
+            ],
+            'other'       => [
+                'ans'   => (int)($ipdRawRights->an_other ?? 0),
+                'los'   => (int)($ipdRawRights->los_other ?? 0),
+                'adjrw' => (float)($ipdRawRights->adjrw_other ?? 0.0),
+                'cmi'   => (int)($ipdRawRights->an_other ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_other ?? 0.0) / (int)$ipdRawRights->an_other) : 0,
+                'inc'   => (float)($ipdRawRights->inc_other ?? 0.0),
+            ],
+        ];
+
+        // 5.8.3 Operation 6 Rights Summary (Tab 3: Surgery)
+        $opRawRights = DB::table('opoh_operation_service')
+            ->whereBetween('operation_date', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(case_ucs_incup), 0)   AS case_ucs_incup,
+                COALESCE(SUM(case_ucs_outprov), 0) AS case_ucs_outprov,
+                COALESCE(SUM(case_ofc), 0)         AS case_ofc,
+                COALESCE(SUM(case_lgo), 0)         AS case_lgo,
+                COALESCE(SUM(case_sss), 0)         AS case_sss,
+                COALESCE(SUM(case_other), 0)       AS case_other,
+                COALESCE(SUM(case_total), 0)       AS case_total,
+
+                COALESCE(SUM(adjrw_total), 0)      AS adjrw_total,
+
+                COALESCE(SUM(inc_ucs_incup), 0)    AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)  AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)          AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)          AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)          AS inc_sss,
+                COALESCE(SUM(inc_other), 0)        AS inc_other,
+                COALESCE(SUM(inc_total), 0)        AS inc_total
+            ")
+            ->first();
+
+        $opCasesTotal = (int)($opRawRights->case_total ?? 0);
+        $opIncTotal   = (float)($opRawRights->inc_total ?? 0.0);
+        $opRwTotal    = (float)($opRawRights->adjrw_total ?? 0.0);
+
+        $caseUcsIncup   = (int)($opRawRights->case_ucs_incup ?? 0);
+        $caseUcsOutprov = (int)($opRawRights->case_ucs_outprov ?? 0);
+        $opRightsSum    = $caseUcsIncup + $caseUcsOutprov + (int)($opRawRights->case_ofc ?? 0) + (int)($opRawRights->case_lgo ?? 0) + (int)($opRawRights->case_sss ?? 0) + (int)($opRawRights->case_other ?? 0);
+
+        if ($opRightsSum == 0 && $opCasesTotal > 0) {
+            $caseUcsIncup = $opCasesTotal;
+        }
+
+        $opRightsRows = [
+            'ucs_incup'   => ['cases' => $caseUcsIncup, 'inc' => (float)($opRawRights->inc_ucs_incup ?? 0.0)],
+            'ucs_outprov' => ['cases' => $caseUcsOutprov, 'inc' => (float)($opRawRights->inc_ucs_outprov ?? 0.0)],
+            'ofc'         => ['cases' => (int)($opRawRights->case_ofc ?? 0), 'inc' => (float)($opRawRights->inc_ofc ?? 0.0)],
+            'lgo'         => ['cases' => (int)($opRawRights->case_lgo ?? 0), 'inc' => (float)($opRawRights->inc_lgo ?? 0.0)],
+            'sss'         => ['cases' => (int)($opRawRights->case_sss ?? 0), 'inc' => (float)($opRawRights->inc_sss ?? 0.0)],
+            'other'       => ['cases' => (int)($opRawRights->case_other ?? 0), 'inc' => (float)($opRawRights->inc_other ?? 0.0)],
+        ];
+
+        // 5.8.4 Hospital Breakdown for Modal Popup on Scheme/Card Click
+        $allModalHospitals = [
+            '10985' => ['name' => 'รพ.ชานุมาน', 'type' => 'รพช.'],
+            '10986' => ['name' => 'รพ.ปทุมราชวงศา', 'type' => 'รพช.'],
+            '10987' => ['name' => 'รพ.พนา', 'type' => 'รพช.'],
+            '10988' => ['name' => 'รพ.เสนางคนิคม', 'type' => 'รพช.'],
+            '10989' => ['name' => 'รพ.หัวตะพาน', 'type' => 'รพช.'],
+            '10990' => ['name' => 'รพ.ลืออำนาจ', 'type' => 'รพช.'],
+            '10703' => ['name' => 'รพ.อำนาจเจริญ', 'type' => 'รพ.แม่ข่าย'],
+        ];
+        $allHospCodes = array_keys($allModalHospitals);
+
+        // A. OPD Breakdown by Hospcode & Right
+        $opdHospRaw = DB::table('opoh_opd_service')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $allHospCodes)
+            ->groupBy('hospcode')
+            ->selectRaw("
+                hospcode,
+                COALESCE(SUM(visit_ucs_incup), 0)   AS v_ucs_incup,
+                COALESCE(SUM(visit_ucs_outprov), 0) AS v_ucs_outprov,
+                COALESCE(SUM(visit_ucs), 0)         AS v_ucs_total,
+                COALESCE(SUM(visit_ofc), 0)         AS v_ofc,
+                COALESCE(SUM(visit_lgo), 0)         AS v_lgo,
+                COALESCE(SUM(visit_sss), 0)         AS v_sss,
+                COALESCE(SUM(visit_other), 0)       AS v_other,
+                COALESCE(SUM(visit_total), 0)       AS v_total,
+
+                COALESCE(SUM(inc_ucs_incup), 0)     AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)   AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)           AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)           AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)           AS inc_sss,
+                COALESCE(SUM(inc_other), 0)         AS inc_other,
+                COALESCE(SUM(inc_total), 0)         AS inc_total
+            ")
+            ->get()
+            ->keyBy('hospcode');
+
+        $opdRightsByHosp = [];
+        foreach (array_keys($rightsConfig) as $rKey) {
+            $opdRightsByHosp[$rKey] = [];
+            foreach ($allModalHospitals as $hcode => $hInfo) {
+                $raw = $opdHospRaw[$hcode] ?? null;
+                $v = 0;
+                $inc = 0.0;
+                if ($raw) {
+                    $hospVTotal = (int)$raw->v_total;
+                    $hospIncTotal = (float)$raw->inc_total;
+                    $sumHospInc = (float)$raw->inc_ucs_incup + (float)$raw->inc_ucs_outprov + (float)$raw->inc_ofc + (float)$raw->inc_lgo + (float)$raw->inc_sss + (float)$raw->inc_other;
+
+                    if ($rKey === 'ucs_incup') {
+                        $v = (int)$raw->v_ucs_incup;
+                        $inc = (float)$raw->inc_ucs_incup;
+                        if ($v == 0 && (int)$raw->v_ucs_outprov == 0 && (int)$raw->v_ucs_total > 0) {
+                            $v = (int)$raw->v_ucs_total;
+                        }
+                    } elseif ($rKey === 'ucs_outprov') {
+                        $v = (int)$raw->v_ucs_outprov;
+                        $inc = (float)$raw->inc_ucs_outprov;
+                    } elseif ($rKey === 'ofc') {
+                        $v = (int)$raw->v_ofc;
+                        $inc = (float)$raw->inc_ofc;
+                    } elseif ($rKey === 'lgo') {
+                        $v = (int)$raw->v_lgo;
+                        $inc = (float)$raw->inc_lgo;
+                    } elseif ($rKey === 'sss') {
+                        $v = (int)$raw->v_sss;
+                        $inc = (float)$raw->inc_sss;
+                    } elseif ($rKey === 'other') {
+                        $v = (int)$raw->v_other;
+                        $inc = (float)$raw->inc_other;
+                    }
+
+                    // Fallback to proportional calculation if rights income is 0 but hospital has recorded income
+                    if ($inc == 0 && $v > 0 && $hospIncTotal > 0 && $hospVTotal > 0 && $sumHospInc == 0) {
+                        $inc = round($hospIncTotal * ($v / $hospVTotal), 2);
+                    }
+                }
+                $opdRightsByHosp[$rKey][$hcode] = [
+                    'hospcode' => $hcode,
+                    'name'     => $hInfo['name'],
+                    'type'     => $hInfo['type'],
+                    'visits'   => $v,
+                    'inc'      => $inc,
+                ];
+            }
+        }
+
+        // B. IPD Breakdown by Hospcode & Right
+        $ipdHospRaw = DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $allHospCodes)
+            ->groupBy('hospcode')
+            ->selectRaw("
+                hospcode,
+                COALESCE(SUM(an_ucs_incup), 0)        AS an_ucs_incup,
+                COALESCE(SUM(an_ucs_outprov), 0)      AS an_ucs_outprov,
+                COALESCE(SUM(an_ofc), 0)              AS an_ofc,
+                COALESCE(SUM(an_lgo), 0)              AS an_lgo,
+                COALESCE(SUM(an_sss), 0)              AS an_sss,
+                COALESCE(SUM(an_other), 0)            AS an_other,
+                COALESCE(SUM(an_total), 0)            AS an_total,
+
+                COALESCE(SUM(admdate_ucs_incup), 0)   AS los_ucs_incup,
+                COALESCE(SUM(admdate_ucs_outprov), 0) AS los_ucs_outprov,
+                COALESCE(SUM(admdate_ofc), 0)         AS los_ofc,
+                COALESCE(SUM(admdate_lgo), 0)         AS los_lgo,
+                COALESCE(SUM(admdate_sss), 0)         AS los_sss,
+                COALESCE(SUM(admdate_other), 0)       AS los_other,
+                COALESCE(SUM(admdate_total), 0)       AS los_total,
+
+                COALESCE(SUM(adjrw_ucs_incup), 0)     AS adjrw_ucs_incup,
+                COALESCE(SUM(adjrw_ucs_outprov), 0)   AS adjrw_ucs_outprov,
+                COALESCE(SUM(adjrw_ofc), 0)           AS adjrw_ofc,
+                COALESCE(SUM(adjrw_lgo), 0)           AS adjrw_lgo,
+                COALESCE(SUM(adjrw_sss), 0)           AS adjrw_sss,
+                COALESCE(SUM(adjrw_other), 0)         AS adjrw_other,
+                COALESCE(SUM(adjrw_total), 0)         AS adjrw_total,
+
+                COALESCE(SUM(inc_ucs_incup), 0)       AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)     AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)             AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)             AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)             AS inc_sss,
+                COALESCE(SUM(inc_other), 0)           AS inc_other,
+                COALESCE(SUM(inc_total), 0)           AS inc_total
+            ")
+            ->get()
+            ->keyBy('hospcode');
+
+        $ipdRightsByHosp = [];
+        foreach (array_keys($rightsConfig) as $rKey) {
+            $ipdRightsByHosp[$rKey] = [];
+            $rate = $rightsConfig[$rKey]['rate'] ?? 0;
+            foreach ($allModalHospitals as $hcode => $hInfo) {
+                $raw = $ipdHospRaw[$hcode] ?? null;
+                $ans = 0;
+                $los = 0;
+                $adjrw = 0.0;
+                $inc = 0.0;
+                if ($raw) {
+                    if ($rKey === 'ucs_incup') {
+                        $ans = (int)$raw->an_ucs_incup;
+                        $los = (int)$raw->los_ucs_incup;
+                        $adjrw = (float)$raw->adjrw_ucs_incup;
+                        $inc = (float)$raw->inc_ucs_incup;
+                        $sumOtherRights = (int)$raw->an_ucs_outprov + (int)$raw->an_ofc + (int)$raw->an_lgo + (int)$raw->an_sss + (int)$raw->an_other;
+                        if ($ans == 0 && $sumOtherRights == 0 && (int)$raw->an_total > 0) {
+                            $ans = (int)$raw->an_total;
+                            $los = (int)$raw->los_total;
+                            $adjrw = (float)$raw->adjrw_total;
+                            $inc = (float)$raw->inc_total;
+                        }
+                    } elseif ($rKey === 'ucs_outprov') {
+                        $ans = (int)$raw->an_ucs_outprov;
+                        $los = (int)$raw->los_ucs_outprov;
+                        $adjrw = (float)$raw->adjrw_ucs_outprov;
+                        $inc = (float)$raw->inc_ucs_outprov;
+                    } elseif ($rKey === 'ofc') {
+                        $ans = (int)$raw->an_ofc;
+                        $los = (int)$raw->los_ofc;
+                        $adjrw = (float)$raw->adjrw_ofc;
+                        $inc = (float)$raw->inc_ofc;
+                    } elseif ($rKey === 'lgo') {
+                        $ans = (int)$raw->an_lgo;
+                        $los = (int)$raw->los_lgo;
+                        $adjrw = (float)$raw->adjrw_lgo;
+                        $inc = (float)$raw->inc_lgo;
+                    } elseif ($rKey === 'sss') {
+                        $ans = (int)$raw->an_sss;
+                        $los = (int)$raw->los_sss;
+                        $adjrw = (float)$raw->adjrw_sss;
+                        $inc = (float)$raw->inc_sss;
+                    } elseif ($rKey === 'other') {
+                        $ans = (int)$raw->an_other;
+                        $los = (int)$raw->los_other;
+                        $adjrw = (float)$raw->adjrw_other;
+                        $inc = (float)$raw->inc_other;
+                    }
+                }
+                $cmi = $ans > 0 ? ($adjrw / $ans) : 0.0;
+                $estComp = ($rate > 0) ? ($adjrw * $rate) : 0.0;
+                $ipdRightsByHosp[$rKey][$hcode] = [
+                    'hospcode' => $hcode,
+                    'name'     => $hInfo['name'],
+                    'type'     => $hInfo['type'],
+                    'ans'      => $ans,
+                    'los'      => $los,
+                    'adjrw'    => $adjrw,
+                    'cmi'      => $cmi,
+                    'est_comp' => $estComp,
+                    'inc'      => $inc,
+                ];
+            }
+        }
+
+        // C. Surgery Breakdown by Hospcode & Right
+        $opHospRaw = DB::table('opoh_operation_service')
+            ->whereBetween('operation_date', [$current_start, $current_end])
+            ->whereIn('hospcode', $allHospCodes)
+            ->groupBy('hospcode')
+            ->selectRaw("
+                hospcode,
+                COALESCE(SUM(case_ucs_incup), 0)   AS case_ucs_incup,
+                COALESCE(SUM(case_ucs_outprov), 0) AS case_ucs_outprov,
+                COALESCE(SUM(case_ofc), 0)         AS case_ofc,
+                COALESCE(SUM(case_lgo), 0)         AS case_lgo,
+                COALESCE(SUM(case_sss), 0)         AS case_sss,
+                COALESCE(SUM(case_other), 0)       AS case_other,
+                COALESCE(SUM(case_total), 0)       AS case_total,
+
+                COALESCE(SUM(adjrw_total), 0)      AS adjrw_total,
+
+                COALESCE(SUM(inc_ucs_incup), 0)    AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)  AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)          AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)          AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)          AS inc_sss,
+                COALESCE(SUM(inc_other), 0)        AS inc_other,
+                COALESCE(SUM(inc_total), 0)        AS inc_total
+            ")
+            ->get()
+            ->keyBy('hospcode');
+
+        $opRightsByHosp = [];
+        foreach (array_keys($rightsConfig) as $rKey) {
+            $opRightsByHosp[$rKey] = [];
+            foreach ($allModalHospitals as $hcode => $hInfo) {
+                $raw = $opHospRaw[$hcode] ?? null;
+                $cases = 0;
+                $inc = 0.0;
+                $adjrw = 0.0;
+                if ($raw) {
+                    if ($rKey === 'ucs_incup') {
+                        $cases = (int)$raw->case_ucs_incup;
+                        $inc = (float)$raw->inc_ucs_incup;
+                        $adjrw = (float)$raw->adjrw_total;
+                        $sumOther = (int)$raw->case_ucs_outprov + (int)$raw->case_ofc + (int)$raw->case_lgo + (int)$raw->case_sss + (int)$raw->case_other;
+                        if ($cases == 0 && $sumOther == 0 && (int)$raw->case_total > 0) {
+                            $cases = (int)$raw->case_total;
+                            $inc = (float)$raw->inc_total;
+                        }
+                    } elseif ($rKey === 'ucs_outprov') {
+                        $cases = (int)$raw->case_ucs_outprov;
+                        $inc = (float)$raw->inc_ucs_outprov;
+                    } elseif ($rKey === 'ofc') {
+                        $cases = (int)$raw->case_ofc;
+                        $inc = (float)$raw->inc_ofc;
+                    } elseif ($rKey === 'lgo') {
+                        $cases = (int)$raw->case_lgo;
+                        $inc = (float)$raw->inc_lgo;
+                    } elseif ($rKey === 'sss') {
+                        $cases = (int)$raw->case_sss;
+                        $inc = (float)$raw->inc_sss;
+                    } elseif ($rKey === 'other') {
+                        $cases = (int)$raw->case_other;
+                        $inc = (float)$raw->inc_other;
+                    }
+                }
+                $opRightsByHosp[$rKey][$hcode] = [
+                    'hospcode' => $hcode,
+                    'name'     => $hInfo['name'],
+                    'type'     => $hInfo['type'],
+                    'cases'    => $cases,
+                    'inc'      => $inc,
+                    'adjrw'    => $adjrw,
+                ];
+            }
+        }
+
+        $allHospitalsJson = $allModalHospitals;
 
         // 6. Doctor Roster for Management Modal
         $doctors = OpohDoctor::orderBy('spclty_code')->orderBy('id')->get();
@@ -445,6 +1174,7 @@ class DashboardOpohController extends Controller
         $thaiDateRangeText = $formatThaiDate($current_start) . ' ถึง ' . $formatThaiDate($current_end);
 
         return view('dashboard_opoh', compact(
+            'active_tab',
             'budget_year_select',
             'budget_year',
             'fiscal_start',
@@ -461,6 +1191,8 @@ class DashboardOpohController extends Controller
             'sumPast',
             'sumCurrent',
             'sumCumulative',
+            'sumTelemed',
+            'sumOnsite',
             'summary',
             'fiscalSummary',
             'ipdSpecialtyStats',
@@ -473,7 +1205,33 @@ class DashboardOpohController extends Controller
             'ipdSumRw',
             'ipdSumInc',
             'opdMonthlyChart',
-            'ipdMonthlyChart'
+            'ipdMonthlyChart',
+            'opSummary',
+            'opSumCumulative',
+            'topOpdDiagnoses',
+            'topIpdDiagnoses',
+            'topOperations',
+            'opMonthlyChart',
+            'surgicalSpecialties',
+            'opSpecialtyRows',
+            'opSpecColTotals',
+            'rightsConfig',
+            'opdRightsRows',
+            'opdVisitsTotal',
+            'opdIncTotal',
+            'ipdRightsRows',
+            'ipdAnsTotal',
+            'ipdLosTotal',
+            'ipdRwTotal',
+            'ipdIncTotal',
+            'opRightsRows',
+            'opCasesTotal',
+            'opIncTotal',
+            'opRwTotal',
+            'allModalHospitals',
+            'opdRightsByHosp',
+            'ipdRightsByHosp',
+            'opRightsByHosp'
         ));
     }
 

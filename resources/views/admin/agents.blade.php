@@ -222,6 +222,20 @@
                                                 <i class="fa-solid fa-spinner fa-spin me-1"></i> มีคำสั่งค้าง
                                             </div>
                                         @endif
+
+                                        @if(!empty($item['last_error']))
+                                            <div class="mt-1">
+                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5 cursor-pointer btn-view-agent-status" data-hcode="{{ $item['hcode'] }}" data-name="{{ $item['name'] }}" style="font-size: 0.68rem;" title="{{ $item['last_error'] }}">
+                                                    <i class="fa-solid fa-triangle-exclamation text-danger me-1"></i> พบ Error
+                                                </span>
+                                            </div>
+                                        @elseif($item['hcode'] === '10703' && $item['last_opd_date'] && strtotime($item['last_opd_sync']) < strtotime('-7 days'))
+                                            <div class="mt-1">
+                                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-2 py-0.5 cursor-pointer btn-view-agent-status" data-hcode="{{ $item['hcode'] }}" data-name="{{ $item['name'] }}" style="font-size: 0.68rem;" title="ข้อมูล OPD หยุดซิงค์ตั้งแต่ 18 ก.ย.">
+                                                    <i class="fa-solid fa-clock-rotate-left text-warning me-1"></i> OPD หยุดซิงค์
+                                                </span>
+                                            </div>
+                                        @endif
                                     </td>
 
                                     <!-- Zero-Port Reverse EMR Channel -->
@@ -270,6 +284,9 @@
                                     <!-- Actions -->
                                     <td class="text-center py-3 px-3">
                                         <div class="btn-group shadow-sm" style="border-radius: 10px;">
+                                            <button type="button" class="btn btn-sm btn-light border text-primary fw-semibold btn-view-agent-status" data-hcode="{{ $item['hcode'] }}" data-name="{{ $item['name'] }}" title="ตรวจสอบสถานะ, Error และ Log ล่าสุด">
+                                                <i class="fa-solid fa-file-waveform text-primary"></i> เช็ค Log
+                                            </button>
                                             <button type="button" class="btn btn-sm btn-light border text-warning" onclick="handleRemoteUpdate('{{ $item['hcode'] }}', '{{ $item['name'] }}')" title="สั่งให้อัปเดต Client เป็นเวอร์ชั่นล่าสุดจากเซิร์ฟเวอร์">
                                                 <i class="fa-solid fa-cloud-arrow-up text-warning"></i> อัปเดต
                                             </button>
@@ -910,6 +927,45 @@
     </div>
 </div>
 
+<!-- Modal ตรวจสอบสถานะและ Log ประจำโรงพยาบาล -->
+<div class="modal fade" id="agentStatusModal" tabindex="-1" aria-labelledby="agentStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="p-2 bg-primary bg-opacity-10 text-primary rounded-3 fs-5" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-file-waveform"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0" id="agentStatusModalTitle">
+                            ตรวจสอบสถานะ & Log ประจำโรงพยาบาล
+                        </h5>
+                        <div class="text-muted small" id="agentStatusModalSubtitle">-</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3" id="agentStatusModalContent">
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-spinner fa-spin fs-2 text-primary mb-2"></i>
+                    <div class="text-muted small">กำลังดึงข้อมูลสถานะและ Log จากระบบ...</div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 px-4 pb-4 d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    <i class="fa-solid fa-circle-info text-info me-1"></i> Heartbeat และ Log ส่งมาจาก Agent ทุก 1 นาที
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold" id="btnForceSyncThisHosp">
+                        <i class="fa-solid fa-rotate me-1"></i> สั่ง Sync รพ. นี้ทันที
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light rounded-pill px-3" data-bs-dismiss="modal">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal ดูและคัดลอก API Token -->
 <div class="modal fade" id="viewTokenModal" tabindex="-1" aria-labelledby="viewTokenModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -1545,6 +1601,203 @@ $('#formGlobalSchedule').on('submit', function(e) {
             btn.prop('disabled', false).html('<i class="fa-solid fa-floppy-disk me-1.5"></i> บันทึกรอบเวลาส่งข้อมูลอัตโนมัติ');
             let errMsg = xhr.responseJSON?.message || 'ไม่สามารถบันทึกรอบเวลาได้';
             Swal.fire('เกิดข้อผิดพลาด', errMsg, 'error');
+        }
+    });
+});
+
+// View Agent Status & Logs Modal
+$(document).on('click', '.btn-view-agent-status', function() {
+    const hcode = $(this).data('hcode');
+    const name = $(this).data('name');
+
+    $('#agentStatusModalTitle').text(`สถานะและบันทึกข้อผิดพลาด (Agent Log & Status)`);
+    $('#agentStatusModalSubtitle').text(`${name} (รหัส รพ. ${hcode})`);
+    $('#agentStatusModalContent').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary mb-2" role="status"></div>
+            <div class="text-muted small">กำลังดึงข้อมูลสถานะและ Log จากระบบ...</div>
+        </div>
+    `);
+    $('#btnForceSyncThisHosp').data('hcode', hcode).data('name', name);
+    $('#agentStatusModal').modal('show');
+
+    $.ajax({
+        url: `/manage/agents/${hcode}/status-logs`,
+        method: 'GET',
+        success: function(res) {
+            renderAgentStatusModal(res);
+        },
+        error: function(xhr) {
+            $('#agentStatusModalContent').html(`
+                <div class="alert alert-danger mb-0">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> ไม่สามารถดึงข้อมูลสถานะของโรงพยาบาลนี้ได้
+                </div>
+            `);
+        }
+    });
+});
+
+function renderAgentStatusModal(res) {
+    const hb = res.heartbeat || {};
+    const sync = res.sync_info || {};
+    const isOnline = res.is_online;
+    const lastErr = res.last_error;
+    const logs = res.recent_logs || [];
+
+    let errHtml = '';
+    if (lastErr) {
+        const errMsg = typeof lastErr === 'object' ? lastErr.error : lastErr;
+        const errTime = typeof lastErr === 'object' && lastErr.timestamp ? `(${lastErr.timestamp})` : '';
+        errHtml = `
+            <div class="alert alert-danger border-danger border-opacity-25 rounded-3 mb-3 p-3">
+                <div class="d-flex align-items-center gap-2 fw-bold text-danger mb-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>ข้อผิดพลาดล่าสุดที่ Agent รายงาน ${errTime}</span>
+                </div>
+                <div class="font-monospace small bg-white p-2 rounded border text-danger text-break mt-1" style="max-height: 120px; overflow-y: auto;">
+                    ${errMsg}
+                </div>
+            </div>
+        `;
+    } else if (res.hcode === '10703' && sync.opd_date && (!sync.opd_sync || new Date(sync.opd_sync) < new Date(Date.now() - 7*86400000))) {
+        errHtml = `
+            <div class="alert alert-warning border-warning border-opacity-25 rounded-3 mb-3 p-3">
+                <div class="d-flex align-items-center gap-2 fw-bold text-warning mb-1">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>ตรวจพบข้อมูล OPD ล่าสุดหยุดซิงค์ (วันที่ล่าสุด: ${sync.opd_date})</span>
+                </div>
+                <div class="small text-secondary mt-1">
+                    ข้อมูล IPD และ Refer ซิงค์ได้ปกติ แต่วันที่ของ OPD ค้าง เกิดจากคำสั่ง Query OPD เดิมมีขนาดตารางประวัติสะสม 20 ล้านแถว ทำให้เกิด Timeout ตอนประมวลผลบนเซิร์ฟเวอร์ HOSxP ของ รพ.อำนาจเจริญ
+                </div>
+            </div>
+        `;
+    }
+
+    let logsRowsHtml = '';
+    if (logs.length > 0) {
+        logs.forEach(l => {
+            const badgeClass = l.level === 'ERROR' ? 'bg-danger text-white' : (l.level === 'WARNING' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-10 text-primary');
+            logsRowsHtml += `
+                <tr>
+                    <td class="font-monospace text-muted small text-nowrap py-1 px-2" style="font-size: 0.72rem;">${l.timestamp || '-'}</td>
+                    <td class="py-1 px-2"><span class="badge ${badgeClass}" style="font-size: 0.65rem;">${l.level || 'INFO'}</span></td>
+                    <td class="py-1 px-2 small text-dark text-break" style="font-size: 0.78rem;">${l.message || ''}</td>
+                </tr>
+            `;
+        });
+    } else {
+        logsRowsHtml = `
+            <tr>
+                <td colspan="3" class="text-center py-4 text-muted small">
+                    <i class="fa-solid fa-inbox fs-4 d-block opacity-25 mb-1"></i>
+                    ยังไม่มีรายการ Log ล่าสุดจาก Agent หรือ Agent ยังไม่เชื่อมต่อ
+                </td>
+            </tr>
+        `;
+    }
+
+    const html = `
+        <!-- Status Summary Cards -->
+        <div class="row g-2 mb-3">
+            <div class="col-6 col-md-3">
+                <div class="p-2.5 bg-light rounded-3 border h-100">
+                    <span class="text-secondary small fw-semibold">สถานะเชื่อมต่อ:</span>
+                    <div class="mt-1">
+                        ${isOnline 
+                            ? `<span class="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-1"><i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> ออนไลน์ (v${hb.version || '1.0.0'})</span>` 
+                            : `<span class="badge bg-secondary bg-opacity-10 text-secondary fw-bold px-2 py-1"><i class="fa-solid fa-circle text-muted" style="font-size: 0.45rem;"></i> ยังไม่เชื่อมต่อ</span>`
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2.5 bg-light rounded-3 border h-100">
+                    <span class="text-secondary small fw-semibold">ฐานข้อมูล HOSxP:</span>
+                    <div class="fw-bold mt-1 text-truncate small" title="${hb.db_status || '-'}">
+                        ${hb.db_status === 'connected' ? '<span class="text-success"><i class="fa-solid fa-database me-1"></i> เชื่อมต่อแล้ว</span>' : `<span class="text-danger"><i class="fa-solid fa-database me-1"></i> ${hb.db_status || 'ไม่พบข้อมูล'}</span>`}
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2.5 bg-light rounded-3 border h-100">
+                    <span class="text-secondary small fw-semibold">ข้อมูล OPD ล่าสุด:</span>
+                    <div class="fw-bold mt-1 small ${sync.opd_date ? 'text-primary' : 'text-muted'}">
+                        ${sync.opd_date || '- ยังไม่มีข้อมูล -'}
+                    </div>
+                    <div class="text-muted" style="font-size: 0.68rem;">${sync.opd_sync ? 'ซิงค์: ' + sync.opd_sync : ''}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2.5 bg-light rounded-3 border h-100">
+                    <span class="text-secondary small fw-semibold">ข้อมูล IPD ล่าสุด:</span>
+                    <div class="fw-bold mt-1 small ${sync.ipd_date ? 'text-danger' : 'text-muted'}">
+                        ${sync.ipd_date || '- ยังไม่มีข้อมูล -'}
+                    </div>
+                    <div class="text-muted" style="font-size: 0.68rem;">${sync.ipd_sync ? 'ซิงค์: ' + sync.ipd_sync : ''}</div>
+                </div>
+            </div>
+        </div>
+
+        ${errHtml}
+
+        <!-- Logs Table -->
+        <div class="card border rounded-3 overflow-hidden shadow-sm">
+            <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+                <span class="fw-bold small text-dark"><i class="fa-solid fa-terminal me-1 text-primary"></i> บันทึกเหตุการณ์ล่าสุด (Live Agent Logs)</span>
+                <span class="badge bg-secondary bg-opacity-25 text-dark font-monospace" style="font-size: 0.7rem;">${logs.length} รายการ</span>
+            </div>
+            <div class="table-responsive" style="max-height: 250px;">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light sticky-top" style="font-size: 0.72rem;">
+                        <tr>
+                            <th style="width: 130px;">เวลา</th>
+                            <th style="width: 70px;">ระดับ</th>
+                            <th>ข้อความ Log</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${logsRowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    $('#agentStatusModalContent').html(html);
+}
+
+// Force Sync button inside modal
+$('#btnForceSyncThisHosp').on('click', function() {
+    const hcode = $(this).data('hcode');
+    const name = $(this).data('name');
+    if (!hcode) return;
+
+    Swal.fire({
+        title: `สั่ง Sync ข้อมูลด่วน?`,
+        text: `ระบบจะส่งคำสั่งไปยัง Agent ของ ${name} (${hcode}) ให้ดึงและส่งข้อมูลทันที`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยันสั่ง Sync',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#18a573'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('manage.agents.remote-sync') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    target: hcode,
+                    sync_type: 'all'
+                },
+                success: function(res) {
+                    Swal.fire('ส่งคำสั่งสำเร็จ!', res.message, 'success');
+                    $('#agentStatusModal').modal('hide');
+                },
+                error: function(xhr) {
+                    Swal.fire('เกิดข้อผิดพลาด', xhr.responseJSON?.message || 'ไม่สามารถส่งคำสั่งได้', 'error');
+                }
+            });
         }
     });
 });

@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // OPOH Ingest API
     Route::post('/opoh/opd', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestOpd']);
     Route::post('/opoh/ipd', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestIpd']);
+    Route::post('/opoh/operation', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestOperation']);
 });
 
 // Public / Token-less Lookup & Download Route for Agent
@@ -49,6 +50,3 @@ Route::get('/agent/opoh-doctors', [\App\Http\Controllers\Api\OpohApiController::
 Route::get('/agent/download-latest', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadExe']);
 
 Route::post('/death-data', [\App\Http\Controllers\Api\DeathApiController::class, 'getDeathData']);
- 
-
-

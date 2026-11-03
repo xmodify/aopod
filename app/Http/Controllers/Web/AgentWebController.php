@@ -51,6 +51,9 @@ class AgentWebController extends Controller
                 $agentUrl = "http://{$host}:{$port}";
             }
 
+            $lastErrObj = Cache::get("agent_last_error_{$hcode}") ?? ($heartbeat['last_error'] ?? null);
+            $lastErrMsg = is_array($lastErrObj) ? ($lastErrObj['error'] ?? null) : $lastErrObj;
+
             $agentList[] = [
                 'hospital'      => $hosp,
                 'hcode'         => $hcode,
@@ -58,6 +61,7 @@ class AgentWebController extends Controller
                 'is_online'     => $isOnline,
                 'heartbeat'     => $heartbeat,
                 'agent_url'     => $agentUrl,
+                'last_error'    => $lastErrMsg,
                 'has_token'     => !empty($hosp->token_api) || ($tokenObj !== null),
                 'token_api'     => $hosp->token_api ?? ($tokenObj->token ?? ''),
                 'token_id'      => $tokenObj->id ?? null,
@@ -361,21 +365,44 @@ FROM (
 	LEFT JOIN pttype p ON p.pttype = ov.pttype
 	LEFT JOIN ovstist oi ON oi.ovstist = ov.ovstist
 	LEFT JOIN (
-		SELECT vn,
-			MAX(CASE WHEN hospmain = '{{HOSPCODE}}' THEN 'Y' END) AS is_incup,
-			MAX(CASE WHEN hospmain != '{{HOSPCODE}}' AND hospmain IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS is_inprov,
-			MAX(CASE WHEN hospmain NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS is_outprov,
-			MAX(CASE WHEN auth_code LIKE 'EP%' THEN 'Y' END) AS is_ep
-		FROM visit_pttype
-		GROUP BY vn
+		SELECT vp.vn,
+			MAX(CASE WHEN vp.hospmain = '{{HOSPCODE}}' THEN 'Y' END) AS is_incup,
+			MAX(CASE WHEN vp.hospmain != '{{HOSPCODE}}' AND vp.hospmain IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS is_inprov,
+			MAX(CASE WHEN vp.hospmain NOT IN ({{PROVINCE_HOSPCODES}}) THEN 'Y' END) AS is_outprov,
+			MAX(CASE WHEN vp.auth_code LIKE 'EP%' THEN 'Y' END) AS is_ep
+		FROM visit_pttype vp
+		JOIN ovst ov_sub ON ov_sub.vn = vp.vn
+		WHERE ov_sub.vstdate BETWEEN ? AND ?
+		GROUP BY vp.vn
 	) vp ON vp.vn = ov.vn
-	LEFT JOIN (SELECT DISTINCT vn FROM dtmain) dt ON dt.vn = ov.vn
-	LEFT JOIN (SELECT DISTINCT vn FROM physic_list) pl ON pl.vn = ov.vn
-	LEFT JOIN (SELECT DISTINCT vn FROM health_med_service) hm ON hm.vn = ov.vn
-	LEFT JOIN (SELECT DISTINCT vn FROM person_anc_service) anc ON anc.vn = ov.vn
+	LEFT JOIN (
+		SELECT DISTINCT dt.vn 
+		FROM dtmain dt 
+		JOIN ovst ov_dt ON ov_dt.vn = dt.vn 
+		WHERE ov_dt.vstdate BETWEEN ? AND ?
+	) dt ON dt.vn = ov.vn
+	LEFT JOIN (
+		SELECT DISTINCT pl.vn 
+		FROM physic_list pl 
+		JOIN ovst ov_pl ON ov_pl.vn = pl.vn 
+		WHERE ov_pl.vstdate BETWEEN ? AND ?
+	) pl ON pl.vn = ov.vn
+	LEFT JOIN (
+		SELECT DISTINCT hm.vn 
+		FROM health_med_service hm 
+		JOIN ovst ov_hm ON ov_hm.vn = hm.vn 
+		WHERE ov_hm.vstdate BETWEEN ? AND ?
+	) hm ON hm.vn = ov.vn
+	LEFT JOIN (
+		SELECT DISTINCT anc.vn 
+		FROM person_anc_service anc 
+		JOIN ovst ov_anc ON ov_anc.vn = anc.vn 
+		WHERE ov_anc.vstdate BETWEEN ? AND ?
+	) anc ON anc.vn = ov.vn
 	LEFT JOIN (
 		SELECT DISTINCT cid, appointment_date
 		FROM moph_appointment_list
+		WHERE appointment_date BETWEEN ? AND ?
 	) ma ON ma.cid = v.cid AND ma.appointment_date = ov.vstdate
 	WHERE ov.vstdate BETWEEN ? AND ?
 ) a
@@ -723,6 +750,55 @@ SQL,
         return response()->download($exePath, 'AOPOD-Agent.exe', [
             'Content-Type' => 'application/octet-stream',
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
+        ]);
+    }
+
+    /**
+     * Get live status, last error, and sync history logs for a hospital agent.
+     */
+    public function getAgentStatusLogs($hcode)
+    {
+        $hospital = Hospital::where('hospcode', $hcode)->first();
+        if (!$hospital) {
+            return response()->json(['status' => 'error', 'message' => 'Hospital not found'], 404);
+        }
+
+        $heartbeat = Cache::get("agent_heartbeat_{$hcode}");
+        $lastError = Cache::get("agent_last_error_{$hcode}");
+        if (!$lastError && !empty($heartbeat['last_error'])) {
+            $lastError = [
+                'error'     => $heartbeat['last_error'],
+                'timestamp' => $heartbeat['updated_at'] ?? now()->toDateTimeString(),
+            ];
+        }
+
+        $recentLogs = Cache::get("agent_log_history_{$hcode}") ?? ($heartbeat['recent_logs'] ?? []);
+
+        $lastOpd = Opd::where('hospcode', $hcode)->orderBy('vstdate', 'desc')->first(['vstdate', 'updated_at']);
+        $lastIpd = Ipd::where('hospcode', $hcode)->orderBy('dchdate', 'desc')->first(['dchdate', 'updated_at']);
+        $lastOp = DB::table('operation')->where('hospcode', $hcode)->orderBy('updated_at', 'desc')->first(['updated_at']);
+
+        $isOnline = false;
+        if ($heartbeat && !empty($heartbeat['updated_at'])) {
+            $isOnline = (time() - strtotime($heartbeat['updated_at'])) < 150;
+        }
+
+        return response()->json([
+            'status'      => 'success',
+            'hcode'       => $hcode,
+            'name'        => $hospital->name ?? $hospital->hospname ?? $hcode,
+            'is_online'   => $isOnline,
+            'heartbeat'   => $heartbeat,
+            'last_error'  => $lastError,
+            'recent_logs' => $recentLogs,
+            'sync_info'   => [
+                'opd_date' => $lastOpd->vstdate ?? null,
+                'opd_sync' => $lastOpd->updated_at ?? null,
+                'ipd_date' => $lastIpd->dchdate ?? null,
+                'ipd_sync' => $lastIpd->updated_at ?? null,
+                'op_sync'  => $lastOp->updated_at ?? null,
+            ],
+            'pending_task' => Cache::get("agent_remote_task_{$hcode}"),
         ]);
     }
 }
