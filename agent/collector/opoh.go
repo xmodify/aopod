@@ -453,6 +453,50 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		records = append(records, r)
 	}
 
+	// Check if any doctor had visits in ovst on dates where ALL visits were excluded as dialysis.
+	// Emitting a record with VisitTotal: 0 allows the central server to delete old ghost records.
+	seenDoctorDates := make(map[string]bool)
+	for _, rec := range records {
+		seenDoctorDates[fmt.Sprintf("%s|%d", rec.Vstdate, rec.DoctorID)] = true
+	}
+
+	zeroCheckQuery := fmt.Sprintf(`SELECT 
+		ov.vstdate,
+		COALESCE(d.cid, '') AS cid,
+		COALESCE(d.licenseno, '') AS licenseno
+	FROM ovst ov
+	JOIN doctor d ON d.code = ov.doctor
+	WHERE ov.vstdate BETWEEN ? AND ?
+	  AND (%s)
+	GROUP BY ov.vstdate, d.cid, d.licenseno`, matchWhere)
+
+	if zRows, err := db.Query(zeroCheckQuery, startDate, endDate); err == nil {
+		defer zRows.Close()
+		for zRows.Next() {
+			var zDate, zCid, zLic string
+			if err := zRows.Scan(&zDate, &zCid, &zLic); err == nil {
+				if len(zDate) >= 10 {
+					zDate = zDate[:10]
+				}
+				if doc, found := matchDoctor(zCid, zLic, cidMap, licMap); found {
+					dKey := fmt.Sprintf("%s|%d", zDate, doc.ID)
+					if !seenDoctorDates[dKey] {
+						records = append(records, OpohOpdRecord{
+							Vstdate:       zDate,
+							DoctorID:      doc.ID,
+							Licenseno:     doc.Licenseno,
+							SpcltyCode:    doc.SpcltyCode,
+							SpecialtyName: doc.SpecialtyName,
+							VisitTotal:    0,
+							HnTotal:       0,
+						})
+						seenDoctorDates[dKey] = true
+					}
+				}
+			}
+		}
+	}
+
 	return records, nil
 }
 

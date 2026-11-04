@@ -119,6 +119,18 @@ class OpohApiController extends Controller
                     $matchCriteria['doctor_id'] = $docId;
                 }
 
+                // If visit_total is 0 (e.g. all visits on this day were dialysis and excluded), delete old ghost record
+                if ((int)($record['visit_total'] ?? 0) === 0) {
+                    OpohOpdService::where($matchCriteria)->delete();
+                    OpohOpdDiagnosis::where('hospcode', $hospcode)
+                        ->where('vstdate', $record['vstdate'])
+                        ->where('spclty_code', $record['spclty_code'])
+                        ->when($docId, fn($q) => $q->where('doctor_id', $docId))
+                        ->delete();
+                    $inserted++;
+                    continue;
+                }
+
                 OpohOpdService::updateOrCreate(
                     $matchCriteria,
                     [

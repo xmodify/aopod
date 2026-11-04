@@ -626,6 +626,27 @@ SQL,
             $dispatchedHospcodes[] = $hcode;
         }
 
+        // When syncing OPOH range, clean up old records for target hospitals in that range so ghost/all-dialysis records are removed
+        if (in_array('opoh', $modules)) {
+            $opohStart = $moduleRanges['opoh']['start_date'] ?? $startDate;
+            $opohEnd   = $moduleRanges['opoh']['end_date'] ?? $endDate;
+            \App\Models\OpohOpdService::whereIn('hospcode', $targets)
+                ->whereBetween('vstdate', [$opohStart, $opohEnd])
+                ->delete();
+            \App\Models\OpohOpdDiagnosis::whereIn('hospcode', $targets)
+                ->whereBetween('vstdate', [$opohStart, $opohEnd])
+                ->delete();
+            \App\Models\OpohIpdService::whereIn('hospcode', $targets)
+                ->whereBetween('dchdate', [$opohStart, $opohEnd])
+                ->delete();
+            \App\Models\OpohIpdDiagnosis::whereIn('hospcode', $targets)
+                ->whereBetween('dchdate', [$opohStart, $opohEnd])
+                ->delete();
+            \App\Models\OpohOperationService::whereIn('hospcode', $targets)
+                ->whereBetween('operation_date', [$opohStart, $opohEnd])
+                ->delete();
+        }
+
         return response()->json([
             'status'     => 'success',
             'task_id'    => $taskId,
