@@ -801,4 +801,23 @@ SQL,
             'pending_task' => Cache::get("agent_remote_task_{$hcode}"),
         ]);
     }
+
+    /**
+     * Clear the cached last error for a hospital agent.
+     */
+    public function clearAgentError($hcode)
+    {
+        Cache::forget("agent_last_error_{$hcode}");
+        
+        $heartbeat = Cache::get("agent_heartbeat_{$hcode}");
+        if ($heartbeat && isset($heartbeat['last_error'])) {
+            $heartbeat['last_error'] = '';
+            Cache::put("agent_heartbeat_{$hcode}", $heartbeat, 150);
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'ล้างประวัติข้อผิดพลาดเรียบร้อยแล้ว',
+        ]);
+    }
 }

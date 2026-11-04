@@ -1279,6 +1279,30 @@ $(document).ready(function() {
         }, 350);
     };
 
+    // Helper: Clear cached last error for hospital agent
+    window.handleClearAgentError = function(hcode) {
+        if (!hcode) return;
+        $.ajax({
+            url: `{{ url('manage/agents') }}/${hcode}/clear-error`,
+            method: 'POST',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function() {
+                $('#alertAgentErrorBox').fadeOut(250, function() { $(this).remove(); });
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'ล้างการแจ้งเตือนข้อผิดพลาดเรียบร้อยแล้ว',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            },
+            error: function(xhr) {
+                Swal.fire('เกิดข้อผิดพลาด', xhr.responseJSON?.message || 'ไม่สามารถล้างการแจ้งเตือนได้', 'error');
+            }
+        });
+    };
+
     // View Token Modal Open
     $(document).on('click', '.btn-view-token', function() {
         currentModalHcode = $(this).data('hcode');
@@ -1682,15 +1706,43 @@ function renderAgentStatusModal(res) {
     if (lastErr) {
         const errMsg = typeof lastErr === 'object' ? lastErr.error : lastErr;
         const errTime = typeof lastErr === 'object' && lastErr.timestamp ? `(${lastErr.timestamp})` : '';
+
+        // Check if recent logs indicate successful operations after error
+        let hasRecentSuccess = false;
+        let lastSuccessMsg = '';
+        if (logs.length > 0) {
+            for (let i = 0; i < logs.length; i++) {
+                const l = logs[i];
+                if (l.level === 'INFO' && (l.message.includes('สำเร็จ') || l.message.includes('เสร็จสิ้น'))) {
+                    hasRecentSuccess = true;
+                    lastSuccessMsg = l.message;
+                    break;
+                }
+            }
+        }
+
         errHtml = `
-            <div class="alert alert-danger border-danger border-opacity-25 rounded-3 mb-3 p-3">
-                <div class="d-flex align-items-center gap-2 fw-bold text-danger mb-1">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span>ข้อผิดพลาดล่าสุดที่ Agent รายงาน ${errTime}</span>
+            <div class="alert alert-danger border-danger border-opacity-25 rounded-3 mb-3 p-3 position-relative" id="alertAgentErrorBox">
+                <div class="d-flex align-items-center justify-content-between gap-2 fw-bold text-danger mb-1 flex-wrap">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>ข้อผิดพลาดล่าสุดที่ Agent รายงาน ${errTime}</span>
+                    </div>
+                    <button type="button" class="btn btn-xs btn-outline-danger rounded-pill px-2.5 py-0.5 fw-semibold" onclick="handleClearAgentError('${res.hcode}')" title="ล้างข้อความข้อผิดพลาดนี้ออกจากระบบ" style="font-size: 0.72rem;">
+                        <i class="fa-solid fa-check-double me-1"></i> รับทราบ / ล้างการแจ้งเตือน
+                    </button>
                 </div>
-                <div class="font-monospace small bg-white p-2 rounded border text-danger text-break mt-1" style="max-height: 120px; overflow-y: auto;">
+                <div class="font-monospace small bg-white p-2 rounded border text-danger text-break mt-1" style="max-height: 100px; overflow-y: auto; font-size: 0.78rem;">
                     ${errMsg}
                 </div>
+                ${hasRecentSuccess ? `
+                    <div class="mt-2 p-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-2 d-flex align-items-center gap-1.5 small text-success">
+                        <i class="fa-solid fa-circle-check fs-6 flex-shrink-0"></i>
+                        <div>
+                            <strong>ระบบฟื้นตัวกลับสู่สถานะปกติแล้ว:</strong> มีการส่งข้อมูลในรอบล่าสุดสำเร็จตามปกติ (${lastSuccessMsg || 'ส่งข้อมูลสำเร็จ'}) ข้อผิดพลาดด้านบนเป็นประวัติจากรอบก่อนหน้า
+                        </div>
+                    </div>
+                ` : ''}
             </div>
         `;
     } else if (sync.opd_date && (!sync.opd_sync || new Date(sync.opd_date) < new Date(Date.now() - 5*86400000))) {

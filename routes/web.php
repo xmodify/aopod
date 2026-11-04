@@ -92,6 +92,7 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
     Route::post('/manage/agents/schedule', [\App\Http\Controllers\Web\AgentWebController::class, 'updateSchedule'])->name('manage.agents.update-schedule');
     Route::get('/manage/agents/download-exe', [\App\Http\Controllers\Web\AgentWebController::class, 'downloadExe'])->name('manage.agents.download-exe');
     Route::get('/manage/agents/{hcode}/status-logs', [\App\Http\Controllers\Web\AgentWebController::class, 'getAgentStatusLogs'])->name('manage.agents.status-logs');
+    Route::post('/manage/agents/{hcode}/clear-error', [\App\Http\Controllers\Web\AgentWebController::class, 'clearAgentError'])->name('manage.agents.clear-error');
 });
 
 // A-EMR Routes (รองรับทั้ง Web Authentication ปกติ และ HOSxP BMS Session โดยตรวจสิทธิ์ใน Controller)
