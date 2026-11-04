@@ -268,7 +268,7 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 
 	matchWhere, cidMap, licMap := buildDoctorMatchClause(doctors)
 
-	// 1. Collect OPD Diagnoses
+	// 1. Collect OPD Diagnoses (Excluding hemodialysis visits: nhso_adp_code = 71641)
 	diagQuery := fmt.Sprintf(`SELECT 
 		ov.vstdate,
 		COALESCE(d.cid, '') AS cid,
@@ -282,6 +282,13 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	LEFT JOIN icd101 i ON i.code = v.pdx
 	WHERE ov.vstdate BETWEEN ? AND ?
 	  AND v.pdx IS NOT NULL AND v.pdx != ''
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM opitemrece opr 
+		JOIN nondrugitems ndi ON ndi.icode = opr.icode 
+		WHERE opr.vn = ov.vn 
+		  AND ndi.nhso_adp_code = '71641'
+	  )
 	  AND (%s)
 	GROUP BY ov.vstdate, d.cid, d.licenseno, v.pdx, i.name
 	ORDER BY ov.vstdate ASC, case_total DESC`, matchWhere)
@@ -342,6 +349,13 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	LEFT JOIN referout ro ON ro.vn = ov.vn
 	LEFT JOIN ipt ON ipt.vn = ov.vn
 	WHERE ov.vstdate BETWEEN ? AND ?
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM opitemrece opr 
+		JOIN nondrugitems ndi ON ndi.icode = opr.icode 
+		WHERE opr.vn = ov.vn 
+		  AND ndi.nhso_adp_code = '71641'
+	  )
 	  AND (%s)
 	GROUP BY ov.vstdate, d.cid, d.licenseno
 	ORDER BY ov.vstdate ASC`, matchWhere)
