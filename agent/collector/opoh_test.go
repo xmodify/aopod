@@ -47,13 +47,14 @@ func TestCollectOpohOPD_ExcludesDialysis(t *testing.T) {
 
 	fmt.Printf("CollectOpohOPD returned %d days of records, total visits = %d\n", len(records), totalVisits)
 
-	// In test_db.php earlier, we verified:
+	// In test_icd9.php / test_check.php:
 	// Total visits before filter: 5060
-	// Dialysis visits (nhso_adp_code = 71641): 1843
-	// Non-dialysis visits: 3217
-	if totalVisits != 3217 {
-		t.Errorf("Expected exactly 3217 non-dialysis visits, got %d", totalVisits)
+	// Dialysis visits excluded (ADP 71641 + ICD-9 3995): 2280
+	// Genuine non-dialysis visits: 2780
+	if totalVisits != 2780 {
+		t.Errorf("Expected exactly 2780 non-dialysis visits, got %d", totalVisits)
 	} else {
-		fmt.Printf("SUCCESS: Exactly 3217 non-dialysis visits returned! (Dialysis visits 1843 were excluded)\n")
+		fmt.Printf("SUCCESS: Exactly 2780 non-dialysis visits returned! (Dialysis visits 2280 were excluded by ADP 71641 + ICD-9 3995)\n")
 	}
 }
+

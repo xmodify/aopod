@@ -27,13 +27,13 @@ func TestGetOpdQueryReplacements(t *testing.T) {
 	}
 
 	// Check expected values exist in query
-	if !strings.Contains(q, "hospmain = '10989'") {
-		t.Errorf("Expected query to contain \"hospmain = '10989'\"")
+	if !strings.Contains(q, "vp.hospmain = '10989'") {
+		t.Errorf("Expected query to contain \"vp.hospmain = '10989'\"")
 	}
-	if !strings.Contains(q, "hospmain != '10989' AND hospmain IN ('10703', '10985', '10986', '10987', '10988', '10989', '10990')") {
+	if !strings.Contains(q, "vp.hospmain != '10989' AND vp.hospmain IN ('10703', '10985', '10986', '10987', '10988', '10989', '10990')") {
 		t.Errorf("Expected query to contain in-province condition")
 	}
-	if !strings.Contains(q, "hospmain NOT IN ('10703', '10985', '10986', '10987', '10988', '10989', '10990')") {
+	if !strings.Contains(q, "vp.hospmain NOT IN ('10703', '10985', '10986', '10987', '10988', '10989', '10990')") {
 		t.Errorf("Expected query to contain out-of-province condition")
 	}
 }

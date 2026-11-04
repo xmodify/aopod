@@ -268,7 +268,7 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 
 	matchWhere, cidMap, licMap := buildDoctorMatchClause(doctors)
 
-	// 1. Collect OPD Diagnoses (Excluding hemodialysis visits: nhso_adp_code = 71641)
+	// 1. Collect OPD Diagnoses (Excluding hemodialysis visits: nhso_adp_code = 71641 or ICD-9 = 3995)
 	diagQuery := fmt.Sprintf(`SELECT 
 		ov.vstdate,
 		COALESCE(d.cid, '') AS cid,
@@ -287,7 +287,19 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		FROM opitemrece opr 
 		JOIN nondrugitems ndi ON ndi.icode = opr.icode 
 		WHERE opr.vn = ov.vn 
-		  AND ndi.nhso_adp_code = '71641'
+		  AND (ndi.nhso_adp_code = '71641' OR ndi.icd9cm IN ('3995', '39.95'))
+	  )
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM doctor_operation d_op 
+		WHERE d_op.vn = ov.vn 
+		  AND d_op.icd9 IN ('3995', '39.95')
+	  )
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM ovstdiag od 
+		WHERE od.vn = ov.vn 
+		  AND od.icd10 IN ('3995', '39.95')
 	  )
 	  AND (%s)
 	GROUP BY ov.vstdate, d.cid, d.licenseno, v.pdx, i.name
@@ -354,7 +366,19 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		FROM opitemrece opr 
 		JOIN nondrugitems ndi ON ndi.icode = opr.icode 
 		WHERE opr.vn = ov.vn 
-		  AND ndi.nhso_adp_code = '71641'
+		  AND (ndi.nhso_adp_code = '71641' OR ndi.icd9cm IN ('3995', '39.95'))
+	  )
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM doctor_operation d_op 
+		WHERE d_op.vn = ov.vn 
+		  AND d_op.icd9 IN ('3995', '39.95')
+	  )
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM ovstdiag od 
+		WHERE od.vn = ov.vn 
+		  AND od.icd10 IN ('3995', '39.95')
 	  )
 	  AND (%s)
 	GROUP BY ov.vstdate, d.cid, d.licenseno
