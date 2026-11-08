@@ -133,14 +133,16 @@ class EmrWebController extends Controller
             'vn' => 'required|string',
             'hospital_code' => 'nullable|string',
             'cid' => 'nullable|string',
+            'hn' => 'nullable|string',
         ]);
 
         $startTime = microtime(true);
         $vn = $request->input('vn');
         $hospitalCode = $request->input('hospital_code');
         $cid = preg_replace('/\D/', '', $request->input('cid', ''));
+        $hn = $request->input('hn');
 
-        $result = $this->emrService->getVisitDetail($vn, $hospitalCode);
+        $result = $this->emrService->getVisitDetail($vn, $hospitalCode, $hn);
         $latencyMs = round((microtime(true) - $startTime) * 1000);
 
         $status = (!empty($result['success']) && (!isset($result['found']) || $result['found'] === true)) ? 'SUCCESS' : 'NOT_FOUND';

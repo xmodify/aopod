@@ -1405,6 +1405,7 @@
                         <span class="badge badge-hosp" style="background:${hStyle.bg}; color:${hStyle.text}; border: 1px solid ${hStyle.border};">
                             <i class="fa-solid ${hStyle.icon} me-1"></i> ${escapeHtml(hospName)}
                         </span>
+                        ${v.is_smart_emr ? `<div class="mt-0.5"><span class="badge" style="background:#f3e8ff; color:#7e22ce; border:1px solid #d8b4fe; font-size:0.62rem; padding:1px 5px;"><i class="fa-solid fa-cloud me-1"></i>Smart EMR เขต 10</span></div>` : ''}
                     </td>
                     <td>
                         <div class="fw-bold text-dark" style="font-size: 0.8rem;">${escapeHtml(visitHn)}</div>
@@ -1524,8 +1525,10 @@
         document.getElementById('mVitLatency').textContent = `⚡ กำลังเชื่อมต่อ...`;
 
         // Update modal sub-title
+        const isSmartEmr = Boolean(visit.is_smart_emr || visit.source === 'smart_emr');
         const anMetaText = isIpd && visit.an ? ` | AN: <strong>${escapeHtml(visit.an)}</strong>` : '';
-        document.getElementById('modalVisitMeta').innerHTML = `สืบค้นข้อมูลสดจากระบบ HOSxP <strong>${escapeHtml(hospName)}</strong> (VN: ${escapeHtml(visit.vn)}${anMetaText})`;
+        const smartEmrBadge = isSmartEmr ? `<span class="badge ms-1" style="background:#f3e8ff; color:#7e22ce; border:1px solid #d8b4fe; font-size:0.72rem;"><i class="fa-solid fa-cloud me-1"></i>Smart EMR เขต 10</span>` : '';
+        document.getElementById('modalVisitMeta').innerHTML = `สืบค้นข้อมูลสดจากระบบ <strong>${escapeHtml(hospName)}</strong> ${smartEmrBadge} (VN: ${escapeHtml(visit.vn)}${anMetaText})`;
 
         // Reset Table Contents for all 5 Tabs
         document.getElementById('modalMedTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>กำลังดึงรายการยาจาก opitemrece...</td></tr>';
@@ -1550,7 +1553,9 @@
                 },
                 body: JSON.stringify({ 
                     vn: visit.vn,
-                    hospital_code: hospCode 
+                    hospital_code: hospCode,
+                    hn: visitHn !== '-' ? visitHn : '',
+                    cid: currentPatientData && currentPatientData.patient ? currentPatientData.patient.cid : ''
                 })
             });
             const data = await response.json();
@@ -1561,7 +1566,7 @@
             }
 
             activeModalDetail = data;
-            document.getElementById('mVitLatency').textContent = `⚡ ${data.latency_ms} ms (ดึงสด)`;
+            document.getElementById('mVitLatency').textContent = `⚡ ${data.latency_ms} ms (${data.source_label || 'ดึงสด'})`;
 
             // Update IPD fields if returned in detail
             if (data.ward_name) document.getElementById('mIpdWard').textContent = data.ward_name;

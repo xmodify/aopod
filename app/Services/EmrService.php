@@ -12,8 +12,16 @@ use Carbon\Carbon;
 
 class EmrService
 {
+    protected SmartEmrService $smartEmrService;
+
+    public function __construct(SmartEmrService $smartEmrService)
+    {
+        $this->smartEmrService = $smartEmrService;
+    }
+
     /**
-     * Search patient medical history by CID across all hospital AOPOD-Agents (Zero-Port Architecture).
+     * Search patient medical history by CID across all hospital AOPOD-Agents (Zero-Port Architecture)
+     * and Regional Smart EMR (Health Zone 10).
      *
      * @param string $cid 13-digit citizen ID
      * @return array
@@ -30,8 +38,94 @@ class EmrService
 
         $startTime = microtime(true);
 
-        // Query all active hospital agents in parallel via Zero-Port reverse polling
+        // 1. Query all active hospital agents in parallel via Zero-Port reverse polling
         $resultsFromHospitals = $this->queryHospitalAgents($cleanCid);
+
+        // 2. Query regional Smart EMR (Zone 10 Hub) for regional hospitals (e.g. รพ.สรรพสิทธิประสงค์ อุบลฯ)
+        try {
+            $smartEmrData = $this->smartEmrService->searchHospitals($cleanCid);
+            if (!empty($smartEmrData['hospitals'])) {
+                // Send stealth audit log with clinician's name
+                $clinicianName = session('bms_user_name') ?: (auth()->check() ? auth()->user()->name : 'ผู้ใช้งานระบบ HOSxP');
+                $this->smartEmrService->sendAuditLog($clinicianName, $cleanCid);
+
+                $localHospCodes = collect($resultsFromHospitals)->pluck('hospital.code')->all();
+
+                foreach ($smartEmrData['hospitals'] as $sHosp) {
+                    $hCode = (string)($sHosp['hospcode'] ?? '');
+                    $hName = $sHosp['name'] ?? 'โรงพยาบาลในเขตสุขภาพที่ 10';
+
+                    // If it is already served by local active AOPOD Agent, skip to prioritize local real-time opitemrece
+                    if (in_array($hCode, $localHospCodes)) {
+                        continue;
+                    }
+
+                    // Fetch visits from Smart EMR
+                    $rawVisits = $this->smartEmrService->getVisits($hCode, $cleanCid);
+                    $formattedVisits = [];
+                    foreach ($rawVisits as $v) {
+                        $rawVstdate = !empty($v['date']) ? substr($v['date'], 0, 10) : '';
+                        $vTime = $v['time'] ?? '';
+                        $vClinic = $v['clinic'] ?? '';
+                        $formattedVisits[] = (object)[
+                            'vstdate'        => $rawVstdate,
+                            'vsttime'        => $vTime,
+                            'vn'             => (string)($v['vn'] ?? ''),
+                            'hn'             => (string)($v['hn'] ?? ($smartEmrData['profile']['hn'] ?? '')),
+                            'an'             => $v['an'] ?? null,
+                            'is_ipd'         => !empty($v['an']),
+                            'department'     => $vClinic,
+                            'clinic'         => $vClinic,
+                            'doctor_name'    => 'แพทย์ รพ. ต้นทาง',
+                            'hospital_code'  => $hCode,
+                            'hospital_name'  => $hName,
+                            'pttype_name'    => $smartEmrData['profile']['pttype_name'] ?? 'สิทธิ์การรักษา',
+                            'pdx'            => '',
+                            'pdx_name'       => '',
+                            'cc'             => '',
+                            'bps'            => 0,
+                            'bpd'            => 0,
+                            'pulse'          => 0,
+                            'temperature'    => 0,
+                            'bw'             => 0,
+                            'height'         => 0,
+                            'bmi'            => 0,
+                            'is_smart_emr'   => true,
+                            'source'         => 'smart_emr',
+                            'source_label'   => 'Smart EMR เขต 10',
+                        ];
+                    }
+
+                    $resultsFromHospitals[] = [
+                        'success' => true,
+                        'found'   => true,
+                        'hospital' => [
+                            'code'         => $hCode,
+                            'name'         => $hName,
+                            'is_smart_emr' => true,
+                        ],
+                        'patient' => [
+                            'hn'         => $smartEmrData['profile']['hn'] ?? '',
+                            'cid'        => $cleanCid,
+                            'full_name'  => trim(($smartEmrData['profile']['title_name'] ?? '') . ($smartEmrData['profile']['first_name'] ?? '') . ' ' . ($smartEmrData['profile']['last_name'] ?? '')),
+                            'sex'        => $smartEmrData['profile']['sex'] ?? '',
+                            'age'        => !empty($smartEmrData['profile']['dob']) ? Carbon::parse($smartEmrData['profile']['dob'])->age : null,
+                            'birthday'   => !empty($smartEmrData['profile']['dob']) ? substr($smartEmrData['profile']['dob'], 0, 10) : '',
+                            'bloodgrp'   => '',
+                            'pttype'     => $smartEmrData['profile']['pttype_name'] ?? '',
+                            'address'    => $smartEmrData['profile']['address'] ?? '',
+                        ],
+                        'allergies'          => [],
+                        'clinics'            => [],
+                        'visits'             => $formattedVisits,
+                        'total_visits_found' => count($formattedVisits),
+                        'is_smart_emr'       => true,
+                    ];
+                }
+            }
+        } catch (\Throwable $ex) {
+            Log::warning("Smart EMR federate query error: " . $ex->getMessage());
+        }
 
         if (empty($resultsFromHospitals)) {
             return [
@@ -318,17 +412,32 @@ class EmrService
     }
 
     /**
-     * Get detailed medications, non-drugs, lab results, diagnoses, and procedures from AOPOD-Agent.
+     * Get detailed medications, non-drugs, lab results, diagnoses, and procedures from AOPOD-Agent
+     * or Regional Smart EMR.
      *
      * @param string $vn
      * @param string|null $hospitalCode
+     * @param string|null $hn
      * @return array
      */
-    public function getVisitDetail(string $vn, ?string $hospitalCode = null): array
+    public function getVisitDetail(string $vn, ?string $hospitalCode = null, ?string $hn = null): array
     {
         $startTime = microtime(true);
 
         try {
+            // 0. If hospital is from external Regional Smart EMR, fetch directly from Smart EMR API
+            $isLocalAgentHosp = !empty($hospitalCode) && Hospital::where('hospcode', $hospitalCode)->where('is_active', true)->exists();
+            if (!$isLocalAgentHosp && !empty($hospitalCode)) {
+                $targetHn = $hn ?: $vn;
+                $profile = $this->smartEmrService->getServiceProfile($hospitalCode, $targetHn, $vn);
+                if ($profile) {
+                    $formatted = $this->smartEmrService->formatAsAopodVisitDetail($profile, $vn, $hospitalCode);
+                    $formatted['success'] = true;
+                    $formatted['latency_ms'] = round((microtime(true) - $startTime) * 1000, 2);
+                    return $formatted;
+                }
+            }
+
             $hosp = null;
             if (!empty($hospitalCode)) {
                 $hosp = Hospital::where('hospcode', $hospitalCode)->where('is_active', true)->first();
