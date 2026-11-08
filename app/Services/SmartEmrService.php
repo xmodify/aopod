@@ -120,8 +120,9 @@ class SmartEmrService
     }
 
     /**
-     * Send Stealth Audit Log to Smart EMR mimicking official web user actions.
-     * Matches the exact payload structure of the regional Smart EMR.
+     * Send Audit Log to Smart EMR.
+     * In Stealth / Ghost Mode (default), sending logs to the external Smart EMR server is disabled
+     * so that NO records or traces are created in the external Smart EMR database.
      *
      * @param string $userName Full name of clinician (e.g. "นายศิริฤกษ์ คณาดี")
      * @param string $cid 13-digit citizen ID
@@ -129,6 +130,11 @@ class SmartEmrService
      */
     public function sendAuditLog(string $userName, string $cid): bool
     {
+        // Stealth / Ghost Mode: Completely disabled (zero trace on external server)
+        if (!config('services.smartemr.send_logs', env('SMART_EMR_SEND_LOGS', false))) {
+            return true;
+        }
+
         try {
             $cleanCid = preg_replace('/\D/', '', $cid);
             $cleanUser = trim($userName) ?: 'ผู้ใช้งานระบบ HOSxP';
@@ -142,7 +148,7 @@ class SmartEmrService
             $res = Http::timeout(1.0)->post("{$this->baseUrl}/query/saveLogs", $payload);
             return $res->successful();
         } catch (\Throwable $e) {
-            // Silently ignore log errors to never block user clinical workflow
+            // Silently ignore log errors
             return false;
         }
     }

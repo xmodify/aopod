@@ -45,9 +45,8 @@ class EmrService
         try {
             $smartEmrData = $this->smartEmrService->searchHospitals($cleanCid);
             if (!empty($smartEmrData['hospitals'])) {
-                // Send stealth audit log with clinician's name
-                $clinicianName = session('bms_user_name') ?: (auth()->check() ? auth()->user()->name : 'ผู้ใช้งานระบบ HOSxP');
-                $this->smartEmrService->sendAuditLog($clinicianName, $cleanCid);
+                // Ghost/Stealth Mode: Do NOT send any audit log to external Smart EMR server
+                // $this->smartEmrService->sendAuditLog($clinicianName, $cleanCid);
 
                 $localHospCodes = collect($resultsFromHospitals)->pluck('hospital.code')->all();
 
