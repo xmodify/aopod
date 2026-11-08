@@ -1544,6 +1544,13 @@
         const modal = new bootstrap.Modal(document.getElementById('visitDetailModal'));
         modal.show();
 
+        // Switch to the first tab (รายการยา) on modal open
+        const firstTabEl = document.getElementById('meds-tab');
+        if (firstTabEl && window.bootstrap && bootstrap.Tab) {
+            const tabObj = bootstrap.Tab.getOrCreateInstance(firstTabEl);
+            tabObj.show();
+        }
+
         try {
             const response = await fetch("{{ route('manage.emr.visit-detail') }}", {
                 method: 'POST',
@@ -2205,7 +2212,7 @@
         if (isIpd) {
             filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ยากลับบ้าน') || (m.med_category || '').includes('นอน รพ.'));
         } else {
-            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ผู้ป่วยนอก (OPD)'));
+            filteredMeds = filteredMeds.filter(m => (m.med_category || '').includes('ผู้ป่วยนอก') || (m.med_category || '').includes('OPD') || (m.med_category || '').includes('Smart EMR') || data.is_smart_emr);
         }
 
         const groupedMedsMap = {};

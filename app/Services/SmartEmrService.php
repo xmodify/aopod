@@ -177,7 +177,7 @@ class SmartEmrService
                 'usage3'       => '',
                 'sp_use'       => '',
                 'sum_price'    => 0.0,
-                'med_category' => 'ยาผู้ป่วยนอก (Smart EMR เขต 10)',
+                'med_category' => 'ยาผู้ป่วยนอก (OPD)',
                 'first_date'   => !empty($d['date_serv']) ? substr($d['date_serv'], 0, 10) : '',
                 'last_date'    => !empty($d['date_serv']) ? substr($d['date_serv'], 0, 10) : '',
                 'days_count'   => 1,
@@ -270,3 +270,4 @@ class SmartEmrService
         ];
     }
 }
+
