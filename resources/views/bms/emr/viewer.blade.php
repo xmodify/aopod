@@ -309,6 +309,33 @@
     padding: 0.3rem 0.65rem;
     margin-top: 0.45rem;
   }
+
+  /* Fullscreen Modal Styling */
+  .modal-dialog.modal-fullscreen {
+    width: 100vw;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+  }
+  .modal-dialog.modal-fullscreen .modal-content {
+    height: 100%;
+    border-radius: 0 !important;
+  }
+  .modal-dialog.modal-fullscreen .rims-modal-header {
+    border-radius: 0 !important;
+    padding: 0.75rem 1.5rem;
+  }
+  .modal-dialog.modal-fullscreen .modal-footer {
+    border-radius: 0 !important;
+    padding: 0.6rem 1.5rem;
+  }
+  .modal-dialog.modal-fullscreen .modal-body {
+    padding: 1rem 1.5rem !important;
+  }
+  .modal-dialog.modal-fullscreen .modal-tab-table-container {
+    max-height: calc(100vh - 440px);
+    min-height: 280px;
+  }
 </style>
 @endpush
 
@@ -510,8 +537,8 @@
 
 <!-- Modal: Visit Detail (โครงสร้าง Smart OPD / IPD Mode Switcher + 5 แท็บ) -->
 <div class="modal fade" id="visitDetailModal" tabindex="-1" aria-labelledby="visitDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable" id="visitDetailModalDialog">
+        <div class="modal-content" style="border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);">
             <!-- Modal Header (RIMS Blue / Orange Style) -->
             <div class="rims-modal-header d-flex align-items-center justify-content-between" id="rimsModalHeader">
                 <div class="d-flex align-items-center gap-3">
@@ -525,7 +552,12 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-link text-white text-opacity-75 p-1 text-decoration-none" id="btnToggleModalFullscreen" onclick="toggleModalFullscreen()" title="ย่อ / ขยายเต็มจอ">
+                        <i class="fa-solid fa-compress fs-5" id="iconModalFullscreen"></i>
+                    </button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
             </div>
 
             <div class="modal-body p-3 bg-slate-50" style="background-color: #f8fafc;">
@@ -877,7 +909,7 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer bg-light border-top px-4 py-2.5" style="border-radius: 0 0 20px 20px;">
+            <div class="modal-footer bg-light border-top px-4 py-2.5">
                 <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal" style="border-radius: 10px;">
                     <i class="fa-solid fa-xmark me-1"></i> ปิดหน้าต่าง
                 </button>
@@ -889,6 +921,27 @@
 
 @push('scripts')
 <script>
+    function toggleModalFullscreen() {
+        const dialog = document.getElementById('visitDetailModalDialog');
+        const icon = document.getElementById('iconModalFullscreen');
+        if (!dialog) return;
+
+        if (dialog.classList.contains('modal-fullscreen')) {
+            dialog.classList.remove('modal-fullscreen');
+            dialog.classList.add('modal-xl', 'modal-dialog-centered');
+            if (icon) {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+            }
+        } else {
+            dialog.classList.remove('modal-xl', 'modal-dialog-centered');
+            dialog.classList.add('modal-fullscreen');
+            if (icon) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+            }
+        }
+    }
     // State memory for current loaded patient & visits
     let currentPatientData = null;
 
