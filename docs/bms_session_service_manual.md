@@ -341,7 +341,7 @@ resources/views/
 ## 6. ข้อควรระวังและแนวทางปฏิบัติด้านความปลอดภัย (Security Guidelines)
 
 1. **การบันทึก Audit Logs (พ.ร.บ. ไซเบอร์):**
-   แม้จะไม่ได้บันทึกผู้ใช้ลงในตาราง `users` แต่ทุกครั้งที่มีการกดค้นหาข้อมูลคนไข้ จะต้องบันทึก `bms_user_name`, `bms_user_cid`, `bms_hospcode`, IP Address และเหตุผลในการสืบค้นลงตาราง Audit Trail (เช่น `emr_access_logs`) ทุกครั้ง
+   แม้จะไม่ได้บันทึกผู้ใช้ลงในตาราง `users` แต่ทุกครั้งที่มีการกดค้นหาข้อมูลคนไข้ จะต้องบันทึก `bms_user_name`, `bms_user_cid`, `bms_hospcode`, IP Address และเหตุผลในการสืบค้นลงตาราง Audit Trail (เช่น `aemr_access_logs`) ทุกครั้ง
 2. **การลบ Session ID ออกจาก URL Address Bar:**
    ในหน้า Blade หรือ JavaScript ฝั่ง Client ควรใช้คำสั่ง:
    ```javascript

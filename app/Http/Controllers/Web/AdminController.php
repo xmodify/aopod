@@ -324,7 +324,7 @@ class AdminController extends Controller
             'allow_death_dashboard' => ['nullable'],
             'allow_birth' => ['nullable'],
             'allow_birth_dashboard' => ['nullable'],
-            'allow_emr' => ['nullable'],
+            'allow_aemr' => ['nullable'],
             'allow_opoh' => ['nullable'],
         ]);
 
@@ -342,7 +342,7 @@ class AdminController extends Controller
                 'allow_death_dashboard' => $request->has('allow_death_dashboard') ? 1 : 0,
                 'allow_birth' => $request->has('allow_birth') ? 1 : 0,
                 'allow_birth_dashboard' => $request->has('allow_birth_dashboard') ? 1 : 0,
-                'allow_emr' => $request->has('allow_emr') ? 1 : 0,
+                'allow_aemr' => $request->has('allow_aemr') ? 1 : 0,
                 'allow_opoh' => $request->has('allow_opoh') ? 1 : 0,
             ]);
 
@@ -373,7 +373,7 @@ class AdminController extends Controller
             'allow_death_dashboard' => ['nullable'],
             'allow_birth' => ['nullable'],
             'allow_birth_dashboard' => ['nullable'],
-            'allow_emr' => ['nullable'],
+            'allow_aemr' => ['nullable'],
             'allow_opoh' => ['nullable'],
         ]);
 
@@ -389,7 +389,7 @@ class AdminController extends Controller
             $user->allow_death_dashboard = $request->has('allow_death_dashboard') ? 1 : 0;
             $user->allow_birth = $request->has('allow_birth') ? 1 : 0;
             $user->allow_birth_dashboard = $request->has('allow_birth_dashboard') ? 1 : 0;
-            $user->allow_emr = $request->has('allow_emr') ? 1 : 0;
+            $user->allow_aemr = $request->has('allow_aemr') ? 1 : 0;
             $user->allow_opoh = $request->has('allow_opoh') ? 1 : 0;
             if ($request->password) {
                 $user->password = \Illuminate\Support\Facades\Hash::make($request->password);

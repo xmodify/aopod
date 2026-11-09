@@ -21,7 +21,6 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
 // BMS Launch Route (สำหรับเปิดโมดูล A-EMR จาก Dashboard URL และ Patient Add-on ใน HOSxP)
 Route::get('/bms/aemr', [BmsAutoLoginController::class, 'handleLaunch'])->name('bms.aemr');
 
-
 // หน้า web หลัก
 Route::match(['get','post'],'web', [DashboardController::class, 'index'])->name('web.index');
 Route::get('web/bed_dep/{hospcode}', [DashboardController::class, 'bed_dep']);
@@ -96,18 +95,18 @@ Route::middleware(['auth:web', 'admin'])->group(function () {
 });
 
 // A-EMR Routes (รองรับทั้ง Web Authentication ปกติ และ HOSxP BMS Session โดยตรวจสิทธิ์ใน Controller)
-Route::post('/manage/emr/search', [\App\Http\Controllers\Web\EmrWebController::class, 'search'])->name('manage.emr.search');
-Route::post('/manage/emr/visit-detail', [\App\Http\Controllers\Web\EmrWebController::class, 'visitDetail'])->name('manage.emr.visit-detail');
-Route::get('/emr/hosxp-viewer', [\App\Http\Controllers\Web\EmrWebController::class, 'hosxpViewer'])->name('emr.hosxp.viewer');
-Route::get('/bms/emr/viewer', [\App\Http\Controllers\Web\EmrWebController::class, 'hosxpViewer'])->name('bms.emr.viewer');
+Route::post('/manage/aemr/search', [\App\Http\Controllers\Web\AemrWebController::class, 'search'])->name('manage.aemr.search');
+Route::post('/manage/aemr/visit-detail', [\App\Http\Controllers\Web\AemrWebController::class, 'visitDetail'])->name('manage.aemr.visit-detail');
+Route::get('/aemr/hosxp-viewer', [\App\Http\Controllers\Web\AemrWebController::class, 'hosxpViewer'])->name('aemr.hosxp.viewer');
+Route::get('/bms/aemr/viewer', [\App\Http\Controllers\Web\AemrWebController::class, 'hosxpViewer'])->name('bms.aemr.viewer');
 
 // Manage Data Routes (Requires Web Authentication, access checked in Controller)
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/manage', [AdminController::class, 'index'])->name('manage.index');
     
     // A-EMR Web Manage Routes
-    Route::get('/manage/emr', [\App\Http\Controllers\Web\EmrWebController::class, 'index'])->name('manage.emr.index');
-    Route::get('/manage/emr/logs', [\App\Http\Controllers\Web\EmrWebController::class, 'logs'])->name('manage.emr.logs');
+    Route::get('/manage/aemr', [\App\Http\Controllers\Web\AemrWebController::class, 'index'])->name('manage.aemr.index');
+    Route::get('/manage/aemr/logs', [\App\Http\Controllers\Web\AemrWebController::class, 'logs'])->name('manage.aemr.logs');
 
 
     Route::get('/manage/death-data', [\App\Http\Controllers\Web\DeathDataController::class, 'index'])->name('manage.death-data.index');
@@ -122,4 +121,5 @@ Route::middleware(['auth:web'])->group(function () {
     Route::match(['put', 'post'], '/manage/opoh/doctors/{id}', [\App\Http\Controllers\Web\DashboardOpohController::class, 'updateDoctor'])->name('manage.opoh.doctors.update');
     Route::delete('/manage/opoh/doctors/{id}', [\App\Http\Controllers\Web\DashboardOpohController::class, 'deleteDoctor'])->name('manage.opoh.doctors.delete');
     Route::post('/manage/opoh/doctors/{id}/toggle', [\App\Http\Controllers\Web\DashboardOpohController::class, 'toggleDoctorStatus'])->name('manage.opoh.doctors.toggle');
+    Route::get('/manage/opoh/doctors/{id}/income-categories', [\App\Http\Controllers\Web\DashboardOpohController::class, 'getDoctorIncomeCategories'])->name('manage.opoh.doctors.income-categories');
 });

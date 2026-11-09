@@ -105,72 +105,75 @@ type OpohDiagnosisItem struct {
 	CaseTotal int    `json:"case_total"`
 }
 
+type OpohIncomeCategoryItem struct {
+	ServiceType     string  `json:"service_type,omitempty"`
+	Vstdate         string  `json:"vstdate,omitempty"`
+	SpcltyCode      string  `json:"spclty_code,omitempty"`
+	DoctorID        int64   `json:"doctor_id,omitempty"`
+	Licenseno       string  `json:"licenseno,omitempty"`
+	DrgChrgitemID   int     `json:"drg_chrgitem_id"`
+	DrgChrgitemName string  `json:"drg_chrgitem_name"`
+	IncUCSIncup     float64 `json:"inc_ucs_incup"`
+	IncUCSOutprov   float64 `json:"inc_ucs_outprov"`
+	IncOFC          float64 `json:"inc_ofc"`
+	IncLGO          float64 `json:"inc_lgo"`
+	IncSSS          float64 `json:"inc_sss"`
+	IncOther        float64 `json:"inc_other"`
+	IncTotal        float64 `json:"inc_total"`
+}
+
 type OpohOpdRecord struct {
-	Vstdate         string              `json:"vstdate"`
-	SpcltyCode      string              `json:"spclty_code"`
-	SpecialtyName   string              `json:"specialty_name"`
-	DoctorID        int64               `json:"doctor_id"`
-	Licenseno       string              `json:"licenseno"`
-	HnTotal         int                 `json:"hn_total"`
-	VisitTotal      int                 `json:"visit_total"`
-	VisitUCS        int                 `json:"visit_ucs"`
-	VisitOFC        int                 `json:"visit_ofc"`
-	VisitLGO        int                 `json:"visit_lgo"`
-	VisitSSS        int                 `json:"visit_sss"`
-	VisitOther      int                 `json:"visit_other"`
-	VisitTelemed    int                 `json:"visit_telemed"`
-	VisitUCSIncup   int                 `json:"visit_ucs_incup"`
-	VisitUCSOutprov int                 `json:"visit_ucs_outprov"`
-	IncTotal        float64             `json:"inc_total"`
-	IncDrugTotal    float64             `json:"inc_drug_total"`
-	IncLabTotal     float64             `json:"inc_lab_total"`
-	IncUCSIncup     float64             `json:"inc_ucs_incup"`
-	IncUCSOutprov   float64             `json:"inc_ucs_outprov"`
-	IncOFC          float64             `json:"inc_ofc"`
-	IncLGO          float64             `json:"inc_lgo"`
-	IncSSS          float64             `json:"inc_sss"`
-	IncOther        float64             `json:"inc_other"`
-	ReferToOrigin   int                 `json:"refer_to_origin"`
-	AdmitIPD        int                 `json:"admit_ipd"`
-	Diagnoses       []OpohDiagnosisItem `json:"diagnoses,omitempty"`
+	Vstdate          string                   `json:"vstdate"`
+	SpcltyCode       string                   `json:"spclty_code"`
+	SpecialtyName    string                   `json:"specialty_name"`
+	DoctorID         int64                    `json:"doctor_id"`
+	Licenseno        string                   `json:"licenseno"`
+	HnTotal          int                      `json:"hn_total"`
+	VisitTotal       int                      `json:"visit_total"`
+	VisitUCS         int                      `json:"visit_ucs"`
+	VisitOFC         int                      `json:"visit_ofc"`
+	VisitLGO         int                      `json:"visit_lgo"`
+	VisitSSS         int                      `json:"visit_sss"`
+	VisitOther       int                      `json:"visit_other"`
+	VisitTelemed     int                      `json:"visit_telemed"`
+	VisitUCSIncup    int                      `json:"visit_ucs_incup"`
+	VisitUCSOutprov  int                      `json:"visit_ucs_outprov"`
+	ReferToOrigin    int                      `json:"refer_to_origin"`
+	AdmitIPD         int                      `json:"admit_ipd"`
+	Diagnoses        []OpohDiagnosisItem      `json:"diagnoses,omitempty"`
+	IncomeCategories []OpohIncomeCategoryItem `json:"income_categories,omitempty"`
 }
 
 type OpohIpdRecord struct {
-	Dchdate           string              `json:"dchdate"`
-	SpcltyCode        string              `json:"spclty_code"`
-	SpecialtyName     string              `json:"specialty_name"`
-	DoctorID          int64               `json:"doctor_id"`
-	Licenseno         string              `json:"licenseno"`
-	AnTotal           int                 `json:"an_total"`
-	AdmdateTotal      int                 `json:"admdate_total"`
-	AdjrwTotal        float64             `json:"adjrw_total"`
-	OperationTotal    int                 `json:"operation_total"`
-	IncTotal          float64             `json:"inc_total"`
-	AnUCSIncup        int                 `json:"an_ucs_incup"`
-	AnUCSOutprov      int                 `json:"an_ucs_outprov"`
-	AnOFC             int                 `json:"an_ofc"`
-	AnLGO             int                 `json:"an_lgo"`
-	AnSSS             int                 `json:"an_sss"`
-	AnOther           int                 `json:"an_other"`
-	AdmdateUCSIncup   int                 `json:"admdate_ucs_incup"`
-	AdmdateUCSOutprov int                 `json:"admdate_ucs_outprov"`
-	AdmdateOFC        int                 `json:"admdate_ofc"`
-	AdmdateLGO        int                 `json:"admdate_lgo"`
-	AdmdateSSS        int                 `json:"admdate_sss"`
-	AdmdateOther      int                 `json:"admdate_other"`
-	AdjrwUCSIncup     float64             `json:"adjrw_ucs_incup"`
-	AdjrwUCSOutprov   float64             `json:"adjrw_ucs_outprov"`
-	AdjrwOFC          float64             `json:"adjrw_ofc"`
-	AdjrwLGO          float64             `json:"adjrw_lgo"`
-	AdjrwSSS          float64             `json:"adjrw_sss"`
-	AdjrwOther        float64             `json:"adjrw_other"`
-	IncUCSIncup       float64             `json:"inc_ucs_incup"`
-	IncUCSOutprov     float64             `json:"inc_ucs_outprov"`
-	IncOFC            float64             `json:"inc_ofc"`
-	IncLGO            float64             `json:"inc_lgo"`
-	IncSSS            float64             `json:"inc_sss"`
-	IncOther          float64             `json:"inc_other"`
-	Diagnoses         []OpohDiagnosisItem `json:"diagnoses,omitempty"`
+	Dchdate           string                   `json:"dchdate"`
+	SpcltyCode        string                   `json:"spclty_code"`
+	SpecialtyName     string                   `json:"specialty_name"`
+	DoctorID          int64                    `json:"doctor_id"`
+	Licenseno         string                   `json:"licenseno"`
+	AnTotal           int                      `json:"an_total"`
+	AdmdateTotal      int                      `json:"admdate_total"`
+	AdjrwTotal        float64                  `json:"adjrw_total"`
+	OperationTotal    int                      `json:"operation_total"`
+	AnUCSIncup        int                      `json:"an_ucs_incup"`
+	AnUCSOutprov      int                      `json:"an_ucs_outprov"`
+	AnOFC             int                      `json:"an_ofc"`
+	AnLGO             int                      `json:"an_lgo"`
+	AnSSS             int                      `json:"an_sss"`
+	AnOther           int                      `json:"an_other"`
+	AdmdateUCSIncup   int                      `json:"admdate_ucs_incup"`
+	AdmdateUCSOutprov int                      `json:"admdate_ucs_outprov"`
+	AdmdateOFC        int                      `json:"admdate_ofc"`
+	AdmdateLGO        int                      `json:"admdate_lgo"`
+	AdmdateSSS        int                      `json:"admdate_sss"`
+	AdmdateOther      int                      `json:"admdate_other"`
+	AdjrwUCSIncup     float64                  `json:"adjrw_ucs_incup"`
+	AdjrwUCSOutprov   float64                  `json:"adjrw_ucs_outprov"`
+	AdjrwOFC          float64                  `json:"adjrw_ofc"`
+	AdjrwLGO          float64                  `json:"adjrw_lgo"`
+	AdjrwSSS          float64                  `json:"adjrw_sss"`
+	AdjrwOther        float64                  `json:"adjrw_other"`
+	Diagnoses         []OpohDiagnosisItem      `json:"diagnoses,omitempty"`
+	IncomeCategories  []OpohIncomeCategoryItem `json:"income_categories,omitempty"`
 }
 
 type OpohOperationRecord struct {
@@ -183,7 +186,6 @@ type OpohOperationRecord struct {
 	OperationName  string  `json:"operation_name"`
 	OpType         string  `json:"op_type"`
 	CaseTotal      int     `json:"case_total"`
-	IncTotal       float64 `json:"inc_total"`
 	AdjrwTotal     float64 `json:"adjrw_total"`
 	CaseUCSIncup   int     `json:"case_ucs_incup"`
 	CaseUCSOutprov int     `json:"case_ucs_outprov"`
@@ -191,40 +193,27 @@ type OpohOperationRecord struct {
 	CaseLGO        int     `json:"case_lgo"`
 	CaseSSS        int     `json:"case_sss"`
 	CaseOther      int     `json:"case_other"`
-	IncUCSIncup    float64 `json:"inc_ucs_incup"`
-	IncUCSOutprov  float64 `json:"inc_ucs_outprov"`
-	IncOFC         float64 `json:"inc_ofc"`
-	IncLGO         float64 `json:"inc_lgo"`
-	IncSSS         float64 `json:"inc_sss"`
-	IncOther       float64 `json:"inc_other"`
 }
 
-// buildDoctorMatchClause creates SQL WHERE conditions strictly for doctor CIDs and licenses (2-tier matching)
+// buildDoctorMatchClause constructs WHERE clause matching active OPOH doctors
 func buildDoctorMatchClause(doctors []OpohDoctor) (string, map[string]OpohDoctor, map[string]OpohDoctor) {
 	cidMap := make(map[string]OpohDoctor)
 	licMap := make(map[string]OpohDoctor)
+
 	var cids []string
 	var lics []string
 
 	for _, d := range doctors {
-		// Tier 1: CID 13 digits
 		cleanCid := strings.TrimSpace(d.CID)
+		cleanLic := strings.TrimSpace(d.Licenseno)
+
 		if cleanCid != "" {
 			cidMap[cleanCid] = d
 			cids = append(cids, fmt.Sprintf("'%s'", cleanCid))
 		}
-
-		// Tier 2: License number (วxxxx)
-		cleanLic := strings.TrimSpace(d.Licenseno)
 		if cleanLic != "" {
 			licMap[cleanLic] = d
 			lics = append(lics, fmt.Sprintf("'%s'", cleanLic))
-			// Also match variant without 'ว'
-			if strings.HasPrefix(cleanLic, "ว") {
-				noV := strings.TrimPrefix(cleanLic, "ว")
-				licMap[noV] = d
-				lics = append(lics, fmt.Sprintf("'%s'", noV))
-			}
 		}
 	}
 
@@ -326,7 +315,84 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		diagRows.Close()
 	}
 
-	// 2. Query OPD Summary
+	// 2. Collect OPD Income Categories from opitemrece join drg_chrgitem
+	incCatQuery := fmt.Sprintf(`SELECT 
+		ov.vstdate,
+		COALESCE(d.cid, '') AS cid,
+		COALESCE(d.licenseno, '') AS licenseno,
+		COALESCE(i.drg_chrgitem_id, 19) AS drg_chrgitem_id,
+		COALESCE(dc.drg_chrgitem_name, i.name) AS drg_chrgitem_name,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR v.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ucs_incup,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR v.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ucs_outprov,
+		COALESCE(SUM(CASE WHEN p.hipdata_code = 'OFC' AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ofc,
+		COALESCE(SUM(CASE WHEN p.hipdata_code = 'LGO' AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_lgo,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_sss,
+		COALESCE(SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR opr.paidst IN ('01','03') OR p.hipdata_code IS NULL) THEN opr.sum_price ELSE 0 END), 0) AS inc_other,
+		COALESCE(SUM(opr.sum_price), 0) AS inc_total
+	FROM opitemrece opr
+	JOIN ovst ov ON ov.vn = opr.vn
+	JOIN vn_stat v ON v.vn = ov.vn
+	JOIN doctor d ON d.code = ov.doctor
+	JOIN income i ON i.income = opr.income
+	LEFT JOIN drg_chrgitem dc ON dc.drg_chrgitem_id = i.drg_chrgitem_id
+	LEFT JOIN pttype p ON p.pttype = opr.pttype
+	LEFT JOIN hospcode hc ON hc.hospcode = v.hospmain
+	WHERE ov.vstdate BETWEEN ? AND ?
+	  AND opr.an IS NULL
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM opitemrece sub_opr 
+		JOIN nondrugitems ndi ON ndi.icode = sub_opr.icode 
+		WHERE sub_opr.vn = ov.vn 
+		  AND (ndi.nhso_adp_code = '71641' OR ndi.icd9cm IN ('3995', '39.95'))
+	  )
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM doctor_operation d_op 
+		WHERE d_op.vn = ov.vn 
+		  AND d_op.icd9 IN ('3995', '39.95')
+	  )
+	  AND NOT EXISTS (
+		SELECT 1 
+		FROM ovstdiag od 
+		WHERE od.vn = ov.vn 
+		  AND od.icd10 IN ('3995', '39.95')
+	  )
+	  AND (%s)
+	GROUP BY ov.vstdate, d.cid, d.licenseno, i.drg_chrgitem_id, dc.drg_chrgitem_name
+	ORDER BY ov.vstdate ASC, drg_chrgitem_id ASC`, matchWhere)
+
+	incCatRows, err := db.Query(incCatQuery, startDate, endDate)
+	incCatMap := make(map[string][]OpohIncomeCategoryItem)
+	if err == nil {
+		for incCatRows.Next() {
+			var catDate, catCid, catLic, catName string
+			var catDrgId int
+			var incIncup, incOutprov, incOfc, incLgo, incSss, incOther, incTotal float64
+			if scanErr := incCatRows.Scan(&catDate, &catCid, &catLic, &catDrgId, &catName, &incIncup, &incOutprov, &incOfc, &incLgo, &incSss, &incOther, &incTotal); scanErr == nil {
+				if len(catDate) >= 10 {
+					catDate = catDate[:10]
+				}
+				key := fmt.Sprintf("%s|%s|%s", catDate, strings.TrimSpace(catCid), strings.TrimSpace(catLic))
+				incCatMap[key] = append(incCatMap[key], OpohIncomeCategoryItem{
+					ServiceType:     "OPD",
+					Vstdate:         catDate,
+					DrgChrgitemID:   catDrgId,
+					DrgChrgitemName: catName,
+					IncUCSIncup:     incIncup,
+					IncUCSOutprov:   incOutprov,
+					IncOFC:          incOfc,
+					IncLGO:          incLgo,
+					IncSSS:          incSss,
+					IncOther:        incOther,
+					IncTotal:        incTotal,
+				})
+			}
+		}
+		incCatRows.Close()
+	}
+
+	// 3. Query OPD Summary
 	query := fmt.Sprintf(`SELECT 
 		ov.vstdate,
 		COALESCE(d.cid, '') AS cid,
@@ -341,15 +407,6 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		SUM(CASE WHEN ot.export_code = '5' THEN 1 ELSE 0 END) AS visit_telemed,
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR v.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS visit_ucs_incup,
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR v.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS visit_ucs_outprov,
-		COALESCE(SUM(v.income), 0) AS inc_total,
-		COALESCE(SUM(v.inc12), 0) AS inc_drug_total,
-		COALESCE(SUM(v.inc03), 0) AS inc_lab_total,
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR v.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN v.income ELSE 0 END), 0) AS inc_ucs_incup,
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR v.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN v.income ELSE 0 END), 0) AS inc_ucs_outprov,
-		COALESCE(SUM(CASE WHEN p.hipdata_code = 'OFC' THEN v.income ELSE 0 END), 0) AS inc_ofc,
-		COALESCE(SUM(CASE WHEN p.hipdata_code = 'LGO' THEN v.income ELSE 0 END), 0) AS inc_lgo,
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN v.income ELSE 0 END), 0) AS inc_sss,
-		COALESCE(SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN v.income ELSE 0 END), 0) AS inc_other,
 		COUNT(DISTINCT CASE WHEN ro.refer_hospcode = '10703' THEN ov.vn END) AS refer_to_origin,
 		COUNT(DISTINCT CASE WHEN ipt.an IS NOT NULL THEN ov.vn END) AS admit_ipd
 	FROM ovst ov
@@ -410,15 +467,6 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 			&r.VisitTelemed,
 			&r.VisitUCSIncup,
 			&r.VisitUCSOutprov,
-			&r.IncTotal,
-			&r.IncDrugTotal,
-			&r.IncLabTotal,
-			&r.IncUCSIncup,
-			&r.IncUCSOutprov,
-			&r.IncOFC,
-			&r.IncLGO,
-			&r.IncSSS,
-			&r.IncOther,
 			&r.ReferToOrigin,
 			&r.AdmitIPD,
 		)
@@ -448,6 +496,11 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		key := fmt.Sprintf("%s|%s|%s", r.Vstdate, strings.TrimSpace(cid), strings.TrimSpace(lic))
 		if items, ok := diagMap[key]; ok {
 			r.Diagnoses = items
+		}
+
+		// Attach income categories
+		if items, ok := incCatMap[key]; ok {
+			r.IncomeCategories = items
 		}
 
 		records = append(records, r)
@@ -488,9 +541,7 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 							SpcltyCode:    doc.SpcltyCode,
 							SpecialtyName: doc.SpecialtyName,
 							VisitTotal:    0,
-							HnTotal:       0,
 						})
-						seenDoctorDates[dKey] = true
 					}
 				}
 			}
@@ -547,7 +598,65 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		diagRows.Close()
 	}
 
-	// 2. Query IPD Summary
+	// 2. Collect IPD Income Categories from opitemrece join ipt join drg_chrgitem
+	incCatQuery := fmt.Sprintf(`SELECT 
+		i.dchdate,
+		COALESCE(d.cid, '') AS cid,
+		COALESCE(d.licenseno, '') AS licenseno,
+		COALESCE(inc.drg_chrgitem_id, 19) AS drg_chrgitem_id,
+		COALESCE(dc.drg_chrgitem_name, inc.name) AS drg_chrgitem_name,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ucs_incup,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ucs_outprov,
+		COALESCE(SUM(CASE WHEN p.hipdata_code = 'OFC' AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ofc,
+		COALESCE(SUM(CASE WHEN p.hipdata_code = 'LGO' AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_lgo,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_sss,
+		COALESCE(SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR opr.paidst IN ('01','03') OR p.hipdata_code IS NULL) THEN opr.sum_price ELSE 0 END), 0) AS inc_other,
+		COALESCE(SUM(opr.sum_price), 0) AS inc_total
+	FROM opitemrece opr
+	JOIN ipt i ON i.an = opr.an
+	JOIN doctor d ON (d.code = i.admdoctor OR d.code = i.dch_doctor OR d.code = i.incharge_doctor)
+	JOIN income inc ON inc.income = opr.income
+	LEFT JOIN drg_chrgitem dc ON dc.drg_chrgitem_id = inc.drg_chrgitem_id
+	LEFT JOIN pttype p ON p.pttype = i.pttype
+	LEFT JOIN ipt_pttype ip ON ip.an = i.an AND ip.pttype_number = 1
+	LEFT JOIN hospcode hc ON hc.hospcode = ip.hospmain
+	WHERE i.dchdate BETWEEN ? AND ?
+	  AND opr.an IS NOT NULL AND opr.an != ''
+	  AND (%s)
+	GROUP BY i.dchdate, d.cid, d.licenseno, inc.drg_chrgitem_id, dc.drg_chrgitem_name
+	ORDER BY i.dchdate ASC, drg_chrgitem_id ASC`, matchWhere)
+
+	incCatRows, err := db.Query(incCatQuery, startDate, endDate)
+	incCatMap := make(map[string][]OpohIncomeCategoryItem)
+	if err == nil {
+		for incCatRows.Next() {
+			var catDate, catCid, catLic, catName string
+			var catDrgId int
+			var incIncup, incOutprov, incOfc, incLgo, incSss, incOther, incTotal float64
+			if scanErr := incCatRows.Scan(&catDate, &catCid, &catLic, &catDrgId, &catName, &incIncup, &incOutprov, &incOfc, &incLgo, &incSss, &incOther, &incTotal); scanErr == nil {
+				if len(catDate) >= 10 {
+					catDate = catDate[:10]
+				}
+				key := fmt.Sprintf("%s|%s|%s", catDate, strings.TrimSpace(catCid), strings.TrimSpace(catLic))
+				incCatMap[key] = append(incCatMap[key], OpohIncomeCategoryItem{
+					ServiceType:     "IPD",
+					Vstdate:         catDate,
+					DrgChrgitemID:   catDrgId,
+					DrgChrgitemName: catName,
+					IncUCSIncup:     incIncup,
+					IncUCSOutprov:   incOutprov,
+					IncOFC:          incOfc,
+					IncLGO:          incLgo,
+					IncSSS:          incSss,
+					IncOther:        incOther,
+					IncTotal:        incTotal,
+				})
+			}
+		}
+		incCatRows.Close()
+	}
+
+	// 3. Query IPD Summary
 	query := fmt.Sprintf(`SELECT 
 		i.dchdate,
 		COALESCE(d.cid, '') AS cid,
@@ -556,7 +665,6 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		SUM(COALESCE(a.admdate, a.los, 1)) AS admdate_total,
 		SUM(COALESCE(a.rw, i.adjrw, 0)) AS adjrw_total,
 		COUNT(DISTINCT op.operation_id) AS operation_total,
-		COALESCE(SUM(a.income), 0) AS inc_total,
 
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS an_ucs_incup,
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS an_ucs_outprov,
@@ -577,14 +685,7 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		SUM(CASE WHEN p.hipdata_code = 'OFC' THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_ofc,
 		SUM(CASE WHEN p.hipdata_code = 'LGO' THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_lgo,
 		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_sss,
-		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_other,
-
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN a.income ELSE 0 END), 0) AS inc_ucs_incup,
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN a.income ELSE 0 END), 0) AS inc_ucs_outprov,
-		COALESCE(SUM(CASE WHEN p.hipdata_code = 'OFC' THEN a.income ELSE 0 END), 0) AS inc_ofc,
-		COALESCE(SUM(CASE WHEN p.hipdata_code = 'LGO' THEN a.income ELSE 0 END), 0) AS inc_lgo,
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN a.income ELSE 0 END), 0) AS inc_sss,
-		COALESCE(SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN a.income ELSE 0 END), 0) AS inc_other
+		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_other
 	FROM ipt i
 	JOIN an_stat a ON a.an = i.an
 	JOIN doctor d ON (d.code = i.admdoctor OR d.code = i.dch_doctor OR d.code = i.incharge_doctor)
@@ -617,7 +718,6 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 			&r.AdmdateTotal,
 			&r.AdjrwTotal,
 			&r.OperationTotal,
-			&r.IncTotal,
 			&r.AnUCSIncup,
 			&r.AnUCSOutprov,
 			&r.AnOFC,
@@ -636,12 +736,6 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 			&r.AdjrwLGO,
 			&r.AdjrwSSS,
 			&r.AdjrwOther,
-			&r.IncUCSIncup,
-			&r.IncUCSOutprov,
-			&r.IncOFC,
-			&r.IncLGO,
-			&r.IncSSS,
-			&r.IncOther,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning OPOH IPD row: %w", err)
@@ -671,6 +765,11 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 			r.Diagnoses = items
 		}
 
+		// Attach income categories
+		if items, ok := incCatMap[key]; ok {
+			r.IncomeCategories = items
+		}
+
 		records = append(records, r)
 	}
 
@@ -693,7 +792,6 @@ func CollectOpohOperations(db *sql.DB, doctors []OpohDoctor, startDate, endDate 
 		COALESCE(d.cid, '') AS cid,
 		COALESCE(d.licenseno, '') AS licenseno,
 		COUNT(DISTINCT ol.operation_id) AS case_total,
-		COALESCE(SUM(od.total_price), 0) AS inc_total,
 		ROUND(COALESCE(SUM(COALESCE(a.rw, i.adjrw, 0)), 0), 4) AS adjrw_total,
 
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR COALESCE(ip.hospmain, v.hospmain) IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS case_ucs_incup,
@@ -701,14 +799,7 @@ func CollectOpohOperations(db *sql.DB, doctors []OpohDoctor, startDate, endDate 
 		SUM(CASE WHEN p.hipdata_code = 'OFC' THEN 1 ELSE 0 END) AS case_ofc,
 		SUM(CASE WHEN p.hipdata_code = 'LGO' THEN 1 ELSE 0 END) AS case_lgo,
 		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN 1 ELSE 0 END) AS case_sss,
-		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN 1 ELSE 0 END) AS case_other,
-
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR COALESCE(ip.hospmain, v.hospmain) IN ('10703','10985','10986','10987','10988','10989','10990')) THEN od.total_price ELSE 0 END), 0) AS inc_ucs_incup,
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (v.pttype_in_chwpart = 'Y' OR hc.chwpart = '37' OR COALESCE(ip.hospmain, v.hospmain) IN ('10703','10985','10986','10987','10988','10989','10990')) THEN od.total_price ELSE 0 END), 0) AS inc_ucs_outprov,
-		COALESCE(SUM(CASE WHEN p.hipdata_code = 'OFC' THEN od.total_price ELSE 0 END), 0) AS inc_ofc,
-		COALESCE(SUM(CASE WHEN p.hipdata_code = 'LGO' THEN od.total_price ELSE 0 END), 0) AS inc_lgo,
-		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN od.total_price ELSE 0 END), 0) AS inc_sss,
-		COALESCE(SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN od.total_price ELSE 0 END), 0) AS inc_other
+		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN 1 ELSE 0 END) AS case_other
 	FROM operation_list ol
 	LEFT JOIN operation_detail od ON od.operation_id = ol.operation_id
 	LEFT JOIN ipt i ON i.an = ol.an
@@ -744,7 +835,6 @@ func CollectOpohOperations(db *sql.DB, doctors []OpohDoctor, startDate, endDate 
 			&cid,
 			&lic,
 			&r.CaseTotal,
-			&r.IncTotal,
 			&r.AdjrwTotal,
 			&r.CaseUCSIncup,
 			&r.CaseUCSOutprov,
@@ -752,12 +842,6 @@ func CollectOpohOperations(db *sql.DB, doctors []OpohDoctor, startDate, endDate 
 			&r.CaseLGO,
 			&r.CaseSSS,
 			&r.CaseOther,
-			&r.IncUCSIncup,
-			&r.IncUCSOutprov,
-			&r.IncOFC,
-			&r.IncLGO,
-			&r.IncSSS,
-			&r.IncOther,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning OPOH Operation row: %w", err)

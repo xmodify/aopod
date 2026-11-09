@@ -22,7 +22,6 @@ class OpohIpdService extends Model
         'admdate_total',
         'adjrw_total',
         'operation_total',
-        'inc_total',
         'an_ucs_incup',
         'an_ucs_outprov',
         'an_ofc',
@@ -41,12 +40,6 @@ class OpohIpdService extends Model
         'adjrw_lgo',
         'adjrw_sss',
         'adjrw_other',
-        'inc_ucs_incup',
-        'inc_ucs_outprov',
-        'inc_ofc',
-        'inc_lgo',
-        'inc_sss',
-        'inc_other',
     ];
 
     protected $casts = [
@@ -55,7 +48,6 @@ class OpohIpdService extends Model
         'admdate_total'       => 'integer',
         'adjrw_total'         => 'decimal:4',
         'operation_total'     => 'integer',
-        'inc_total'           => 'decimal:2',
         'an_ucs_incup'        => 'integer',
         'an_ucs_outprov'      => 'integer',
         'an_ofc'              => 'integer',
@@ -74,12 +66,6 @@ class OpohIpdService extends Model
         'adjrw_lgo'           => 'decimal:4',
         'adjrw_sss'           => 'decimal:4',
         'adjrw_other'         => 'decimal:4',
-        'inc_ucs_incup'       => 'decimal:2',
-        'inc_ucs_outprov'     => 'decimal:2',
-        'inc_ofc'             => 'decimal:2',
-        'inc_lgo'             => 'decimal:2',
-        'inc_sss'             => 'decimal:2',
-        'inc_other'           => 'decimal:2',
         'created_at'          => 'datetime',
         'updated_at'          => 'datetime',
     ];
@@ -92,4 +78,3 @@ class OpohIpdService extends Model
         return $this->belongsTo(Hospital::class, 'hospcode', 'hospcode');
     }
 }
-

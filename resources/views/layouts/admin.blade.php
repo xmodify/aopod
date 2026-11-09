@@ -262,9 +262,9 @@
         <div class="text-muted small px-3 mb-2 fw-bold text-uppercase" style="letter-spacing: 1px;">ระบบหลัก</div>
       </li>
 
-      @if(Auth::user()->canAccessEmr())
+      @if(Auth::user()->canAccessAemr())
       <li class="sidebar-menu-item">
-        <a href="{{ route('manage.emr.index') }}" class="sidebar-link {{ Request::is('manage/emr*') ? 'active' : '' }}">
+        <a href="{{ route('manage.aemr.index') }}" class="sidebar-link {{ Request::is('manage/aemr*') ? 'active' : '' }}">
           <i class="fa-solid fa-notes-medical fs-5" style="color: #06b6d4 !important;"></i>
           <span>A-EMR</span>
         </a>

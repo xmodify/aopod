@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EmrAccessLog extends Model
+class AemrAccessLog extends Model
 {
     use HasFactory;
 
-    protected $table = 'emr_access_logs';
+    protected $table = 'aemr_access_logs';
 
     const UPDATED_AT = null; // Append-only audit table
 

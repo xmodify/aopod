@@ -36,12 +36,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/agent/config', [\App\Http\Controllers\Api\AgentApiController::class, 'getConfig']);
     Route::post('/agent/heartbeat', [\App\Http\Controllers\Api\AgentApiController::class, 'heartbeat']);
     Route::post('/agent/task/complete', [\App\Http\Controllers\Api\AgentApiController::class, 'completeTask']);
-    Route::post('/agent/emr/poll-task', [\App\Http\Controllers\Api\AgentApiController::class, 'pollEmrTask']);
-    Route::post('/agent/emr/submit-result', [\App\Http\Controllers\Api\AgentApiController::class, 'submitEmrResult']);
+    Route::post('/agent/aemr/poll-task', [\App\Http\Controllers\Api\AgentApiController::class, 'pollAemrTask']);
+    Route::post('/agent/aemr/submit-result', [\App\Http\Controllers\Api\AgentApiController::class, 'submitAemrResult']);
     // OPOH Ingest API
     Route::post('/opoh/opd', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestOpd']);
     Route::post('/opoh/ipd', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestIpd']);
     Route::post('/opoh/operation', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestOperation']);
+    Route::post('/opoh/income-categories', [\App\Http\Controllers\Api\OpohApiController::class, 'ingestIncomeCategories']);
 });
 
 // Public / Token-less Lookup & Download Route for Agent

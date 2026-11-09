@@ -5,3 +5,18 @@ Stack trace:
 #0 {main}
   thrown in C:\Users\LENOVO\.gemini\antigravity\brain\a45c2da7-6ca5-4d0d-b9aa-a229e318a87c\scratch\test_opoh.php on line 2
 [04-Nov-2026 10:55:34 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 2
+[09-Nov-2026 02:20:11 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 1
+[09-Nov-2026 02:30:34 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 1
+[09-Nov-2026 04:13:23 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[09-Nov-2026 04:35:57 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[09-Nov-2026 04:36:15 UTC] PHP Warning:  require(C:\Users\LENOVO\.gemini\antigravity\brain\955ce824-4fa3-4aa7-b69e-da494e850316\scratch/../../../../../../Project Laravel/aopod/vendor/autoload.php): Failed to open stream: No such file or directory in C:\Users\LENOVO\.gemini\antigravity\brain\955ce824-4fa3-4aa7-b69e-da494e850316\scratch\test_opoh_views.php on line 3
+[09-Nov-2026 04:36:15 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\LENOVO\.gemini\antigravity\brain\955ce824-4fa3-4aa7-b69e-da494e850316\scratch/../../../../../../Project Laravel/aopod/vendor/autoload.php' (include_path='.;C:\php\pear') in C:\Users\LENOVO\.gemini\antigravity\brain\955ce824-4fa3-4aa7-b69e-da494e850316\scratch\test_opoh_views.php:3
+Stack trace:
+#0 {main}
+  thrown in C:\Users\LENOVO\.gemini\antigravity\brain\955ce824-4fa3-4aa7-b69e-da494e850316\scratch\test_opoh_views.php on line 3
+[09-Nov-2026 04:36:40 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[09-Nov-2026 04:40:25 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[09-Nov-2026 05:16:28 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[09-Nov-2026 05:21:19 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[09-Nov-2026 05:21:37 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[09-Nov-2026 05:22:52 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3

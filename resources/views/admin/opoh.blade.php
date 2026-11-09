@@ -72,10 +72,68 @@
     color: #be123c !important;
     border-bottom: 2px solid #fecdd3 !important;
   }
-  #doctorIpdTable tfoot tr {
+  #doctorIpdTable tfoot tr.tr-aoph {
     background: #ffe4e6 !important;
     color: #9f1239 !important;
     border-top: 2px solid #f43f5e !important;
+  }
+  #doctorIpdTable tfoot tr.tr-grand,
+  #doctorVisitsTable tfoot tr.tr-grand {
+    background: #ecfdf5 !important;
+    color: #065f46 !important;
+    border-top: 1px dashed #10b981 !important;
+  }
+  #doctorVisitsTable tfoot tr.tr-aoph {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+    border-top: 2px solid #0284c7 !important;
+  }
+
+  /* Doctor Income Modal Segment Buttons */
+  .doc-inc-type-btn {
+    border: none !important;
+    border-radius: 20px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    color: #475569 !important;
+    background: #f1f5f9 !important;
+    padding: 6px 14px !important;
+    transition: all 0.2s ease-in-out !important;
+    cursor: pointer !important;
+  }
+  .doc-inc-type-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+  }
+  .doc-inc-type-btn.active[data-type="ALL"],
+  .doc-inc-type-btn.active-all {
+    background: #1e293b !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(30, 41, 59, 0.3) !important;
+  }
+  .doc-inc-type-btn.active[data-type="OPD"],
+  .doc-inc-type-btn.active-opd {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35) !important;
+  }
+  .doc-inc-type-btn.active[data-type="IPD"],
+  .doc-inc-type-btn.active-ipd {
+    background: #e11d48 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35) !important;
+  }
+
+  /* Modal Table Styles */
+  #doctorIncomeTable th,
+  #doctorIncomeTable td {
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    padding: 8px 12px !important;
+  }
+  .col-inc-total {
+    min-width: 155px !important;
+    padding-right: 18px !important;
   }
 </style>
 @endpush
@@ -182,8 +240,8 @@
                     </div>
 
                     {{-- 2. เลือกปีงบ --}}
-                    <div style="min-width: 140px;">
-                        <select name="budget_year" id="budget_year_select" class="form-select form-select-sm shadow-sm" title="เลือกปีงบประมาณ">
+                    <div style="min-width: 185px;">
+                        <select name="budget_year" id="budget_year_select" class="form-select form-select-sm shadow-sm fw-semibold" title="เลือกปีงบประมาณ">
                             @foreach($budget_year_select as $by)
                                 <option value="{{ $by->LEAVE_YEAR_ID }}" {{ $budget_year == $by->LEAVE_YEAR_ID ? 'selected' : '' }}>
                                     {{ $by->LEAVE_YEAR_NAME }}
@@ -250,9 +308,15 @@
                     </li>
                 </ul>
 
-                <div class="text-muted small">
-                    <i class="fa-solid fa-circle-info text-info me-1"></i>
-                    แสดงข้อมูลแพทย์เฉพาะทางหมุนเวียนออกตรวจและดูแลผู้ป่วย ณ รพช. 6 แห่ง
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold shadow-sm d-flex align-items-center gap-1.5" onclick="exportMainDoctorTableToExcel()" title="ส่งออกตารางผลงานแพทย์เป็น Excel">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Excel ตารางผลงาน</span>
+                    </button>
+                    <div class="text-muted small d-none d-lg-inline">
+                        <i class="fa-solid fa-circle-info text-info me-1"></i>
+                        แพทย์เฉพาะทาง รพช. 6 แห่ง
+                    </div>
                 </div>
             </div>
 
@@ -270,6 +334,7 @@
                                     @foreach($hospitalsList as $hcode => $hname)
                                         <th style="min-width: 110px;" class="text-end">{{ $hname }}</th>
                                     @endforeach
+                                    <th style="min-width: 130px;" class="text-end">ค่ารักษารวม (บาท)</th>
                                     <th style="min-width: 130px;" class="text-end bg-light border-start text-secondary">
                                         รพ.อำนาจเจริญ
                                         <div class="small fw-normal text-muted" style="font-size: 0.70rem;">(ตรวจ ณ แม่ข่าย)</div>
@@ -314,13 +379,19 @@
                                             {{ $hv > 0 ? number_format($hv) : '-' }}
                                         </td>
                                     @endforeach
+                                    <td class="text-end">
+                                        <div class="fw-bold text-dark">{{ number_format($row['inc'] ?? 0, 2) }}</div>
+                                        <button type="button" class="btn btn-outline-success btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('{{ $doc->id }}', '{{ addslashes($doc->doctor_name) }}', 'OPD')" title="ดูรายละเอียด 16 หมวดค่ารักษา">
+                                            <i class="fa-solid fa-list-check me-1"></i>16 หมวด
+                                        </button>
+                                    </td>
                                     <td class="text-end bg-light border-start {{ $row['amnat_visits'] > 0 ? 'fw-bold text-secondary' : 'text-muted opacity-50' }}">
                                         {{ $row['amnat_visits'] > 0 ? number_format($row['amnat_visits']) : '-' }}
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="{{ 4 + count($hospitalsList) }}" class="text-center py-4 text-muted">
+                                    <td colspan="{{ 5 + count($hospitalsList) }}" class="text-center py-4 text-muted">
                                         <i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>
                                         ยังไม่มีข้อมูลการออกตรวจในช่วงเวลาที่เลือก
                                     </td>
@@ -328,15 +399,44 @@
                                 @endforelse
                             </tbody>
                             <tfoot>
-                                <tr>
-                                    <td class="text-end fw-bold">รวมทั้งหมด (รพช.)</td>
-                                    <td class="text-end fw-bolder">{{ number_format($colTotals['cumulative']) }}</td>
+                                {{-- แถวรวมที่ 1: รวมเฉพาะแพทย์ AOPH (22 ท่าน) --}}
+                                <tr class="tr-aoph align-middle">
+                                    <td class="text-start fw-bold">
+                                        <i class="fa-solid fa-user-doctor me-1 text-primary"></i> รวมแพทย์ AOPH (22 ท่าน)
+                                    </td>
+                                    <td class="text-end fw-bolder text-secondary">{{ number_format($colTotals['cumulative']) }}</td>
                                     <td class="text-end fw-bolder bg-primary bg-opacity-10 text-primary">{{ number_format($colTotals['period']) }}</td>
                                     @foreach($hospitalsList as $hcode => $hname)
                                         <td class="text-end fw-bolder">{{ number_format($colTotals[$hcode]) }}</td>
                                     @endforeach
+                                    <td class="text-end">
+                                        <div class="fw-bolder text-success">฿{{ number_format($colTotals['inc'] ?? 0, 2) }}</div>
+                                        <button type="button" class="btn btn-outline-primary btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('AOPH', 'รวมแพทย์ AOPH (22 ท่าน)', 'OPD')" title="ดู 16 หมวดค่ารักษาเฉพาะแพทย์ AOPH">
+                                            <i class="fa-solid fa-list-check me-1"></i>16 หมวด
+                                        </button>
+                                    </td>
                                     <td class="text-end fw-bolder bg-light border-start text-secondary">
                                         {{ number_format($colTotals['amnat']) }}
+                                    </td>
+                                </tr>
+                                {{-- แถวรวมที่ 2: รวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์) --}}
+                                <tr class="tr-grand align-middle">
+                                    <td class="text-start fw-bolder text-success">
+                                        <i class="fa-solid fa-hospital me-1 text-success"></i> รวมทั้งหมด รพช. (ไม่แยกแพทย์)
+                                    </td>
+                                    <td class="text-end fw-bolder">{{ number_format($grandOpdTotals['cumulative']) }}</td>
+                                    <td class="text-end fw-bolder bg-success bg-opacity-10 text-success">{{ number_format($grandOpdTotals['period']) }}</td>
+                                    @foreach($hospitalsList as $hcode => $hname)
+                                        <td class="text-end fw-bolder">{{ number_format($grandOpdTotals[$hcode] ?? 0) }}</td>
+                                    @endforeach
+                                    <td class="text-end">
+                                        <div class="fw-bolder text-success fs-6">฿{{ number_format($grandOpdTotals['inc'] ?? 0, 2) }}</div>
+                                        <button type="button" class="btn btn-success btn-xs rounded-pill px-2.5 py-0.5 mt-0.5 text-white shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('ALL', 'ยอดรวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์)', 'OPD')" title="ดู 16 หมวดค่ารักษาภาพรวมทั้งหมด (ไม่แยกแพทย์)">
+                                            <i class="fa-solid fa-layer-group me-1"></i>16 หมวด (ภาพรวม)
+                                        </button>
+                                    </td>
+                                    <td class="text-end fw-bolder bg-light border-start text-secondary">
+                                        {{ number_format($grandOpdTotals['amnat']) }}
                                     </td>
                                 </tr>
                             </tfoot>
@@ -409,8 +509,11 @@
                                             {{ $ha > 0 ? number_format($ha) : '-' }}
                                         </td>
                                     @endforeach
-                                    <td class="text-end fw-bold text-dark">
-                                        {{ number_format($row['inc'], 2) }}
+                                    <td class="text-end">
+                                        <div class="fw-bold text-dark">{{ number_format($row['inc'], 2) }}</div>
+                                        <button type="button" class="btn btn-outline-danger btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('{{ $doc->id }}', '{{ addslashes($doc->doctor_name) }}', 'IPD')" title="ดูรายละเอียด 16 หมวดค่ารักษา">
+                                            <i class="fa-solid fa-list-check me-1"></i>16 หมวด
+                                        </button>
                                     </td>
                                     <td class="text-end bg-light border-start {{ $row['amnat_ans'] > 0 ? 'fw-bold text-secondary' : 'text-muted opacity-50' }}">
                                         {{ $row['amnat_ans'] > 0 ? number_format($row['amnat_ans']) : '-' }}
@@ -426,8 +529,11 @@
                                 @endforelse
                             </tbody>
                             <tfoot>
-                                <tr>
-                                    <td class="text-end fw-bold">รวมทั้งหมด (รพช.)</td>
+                                {{-- แถวรวมที่ 1: รวมเฉพาะแพทย์ AOPH (22 ท่าน) --}}
+                                <tr class="tr-aoph align-middle">
+                                    <td class="text-start fw-bold">
+                                        <i class="fa-solid fa-user-doctor me-1 text-danger"></i> รวมแพทย์ AOPH (22 ท่าน)
+                                    </td>
                                     <td class="text-end fw-bolder">{{ number_format($colIpdTotals['cumulative']) }}</td>
                                     <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger">{{ number_format($colIpdTotals['period']) }}</td>
                                     <td class="text-end fw-bolder">{{ number_format($colIpdTotals['los']) }}</td>
@@ -435,9 +541,36 @@
                                     @foreach($hospitalsList as $hcode => $hname)
                                         <td class="text-end fw-bolder">{{ number_format($colIpdTotals[$hcode]) }}</td>
                                     @endforeach
-                                    <td class="text-end fw-bolder text-dark">{{ number_format($colIpdTotals['inc'], 2) }}</td>
+                                    <td class="text-end">
+                                        <div class="fw-bolder text-danger">฿{{ number_format($colIpdTotals['inc'] ?? 0, 2) }}</div>
+                                        <button type="button" class="btn btn-outline-danger btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('AOPH', 'รวมแพทย์ AOPH (22 ท่าน)', 'IPD')" title="ดู 16 หมวดค่ารักษาเฉพาะแพทย์ AOPH">
+                                            <i class="fa-solid fa-list-check me-1"></i>16 หมวด
+                                        </button>
+                                    </td>
                                     <td class="text-end fw-bolder bg-light border-start text-secondary">
                                         {{ number_format($colIpdTotals['amnat']) }}
+                                    </td>
+                                </tr>
+                                {{-- แถวรวมที่ 2: รวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์) --}}
+                                <tr class="tr-grand align-middle">
+                                    <td class="text-start fw-bolder text-success">
+                                        <i class="fa-solid fa-hospital me-1 text-success"></i> รวมทั้งหมด รพช. (ไม่แยกแพทย์)
+                                    </td>
+                                    <td class="text-end fw-bolder">{{ number_format($grandIpdTotals['cumulative']) }}</td>
+                                    <td class="text-end fw-bolder bg-success bg-opacity-10 text-success">{{ number_format($grandIpdTotals['period']) }}</td>
+                                    <td class="text-end fw-bolder">{{ number_format($grandIpdTotals['los']) }}</td>
+                                    <td class="text-end fw-bolder">{{ number_format($grandIpdTotals['rw'], 4) }}</td>
+                                    @foreach($hospitalsList as $hcode => $hname)
+                                        <td class="text-end fw-bolder">{{ number_format($grandIpdTotals[$hcode] ?? 0) }}</td>
+                                    @endforeach
+                                    <td class="text-end">
+                                        <div class="fw-bolder text-success fs-6">฿{{ number_format($grandIpdTotals['inc'] ?? 0, 2) }}</div>
+                                        <button type="button" class="btn btn-success btn-xs rounded-pill px-2.5 py-0.5 mt-0.5 text-white shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('ALL', 'ยอดรวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์)', 'IPD')" title="ดู 16 หมวดค่ารักษาภาพรวมทั้งหมด (ไม่แยกแพทย์)">
+                                            <i class="fa-solid fa-layer-group me-1"></i>16 หมวด (ภาพรวม)
+                                        </button>
+                                    </td>
+                                    <td class="text-end fw-bolder bg-light border-start text-secondary">
+                                        {{ number_format($grandIpdTotals['amnat']) }}
                                     </td>
                                 </tr>
                             </tfoot>
@@ -740,6 +873,103 @@
         </div>
     </div>
 </div>
+
+{{-- 6. Modal รายได้แยกตาม 16 หมวดค่ารักษาพยาบาลของแพทย์ --}}
+<div class="modal fade" id="doctorIncomeModal" tabindex="-1" aria-labelledby="doctorIncomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-2 pt-4 px-4 align-items-start">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-4 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                        <i class="fa-solid fa-file-invoice-dollar fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 fw-bold">
+                                รายได้ตาม 16 หมวดค่ารักษา
+                            </span>
+                            <span id="docIncomeSpecBadge" class="badge rounded-pill bg-light text-dark border px-2.5 py-1 fw-semibold">
+                                -
+                            </span>
+                        </div>
+                        <h5 class="modal-title fw-bold text-dark mb-0" id="docIncomeDoctorName">ชื่อแพทย์</h5>
+                        <p class="text-muted small mb-0 mt-1">
+                            ช่วงเวลา: <strong class="text-dark">{{ $thaiDateRangeText }}</strong> | เลข ว.: <span id="docIncomeLicense" class="font-monospace">-</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    {{-- Toggle OPD / IPD / ALL --}}
+                    <div class="btn-group btn-group-sm shadow-sm p-1 rounded-pill bg-light border" role="group" id="docIncomeTypeGroup">
+                        <button type="button" class="btn btn-sm px-3 fw-bold doc-inc-type-btn active active-all" data-type="ALL">
+                            <i class="fa-solid fa-layer-group me-1"></i>ทั้งหมด
+                        </button>
+                        <button type="button" class="btn btn-sm px-3 fw-bold doc-inc-type-btn" data-type="OPD">
+                            <i class="fa-solid fa-hospital-user me-1"></i>OPD
+                        </button>
+                        <button type="button" class="btn btn-sm px-3 fw-bold doc-inc-type-btn" data-type="IPD">
+                            <i class="fa-solid fa-bed-pulse me-1"></i>IPD
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="exportDoctorIncomeToExcel()" title="ส่งออกตาราง 16 หมวดเป็นไฟล์ Excel">
+                        <i class="fa-solid fa-file-excel me-1"></i> Excel
+                    </button>
+                    <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div class="modal-body px-4 py-3">
+                {{-- Loader --}}
+                <div id="docIncomeLoader" class="text-center py-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="mt-2 text-muted small fw-semibold">กำลังโหลดข้อมูล 16 หมวดค่ารักษา...</div>
+                </div>
+
+                {{-- Content Container --}}
+                <div id="docIncomeContent" class="d-none">
+                    {{-- 6 Rights Summary Row --}}
+                    <div class="row g-2 mb-3" id="docIncomeCardsRow">
+                        {{-- Injected dynamically --}}
+                    </div>
+
+                    <div class="table-responsive rounded-3 border shadow-sm">
+                        <table class="table table-hover align-middle mb-0 w-100" id="doctorIncomeTable" style="font-size: 0.88rem;">
+                            <thead class="table-light sticky-top">
+                                <tr class="text-center align-middle">
+                                    <th class="text-start" style="min-width: 260px;">กลุ่มหมวดค่ารักษา (drg_chrgitem)</th>
+                                    <th style="min-width: 120px;" class="text-end">UC ในจังหวัด</th>
+                                    <th style="min-width: 120px;" class="text-end">UC ต่างจังหวัด</th>
+                                    <th style="min-width: 120px;" class="text-end">ข้าราชการ</th>
+                                    <th style="min-width: 110px;" class="text-end">อปท.</th>
+                                    <th style="min-width: 120px;" class="text-end">ประกันสังคม</th>
+                                    <th style="min-width: 110px;" class="text-end">อื่นๆ/ชำระเงิน</th>
+                                    <th style="min-width: 155px;" class="text-end bg-success bg-opacity-10 text-success fw-bolder col-inc-total">ยอดรวม (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="docIncomeTableBody">
+                                {{-- Rows injected dynamically --}}
+                            </tbody>
+                            <tfoot id="docIncomeTableFoot" class="fw-bold text-end">
+                                {{-- Footer totals injected dynamically --}}
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pb-4 px-4 d-flex justify-content-between align-items-center">
+                <span class="text-muted small">
+                    <i class="fa-solid fa-circle-info text-info me-1"></i>ประมวลผลจากข้อมูลค่ารักษาพยาบาล (<span class="font-monospace">opitemrece</span>) เชื่อมโยงตามเลข ว. และรหัสแพทย์
+                </span>
+                <button type="button" class="btn btn-secondary px-4 rounded-3" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -748,6 +978,7 @@
 <script src="{{ asset('assets/vendor/flatpickr/flatpickr-th-buddhist.js') }}"></script>
 <script src="{{ asset('assets/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/datatables/js/dataTables.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/xlsx.full.min.js') }}"></script>
 <script>
 $(document).ready(function() {
     // 1. Initialize Flatpickr Buddhist Calendar
@@ -1158,6 +1389,173 @@ $(document).ready(function() {
             }
         });
     });
+
+    // 10. Doctor 16 Income Categories Modal
+    let currentDocIncomeId = null;
+    let currentDocIncomeType = 'ALL';
+
+    function updateDocIncomeBtnStyles(selectedType) {
+        $('.doc-inc-type-btn').removeClass('active active-all active-opd active-ipd');
+        const $target = $('.doc-inc-type-btn[data-type="' + selectedType + '"]');
+        $target.addClass('active active-' + selectedType.toLowerCase());
+    }
+
+    window.openDoctorIncomeModal = function(doctorId, doctorName, defaultType = 'ALL') {
+        currentDocIncomeId = doctorId;
+        currentDocIncomeType = defaultType;
+
+        $('#docIncomeDoctorName').text(doctorName);
+        updateDocIncomeBtnStyles(defaultType);
+
+        $('#docIncomeLoader').removeClass('d-none');
+        $('#docIncomeContent').addClass('d-none');
+        const modalEl = new bootstrap.Modal(document.getElementById('doctorIncomeModal'));
+        modalEl.show();
+
+        fetchDoctorIncomeData();
+    };
+
+    $('.doc-inc-type-btn').on('click', function() {
+        const type = $(this).data('type');
+        currentDocIncomeType = type;
+        updateDocIncomeBtnStyles(type);
+        fetchDoctorIncomeData();
+    });
+
+    function fetchDoctorIncomeData() {
+        if (!currentDocIncomeId) return;
+        $('#docIncomeLoader').removeClass('d-none');
+        $('#docIncomeContent').addClass('d-none');
+
+        $.ajax({
+            url: "{{ url('manage/opoh/doctors') }}/" + currentDocIncomeId + "/income-categories",
+            type: 'GET',
+            data: {
+                service_type: currentDocIncomeType,
+                start_date: '{{ $current_start }}',
+                end_date: '{{ $current_end }}'
+            },
+            success: function(res) {
+                $('#docIncomeLoader').addClass('d-none');
+                $('#docIncomeContent').removeClass('d-none');
+
+                if (!res.success) {
+                    Swal.fire('ข้อผิดพลาด', res.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
+                    return;
+                }
+
+                $('#docIncomeSpecBadge').text(res.doctor.specialty_name || '-');
+                $('#docIncomeLicense').text(res.doctor.licenseno || '-');
+
+                // Render Rows
+                let tbodyHtml = '';
+                res.categories.forEach(function(row) {
+                    tbodyHtml += `
+                        <tr>
+                            <td class="fw-bold text-dark text-start">${row.drg_chrgitem_name}</td>
+                            <td class="text-end ${row.ucs_incup > 0 ? 'text-dark' : 'text-muted opacity-50'}">${row.ucs_incup > 0 ? Number(row.ucs_incup).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-'}</td>
+                            <td class="text-end ${row.ucs_outprov > 0 ? 'text-dark' : 'text-muted opacity-50'}">${row.ucs_outprov > 0 ? Number(row.ucs_outprov).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-'}</td>
+                            <td class="text-end ${row.ofc > 0 ? 'text-dark' : 'text-muted opacity-50'}">${row.ofc > 0 ? Number(row.ofc).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-'}</td>
+                            <td class="text-end ${row.lgo > 0 ? 'text-dark' : 'text-muted opacity-50'}">${row.lgo > 0 ? Number(row.lgo).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-'}</td>
+                            <td class="text-end ${row.sss > 0 ? 'text-dark' : 'text-muted opacity-50'}">${row.sss > 0 ? Number(row.sss).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-'}</td>
+                            <td class="text-end ${row.other > 0 ? 'text-dark' : 'text-muted opacity-50'}">${row.other > 0 ? Number(row.other).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-'}</td>
+                            <td class="text-end col-inc-total fw-bold text-success bg-success bg-opacity-10">${Number(row.total).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        </tr>
+                    `;
+                });
+                $('#docIncomeTableBody').html(tbodyHtml);
+
+                // Render Foot
+                const t = res.totals;
+                const tfootHtml = `
+                    <tr class="fw-bold align-middle bg-success bg-opacity-10" style="border-top: 2px solid #16a34a;">
+                        <td class="text-center fw-bolder text-dark">รวมทั้งหมด (16 หมวด)</td>
+                        <td class="text-end fw-bold">${Number(t.ucs_incup).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="text-end fw-bold">${Number(t.ucs_outprov).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="text-end fw-bold">${Number(t.ofc).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="text-end fw-bold">${Number(t.lgo).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="text-end fw-bold">${Number(t.sss).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="text-end fw-bold">${Number(t.other).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="text-end col-inc-total fw-bolder text-success fs-6 bg-success bg-opacity-25">฿${Number(t.total).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>
+                `;
+                $('#docIncomeTableFoot').html(tfootHtml);
+
+                // Render 6 KPI Cards
+                const grand = t.total > 0 ? t.total : 1;
+                const rightsMap = [
+                    { name: 'UC ในจังหวัด', val: t.ucs_incup, color: '#0284c7', icon: 'fa-id-card' },
+                    { name: 'UC ต่างจังหวัด', val: t.ucs_outprov, color: '#06b6d4', icon: 'fa-plane-departure' },
+                    { name: 'ข้าราชการ (OFC)', val: t.ofc, color: '#16a34a', icon: 'fa-building-columns' },
+                    { name: 'อปท. (LGO)', val: t.lgo, color: '#d97706', icon: 'fa-landmark' },
+                    { name: 'ประกันสังคม (SSS)', val: t.sss, color: '#9333ea', icon: 'fa-shield-halved' },
+                    { name: 'ชำระเงิน/อื่นๆ', val: t.other, color: '#64748b', icon: 'fa-money-bill-wave' }
+                ];
+                let cardsHtml = '';
+                rightsMap.forEach(function(r) {
+                    const pct = ((r.val / grand) * 100).toFixed(1);
+                    cardsHtml += `
+                        <div class="col-6 col-md-4 col-xl-2">
+                            <div class="card h-100 border rounded-3 p-2 shadow-sm bg-white" style="border-left: 4px solid ${r.color} !important;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="badge rounded-pill fw-bold" style="background-color: ${r.color}15; color: ${r.color}; font-size: 0.68rem;">
+                                        <i class="fa-solid ${r.icon} me-1"></i>${r.name}
+                                    </span>
+                                    <span class="text-muted fw-bold" style="font-size: 0.70rem;">${pct}%</span>
+                                </div>
+                                <div class="mt-0.5">
+                                    <div class="fw-bold text-dark" style="font-size: 0.88rem;">฿${Number(r.val).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#docIncomeCardsRow').html(cardsHtml);
+            },
+            error: function() {
+                $('#docIncomeLoader').addClass('d-none');
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อข้อมูลรายได้ของแพทย์ได้', 'error');
+            }
+        });
+    }
+
+    window.exportTableToExcel = function(tableId, filename, sheetName) {
+        if (typeof XLSX === 'undefined') {
+            alert('กรุณารอไลบรารี XLSX โหลดสักครู่');
+            return;
+        }
+        const tableSelect = document.getElementById(tableId);
+        if (!tableSelect) return;
+        let cleanSheet = (sheetName || 'Sheet1').replace(/[:\\/?*\[\]]/g, '').substring(0, 31);
+        const wb = XLSX.utils.table_to_book(tableSelect, { sheet: cleanSheet });
+        let cleanFilename = (filename ? filename : 'excel_export').replace(/[\/\\:\*\?"<>\|]+/g, '_');
+        const fname = cleanFilename + '.xlsx';
+        XLSX.writeFile(wb, fname);
+    };
+
+    window.exportDoctorIncomeToExcel = function() {
+        let rawDocName = $('#docIncomeDoctorName').text().trim() || 'แพทย์';
+        let cleanDocName = rawDocName.replace(/[\s\.\/\\:\*\?"<>\|]+/g, '_').replace(/^_+|_+$/g, '');
+        let typeText = currentDocIncomeType === 'ALL' ? 'รวมทั้งหมด_OPD_IPD' : (currentDocIncomeType === 'OPD' ? 'ผู้ป่วยนอก_OPD' : 'ผู้ป่วยใน_IPD');
+        let dateText = '{{ $current_start }}_ถึง_{{ $current_end }}';
+
+        let filename = 'รายงาน16หมวดค่ารักษา_' + cleanDocName + '_' + typeText + '_' + dateText;
+        let sheetName = (cleanDocName.length > 25 ? cleanDocName.substring(0, 25) : cleanDocName);
+
+        exportTableToExcel('doctorIncomeTable', filename, sheetName);
+    };
+
+    window.exportMainDoctorTableToExcel = function() {
+        const isOpd = $('#pills-admin-opd-tab').hasClass('active');
+        const tableId = isOpd ? 'doctorVisitsTable' : 'doctorIpdTable';
+        const typeText = isOpd ? 'ผู้ป่วยนอก_OPD' : 'ผู้ป่วยใน_IPD';
+        const dateText = '{{ $current_start }}_ถึง_{{ $current_end }}';
+
+        let filename = 'รายงานสถิติผลงานแพทย์_AOPH_' + typeText + '_' + dateText;
+        let sheetName = (isOpd ? 'สถิติ_OPD' : 'สถิติ_IPD');
+
+        exportTableToExcel(tableId, filename, sheetName);
+    };
 });
 </script>
 @endpush

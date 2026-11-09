@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Hospital;
-use App\Models\EmrAccessLog;
+use App\Models\AemrAccessLog;
 use App\Services\Bms\BmsSessionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -148,7 +148,7 @@ class BmsAutoLoginController extends Controller
             }
 
             // เมื่อเปิดจาก HOSxP (ทั้ง Dashboard URL และ Patient Add-on) ➔ ส่งไปหน้าจอ Dedicated Clinical Viewer (ไร้ Sidebar)
-            return redirect()->route('bms.emr.viewer', [
+            return redirect()->route('bms.aemr.viewer', [
                 'cid' => !empty($patientCid) ? preg_replace('/\D/', '', $patientCid) : '',
                 'hn'  => $context['hn'] ?? '',
                 'vn'  => $context['vn'] ?? '',

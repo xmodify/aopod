@@ -1,42 +1,29 @@
-@extends('layouts.admin')
+@extends('layouts.bms')
 
-@section('title', 'A-EMR - AOPOD')
-@section('header_title')
-<span class="d-inline-flex align-items-center gap-2 flex-wrap">
-  <span>A-EMR</span>
-  <span class="badge bg-light text-secondary border fw-normal d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-3 shadow-2xs" 
-        style="font-size: 0.78rem; font-family: monospace; letter-spacing: 0; cursor: pointer; user-select: all;" 
-        onclick="navigator.clipboard.writeText('{{ url('/bms/aemr') }}'); const btn = this.querySelector('.copy-icon'); btn.className='fa-solid fa-check text-success copy-icon'; setTimeout(() => btn.className='fa-regular fa-copy copy-icon', 2000);"
-        title="คลิกเพื่อคัดลอก URL สำหรับตั้งค่าใน HOSxP">
-    <i class="fa-solid fa-link text-info"></i>
-    <span class="text-muted fw-semibold">HOSxP URL:</span>
-    <span class="text-primary fw-bold">{{ url('/bms/aemr') }}</span>
-    <i class="fa-regular fa-copy ms-1 text-muted copy-icon"></i>
-  </span>
-</span>
-@endsection
+@section('title', 'A-EMR - HOSxP')
+@section('header_title', 'A-EMR')
 
 @push('styles')
 <style>
-  .emr-search-card {
+  .aemr-search-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(6, 182, 212, 0.08) 100%);
     border: 1px solid rgba(6, 182, 212, 0.25);
     border-radius: 14px;
     box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
   }
 
-  .emr-input-group {
+  .aemr-input-group {
     border-radius: 10px;
     background: #ffffff;
     border: 1.5px solid #cbd5e1;
     transition: all 0.2s ease;
     overflow: hidden;
   }
-  .emr-input-group:focus-within {
+  .aemr-input-group:focus-within {
     border-color: #06b6d4;
     box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
   }
-  .emr-input-group input {
+  .aemr-input-group input {
     border: none !important;
     font-size: 1rem;
     font-weight: 600;
@@ -44,7 +31,7 @@
     padding: 0.35rem 0.5rem;
     box-shadow: none !important;
   }
-  .emr-input-group input::placeholder {
+  .aemr-input-group input::placeholder {
     font-size: 0.85rem;
     font-weight: 400;
     letter-spacing: normal;
@@ -356,26 +343,10 @@
 <div class="row g-3">
     <!-- 1. Search Box (Clean & Compact) -->
     <div class="col-12">
-        <div class="emr-search-card p-2.5 px-md-3 py-md-2.5">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
-                <div>
-                    <h6 class="fw-bold mb-0 text-slate-800 d-flex align-items-center gap-1.5" style="font-size: 0.95rem;">
-                        <i class="fa-solid fa-notes-medical text-info"></i> A-EMR : สืบค้นประวัติการรักษาผู้ป่วยข้ามโรงพยาบาล
-                    </h6>
-                </div>
-                @if(Auth::user()->isAdmin())
-                <div>
-                    <a href="{{ route('manage.emr.logs') }}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-3 fw-semibold shadow-sm" style="border-color: #cbd5e1; background: #ffffff; font-size: 0.78rem;">
-                        <i class="fa-solid fa-shield-halved text-primary"></i>
-                        <span>ประวัติการใช้งาน (Audit Logs)</span>
-                    </a>
-                </div>
-                @endif
-            </div>
-
+        <div class="aemr-search-card p-2 px-md-3 py-md-2">
             <form id="emrSearchForm" class="row g-2 align-items-center" onsubmit="handleSearch(event)">
                 <div class="col-12 col-md-9 col-lg-10">
-                    <div class="emr-input-group d-flex align-items-center px-2.5 py-0.5">
+                    <div class="aemr-input-group d-flex align-items-center px-2.5 py-0.5">
                         <i class="fa-solid fa-id-card text-muted fs-6 me-2"></i>
                         <input type="text" id="cidInput" class="form-control" 
                                placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก หรือ สแกน Smart Card" 
@@ -1024,6 +995,39 @@
         cidInput.focus();
     }
 
+    // Clean sensitive BMS Session parameters from Address Bar
+    (function cleanUrlTokens() {
+        try {
+            const url = new URL(window.location.href);
+            const sensitiveParams = [
+                'bms-session-id', 'bms_session_id', 'sessionId', 'session_id',
+                'marketplace_token', 'marketplace-token', 'token'
+            ];
+            let changed = false;
+            sensitiveParams.forEach(p => {
+                if (url.searchParams.has(p)) {
+                    url.searchParams.delete(p);
+                    changed = true;
+                }
+            });
+            if (changed) {
+                window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : ''));
+            }
+        } catch (e) {
+            console.warn('URL cleaning error:', e);
+        }
+    })();
+
+    // Auto-search if initial CID is passed from HOSxP
+    document.addEventListener('DOMContentLoaded', () => {
+        const initialCid = "{{ $initialCid ?? '' }}";
+        if (initialCid && initialCid.replace(/\D/g, '').length === 13) {
+            cidInput.value = initialCid;
+            handleSearch();
+        }
+    });
+
+
     async function handleSearch(e) {
         if (e) e.preventDefault();
         const cid = cidInput.value.replace(/\D/g, '');
@@ -1048,7 +1052,7 @@
         document.getElementById('searchBtn').disabled = true;
 
         try {
-            const response = await fetch("{{ route('manage.emr.search') }}", {
+            const response = await fetch("{{ route('manage.aemr.search') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1073,7 +1077,7 @@
             }
 
             currentPatientData = data;
-            renderEmrData(data);
+            renderAemrData(data);
             document.getElementById('emrResultContainer').classList.remove('d-none');
 
         } catch (error) {
@@ -1110,7 +1114,7 @@
 
     let activeHospitalFilter = 'ALL';
 
-    function renderEmrData(data) {
+    function renderAemrData(data) {
         const pt = data.patient;
         document.getElementById('resPatientName').textContent = pt.full_name || '-';
         document.getElementById('resPatientHn').textContent = pt.hn || '-';
@@ -1353,7 +1357,6 @@
                 }
 
                 // Build Department / Ward Column
-                // Build Department / Ward Column
                 let deptColHtml = '';
                 if (isIpd) {
                     deptColHtml = `
@@ -1552,7 +1555,7 @@
         }
 
         try {
-            const response = await fetch("{{ route('manage.emr.visit-detail') }}", {
+            const response = await fetch("{{ route('manage.aemr.visit-detail') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

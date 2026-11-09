@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
-class EmrService
+class AemrService
 {
     protected SmartEmrService $smartEmrService;
 
@@ -273,12 +273,12 @@ class EmrService
                 return $results;
             }
 
-            $batchId = 'emr_pt_' . time() . '_' . Str::random(8);
+            $batchId = 'aemr_pt_' . time() . '_' . Str::random(8);
             $pendingHospcodes = [];
 
             // 1. Dispatch reverse tasks into cache for all active hospital agents
             foreach ($hospitals as $hosp) {
-                Cache::put("agent_emr_task_{$hosp->hospcode}", [
+                Cache::put("agent_aemr_task_{$hosp->hospcode}", [
                     'task_id'       => $batchId,
                     'type'          => 'patient_search',
                     'cid'           => $cleanCid,
@@ -297,7 +297,7 @@ class EmrService
 
             while ($elapsedMs < $maxWaitMs && !empty($pendingHospcodes)) {
                 foreach ($pendingHospcodes as $hCode => $hospObj) {
-                    $resultKey = "agent_emr_result_{$batchId}_{$hCode}";
+                    $resultKey = "agent_aemr_result_{$batchId}_{$hCode}";
                     $cached = Cache::get($resultKey);
                     if ($cached !== null) {
                         unset($pendingHospcodes[$hCode]);
@@ -352,7 +352,7 @@ class EmrService
                     $calls = [];
                     foreach ($pendingHospcodes as $hosp) {
                         if (!empty($hosp->agent_url)) {
-                            $url = rtrim($hosp->agent_url, '/') . "/api/emr/patient?cid=" . $cleanCid;
+                            $url = rtrim($hosp->agent_url, '/') . "/api/aemr/patient?cid=" . $cleanCid;
                             $calls[] = $pool->as($hosp->hospcode)
                                             ->timeout(1)
                                             ->withToken($hosp->token_api ?? '')
@@ -446,10 +446,10 @@ class EmrService
             }
 
             $targetHospCode = $hospitalCode ?: ($hosp->hospcode ?? '10989');
-            $taskId = 'emr_vn_' . time() . '_' . Str::random(8);
+            $taskId = 'aemr_vn_' . time() . '_' . Str::random(8);
 
             // 1. Dispatch real-time reverse task to agent
-            Cache::put("agent_emr_task_{$targetHospCode}", [
+            Cache::put("agent_aemr_task_{$targetHospCode}", [
                 'task_id'       => $taskId,
                 'type'          => 'visit_detail',
                 'vn'            => $vn,
@@ -461,7 +461,7 @@ class EmrService
             $maxWaitMs = 2500;
             $intervalMs = 35;
             $elapsedMs = 0;
-            $resultKey = "agent_emr_result_{$taskId}_{$targetHospCode}";
+            $resultKey = "agent_aemr_result_{$taskId}_{$targetHospCode}";
 
             while ($elapsedMs < $maxWaitMs) {
                 $cached = Cache::get($resultKey);
@@ -486,7 +486,7 @@ class EmrService
 
             // 3. Fallback to direct HTTP if available
             $agentUrl = ($hosp && $hosp->agent_url) ? $hosp->agent_url : env('AOPOD_AGENT_URL', 'http://127.0.0.1:8989');
-            $url = rtrim($agentUrl, '/') . "/api/emr/visit?vn=" . urlencode($vn);
+            $url = rtrim($agentUrl, '/') . "/api/aemr/visit?vn=" . urlencode($vn);
 
             try {
                 $response = Http::timeout(1.5)->withToken($hosp->token_api ?? '')->get($url);

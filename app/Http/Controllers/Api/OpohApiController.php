@@ -9,6 +9,7 @@ use App\Models\OpohOpdService;
 use App\Models\OpohOperationService;
 use App\Models\OpohOpdDiagnosis;
 use App\Models\OpohIpdDiagnosis;
+use App\Models\OpohIncomeCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -86,18 +87,10 @@ class OpohApiController extends Controller
             'records.*.visit_telemed'     => ['nullable', 'integer', 'min:0'],
             'records.*.visit_ucs_incup'   => ['nullable', 'integer', 'min:0'],
             'records.*.visit_ucs_outprov' => ['nullable', 'integer', 'min:0'],
-            'records.*.inc_total'         => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_drug_total'    => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_lab_total'     => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_ucs_incup'     => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_ucs_outprov'   => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_ofc'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_lgo'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_sss'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_other'         => ['nullable', 'numeric', 'min:0'],
             'records.*.refer_to_origin'   => ['nullable', 'integer', 'min:0'],
             'records.*.admit_ipd'         => ['nullable', 'integer', 'min:0'],
             'records.*.diagnoses'         => ['nullable', 'array'],
+            'records.*.income_categories' => ['nullable', 'array'],
         ]);
 
         $inserted = 0;
@@ -147,15 +140,6 @@ class OpohApiController extends Controller
                         'visit_telemed'     => (int)($record['visit_telemed'] ?? 0),
                         'visit_ucs_incup'   => (int)($record['visit_ucs_incup'] ?? 0),
                         'visit_ucs_outprov' => (int)($record['visit_ucs_outprov'] ?? 0),
-                        'inc_total'         => (float)($record['inc_total'] ?? 0.00),
-                        'inc_drug_total'    => (float)($record['inc_drug_total'] ?? 0.00),
-                        'inc_lab_total'     => (float)($record['inc_lab_total'] ?? 0.00),
-                        'inc_ucs_incup'     => (float)($record['inc_ucs_incup'] ?? 0.00),
-                        'inc_ucs_outprov'   => (float)($record['inc_ucs_outprov'] ?? 0.00),
-                        'inc_ofc'           => (float)($record['inc_ofc'] ?? 0.00),
-                        'inc_lgo'           => (float)($record['inc_lgo'] ?? 0.00),
-                        'inc_sss'           => (float)($record['inc_sss'] ?? 0.00),
-                        'inc_other'         => (float)($record['inc_other'] ?? 0.00),
                         'refer_to_origin'   => (int)($record['refer_to_origin'] ?? 0),
                         'admit_ipd'         => (int)($record['admit_ipd'] ?? 0),
                     ]
@@ -179,6 +163,36 @@ class OpohApiController extends Controller
                             [
                                 'diag_name'   => $diag['diag_name'] ?? $icd10,
                                 'case_total'  => (int)($diag['case_total'] ?? 1),
+                            ]
+                        );
+                    }
+                }
+
+                // Ingest Income Categories if attached directly to OPD record
+                if (!empty($record['income_categories']) && is_array($record['income_categories'])) {
+                    foreach ($record['income_categories'] as $cat) {
+                        $drgId = (int)($cat['drg_chrgitem_id'] ?? 0);
+                        if ($drgId <= 0) continue;
+
+                        OpohIncomeCategory::updateOrCreate(
+                            [
+                                'hospcode'        => $hospcode,
+                                'service_type'    => 'OPD',
+                                'vstdate'         => $record['vstdate'],
+                                'doctor_id'       => $docId,
+                                'drg_chrgitem_id' => $drgId,
+                            ],
+                            [
+                                'spclty_code'       => $record['spclty_code'],
+                                'licenseno'         => $license,
+                                'drg_chrgitem_name' => $cat['drg_chrgitem_name'] ?? 'หมวดที่ ' . $drgId,
+                                'inc_ucs_incup'     => (float)($cat['inc_ucs_incup'] ?? 0.00),
+                                'inc_ucs_outprov'   => (float)($cat['inc_ucs_outprov'] ?? 0.00),
+                                'inc_ofc'           => (float)($cat['inc_ofc'] ?? 0.00),
+                                'inc_lgo'           => (float)($cat['inc_lgo'] ?? 0.00),
+                                'inc_sss'           => (float)($cat['inc_sss'] ?? 0.00),
+                                'inc_other'         => (float)($cat['inc_other'] ?? 0.00),
+                                'inc_total'         => (float)($cat['inc_total'] ?? 0.00),
                             ]
                         );
                     }
@@ -229,7 +243,6 @@ class OpohApiController extends Controller
             'records.*.admdate_total'     => ['nullable', 'integer', 'min:0'],
             'records.*.adjrw_total'       => ['nullable', 'numeric', 'min:0'],
             'records.*.operation_total'   => ['nullable', 'integer', 'min:0'],
-            'records.*.inc_total'         => ['nullable', 'numeric', 'min:0'],
 
             'records.*.an_ucs_incup'      => ['nullable', 'integer', 'min:0'],
             'records.*.an_ucs_outprov'    => ['nullable', 'integer', 'min:0'],
@@ -252,14 +265,8 @@ class OpohApiController extends Controller
             'records.*.adjrw_sss'         => ['nullable', 'numeric', 'min:0'],
             'records.*.adjrw_other'       => ['nullable', 'numeric', 'min:0'],
 
-            'records.*.inc_ucs_incup'     => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_ucs_outprov'   => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_ofc'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_lgo'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_sss'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_other'         => ['nullable', 'numeric', 'min:0'],
-
             'records.*.diagnoses'         => ['nullable', 'array'],
+            'records.*.income_categories' => ['nullable', 'array'],
         ]);
 
         $inserted = 0;
@@ -291,7 +298,6 @@ class OpohApiController extends Controller
                         'admdate_total'       => (int)($record['admdate_total'] ?? 0),
                         'adjrw_total'         => (float)($record['adjrw_total'] ?? 0.0000),
                         'operation_total'     => (int)($record['operation_total'] ?? 0),
-                        'inc_total'           => (float)($record['inc_total'] ?? 0.00),
 
                         'an_ucs_incup'        => (int)($record['an_ucs_incup'] ?? 0),
                         'an_ucs_outprov'      => (int)($record['an_ucs_outprov'] ?? 0),
@@ -313,13 +319,6 @@ class OpohApiController extends Controller
                         'adjrw_lgo'           => (float)($record['adjrw_lgo'] ?? 0.0000),
                         'adjrw_sss'           => (float)($record['adjrw_sss'] ?? 0.0000),
                         'adjrw_other'         => (float)($record['adjrw_other'] ?? 0.0000),
-
-                        'inc_ucs_incup'       => (float)($record['inc_ucs_incup'] ?? 0.00),
-                        'inc_ucs_outprov'     => (float)($record['inc_ucs_outprov'] ?? 0.00),
-                        'inc_ofc'             => (float)($record['inc_ofc'] ?? 0.00),
-                        'inc_lgo'             => (float)($record['inc_lgo'] ?? 0.00),
-                        'inc_sss'             => (float)($record['inc_sss'] ?? 0.00),
-                        'inc_other'           => (float)($record['inc_other'] ?? 0.00),
                     ]
                 );
                 $inserted++;
@@ -341,6 +340,36 @@ class OpohApiController extends Controller
                             [
                                 'diag_name'   => $diag['diag_name'] ?? $icd10,
                                 'case_total'  => (int)($diag['case_total'] ?? 1),
+                            ]
+                        );
+                    }
+                }
+
+                // Ingest IPD Income Categories if attached directly
+                if (!empty($record['income_categories']) && is_array($record['income_categories'])) {
+                    foreach ($record['income_categories'] as $cat) {
+                        $drgId = (int)($cat['drg_chrgitem_id'] ?? 0);
+                        if ($drgId <= 0) continue;
+
+                        OpohIncomeCategory::updateOrCreate(
+                            [
+                                'hospcode'        => $hospcode,
+                                'service_type'    => 'IPD',
+                                'vstdate'         => $record['dchdate'],
+                                'doctor_id'       => $docId,
+                                'drg_chrgitem_id' => $drgId,
+                            ],
+                            [
+                                'spclty_code'       => $record['spclty_code'],
+                                'licenseno'         => $license,
+                                'drg_chrgitem_name' => $cat['drg_chrgitem_name'] ?? 'หมวดที่ ' . $drgId,
+                                'inc_ucs_incup'     => (float)($cat['inc_ucs_incup'] ?? 0.00),
+                                'inc_ucs_outprov'   => (float)($cat['inc_ucs_outprov'] ?? 0.00),
+                                'inc_ofc'           => (float)($cat['inc_ofc'] ?? 0.00),
+                                'inc_lgo'           => (float)($cat['inc_lgo'] ?? 0.00),
+                                'inc_sss'           => (float)($cat['inc_sss'] ?? 0.00),
+                                'inc_other'         => (float)($cat['inc_other'] ?? 0.00),
+                                'inc_total'         => (float)($cat['inc_total'] ?? 0.00),
                             ]
                         );
                     }
@@ -391,7 +420,6 @@ class OpohApiController extends Controller
             'records.*.operation_name'    => ['required', 'string'],
             'records.*.op_type'           => ['nullable', 'string'],
             'records.*.case_total'        => ['nullable', 'integer', 'min:1'],
-            'records.*.inc_total'         => ['nullable', 'numeric', 'min:0'],
             'records.*.adjrw_total'       => ['nullable', 'numeric', 'min:0'],
 
             'records.*.case_ucs_incup'    => ['nullable', 'integer', 'min:0'],
@@ -400,13 +428,6 @@ class OpohApiController extends Controller
             'records.*.case_lgo'          => ['nullable', 'integer', 'min:0'],
             'records.*.case_sss'          => ['nullable', 'integer', 'min:0'],
             'records.*.case_other'        => ['nullable', 'integer', 'min:0'],
-
-            'records.*.inc_ucs_incup'     => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_ucs_outprov'   => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_ofc'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_lgo'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_sss'           => ['nullable', 'numeric', 'min:0'],
-            'records.*.inc_other'         => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $inserted = 0;
@@ -435,7 +456,6 @@ class OpohApiController extends Controller
                         'licenseno'       => $license,
                         'operation_name'  => $record['operation_name'],
                         'case_total'      => (int)($record['case_total'] ?? 1),
-                        'inc_total'       => (float)($record['inc_total'] ?? 0.00),
                         'adjrw_total'     => (float)($record['adjrw_total'] ?? 0.0000),
 
                         'case_ucs_incup'  => (int)($record['case_ucs_incup'] ?? 0),
@@ -444,13 +464,6 @@ class OpohApiController extends Controller
                         'case_lgo'        => (int)($record['case_lgo'] ?? 0),
                         'case_sss'        => (int)($record['case_sss'] ?? 0),
                         'case_other'      => (int)($record['case_other'] ?? 0),
-
-                        'inc_ucs_incup'   => (float)($record['inc_ucs_incup'] ?? 0.00),
-                        'inc_ucs_outprov' => (float)($record['inc_ucs_outprov'] ?? 0.00),
-                        'inc_ofc'         => (float)($record['inc_ofc'] ?? 0.00),
-                        'inc_lgo'         => (float)($record['inc_lgo'] ?? 0.00),
-                        'inc_sss'         => (float)($record['inc_sss'] ?? 0.00),
-                        'inc_other'       => (float)($record['inc_other'] ?? 0.00),
                     ]
                 );
                 $inserted++;
@@ -469,6 +482,94 @@ class OpohApiController extends Controller
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Failed to save OPOH Operation data: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * POST /api/opoh/income-categories
+     * Dedicated endpoint to receive aggregated income category records from Agent
+     */
+    public function ingestIncomeCategories(Request $request)
+    {
+        $hospital = Auth::user();
+        $hospcode = $hospital->hospcode ?? $request->input('hospcode');
+
+        if (empty($hospcode)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Missing hospital code',
+            ], 400);
+        }
+
+        $validated = $request->validate([
+            'records'                      => ['required', 'array', 'min:1'],
+            'records.*.service_type'       => ['nullable', 'string', 'in:OPD,IPD'],
+            'records.*.vstdate'            => ['required', 'date_format:Y-m-d'],
+            'records.*.spclty_code'        => ['nullable', 'string'],
+            'records.*.doctor_id'          => ['nullable', 'integer'],
+            'records.*.licenseno'          => ['nullable', 'string'],
+            'records.*.drg_chrgitem_id'    => ['required', 'integer'],
+            'records.*.drg_chrgitem_name'  => ['nullable', 'string'],
+            'records.*.inc_ucs_incup'      => ['nullable', 'numeric'],
+            'records.*.inc_ucs_outprov'    => ['nullable', 'numeric'],
+            'records.*.inc_ofc'            => ['nullable', 'numeric'],
+            'records.*.inc_lgo'            => ['nullable', 'numeric'],
+            'records.*.inc_sss'            => ['nullable', 'numeric'],
+            'records.*.inc_other'          => ['nullable', 'numeric'],
+            'records.*.inc_total'          => ['nullable', 'numeric'],
+        ]);
+
+        $inserted = 0;
+        DB::beginTransaction();
+        try {
+            foreach ($validated['records'] as $record) {
+                $docId = $record['doctor_id'] ?? null;
+                $license = $record['licenseno'] ?? null;
+                if (!$docId && $license) {
+                    $docId = DB::table('opoh_doctors')->where('licenseno', $license)->value('id');
+                }
+
+                $drgId = (int)$record['drg_chrgitem_id'];
+                $serviceType = strtoupper($record['service_type'] ?? 'OPD');
+
+                OpohIncomeCategory::updateOrCreate(
+                    [
+                        'hospcode'        => $hospcode,
+                        'service_type'    => $serviceType,
+                        'vstdate'         => $record['vstdate'],
+                        'doctor_id'       => $docId,
+                        'drg_chrgitem_id' => $drgId,
+                    ],
+                    [
+                        'spclty_code'       => $record['spclty_code'] ?? '01',
+                        'licenseno'         => $license,
+                        'drg_chrgitem_name' => $record['drg_chrgitem_name'] ?? 'หมวดที่ ' . $drgId,
+                        'inc_ucs_incup'     => (float)($record['inc_ucs_incup'] ?? 0.00),
+                        'inc_ucs_outprov'   => (float)($record['inc_ucs_outprov'] ?? 0.00),
+                        'inc_ofc'           => (float)($record['inc_ofc'] ?? 0.00),
+                        'inc_lgo'           => (float)($record['inc_lgo'] ?? 0.00),
+                        'inc_sss'           => (float)($record['inc_sss'] ?? 0.00),
+                        'inc_other'         => (float)($record['inc_other'] ?? 0.00),
+                        'inc_total'         => (float)($record['inc_total'] ?? 0.00),
+                    ]
+                );
+                $inserted++;
+            }
+            DB::commit();
+
+            return response()->json([
+                'status'   => 'success',
+                'hospcode' => $hospcode,
+                'count'    => $inserted,
+                'message'  => "Synchronized {$inserted} OPOH Income Category records successfully",
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("[OPOH Income Category Ingest Error] " . $e->getMessage());
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to save OPOH Income Category data: ' . $e->getMessage(),
             ], 500);
         }
     }

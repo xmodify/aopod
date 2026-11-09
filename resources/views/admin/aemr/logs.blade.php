@@ -116,7 +116,7 @@
     <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="{{ route('manage.emr.index') }}" class="btn btn-sm btn-light border shadow-sm rounded-3 px-2.5 py-1.5 text-secondary" title="กลับหน้า A-EMR">
+                <a href="{{ route('manage.aemr.index') }}" class="btn btn-sm btn-light border shadow-sm rounded-3 px-2.5 py-1.5 text-secondary" title="กลับหน้า A-EMR">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <h4 class="fw-bold mb-0 text-slate-800">
@@ -129,7 +129,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('manage.emr.index') }}" class="btn btn-outline-secondary rounded-3 shadow-sm px-3 py-2 fw-semibold d-flex align-items-center gap-2">
+            <a href="{{ route('manage.aemr.index') }}" class="btn btn-outline-secondary rounded-3 shadow-sm px-3 py-2 fw-semibold d-flex align-items-center gap-2">
                 <i class="fa-solid fa-notes-medical text-info"></i>
                 <span>หน้าสืบค้น A-EMR</span>
             </a>
@@ -192,7 +192,7 @@
     <!-- Filter Card -->
     <div class="col-12">
         <div class="log-filter-card">
-            <form method="GET" action="{{ route('manage.emr.logs') }}" class="row g-3 align-items-end">
+            <form method="GET" action="{{ route('manage.aemr.logs') }}" class="row g-3 align-items-end">
                 <div class="col-12 col-md-3">
                     <label class="form-label small fw-bold text-secondary mb-1">คำค้นหา (ผู้ใช้, CID, เหตุผล, IP)</label>
                     <div class="input-group input-group-sm">
@@ -252,7 +252,7 @@
                         <span>ค้นหา</span>
                     </button>
                     @if(request()->hasAny(['search', 'action', 'status', 'date_start', 'date_end', 'hospcode']))
-                    <a href="{{ route('manage.emr.logs') }}" class="btn btn-sm btn-light border text-danger px-2.5 py-1.5 d-inline-flex align-items-center gap-1 shadow-sm" title="ล้างตัวกรอง" style="border-radius: 8px;">
+                    <a href="{{ route('manage.aemr.logs') }}" class="btn btn-sm btn-light border text-danger px-2.5 py-1.5 d-inline-flex align-items-center gap-1 shadow-sm" title="ล้างตัวกรอง" style="border-radius: 8px;">
                         <i class="fa-solid fa-rotate-left"></i>
                         <span>ล้าง</span>
                     </a>

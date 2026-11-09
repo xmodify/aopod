@@ -43,8 +43,8 @@ func (s *Server) Start(port int) error {
 	mux.HandleFunc("/api/sync", s.handleSync)
 	mux.HandleFunc("/api/logs", s.handleLogs)
 	mux.HandleFunc("/api/logs/clear", s.handleClearLogs)
-	mux.HandleFunc("/api/emr/patient", s.handleEmrPatient)
-	mux.HandleFunc("/api/emr/visit", s.handleEmrVisit)
+	mux.HandleFunc("/api/aemr/patient", s.handleAemrPatient)
+	mux.HandleFunc("/api/aemr/visit", s.handleAemrVisit)
 	mux.HandleFunc("/api/open-logs-folder", func(w http.ResponseWriter, r *http.Request) {
 		logsDir := scheduler.GetLogsDir()
 		_ = exec.Command("explorer.exe", logsDir).Start()
@@ -285,7 +285,7 @@ func (s *Server) handleService(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "success", "message": fmt.Sprintf("ดำเนินการ %s Service สำเร็จ", action)})
 }
 
-func (s *Server) handleEmrPatient(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleAemrPatient(w http.ResponseWriter, r *http.Request) {
 	cid := strings.TrimSpace(r.URL.Query().Get("cid"))
 	if len(cid) != 13 {
 		writeJSON(w, http.StatusBadRequest, map[string]interface{}{
@@ -304,7 +304,7 @@ func (s *Server) handleEmrPatient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	emr, err := collector.CollectPatientEMR(db, cid)
+	emr, err := collector.CollectPatientAEMR(db, cid)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]interface{}{
 			"success": false,
@@ -334,7 +334,7 @@ func (s *Server) handleEmrPatient(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (s *Server) handleEmrVisit(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleAemrVisit(w http.ResponseWriter, r *http.Request) {
 	vn := strings.TrimSpace(r.URL.Query().Get("vn"))
 	if vn == "" {
 		writeJSON(w, http.StatusBadRequest, map[string]interface{}{

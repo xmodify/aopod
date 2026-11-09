@@ -34,7 +34,7 @@ class User extends Authenticatable
         'allow_birth',
         'allow_death_dashboard',
         'allow_birth_dashboard',
-        'allow_emr',
+        'allow_aemr',
         'allow_opoh',
     ];
 
@@ -77,9 +77,9 @@ class User extends Authenticatable
      *
      * @return bool
      */
-    public function canAccessEmr(): bool
+    public function canAccessAemr(): bool
     {
-        return $this->isAdmin() || (bool)$this->allow_emr;
+        return $this->isAdmin() || (bool)$this->allow_aemr;
     }
 
     /**

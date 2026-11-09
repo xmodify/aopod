@@ -14,7 +14,7 @@ import (
 	"aopod-agent/database"
 )
 
-type EmrTask struct {
+type AemrTask struct {
 	TaskID       string  `json:"task_id"`
 	Type         string  `json:"type"` // "patient_search" or "visit_detail"
 	CID          string  `json:"cid"`
@@ -25,7 +25,7 @@ type EmrTask struct {
 
 type PollTaskResponse struct {
 	Status string   `json:"status"` // "has_task" or "no_task"
-	Task   *EmrTask `json:"task"`
+	Task   *AemrTask `json:"task"`
 }
 
 var (
@@ -34,8 +34,8 @@ var (
 	workerMutex       sync.Mutex
 )
 
-// StartReverseEmrWorker runs a continuous loop to receive real-time EMR query requests without opening ports.
-func StartReverseEmrWorker() {
+// StartReverseAemrWorker runs a continuous loop to receive real-time EMR query requests without opening ports.
+func StartReverseAemrWorker() {
 	workerMutex.Lock()
 	if isWorkerRunning {
 		workerMutex.Unlock()
@@ -60,7 +60,7 @@ func StartReverseEmrWorker() {
 			continue
 		}
 
-		pollURL := fmt.Sprintf("%s/api/agent/emr/poll-task", stringsTrimRight(cfg.Hospital.ServerURL, "/"))
+		pollURL := fmt.Sprintf("%s/api/agent/aemr/poll-task", stringsTrimRight(cfg.Hospital.ServerURL, "/"))
 		payload := map[string]string{
 			"hospcode": cfg.Hospital.Code,
 		}
@@ -90,52 +90,52 @@ func StartReverseEmrWorker() {
 		}
 
 		// Handle task in a goroutine so the listener immediately polls again
-		go handleEmrTask(pollResp.Task, cfg)
+		go handleAemrTask(pollResp.Task, cfg)
 	}
 }
 
-func handleEmrTask(task *EmrTask, cfg *config.Config) {
+func handleAemrTask(task *AemrTask, cfg *config.Config) {
 	db, err := database.GetDB()
 	if err != nil {
-		submitEmrResult(task.TaskID, false, false, "Database connection error: "+err.Error(), nil, cfg)
+		submitAemrResult(task.TaskID, false, false, "Database connection error: "+err.Error(), nil, cfg)
 		return
 	}
 
 	switch task.Type {
 	case "patient_search":
 		AddLog("INFO", fmt.Sprintf("[A-EMR] ได้รับคำร้องขอสืบค้นประวัติ CID: %s (Task: %s)", task.CID, task.TaskID))
-		emr, err := collector.CollectPatientEMR(db, task.CID)
+		emr, err := collector.CollectPatientAEMR(db, task.CID)
 		if err != nil {
 			AddLog("ERROR", fmt.Sprintf("[A-EMR] สืบค้นประวัติผิดพลาด: %v", err))
-			submitEmrResult(task.TaskID, false, false, err.Error(), nil, cfg)
+			submitAemrResult(task.TaskID, false, false, err.Error(), nil, cfg)
 			return
 		}
 		if emr == nil {
 			AddLog("INFO", fmt.Sprintf("[A-EMR] ไม่พบประวัติผู้ป่วย CID: %s", task.CID))
-			submitEmrResult(task.TaskID, true, false, "not_found", nil, cfg)
+			submitAemrResult(task.TaskID, true, false, "not_found", nil, cfg)
 			return
 		}
 		AddLog("INFO", fmt.Sprintf("[A-EMR] พบประวัติ HN: %s (%s) ส่งข้อมูลกลับเซิร์ฟเวอร์เรียบร้อย", emr.HN, emr.FullName))
-		submitEmrResult(task.TaskID, true, true, "", emr, cfg)
+		submitAemrResult(task.TaskID, true, true, "", emr, cfg)
 
 	case "visit_detail":
 		AddLog("INFO", fmt.Sprintf("[A-EMR] ได้รับคำร้องขอรายละเอียดการตรวจ VN: %s (Task: %s)", task.VN, task.TaskID))
 		detail, err := collector.CollectVisitDetail(db, task.VN)
 		if err != nil {
 			AddLog("ERROR", fmt.Sprintf("[A-EMR] สืบค้นรายละเอียดการตรวจผิดพลาด: %v", err))
-			submitEmrResult(task.TaskID, false, false, err.Error(), nil, cfg)
+			submitAemrResult(task.TaskID, false, false, err.Error(), nil, cfg)
 			return
 		}
 		if detail == nil {
-			submitEmrResult(task.TaskID, true, false, "not_found", nil, cfg)
+			submitAemrResult(task.TaskID, true, false, "not_found", nil, cfg)
 			return
 		}
-		submitEmrResult(task.TaskID, true, true, "", detail, cfg)
+		submitAemrResult(task.TaskID, true, true, "", detail, cfg)
 	}
 }
 
-func submitEmrResult(taskID string, success bool, found bool, message string, data interface{}, cfg *config.Config) {
-	submitURL := fmt.Sprintf("%s/api/agent/emr/submit-result", stringsTrimRight(cfg.Hospital.ServerURL, "/"))
+func submitAemrResult(taskID string, success bool, found bool, message string, data interface{}, cfg *config.Config) {
+	submitURL := fmt.Sprintf("%s/api/agent/aemr/submit-result", stringsTrimRight(cfg.Hospital.ServerURL, "/"))
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 		Transport: &http.Transport{

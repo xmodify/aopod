@@ -114,7 +114,8 @@ class DashboardOpohController extends Controller
             $specHospMatrix[$m->spclty_code][$m->hospcode] = (int)$m->visits;
         }
 
-        $specialtyPeriodInc = DB::table('opoh_opd_service')
+        $specialtyPeriodInc = DB::table('opoh_income_categories')
+            ->where('service_type', 'OPD')
             ->whereBetween('vstdate', [$current_start, $current_end])
             ->whereIn('hospcode', $communityCodes)
             ->groupBy('spclty_code')
@@ -181,13 +182,28 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(visit_sss), 0)       AS visit_sss,
                 COALESCE(SUM(visit_other), 0)     AS visit_other,
                 COALESCE(SUM(visit_telemed), 0)   AS visit_telemed,
-                COALESCE(SUM(inc_total), 0)       AS inc_total,
-                COALESCE(SUM(inc_drug_total), 0)  AS inc_drug_total,
-                COALESCE(SUM(inc_lab_total), 0)   AS inc_lab_total,
                 COALESCE(SUM(refer_to_origin), 0) AS refer_to_origin,
                 COALESCE(SUM(admit_ipd), 0)       AS admit_ipd
             ")
             ->first();
+
+        // Income breakdown for OPD Current Period from opoh_income_categories
+        $opdPeriodIncSum = DB::table('opoh_income_categories')
+            ->where('service_type', 'OPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(inc_total), 0) AS inc_total,
+                COALESCE(SUM(CASE WHEN drg_chrgitem_id IN (3, 4, 17) THEN inc_total ELSE 0 END), 0) AS inc_drug_total,
+                COALESCE(SUM(CASE WHEN drg_chrgitem_id = 7 THEN inc_total ELSE 0 END), 0) AS inc_lab_total
+            ")
+            ->first();
+
+        if ($summary) {
+            $summary->inc_total      = (float)($opdPeriodIncSum->inc_total ?? 0.0);
+            $summary->inc_drug_total = (float)($opdPeriodIncSum->inc_drug_total ?? 0.0);
+            $summary->inc_lab_total  = (float)($opdPeriodIncSum->inc_lab_total ?? 0.0);
+        }
 
         $sumTelemed = (int)($summary->visit_telemed ?? 0);
         $sumOnsite  = max(0, $sumCurrent - $sumTelemed);
@@ -199,13 +215,28 @@ class DashboardOpohController extends Controller
             ->selectRaw("
                 COALESCE(SUM(visit_total), 0)     AS visit_total,
                 COALESCE(SUM(visit_telemed), 0)   AS visit_telemed,
-                COALESCE(SUM(inc_total), 0)       AS inc_total,
-                COALESCE(SUM(inc_drug_total), 0)  AS inc_drug_total,
-                COALESCE(SUM(inc_lab_total), 0)   AS inc_lab_total,
                 COALESCE(SUM(refer_to_origin), 0) AS refer_to_origin,
                 COALESCE(SUM(admit_ipd), 0)       AS admit_ipd
             ")
             ->first();
+
+        $opdCumulativeIncSum = DB::table('opoh_income_categories')
+            ->where('service_type', 'OPD')
+            ->where('vstdate', '>=', $cumulative_start)
+            ->where('vstdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(inc_total), 0) AS inc_total,
+                COALESCE(SUM(CASE WHEN drg_chrgitem_id IN (3, 4, 17) THEN inc_total ELSE 0 END), 0) AS inc_drug_total,
+                COALESCE(SUM(CASE WHEN drg_chrgitem_id = 7 THEN inc_total ELSE 0 END), 0) AS inc_lab_total
+            ")
+            ->first();
+
+        if ($fiscalSummary) {
+            $fiscalSummary->inc_total      = (float)($opdCumulativeIncSum->inc_total ?? 0.0);
+            $fiscalSummary->inc_drug_total = (float)($opdCumulativeIncSum->inc_drug_total ?? 0.0);
+            $fiscalSummary->inc_lab_total  = (float)($opdCumulativeIncSum->inc_lab_total ?? 0.0);
+        }
 
         // 5.5 IPD Aggregations (ผู้ป่วยใน - 7 สาขาเป็นแถว และ รพ.เป็นคอลัมน์)
         $ipdSpecialtyStats = DB::table('opoh_ipd_service')
@@ -236,8 +267,9 @@ class DashboardOpohController extends Controller
             ->pluck(DB::raw('COALESCE(SUM(adjrw_total), 0)'), 'spclty_code')
             ->toArray();
 
-        $ipdPeriodInc = DB::table('opoh_ipd_service')
-            ->whereBetween('dchdate', [$current_start, $current_end])
+        $ipdPeriodInc = DB::table('opoh_income_categories')
+            ->where('service_type', 'IPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
             ->whereIn('hospcode', $communityCodes)
             ->groupBy('spclty_code')
             ->pluck(DB::raw('COALESCE(SUM(inc_total), 0)'), 'spclty_code')
@@ -447,7 +479,7 @@ class DashboardOpohController extends Controller
 
         // 5.7 Operation / Surgery Service Aggregations (Tab 3: ผ่าตัดและหัตถการ)
         $active_tab = $request->input('active_tab', 'opd');
-        if (!in_array($active_tab, ['opd', 'ipd', 'operation'])) {
+        if (!in_array($active_tab, ['opd', 'ipd', 'operation', 'income'])) {
             $active_tab = 'opd';
         }
 
@@ -458,7 +490,7 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(case_total), 0) as total,
                 COALESCE(SUM(CASE WHEN op_type = 'IPD' THEN case_total ELSE 0 END), 0) as total_ipd,
                 COALESCE(SUM(CASE WHEN op_type = 'ODS' THEN case_total ELSE 0 END), 0) as total_ods,
-                COALESCE(SUM(inc_total), 0) as total_inc
+                0 as total_inc
             ")
             ->first();
 
@@ -681,8 +713,15 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(visit_lgo), 0)         AS v_lgo,
                 COALESCE(SUM(visit_sss), 0)         AS v_sss,
                 COALESCE(SUM(visit_other), 0)       AS v_other,
-                COALESCE(SUM(visit_total), 0)       AS v_total,
+                COALESCE(SUM(visit_total), 0)       AS v_total
+            ")
+            ->first();
 
+        $opdRightsInc = DB::table('opoh_income_categories')
+            ->where('service_type', 'OPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
                 COALESCE(SUM(inc_ucs_incup), 0)     AS inc_ucs_incup,
                 COALESCE(SUM(inc_ucs_outprov), 0)   AS inc_ucs_outprov,
                 COALESCE(SUM(inc_ofc), 0)           AS inc_ofc,
@@ -694,7 +733,7 @@ class DashboardOpohController extends Controller
             ->first();
 
         $opdVisitsTotal = (int)($opdRawRights->v_total ?? 0);
-        $opdIncTotal    = (float)($opdRawRights->inc_total ?? 0.0);
+        $opdIncTotal    = (float)($opdRightsInc->inc_total ?? 0.0);
 
         // Fallback if legacy records had total visit_ucs but not yet split
         $vUcsIncup   = (int)($opdRawRights->v_ucs_incup ?? 0);
@@ -703,27 +742,12 @@ class DashboardOpohController extends Controller
             $vUcsIncup = (int)$opdRawRights->v_ucs_total;
         }
 
-        $sumRightsInc = (float)($opdRawRights->inc_ucs_incup ?? 0)
-                      + (float)($opdRawRights->inc_ucs_outprov ?? 0)
-                      + (float)($opdRawRights->inc_ofc ?? 0)
-                      + (float)($opdRawRights->inc_lgo ?? 0)
-                      + (float)($opdRawRights->inc_sss ?? 0)
-                      + (float)($opdRawRights->inc_other ?? 0);
-
-        $incUcsIncup   = (float)($opdRawRights->inc_ucs_incup ?? 0.0);
-        $incUcsOutprov = (float)($opdRawRights->inc_ucs_outprov ?? 0.0);
-        $incOfc        = (float)($opdRawRights->inc_ofc ?? 0.0);
-        $incLgo        = (float)($opdRawRights->inc_lgo ?? 0.0);
-        $incSss        = (float)($opdRawRights->inc_sss ?? 0.0);
-        $incOther      = (float)($opdRawRights->inc_other ?? 0.0);
-
-        if ($sumRightsInc == 0 && $opdIncTotal > 0 && $opdVisitsTotal > 0) {
-            $incUcsIncup = round($opdIncTotal * ($vUcsIncup / $opdVisitsTotal), 2);
-            $incOfc      = round($opdIncTotal * ((int)($opdRawRights->v_ofc ?? 0) / $opdVisitsTotal), 2);
-            $incLgo      = round($opdIncTotal * ((int)($opdRawRights->v_lgo ?? 0) / $opdVisitsTotal), 2);
-            $incSss      = round($opdIncTotal * ((int)($opdRawRights->v_sss ?? 0) / $opdVisitsTotal), 2);
-            $incOther    = round($opdIncTotal * ((int)($opdRawRights->v_other ?? 0) / $opdVisitsTotal), 2);
-        }
+        $incUcsIncup   = (float)($opdRightsInc->inc_ucs_incup ?? 0.0);
+        $incUcsOutprov = (float)($opdRightsInc->inc_ucs_outprov ?? 0.0);
+        $incOfc        = (float)($opdRightsInc->inc_ofc ?? 0.0);
+        $incLgo        = (float)($opdRightsInc->inc_lgo ?? 0.0);
+        $incSss        = (float)($opdRightsInc->inc_sss ?? 0.0);
+        $incOther      = (float)($opdRightsInc->inc_other ?? 0.0);
 
         $opdRightsRows = [
             'ucs_incup'   => ['visits' => $vUcsIncup, 'inc' => $incUcsIncup],
@@ -761,29 +785,36 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(adjrw_lgo), 0)           AS adjrw_lgo,
                 COALESCE(SUM(adjrw_sss), 0)           AS adjrw_sss,
                 COALESCE(SUM(adjrw_other), 0)         AS adjrw_other,
-                COALESCE(SUM(adjrw_total), 0)         AS adjrw_total,
+                COALESCE(SUM(adjrw_total), 0)         AS adjrw_total
+            ")
+            ->first();
 
-                COALESCE(SUM(inc_ucs_incup), 0)       AS inc_ucs_incup,
-                COALESCE(SUM(inc_ucs_outprov), 0)     AS inc_ucs_outprov,
-                COALESCE(SUM(inc_ofc), 0)             AS inc_ofc,
-                COALESCE(SUM(inc_lgo), 0)             AS inc_lgo,
-                COALESCE(SUM(inc_sss), 0)             AS inc_sss,
-                COALESCE(SUM(inc_other), 0)           AS inc_other,
-                COALESCE(SUM(inc_total), 0)           AS inc_total
+        $ipdRightsInc = DB::table('opoh_income_categories')
+            ->where('service_type', 'IPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(inc_ucs_incup), 0)     AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)   AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)           AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)           AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)           AS inc_sss,
+                COALESCE(SUM(inc_other), 0)         AS inc_other,
+                COALESCE(SUM(inc_total), 0)         AS inc_total
             ")
             ->first();
 
         $ipdAnsTotal   = (int)($ipdRawRights->an_total ?? 0);
         $ipdLosTotal   = (int)($ipdRawRights->los_total ?? 0);
         $ipdRwTotal    = (float)($ipdRawRights->adjrw_total ?? 0.0);
-        $ipdIncTotal   = (float)($ipdRawRights->inc_total ?? 0.0);
+        $ipdIncTotal   = (float)($ipdRightsInc->inc_total ?? 0.0);
 
         // Fallback for legacy IPD records
         $anUcsIncup    = (int)($ipdRawRights->an_ucs_incup ?? 0);
         $anUcsOutprov  = (int)($ipdRawRights->an_ucs_outprov ?? 0);
         $losUcsIncup   = (int)($ipdRawRights->los_ucs_incup ?? 0);
         $adjrwUcsIncup = (float)($ipdRawRights->adjrw_ucs_incup ?? 0.0);
-        $incUcsIncup   = (float)($ipdRawRights->inc_ucs_incup ?? 0.0);
+        $incUcsIncup   = (float)($ipdRightsInc->inc_ucs_incup ?? 0.0);
 
         $allRightsSum = $anUcsIncup + $anUcsOutprov + (int)($ipdRawRights->an_ofc ?? 0) + (int)($ipdRawRights->an_lgo ?? 0) + (int)($ipdRawRights->an_sss ?? 0) + (int)($ipdRawRights->an_other ?? 0);
         if ($allRightsSum == 0 && $ipdAnsTotal > 0) {
@@ -806,35 +837,35 @@ class DashboardOpohController extends Controller
                 'los'   => (int)($ipdRawRights->los_ucs_outprov ?? 0),
                 'adjrw' => (float)($ipdRawRights->adjrw_ucs_outprov ?? 0.0),
                 'cmi'   => $anUcsOutprov > 0 ? ((float)($ipdRawRights->adjrw_ucs_outprov ?? 0.0) / $anUcsOutprov) : 0,
-                'inc'   => (float)($ipdRawRights->inc_ucs_outprov ?? 0.0),
+                'inc'   => (float)($ipdRightsInc->inc_ucs_outprov ?? 0.0),
             ],
             'ofc'         => [
                 'ans'   => (int)($ipdRawRights->an_ofc ?? 0),
                 'los'   => (int)($ipdRawRights->los_ofc ?? 0),
                 'adjrw' => (float)($ipdRawRights->adjrw_ofc ?? 0.0),
                 'cmi'   => (int)($ipdRawRights->an_ofc ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_ofc ?? 0.0) / (int)$ipdRawRights->an_ofc) : 0,
-                'inc'   => (float)($ipdRawRights->inc_ofc ?? 0.0),
+                'inc'   => (float)($ipdRightsInc->inc_ofc ?? 0.0),
             ],
             'lgo'         => [
                 'ans'   => (int)($ipdRawRights->an_lgo ?? 0),
                 'los'   => (int)($ipdRawRights->los_lgo ?? 0),
                 'adjrw' => (float)($ipdRawRights->adjrw_lgo ?? 0.0),
                 'cmi'   => (int)($ipdRawRights->an_lgo ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_lgo ?? 0.0) / (int)$ipdRawRights->an_lgo) : 0,
-                'inc'   => (float)($ipdRawRights->inc_lgo ?? 0.0),
+                'inc'   => (float)($ipdRightsInc->inc_lgo ?? 0.0),
             ],
             'sss'         => [
                 'ans'   => (int)($ipdRawRights->an_sss ?? 0),
                 'los'   => (int)($ipdRawRights->los_sss ?? 0),
                 'adjrw' => (float)($ipdRawRights->adjrw_sss ?? 0.0),
                 'cmi'   => (int)($ipdRawRights->an_sss ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_sss ?? 0.0) / (int)$ipdRawRights->an_sss) : 0,
-                'inc'   => (float)($ipdRawRights->inc_sss ?? 0.0),
+                'inc'   => (float)($ipdRightsInc->inc_sss ?? 0.0),
             ],
             'other'       => [
                 'ans'   => (int)($ipdRawRights->an_other ?? 0),
                 'los'   => (int)($ipdRawRights->los_other ?? 0),
                 'adjrw' => (float)($ipdRawRights->adjrw_other ?? 0.0),
                 'cmi'   => (int)($ipdRawRights->an_other ?? 0) > 0 ? ((float)($ipdRawRights->adjrw_other ?? 0.0) / (int)$ipdRawRights->an_other) : 0,
-                'inc'   => (float)($ipdRawRights->inc_other ?? 0.0),
+                'inc'   => (float)($ipdRightsInc->inc_other ?? 0.0),
             ],
         ];
 
@@ -850,21 +881,12 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(case_sss), 0)         AS case_sss,
                 COALESCE(SUM(case_other), 0)       AS case_other,
                 COALESCE(SUM(case_total), 0)       AS case_total,
-
-                COALESCE(SUM(adjrw_total), 0)      AS adjrw_total,
-
-                COALESCE(SUM(inc_ucs_incup), 0)    AS inc_ucs_incup,
-                COALESCE(SUM(inc_ucs_outprov), 0)  AS inc_ucs_outprov,
-                COALESCE(SUM(inc_ofc), 0)          AS inc_ofc,
-                COALESCE(SUM(inc_lgo), 0)          AS inc_lgo,
-                COALESCE(SUM(inc_sss), 0)          AS inc_sss,
-                COALESCE(SUM(inc_other), 0)        AS inc_other,
-                COALESCE(SUM(inc_total), 0)        AS inc_total
+                COALESCE(SUM(adjrw_total), 0)      AS adjrw_total
             ")
             ->first();
 
         $opCasesTotal = (int)($opRawRights->case_total ?? 0);
-        $opIncTotal   = (float)($opRawRights->inc_total ?? 0.0);
+        $opIncTotal   = 0.0;
         $opRwTotal    = (float)($opRawRights->adjrw_total ?? 0.0);
 
         $caseUcsIncup   = (int)($opRawRights->case_ucs_incup ?? 0);
@@ -876,12 +898,12 @@ class DashboardOpohController extends Controller
         }
 
         $opRightsRows = [
-            'ucs_incup'   => ['cases' => $caseUcsIncup, 'inc' => (float)($opRawRights->inc_ucs_incup ?? 0.0)],
-            'ucs_outprov' => ['cases' => $caseUcsOutprov, 'inc' => (float)($opRawRights->inc_ucs_outprov ?? 0.0)],
-            'ofc'         => ['cases' => (int)($opRawRights->case_ofc ?? 0), 'inc' => (float)($opRawRights->inc_ofc ?? 0.0)],
-            'lgo'         => ['cases' => (int)($opRawRights->case_lgo ?? 0), 'inc' => (float)($opRawRights->inc_lgo ?? 0.0)],
-            'sss'         => ['cases' => (int)($opRawRights->case_sss ?? 0), 'inc' => (float)($opRawRights->inc_sss ?? 0.0)],
-            'other'       => ['cases' => (int)($opRawRights->case_other ?? 0), 'inc' => (float)($opRawRights->inc_other ?? 0.0)],
+            'ucs_incup'   => ['cases' => $caseUcsIncup, 'inc' => 0.0],
+            'ucs_outprov' => ['cases' => $caseUcsOutprov, 'inc' => 0.0],
+            'ofc'         => ['cases' => (int)($opRawRights->case_ofc ?? 0), 'inc' => 0.0],
+            'lgo'         => ['cases' => (int)($opRawRights->case_lgo ?? 0), 'inc' => 0.0],
+            'sss'         => ['cases' => (int)($opRawRights->case_sss ?? 0), 'inc' => 0.0],
+            'other'       => ['cases' => (int)($opRawRights->case_other ?? 0), 'inc' => 0.0],
         ];
 
         // 5.8.4 Hospital Breakdown for Modal Popup on Scheme/Card Click
@@ -910,8 +932,18 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(visit_lgo), 0)         AS v_lgo,
                 COALESCE(SUM(visit_sss), 0)         AS v_sss,
                 COALESCE(SUM(visit_other), 0)       AS v_other,
-                COALESCE(SUM(visit_total), 0)       AS v_total,
+                COALESCE(SUM(visit_total), 0)       AS v_total
+            ")
+            ->get()
+            ->keyBy('hospcode');
 
+        $opdHospIncRaw = DB::table('opoh_income_categories')
+            ->where('service_type', 'OPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $allHospCodes)
+            ->groupBy('hospcode')
+            ->selectRaw("
+                hospcode,
                 COALESCE(SUM(inc_ucs_incup), 0)     AS inc_ucs_incup,
                 COALESCE(SUM(inc_ucs_outprov), 0)   AS inc_ucs_outprov,
                 COALESCE(SUM(inc_ofc), 0)           AS inc_ofc,
@@ -928,39 +960,40 @@ class DashboardOpohController extends Controller
             $opdRightsByHosp[$rKey] = [];
             foreach ($allModalHospitals as $hcode => $hInfo) {
                 $raw = $opdHospRaw[$hcode] ?? null;
+                $incRaw = $opdHospIncRaw[$hcode] ?? null;
                 $v = 0;
                 $inc = 0.0;
                 if ($raw) {
-                    $hospVTotal = (int)$raw->v_total;
-                    $hospIncTotal = (float)$raw->inc_total;
-                    $sumHospInc = (float)$raw->inc_ucs_incup + (float)$raw->inc_ucs_outprov + (float)$raw->inc_ofc + (float)$raw->inc_lgo + (float)$raw->inc_sss + (float)$raw->inc_other;
-
                     if ($rKey === 'ucs_incup') {
                         $v = (int)$raw->v_ucs_incup;
-                        $inc = (float)$raw->inc_ucs_incup;
                         if ($v == 0 && (int)$raw->v_ucs_outprov == 0 && (int)$raw->v_ucs_total > 0) {
                             $v = (int)$raw->v_ucs_total;
                         }
                     } elseif ($rKey === 'ucs_outprov') {
                         $v = (int)$raw->v_ucs_outprov;
-                        $inc = (float)$raw->inc_ucs_outprov;
                     } elseif ($rKey === 'ofc') {
                         $v = (int)$raw->v_ofc;
-                        $inc = (float)$raw->inc_ofc;
                     } elseif ($rKey === 'lgo') {
                         $v = (int)$raw->v_lgo;
-                        $inc = (float)$raw->inc_lgo;
                     } elseif ($rKey === 'sss') {
                         $v = (int)$raw->v_sss;
-                        $inc = (float)$raw->inc_sss;
                     } elseif ($rKey === 'other') {
                         $v = (int)$raw->v_other;
-                        $inc = (float)$raw->inc_other;
                     }
-
-                    // Fallback to proportional calculation if rights income is 0 but hospital has recorded income
-                    if ($inc == 0 && $v > 0 && $hospIncTotal > 0 && $hospVTotal > 0 && $sumHospInc == 0) {
-                        $inc = round($hospIncTotal * ($v / $hospVTotal), 2);
+                }
+                if ($incRaw) {
+                    if ($rKey === 'ucs_incup') {
+                        $inc = (float)$incRaw->inc_ucs_incup;
+                    } elseif ($rKey === 'ucs_outprov') {
+                        $inc = (float)$incRaw->inc_ucs_outprov;
+                    } elseif ($rKey === 'ofc') {
+                        $inc = (float)$incRaw->inc_ofc;
+                    } elseif ($rKey === 'lgo') {
+                        $inc = (float)$incRaw->inc_lgo;
+                    } elseif ($rKey === 'sss') {
+                        $inc = (float)$incRaw->inc_sss;
+                    } elseif ($rKey === 'other') {
+                        $inc = (float)$incRaw->inc_other;
                     }
                 }
                 $opdRightsByHosp[$rKey][$hcode] = [
@@ -1002,15 +1035,25 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(adjrw_lgo), 0)           AS adjrw_lgo,
                 COALESCE(SUM(adjrw_sss), 0)           AS adjrw_sss,
                 COALESCE(SUM(adjrw_other), 0)         AS adjrw_other,
-                COALESCE(SUM(adjrw_total), 0)         AS adjrw_total,
+                COALESCE(SUM(adjrw_total), 0)         AS adjrw_total
+            ")
+            ->get()
+            ->keyBy('hospcode');
 
-                COALESCE(SUM(inc_ucs_incup), 0)       AS inc_ucs_incup,
-                COALESCE(SUM(inc_ucs_outprov), 0)     AS inc_ucs_outprov,
-                COALESCE(SUM(inc_ofc), 0)             AS inc_ofc,
-                COALESCE(SUM(inc_lgo), 0)             AS inc_lgo,
-                COALESCE(SUM(inc_sss), 0)             AS inc_sss,
-                COALESCE(SUM(inc_other), 0)           AS inc_other,
-                COALESCE(SUM(inc_total), 0)           AS inc_total
+        $ipdHospIncRaw = DB::table('opoh_income_categories')
+            ->where('service_type', 'IPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $allHospCodes)
+            ->groupBy('hospcode')
+            ->selectRaw("
+                hospcode,
+                COALESCE(SUM(inc_ucs_incup), 0)     AS inc_ucs_incup,
+                COALESCE(SUM(inc_ucs_outprov), 0)   AS inc_ucs_outprov,
+                COALESCE(SUM(inc_ofc), 0)           AS inc_ofc,
+                COALESCE(SUM(inc_lgo), 0)           AS inc_lgo,
+                COALESCE(SUM(inc_sss), 0)           AS inc_sss,
+                COALESCE(SUM(inc_other), 0)         AS inc_other,
+                COALESCE(SUM(inc_total), 0)         AS inc_total
             ")
             ->get()
             ->keyBy('hospcode');
@@ -1021,6 +1064,7 @@ class DashboardOpohController extends Controller
             $rate = $rightsConfig[$rKey]['rate'] ?? 0;
             foreach ($allModalHospitals as $hcode => $hInfo) {
                 $raw = $ipdHospRaw[$hcode] ?? null;
+                $incRaw = $ipdHospIncRaw[$hcode] ?? null;
                 $ans = 0;
                 $los = 0;
                 $adjrw = 0.0;
@@ -1030,39 +1074,47 @@ class DashboardOpohController extends Controller
                         $ans = (int)$raw->an_ucs_incup;
                         $los = (int)$raw->los_ucs_incup;
                         $adjrw = (float)$raw->adjrw_ucs_incup;
-                        $inc = (float)$raw->inc_ucs_incup;
                         $sumOtherRights = (int)$raw->an_ucs_outprov + (int)$raw->an_ofc + (int)$raw->an_lgo + (int)$raw->an_sss + (int)$raw->an_other;
                         if ($ans == 0 && $sumOtherRights == 0 && (int)$raw->an_total > 0) {
                             $ans = (int)$raw->an_total;
                             $los = (int)$raw->los_total;
                             $adjrw = (float)$raw->adjrw_total;
-                            $inc = (float)$raw->inc_total;
                         }
                     } elseif ($rKey === 'ucs_outprov') {
                         $ans = (int)$raw->an_ucs_outprov;
                         $los = (int)$raw->los_ucs_outprov;
                         $adjrw = (float)$raw->adjrw_ucs_outprov;
-                        $inc = (float)$raw->inc_ucs_outprov;
                     } elseif ($rKey === 'ofc') {
                         $ans = (int)$raw->an_ofc;
                         $los = (int)$raw->los_ofc;
                         $adjrw = (float)$raw->adjrw_ofc;
-                        $inc = (float)$raw->inc_ofc;
                     } elseif ($rKey === 'lgo') {
                         $ans = (int)$raw->an_lgo;
                         $los = (int)$raw->los_lgo;
                         $adjrw = (float)$raw->adjrw_lgo;
-                        $inc = (float)$raw->inc_lgo;
                     } elseif ($rKey === 'sss') {
                         $ans = (int)$raw->an_sss;
                         $los = (int)$raw->los_sss;
                         $adjrw = (float)$raw->adjrw_sss;
-                        $inc = (float)$raw->inc_sss;
                     } elseif ($rKey === 'other') {
                         $ans = (int)$raw->an_other;
                         $los = (int)$raw->los_other;
                         $adjrw = (float)$raw->adjrw_other;
-                        $inc = (float)$raw->inc_other;
+                    }
+                }
+                if ($incRaw) {
+                    if ($rKey === 'ucs_incup') {
+                        $inc = (float)$incRaw->inc_ucs_incup;
+                    } elseif ($rKey === 'ucs_outprov') {
+                        $inc = (float)$incRaw->inc_ucs_outprov;
+                    } elseif ($rKey === 'ofc') {
+                        $inc = (float)$incRaw->inc_ofc;
+                    } elseif ($rKey === 'lgo') {
+                        $inc = (float)$incRaw->inc_lgo;
+                    } elseif ($rKey === 'sss') {
+                        $inc = (float)$incRaw->inc_sss;
+                    } elseif ($rKey === 'other') {
+                        $inc = (float)$incRaw->inc_other;
                     }
                 }
                 $cmi = $ans > 0 ? ($adjrw / $ans) : 0.0;
@@ -1095,16 +1147,7 @@ class DashboardOpohController extends Controller
                 COALESCE(SUM(case_sss), 0)         AS case_sss,
                 COALESCE(SUM(case_other), 0)       AS case_other,
                 COALESCE(SUM(case_total), 0)       AS case_total,
-
-                COALESCE(SUM(adjrw_total), 0)      AS adjrw_total,
-
-                COALESCE(SUM(inc_ucs_incup), 0)    AS inc_ucs_incup,
-                COALESCE(SUM(inc_ucs_outprov), 0)  AS inc_ucs_outprov,
-                COALESCE(SUM(inc_ofc), 0)          AS inc_ofc,
-                COALESCE(SUM(inc_lgo), 0)          AS inc_lgo,
-                COALESCE(SUM(inc_sss), 0)          AS inc_sss,
-                COALESCE(SUM(inc_other), 0)        AS inc_other,
-                COALESCE(SUM(inc_total), 0)        AS inc_total
+                COALESCE(SUM(adjrw_total), 0)      AS adjrw_total
             ")
             ->get()
             ->keyBy('hospcode');
@@ -1115,33 +1158,25 @@ class DashboardOpohController extends Controller
             foreach ($allModalHospitals as $hcode => $hInfo) {
                 $raw = $opHospRaw[$hcode] ?? null;
                 $cases = 0;
-                $inc = 0.0;
                 $adjrw = 0.0;
                 if ($raw) {
                     if ($rKey === 'ucs_incup') {
                         $cases = (int)$raw->case_ucs_incup;
-                        $inc = (float)$raw->inc_ucs_incup;
                         $adjrw = (float)$raw->adjrw_total;
                         $sumOther = (int)$raw->case_ucs_outprov + (int)$raw->case_ofc + (int)$raw->case_lgo + (int)$raw->case_sss + (int)$raw->case_other;
                         if ($cases == 0 && $sumOther == 0 && (int)$raw->case_total > 0) {
                             $cases = (int)$raw->case_total;
-                            $inc = (float)$raw->inc_total;
                         }
                     } elseif ($rKey === 'ucs_outprov') {
                         $cases = (int)$raw->case_ucs_outprov;
-                        $inc = (float)$raw->inc_ucs_outprov;
                     } elseif ($rKey === 'ofc') {
                         $cases = (int)$raw->case_ofc;
-                        $inc = (float)$raw->inc_ofc;
                     } elseif ($rKey === 'lgo') {
                         $cases = (int)$raw->case_lgo;
-                        $inc = (float)$raw->inc_lgo;
                     } elseif ($rKey === 'sss') {
                         $cases = (int)$raw->case_sss;
-                        $inc = (float)$raw->inc_sss;
                     } elseif ($rKey === 'other') {
                         $cases = (int)$raw->case_other;
-                        $inc = (float)$raw->inc_other;
                     }
                 }
                 $opRightsByHosp[$rKey][$hcode] = [
@@ -1149,8 +1184,8 @@ class DashboardOpohController extends Controller
                     'name'     => $hInfo['name'],
                     'type'     => $hInfo['type'],
                     'cases'    => $cases,
-                    'inc'      => $inc,
                     'adjrw'    => $adjrw,
+                    'inc'      => 0.0,
                 ];
             }
         }
@@ -1172,6 +1207,230 @@ class DashboardOpohController extends Controller
         };
 
         $thaiDateRangeText = $formatThaiDate($current_start) . ' ถึง ' . $formatThaiDate($current_end);
+
+        // 8. 16 Medical Income Categories (Tab 4: หมวดค่ารักษาพยาบาล)
+        $masterCategories = [
+            1  => '1. ค่าห้องและค่าอาหาร',
+            2  => '2. อวัยวะเทียมและอุปกรณ์ในการบำบัดรักษา',
+            3  => '3. ยาและสารอาหารทางเส้นเลือดที่ใช้ใน รพ.',
+            4  => '4. ยาที่นำไปใช้ต่อที่บ้าน',
+            5  => '5. เวชภัณฑ์ที่มิใช่ยา',
+            6  => '6. บริการโลหิตและส่วนประกอบของโลหิต',
+            7  => '7. ตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา (Lab)',
+            8  => '8. ตรวจวินิจฉัยและรักษาทางรังสีวิทยา (X-Ray)',
+            9  => '9. ตรวจวินิจฉัยโดยวิธีพิเศษอื่นๆ',
+            10 => '10. อุปกรณ์ของใช้และเครื่องมือทางการแพทย์',
+            11 => '11. ทำหัตถการและวิสัญญี',
+            12 => '12. ค่าบริการทางการพยาบาล',
+            13 => '13. ค่าบริการทางทันตกรรม',
+            14 => '14. ค่าบริการทางกายภาพบำบัดและเวชกรรมฟื้นฟู',
+            15 => '15. ค่าบริการฝังเข็มและการบำบัดของผู้ประกอบโรคศิลปะอื่น',
+            16 => '16. ค่าบริการอื่นๆ ที่ไม่เกี่ยวกับการรักษาพยาบาลโดยตรง',
+        ];
+
+        $income_service_type = $request->input('income_service_type', 'ALL'); // 'ALL', 'OPD', 'IPD'
+        if (!in_array($income_service_type, ['ALL', 'OPD', 'IPD'])) {
+            $income_service_type = 'ALL';
+        }
+
+        $income_hospcode = $request->input('income_hospcode', 'ALL');
+        $targetIncomeHosps = ($income_hospcode !== 'ALL' && in_array($income_hospcode, $allHospCodes)) 
+            ? [$income_hospcode] 
+            : $communityCodes;
+
+        $incomeMonthsList = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        $year_short = (int)substr($budget_year, -2);
+        $prev_year_short = $year_short - 1;
+        $incomeMonthsNames = [
+            10 => "ต.ค. {$prev_year_short}",
+            11 => "พ.ย. {$prev_year_short}",
+            12 => "ธ.ค. {$prev_year_short}",
+            1  => "ม.ค. {$year_short}",
+            2  => "ก.พ. {$year_short}",
+            3  => "มี.ค. {$year_short}",
+            4  => "เม.ย. {$year_short}",
+            5  => "พ.ค. {$year_short}",
+            6  => "มิ.ย. {$year_short}",
+            7  => "ก.ค. {$year_short}",
+            8  => "ส.ค. {$year_short}",
+            9  => "ก.ย. {$year_short}"
+        ];
+
+        // Query Income Categories for the whole Fiscal Year
+        $catQuery = DB::table('opoh_income_categories')
+            ->whereBetween('vstdate', [$fiscal_start, $fiscal_end])
+            ->whereIn('hospcode', $targetIncomeHosps);
+
+        if ($income_service_type !== 'ALL') {
+            $catQuery->where('service_type', $income_service_type);
+        }
+
+        $rawIncomeCats = $catQuery->selectRaw("
+            MONTH(vstdate) as month_num,
+            drg_chrgitem_id,
+            COALESCE(SUM(inc_ucs_incup), 0)   AS ucs_incup,
+            COALESCE(SUM(inc_ucs_outprov), 0) AS ucs_outprov,
+            COALESCE(SUM(inc_ofc), 0)         AS ofc,
+            COALESCE(SUM(inc_lgo), 0)         AS lgo,
+            COALESCE(SUM(inc_sss), 0)         AS sss,
+            COALESCE(SUM(inc_other), 0)       AS other,
+            COALESCE(SUM(inc_total), 0)       AS total
+        ")
+        ->groupBy(DB::raw("MONTH(vstdate)"), 'drg_chrgitem_id')
+        ->get();
+
+        $incomeYearlyData = [];
+        foreach ($masterCategories as $catId => $catName) {
+            $incomeYearlyData[$catId] = (object)[
+                'group_id'    => $catId,
+                'group_name'  => $catName,
+                'ucs_incup'   => 0.0,
+                'ucs_outprov' => 0.0,
+                'ofc'         => 0.0,
+                'lgo'         => 0.0,
+                'sss'         => 0.0,
+                'other'       => 0.0,
+                'total'       => 0.0,
+            ];
+        }
+
+        $incomeMonthlyData = [];
+        $incomeSumsMonthly = [];
+        foreach ($incomeMonthsList as $m) {
+            $incomeMonthlyData[$m] = [];
+            foreach ($masterCategories as $catId => $catName) {
+                $incomeMonthlyData[$m][$catId] = (object)[
+                    'group_id'    => $catId,
+                    'group_name'  => $catName,
+                    'ucs_incup'   => 0.0,
+                    'ucs_outprov' => 0.0,
+                    'ofc'         => 0.0,
+                    'lgo'         => 0.0,
+                    'sss'         => 0.0,
+                    'other'       => 0.0,
+                    'total'       => 0.0,
+                ];
+            }
+            $incomeSumsMonthly[$m] = [
+                'ucs_incup'   => 0.0,
+                'ucs_outprov' => 0.0,
+                'ofc'         => 0.0,
+                'lgo'         => 0.0,
+                'sss'         => 0.0,
+                'other'       => 0.0,
+                'total'       => 0.0,
+            ];
+        }
+
+        $incomeSumsYearly = [
+            'ucs_incup'   => 0.0,
+            'ucs_outprov' => 0.0,
+            'ofc'         => 0.0,
+            'lgo'         => 0.0,
+            'sss'         => 0.0,
+            'other'       => 0.0,
+            'total'       => 0.0,
+        ];
+
+        foreach ($rawIncomeCats as $row) {
+            $m = (int)$row->month_num;
+            $catId = (int)$row->drg_chrgitem_id;
+
+            if (!isset($incomeYearlyData[$catId])) {
+                $cName = $catId == 17 ? '17. ยาอื่นๆ ที่ไม่ใช่หมวด 3 และ 4' : ($catId == 19 ? '19. ค่าบริการอื่นๆ' : "หมวด {$catId}");
+                $incomeYearlyData[$catId] = (object)[
+                    'group_id'    => $catId,
+                    'group_name'  => $cName,
+                    'ucs_incup'   => 0.0,
+                    'ucs_outprov' => 0.0,
+                    'ofc'         => 0.0,
+                    'lgo'         => 0.0,
+                    'sss'         => 0.0,
+                    'other'       => 0.0,
+                    'total'       => 0.0,
+                ];
+                foreach ($incomeMonthsList as $mi) {
+                    $incomeMonthlyData[$mi][$catId] = (object)[
+                        'group_id'    => $catId,
+                        'group_name'  => $cName,
+                        'ucs_incup'   => 0.0,
+                        'ucs_outprov' => 0.0,
+                        'ofc'         => 0.0,
+                        'lgo'         => 0.0,
+                        'sss'         => 0.0,
+                        'other'       => 0.0,
+                        'total'       => 0.0,
+                    ];
+                }
+            }
+
+            $uIn  = (float)$row->ucs_incup;
+            $uOut = (float)$row->ucs_outprov;
+            $ofc  = (float)$row->ofc;
+            $lgo  = (float)$row->lgo;
+            $sss  = (float)$row->sss;
+            $oth  = (float)$row->other;
+            $tot  = (float)$row->total;
+
+            if (isset($incomeMonthlyData[$m][$catId])) {
+                $incomeMonthlyData[$m][$catId]->ucs_incup   += $uIn;
+                $incomeMonthlyData[$m][$catId]->ucs_outprov += $uOut;
+                $incomeMonthlyData[$m][$catId]->ofc         += $ofc;
+                $incomeMonthlyData[$m][$catId]->lgo         += $lgo;
+                $incomeMonthlyData[$m][$catId]->sss         += $sss;
+                $incomeMonthlyData[$m][$catId]->other       += $oth;
+                $incomeMonthlyData[$m][$catId]->total       += $tot;
+
+                $incomeSumsMonthly[$m]['ucs_incup']   += $uIn;
+                $incomeSumsMonthly[$m]['ucs_outprov'] += $uOut;
+                $incomeSumsMonthly[$m]['ofc']         += $ofc;
+                $incomeSumsMonthly[$m]['lgo']         += $lgo;
+                $incomeSumsMonthly[$m]['sss']         += $sss;
+                $incomeSumsMonthly[$m]['other']       += $oth;
+                $incomeSumsMonthly[$m]['total']       += $tot;
+            }
+
+            $incomeYearlyData[$catId]->ucs_incup   += $uIn;
+            $incomeYearlyData[$catId]->ucs_outprov += $uOut;
+            $incomeYearlyData[$catId]->ofc         += $ofc;
+            $incomeYearlyData[$catId]->lgo         += $lgo;
+            $incomeYearlyData[$catId]->sss         += $sss;
+            $incomeYearlyData[$catId]->other       += $oth;
+            $incomeYearlyData[$catId]->total       += $tot;
+
+            $incomeSumsYearly['ucs_incup']   += $uIn;
+            $incomeSumsYearly['ucs_outprov'] += $uOut;
+            $incomeSumsYearly['ofc']         += $ofc;
+            $incomeSumsYearly['lgo']         += $lgo;
+            $incomeSumsYearly['sss']         += $sss;
+            $incomeSumsYearly['other']       += $oth;
+            $incomeSumsYearly['total']       += $tot;
+        }
+
+        // Monthly Trend Line Chart Data for ApexCharts
+        $incomeChartData = [];
+        $incomeChartData['all'] = [];
+        foreach ($incomeMonthsList as $m) {
+            $incomeChartData['all'][] = round($incomeSumsMonthly[$m]['total'] ?? 0.0, 2);
+        }
+        foreach ($incomeYearlyData as $catId => $cat) {
+            $incomeChartData[$catId] = [];
+            foreach ($incomeMonthsList as $m) {
+                $val = $incomeMonthlyData[$m][$catId]->total ?? 0.0;
+                $incomeChartData[$catId][] = round($val, 2);
+            }
+        }
+
+        // Summary Cards for Income Tab
+        $incomeCumulativeGrandTotal = (float)DB::table('opoh_income_categories')
+            ->where('vstdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('inc_total');
+
+        $incomePeriodGrandTotal = (float)DB::table('opoh_income_categories')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('inc_total');
 
         return view('dashboard_opoh', compact(
             'active_tab',
@@ -1231,7 +1490,19 @@ class DashboardOpohController extends Controller
             'allModalHospitals',
             'opdRightsByHosp',
             'ipdRightsByHosp',
-            'opRightsByHosp'
+            'opRightsByHosp',
+            'income_service_type',
+            'income_hospcode',
+            'masterCategories',
+            'incomeMonthsList',
+            'incomeMonthsNames',
+            'incomeYearlyData',
+            'incomeMonthlyData',
+            'incomeChartData',
+            'incomeSumsYearly',
+            'incomeSumsMonthly',
+            'incomeCumulativeGrandTotal',
+            'incomePeriodGrandTotal'
         ));
     }
 
@@ -1362,11 +1633,22 @@ class DashboardOpohController extends Controller
             $docHospMatrix[$m->doctor_id][$m->hospcode] = (int)$m->visits;
         }
 
+        // 4.4.1 OPD Doctor Income from opoh_income_categories
+        $docPeriodOpdInc = DB::table('opoh_income_categories')
+            ->where('service_type', 'OPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->whereNotNull('doctor_id')
+            ->groupBy('doctor_id')
+            ->pluck(DB::raw('COALESCE(SUM(inc_total), 0)'), 'doctor_id')
+            ->toArray();
+
         // Build Doctor Service Stats Rows
         $docStats = [];
         $colTotals = [
             'cumulative' => 0,
             'period'     => 0,
+            'inc'        => 0.0,
             'amnat'      => 0,
         ];
         foreach ($hospitalsList as $hcode => $hname) {
@@ -1377,9 +1659,11 @@ class DashboardOpohController extends Controller
             $cumul = (int)($docCumulativeVisits[$doc->id] ?? 0);
             $period = (int)($docPeriodVisits[$doc->id] ?? 0);
             $amnatVisits = (int)($docAmnatPeriodVisits[$doc->id] ?? 0);
+            $opdInc = (float)($docPeriodOpdInc[$doc->id] ?? 0.0);
 
             $colTotals['cumulative'] += $cumul;
             $colTotals['period'] += $period;
+            $colTotals['inc'] += $opdInc;
             $colTotals['amnat'] += $amnatVisits;
 
             $hospVisits = [];
@@ -1393,9 +1677,49 @@ class DashboardOpohController extends Controller
                 'doctor'       => $doc,
                 'cumulative'   => $cumul,
                 'period'       => $period,
+                'inc'          => $opdInc,
                 'hosp_visits'  => $hospVisits,
                 'amnat_visits' => $amnatVisits,
             ];
+        }
+
+        // 4.4.2 Grand Total for OPD across 6 Community Hospitals (All cases / ไม่แยกแพทย์)
+        $grandOpdCumulative = (int)DB::table('opoh_opd_service')
+            ->where('vstdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('visit_total');
+
+        $grandOpdPeriod = (int)DB::table('opoh_opd_service')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('visit_total');
+
+        $grandOpdHospVisitsRaw = DB::table('opoh_opd_service')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->groupBy('hospcode')
+            ->pluck(DB::raw('COALESCE(SUM(visit_total), 0)'), 'hospcode')
+            ->toArray();
+
+        $grandOpdInc = (float)DB::table('opoh_income_categories')
+            ->where('service_type', 'OPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('inc_total');
+
+        $grandOpdAmnatVisits = (int)DB::table('opoh_opd_service')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->where('hospcode', '10703')
+            ->sum('visit_total');
+
+        $grandOpdTotals = [
+            'cumulative' => $grandOpdCumulative,
+            'period'     => $grandOpdPeriod,
+            'inc'        => $grandOpdInc,
+            'amnat'      => $grandOpdAmnatVisits,
+        ];
+        foreach ($hospitalsList as $hcode => $hname) {
+            $grandOpdTotals[$hcode] = (int)($grandOpdHospVisitsRaw[$hcode] ?? 0);
         }
 
         // 4.5 IPD Doctor Visit Statistics
@@ -1431,8 +1755,9 @@ class DashboardOpohController extends Controller
             ->pluck(DB::raw('COALESCE(SUM(adjrw_total), 0)'), 'doctor_id')
             ->toArray();
 
-        $docPeriodInc = DB::table('opoh_ipd_service')
-            ->whereBetween('dchdate', [$current_start, $current_end])
+        $docPeriodInc = DB::table('opoh_income_categories')
+            ->where('service_type', 'IPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
             ->whereIn('hospcode', $communityCodes)
             ->whereNotNull('doctor_id')
             ->groupBy('doctor_id')
@@ -1507,6 +1832,57 @@ class DashboardOpohController extends Controller
             ];
         }
 
+        // 4.5.2 Grand Total for IPD across 6 Community Hospitals (All cases / ไม่แยกแพทย์)
+        $grandIpdCumulative = (int)DB::table('opoh_ipd_service')
+            ->where('dchdate', '<=', $current_end)
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('an_total');
+
+        $grandIpdPeriod = (int)DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('an_total');
+
+        $grandIpdLos = (int)DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('admdate_total');
+
+        $grandIpdRw = (float)DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('adjrw_total');
+
+        $grandIpdHospAnsRaw = DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->groupBy('hospcode')
+            ->pluck(DB::raw('COALESCE(SUM(an_total), 0)'), 'hospcode')
+            ->toArray();
+
+        $grandIpdInc = (float)DB::table('opoh_income_categories')
+            ->where('service_type', 'IPD')
+            ->whereBetween('vstdate', [$current_start, $current_end])
+            ->whereIn('hospcode', $communityCodes)
+            ->sum('inc_total');
+
+        $grandIpdAmnatAns = (int)DB::table('opoh_ipd_service')
+            ->whereBetween('dchdate', [$current_start, $current_end])
+            ->where('hospcode', '10703')
+            ->sum('an_total');
+
+        $grandIpdTotals = [
+            'cumulative' => $grandIpdCumulative,
+            'period'     => $grandIpdPeriod,
+            'los'        => $grandIpdLos,
+            'rw'         => $grandIpdRw,
+            'inc'        => $grandIpdInc,
+            'amnat'      => $grandIpdAmnatAns,
+        ];
+        foreach ($hospitalsList as $hcode => $hname) {
+            $grandIpdTotals[$hcode] = (int)($grandIpdHospAnsRaw[$hcode] ?? 0);
+        }
+
         $formatThaiDate = function($dateStr, $full = false) {
             if (!$dateStr) return '';
             $d = Carbon::parse($dateStr)->locale('th');
@@ -1520,8 +1896,10 @@ class DashboardOpohController extends Controller
         return view('admin.opoh', compact(
             'docStats',
             'colTotals',
+            'grandOpdTotals',
             'docIpdStats',
             'colIpdTotals',
+            'grandIpdTotals',
             'hospitalsList',
             'specialties',
             'budget_year_select',
@@ -1734,6 +2112,146 @@ class DashboardOpohController extends Controller
             'doctors' => $doctors,
             'total'   => $doctors->count(),
             'active'  => $doctors->where('is_active', 'Y')->count(),
+        ]);
+    }
+
+    /**
+     * AJAX endpoint: Get 16 Income Categories breakdown for a specific doctor, or ALL doctors / entire hospital
+     */
+    public function getDoctorIncomeCategories(Request $request, $doctorId)
+    {
+        $communityCodes = ['10985', '10986', '10987', '10988', '10989', '10990'];
+        $service_type   = $request->input('service_type', 'ALL'); // 'ALL', 'OPD', 'IPD'
+        $start_date     = $request->input('start_date');
+        $end_date       = $request->input('end_date');
+
+        if ($doctorId === 'ALL' || $doctorId === 'all' || $doctorId == '0') {
+            $doctor = (object)[
+                'id'             => 'ALL',
+                'doctor_name'    => 'ยอดรวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์)',
+                'licenseno'      => 'รวมทุกแพทย์ / ทุกหน่วยบริการ',
+                'spclty_code'    => 'ALL',
+                'specialty_name' => 'ภาพรวมทุกสาขาความเชี่ยวชาญ',
+            ];
+            $query = DB::table('opoh_income_categories')
+                ->whereIn('hospcode', $communityCodes);
+        } elseif ($doctorId === 'AOPH' || $doctorId === 'aoph') {
+            $doctor = (object)[
+                'id'             => 'AOPH',
+                'doctor_name'    => 'ยอดรวมเฉพาะแพทย์ AOPH ทั้งหมด (22 ท่าน)',
+                'licenseno'      => 'แพทย์เฉพาะทาง รพ.แม่ข่าย',
+                'spclty_code'    => 'AOPH',
+                'specialty_name' => 'รวม 7 สาขาเฉพาะทาง AOPH',
+            ];
+            $query = DB::table('opoh_income_categories')
+                ->whereIn('hospcode', $communityCodes)
+                ->whereNotNull('doctor_id');
+        } else {
+            $doctor = DB::table('opoh_doctors')->where('id', $doctorId)->first();
+            if (!$doctor) {
+                return response()->json(['success' => false, 'message' => 'ไม่พบข้อมูลแพทย์'], 404);
+            }
+            $query = DB::table('opoh_income_categories')
+                ->where('doctor_id', $doctorId);
+        }
+
+        if ($service_type !== 'ALL') {
+            $query->where('service_type', $service_type);
+        }
+
+        if ($start_date && $end_date) {
+            $query->whereBetween('vstdate', [$start_date, $end_date]);
+        }
+
+        $rawRows = $query->selectRaw("
+            drg_chrgitem_id,
+            drg_chrgitem_name,
+            COALESCE(SUM(inc_ucs_incup), 0)   AS ucs_incup,
+            COALESCE(SUM(inc_ucs_outprov), 0) AS ucs_outprov,
+            COALESCE(SUM(inc_ofc), 0)         AS ofc,
+            COALESCE(SUM(inc_lgo), 0)         AS lgo,
+            COALESCE(SUM(inc_sss), 0)         AS sss,
+            COALESCE(SUM(inc_other), 0)       AS other,
+            COALESCE(SUM(inc_total), 0)       AS total
+        ")
+        ->groupBy('drg_chrgitem_id', 'drg_chrgitem_name')
+        ->get()
+        ->keyBy('drg_chrgitem_id');
+
+        $masterCategories = [
+            1  => '1. ค่าห้องและค่าอาหาร',
+            2  => '2. อวัยวะเทียมและอุปกรณ์ในการบำบัดรักษา',
+            3  => '3. ยาและสารอาหารทางเส้นเลือดที่ใช้ใน รพ.',
+            4  => '4. ยาที่นำไปใช้ต่อที่บ้าน',
+            5  => '5. เวชภัณฑ์ที่มิใช่ยา',
+            6  => '6. บริการโลหิตและส่วนประกอบของโลหิต',
+            7  => '7. ตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา (Lab)',
+            8  => '8. ตรวจวินิจฉัยและรักษาทางรังสีวิทยา (X-Ray)',
+            9  => '9. ตรวจวินิจฉัยโดยวิธีพิเศษอื่นๆ',
+            10 => '10. อุปกรณ์ของใช้และเครื่องมือทางการแพทย์',
+            11 => '11. ทำหัตถการและวิสัญญี',
+            12 => '12. ค่าบริการทางการพยาบาล',
+            13 => '13. ค่าบริการทางทันตกรรม',
+            14 => '14. ค่าบริการทางกายภาพบำบัดและเวชกรรมฟื้นฟู',
+            15 => '15. ค่าบริการฝังเข็มและการบำบัดของผู้ประกอบโรคศิลปะอื่น',
+            16 => '16. ค่าบริการอื่นๆ ที่ไม่เกี่ยวกับการรักษาพยาบาลโดยตรง',
+        ];
+
+        $categories = [];
+        $totals = [
+            'ucs_incup'   => 0.0,
+            'ucs_outprov' => 0.0,
+            'ofc'         => 0.0,
+            'lgo'         => 0.0,
+            'sss'         => 0.0,
+            'other'       => 0.0,
+            'total'       => 0.0,
+        ];
+
+        foreach ($masterCategories as $catId => $catName) {
+            $row = $rawRows->get($catId);
+            $uIn  = (float)($row->ucs_incup ?? 0.0);
+            $uOut = (float)($row->ucs_outprov ?? 0.0);
+            $ofc  = (float)($row->ofc ?? 0.0);
+            $lgo  = (float)($row->lgo ?? 0.0);
+            $sss  = (float)($row->sss ?? 0.0);
+            $oth  = (float)($row->other ?? 0.0);
+            $tot  = (float)($row->total ?? 0.0);
+
+            $categories[] = [
+                'drg_chrgitem_id'   => $catId,
+                'drg_chrgitem_name' => $catName,
+                'ucs_incup'         => $uIn,
+                'ucs_outprov'       => $uOut,
+                'ofc'               => $ofc,
+                'lgo'               => $lgo,
+                'sss'               => $sss,
+                'other'             => $oth,
+                'total'             => $tot,
+            ];
+
+            $totals['ucs_incup']   += $uIn;
+            $totals['ucs_outprov'] += $uOut;
+            $totals['ofc']         += $ofc;
+            $totals['lgo']         += $lgo;
+            $totals['sss']         += $sss;
+            $totals['other']       += $oth;
+            $totals['total']       += $tot;
+        }
+
+        return response()->json([
+            'success'      => true,
+            'doctor'       => [
+                'id'             => $doctor->id,
+                'doctor_name'    => $doctor->doctor_name,
+                'licenseno'      => $doctor->licenseno,
+                'spclty_code'    => $doctor->spclty_code,
+                'specialty_name' => $doctor->specialty_name,
+            ],
+            'service_type' => $service_type,
+            'date_range'   => ['start' => $start_date, 'end' => $end_date],
+            'categories'   => $categories,
+            'totals'       => $totals,
         ]);
     }
 }

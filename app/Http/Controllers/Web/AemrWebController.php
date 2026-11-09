@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\EmrAccessLog;
+use App\Models\AemrAccessLog;
 use App\Models\Hospital;
-use App\Services\EmrService;
+use App\Services\AemrService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
-class EmrWebController extends Controller
+class AemrWebController extends Controller
 {
-    protected EmrService $emrService;
+    protected AemrService $aemrService;
 
-    public function __construct(EmrService $emrService)
+    public function __construct(AemrService $aemrService)
     {
-        $this->emrService = $emrService;
+        $this->aemrService = $aemrService;
     }
 
     /**
@@ -25,11 +25,11 @@ class EmrWebController extends Controller
      */
     public function index()
     {
-        if (!auth()->check() || !auth()->user()->canAccessEmr()) {
+        if (!auth()->check() || !auth()->user()->canAccessAemr()) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงระบบ A-EMR กรุณาติดต่อผู้ดูแลระบบ');
         }
 
-        return view('admin.emr.index');
+        return view('admin.aemr.index');
     }
 
     /**
@@ -38,7 +38,7 @@ class EmrWebController extends Controller
     public function search(Request $request)
     {
         $isBms = session('is_bms_auth', false);
-        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessEmr())) {
+        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessAemr())) {
             return response()->json(['success' => false, 'message' => 'คุณไม่มีสิทธิ์เข้าถึงระบบ A-EMR'], 403);
         }
 
@@ -58,7 +58,7 @@ class EmrWebController extends Controller
             ], 422);
         }
 
-        $result = $this->emrService->searchPatientByCid($cid);
+        $result = $this->aemrService->searchPatientByCid($cid);
         $latencyMs = round((microtime(true) - $startTime) * 1000);
 
         // Determine log status
@@ -87,7 +87,7 @@ class EmrWebController extends Controller
         $providerId = $isBms ? (session('bms_user_cid') ?: session('bms_doctor_code')) : (auth()->user()->provider_id ?? null);
 
         try {
-            EmrAccessLog::create([
+            AemrAccessLog::create([
                 'user_id'          => $userId,
                 'username'         => $username,
                 'user_name'        => $userName,
@@ -125,7 +125,7 @@ class EmrWebController extends Controller
     public function visitDetail(Request $request)
     {
         $isBms = session('is_bms_auth', false);
-        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessEmr())) {
+        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessAemr())) {
             return response()->json(['success' => false, 'message' => 'คุณไม่มีสิทธิ์เข้าถึงระบบ A-EMR'], 403);
         }
 
@@ -142,7 +142,7 @@ class EmrWebController extends Controller
         $cid = preg_replace('/\D/', '', $request->input('cid', ''));
         $hn = $request->input('hn');
 
-        $result = $this->emrService->getVisitDetail($vn, $hospitalCode, $hn);
+        $result = $this->aemrService->getVisitDetail($vn, $hospitalCode, $hn);
         $latencyMs = round((microtime(true) - $startTime) * 1000);
 
         $status = (!empty($result['success']) && (!isset($result['found']) || $result['found'] === true)) ? 'SUCCESS' : 'NOT_FOUND';
@@ -159,7 +159,7 @@ class EmrWebController extends Controller
 
         // Save Audit Trail Log for visit detail
         try {
-            EmrAccessLog::create([
+            AemrAccessLog::create([
                 'user_id'          => $userId,
                 'username'         => $username,
                 'user_name'        => $userName,
@@ -198,7 +198,7 @@ class EmrWebController extends Controller
             abort(403, 'เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่มีสิทธิ์เข้าถึงประวัติการใช้งาน Audit Log');
         }
 
-        $query = EmrAccessLog::query();
+        $query = AemrAccessLog::query();
 
         // Filters
         if ($search = trim($request->input('search', ''))) {
@@ -251,17 +251,17 @@ class EmrWebController extends Controller
         }
 
         // Statistics Summary
-        $todayCount = EmrAccessLog::whereDate('created_at', Carbon::today())->count();
-        $monthCount = EmrAccessLog::whereMonth('created_at', Carbon::now()->month)
+        $todayCount = AemrAccessLog::whereDate('created_at', Carbon::today())->count();
+        $monthCount = AemrAccessLog::whereMonth('created_at', Carbon::now()->month)
                                   ->whereYear('created_at', Carbon::now()->year)
                                   ->count();
-        $uniqueUsersCount = EmrAccessLog::distinct('user_id')->count('user_id');
-        $avgLatency = round((float)EmrAccessLog::avg('response_time_ms'), 1);
+        $uniqueUsersCount = AemrAccessLog::distinct('user_id')->count('user_id');
+        $avgLatency = round((float)AemrAccessLog::avg('response_time_ms'), 1);
 
         $logs = $query->orderBy('id', 'desc')->paginate(30)->withQueryString();
         $hospitals = Hospital::orderBy('hospcode')->get();
 
-        return view('admin.emr.logs', compact(
+        return view('admin.aemr.logs', compact(
             'logs',
             'hospitals',
             'todayCount',
@@ -276,7 +276,7 @@ class EmrWebController extends Controller
      */
     protected function exportLogsCsv($query)
     {
-        $fileName = 'a_emr_audit_logs_' . date('Y-m-d_His') . '.csv';
+        $fileName = 'aemr_audit_logs_' . date('Y-m-d_His') . '.csv';
         $records = $query->orderBy('id', 'desc')->limit(5000)->get();
 
         $headers = [
@@ -342,7 +342,7 @@ class EmrWebController extends Controller
     public function hosxpViewer(Request $request)
     {
         $isBms = session('is_bms_auth', false);
-        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessEmr())) {
+        if (!$isBms && (!auth()->check() || !auth()->user()->canAccessAemr())) {
             abort(403, 'คุณไม่มีสิทธิ์เข้าถึงระบบ A-EMR กรุณาติดต่อผู้ดูแลระบบ');
         }
 
@@ -357,7 +357,7 @@ class EmrWebController extends Controller
             'provider_id' => session('bms_user_cid', session('bms_doctor_code', '')),
         ];
 
-        return view('bms.emr.viewer', [
+        return view('bms.aemr.viewer', [
             'initialCid' => $cid,
             'initialHn'  => $hn,
             'initialVn'  => $vn,

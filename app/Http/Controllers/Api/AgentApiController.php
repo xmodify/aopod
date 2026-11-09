@@ -193,7 +193,7 @@ class AgentApiController extends Controller
      * Long-polling endpoint for Hospital Agent to receive real-time EMR query tasks.
      * Zero-Port Architecture: Agent initiates outbound connection.
      */
-    public function pollEmrTask(Request $request)
+    public function pollAemrTask(Request $request)
     {
         $user = Auth::user();
         $hospcode = $user->hospcode ?? $request->input('hospcode');
@@ -203,7 +203,7 @@ class AgentApiController extends Controller
         }
 
         // Long-poll: check Cache for up to 15 seconds (sleep 200ms interval)
-        $cacheKey = "agent_emr_task_{$hospcode}";
+        $cacheKey = "agent_aemr_task_{$hospcode}";
         $maxIterations = 75; // 75 * 200ms = 15 seconds max execution
         
         for ($i = 0; $i < $maxIterations; $i++) {
@@ -227,7 +227,7 @@ class AgentApiController extends Controller
     /**
      * Submit EMR query result from Hospital Agent back to Central Server.
      */
-    public function submitEmrResult(Request $request)
+    public function submitAemrResult(Request $request)
     {
         $user = Auth::user();
         $hospcode = $user->hospcode ?? $request->input('hospcode');
@@ -252,7 +252,7 @@ class AgentApiController extends Controller
         ];
 
         // Store result in cache for 60 seconds
-        Cache::put("agent_emr_result_{$taskId}_{$hospcode}", $resultPayload, 60);
+        Cache::put("agent_aemr_result_{$taskId}_{$hospcode}", $resultPayload, 60);
 
         return response()->json(['status' => 'success', 'message' => 'EMR result received']);
     }

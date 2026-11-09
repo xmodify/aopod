@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// PatientEMR contains full patient record summary
-type PatientEMR struct {
+// PatientAEMR contains full patient record summary
+type PatientAEMR struct {
 	HN           string          `json:"hn"`
 	CID          string          `json:"cid"`
 	FullName     string          `json:"full_name"`
@@ -155,8 +155,8 @@ type ProcedureItem struct {
 	Category     string `json:"category"` // "OPD" or "IPD"
 }
 
-// CollectPatientEMR searches patient demographics, allergies, clinics, and 20 recent visits by CID.
-func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
+// CollectPatientAEMR searches patient demographics, allergies, clinics, and 20 recent visits by CID.
+func CollectPatientAEMR(db *sql.DB, cid string) (*PatientAEMR, error) {
 	startTime := time.Now()
 	cleanCID := strings.TrimSpace(cid)
 
@@ -197,7 +197,7 @@ func CollectPatientEMR(db *sql.DB, cid string) (*PatientEMR, error) {
 		addrStr = "-"
 	}
 
-	emr := &PatientEMR{
+	emr := &PatientAEMR{
 		HN:           hn,
 		CID:          cleanCID,
 		FullName:     fmt.Sprintf("%s %s", fname, lname),

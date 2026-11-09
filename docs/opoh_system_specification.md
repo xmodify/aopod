@@ -97,11 +97,6 @@ CREATE TABLE `opoh_opd_service` (
   `visit_sss` INT UNSIGNED DEFAULT 0 COMMENT 'สิทธิประกันสังคม (SSS)',
   `visit_other` INT UNSIGNED DEFAULT 0 COMMENT 'สิทธิอื่นๆ / ชำระเงิน',
   
-  -- ด้านการเงินรวม
-  `inc_total` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'ค่าบริการทางการแพทย์รวม',
-  `inc_drug_total` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'ค่ายารวมทั้งหมด',
-  `inc_lab_total` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'ค่าแล็บรวม',
-  
   -- ผลลัพธ์หลังตรวจ (Outcomes)
   `refer_to_origin` INT UNSIGNED DEFAULT 0 COMMENT 'ส่งต่อกลับไป รพ.อำนาจเจริญ (10703)',
   `admit_ipd` INT UNSIGNED DEFAULT 0 COMMENT 'รับไว้นอน รพช. (Admit)',
@@ -127,7 +122,6 @@ CREATE TABLE `opoh_ipd_service` (
   `admdate_total` INT UNSIGNED DEFAULT 0 COMMENT 'วันนอนสะสมรวม',
   `adjrw_total` DECIMAL(10,4) DEFAULT 0.0000 COMMENT 'ผลรวม AdjRW',
   `operation_total` INT UNSIGNED DEFAULT 0 COMMENT 'จำนวนเคสผ่าตัด/หัตถการ',
-  `inc_total` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'ค่าใช้จ่ายรวม',
   
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,
@@ -135,11 +129,37 @@ CREATE TABLE `opoh_ipd_service` (
 );
 ```
 
-### 3.4 เพิ่มฟิลด์สิทธิ์ในตาราง `users`
+### 3.4 ตาราง `opoh_income_categories` (หมวดค่ารักษา 16 หมวด DRG x 6 สิทธิมาตรฐาน - Single Source of Truth ด้านการเงิน)
+```sql
+CREATE TABLE `opoh_income_categories` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `hospcode` VARCHAR(10) NOT NULL COMMENT 'รหัส รพ.',
+  `vstdate` DATE NOT NULL COMMENT 'วันที่รับบริการ',
+  `service_type` ENUM('OPD', 'IPD') NOT NULL COMMENT 'ประเภทบริการ',
+  `spclty_code` VARCHAR(10) NULL COMMENT 'รหัสสาขาเฉพาะทาง',
+  `doctor_id` BIGINT UNSIGNED NULL COMMENT 'ID แพทย์ AOPH (ถ้ามี)',
+  `drg_chrgitem_id` INT UNSIGNED NOT NULL COMMENT 'รหัสหมวดค่ารักษา 1-16 (drg_chrgitem)',
+  `drg_chrgitem_name` VARCHAR(255) NOT NULL COMMENT 'ชื่อหมวดค่ารักษา',
+  `inc_ucs_incup` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'สิทธิประกันสุขภาพในจังหวัด',
+  `inc_ucs_outprov` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'สิทธิประกันสุขภาพต่างจังหวัด',
+  `inc_ofc` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'สิทธิข้าราชการ/เบิกต้นสังกัด',
+  `inc_lgo` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'สิทธิองค์กรปกครองส่วนท้องถิ่น (อปท.)',
+  `inc_sss` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'สิทธิประกันสังคม',
+  `inc_other` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'สิทธิชำระเงิน/อื่นๆ',
+  `inc_total` DECIMAL(12,2) DEFAULT 0.00 COMMENT 'ยอดรวมทุกสิทธิ',
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL,
+  INDEX idx_hosp_vst_type (`hospcode`, `vstdate`, `service_type`),
+  INDEX idx_cat_vst (`drg_chrgitem_id`, `vstdate`),
+  INDEX idx_doc_vst (`doctor_id`, `vstdate`)
+);
+```
+
+### 3.5 เพิ่มฟิลด์สิทธิ์ในตาราง `users`
 เพิ่ม 2 ฟิลด์ตามมาตรฐานระบบ AOPOD เดิม:
 ```sql
 ALTER TABLE `users` 
-ADD COLUMN `allow_opoh` TINYINT(1) DEFAULT 0 COMMENT 'สิทธิ์จัดการแพทย์ OPOH (เพิ่ม/ลบ/แก้ไข)' AFTER `allow_emr`,
+ADD COLUMN `allow_opoh` TINYINT(1) DEFAULT 0 COMMENT 'สิทธิ์จัดการแพทย์ OPOH (เพิ่ม/ลบ/แก้ไข)' AFTER `allow_aemr`,
 ADD COLUMN `allow_opoh_dashboard` TINYINT(1) DEFAULT 0 COMMENT 'สิทธิ์ดู Dashboard OPOH (Read-Only)' AFTER `allow_opoh`;
 ```
 

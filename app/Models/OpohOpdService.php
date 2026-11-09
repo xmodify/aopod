@@ -28,44 +28,26 @@ class OpohOpdService extends Model
         'visit_telemed',
         'visit_ucs_incup',
         'visit_ucs_outprov',
-        'inc_total',
-        'inc_drug_total',
-        'inc_lab_total',
-        'inc_ucs_incup',
-        'inc_ucs_outprov',
-        'inc_ofc',
-        'inc_lgo',
-        'inc_sss',
-        'inc_other',
         'refer_to_origin',
         'admit_ipd',
     ];
 
     protected $casts = [
-        'vstdate' => 'date',
-        'hn_total' => 'integer',
-        'visit_total' => 'integer',
-        'visit_ucs' => 'integer',
-        'visit_ofc' => 'integer',
-        'visit_lgo' => 'integer',
-        'visit_sss' => 'integer',
-        'visit_other' => 'integer',
-        'visit_telemed' => 'integer',
-        'visit_ucs_incup' => 'integer',
+        'vstdate'           => 'date',
+        'hn_total'          => 'integer',
+        'visit_total'       => 'integer',
+        'visit_ucs'         => 'integer',
+        'visit_ofc'         => 'integer',
+        'visit_lgo'         => 'integer',
+        'visit_sss'         => 'integer',
+        'visit_other'       => 'integer',
+        'visit_telemed'     => 'integer',
+        'visit_ucs_incup'   => 'integer',
         'visit_ucs_outprov' => 'integer',
-        'inc_total' => 'decimal:2',
-        'inc_drug_total' => 'decimal:2',
-        'inc_lab_total' => 'decimal:2',
-        'inc_ucs_incup' => 'decimal:2',
-        'inc_ucs_outprov' => 'decimal:2',
-        'inc_ofc' => 'decimal:2',
-        'inc_lgo' => 'decimal:2',
-        'inc_sss' => 'decimal:2',
-        'inc_other' => 'decimal:2',
-        'refer_to_origin' => 'integer',
-        'admit_ipd' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'refer_to_origin'   => 'integer',
+        'admit_ipd'         => 'integer',
+        'created_at'        => 'datetime',
+        'updated_at'        => 'datetime',
     ];
 
     /**
@@ -81,4 +63,3 @@ class OpohOpdService extends Model
         return $this->belongsTo(OpohDoctor::class, 'doctor_id');
     }
 }
-

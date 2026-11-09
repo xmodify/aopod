@@ -162,6 +162,13 @@
               <span class="badge text-white rounded-pill ms-1" style="background-color: {{ $active_tab === 'operation' ? 'rgba(255,255,255,0.3)' : '#8b5cf6' }}; font-size: 0.72rem; font-weight: 700;">{{ number_format($opSumCumulative) }} เคส</span>
             </button>
           </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link {{ $active_tab === 'income' ? 'active' : '' }} px-3 py-1.5 rounded-pill fw-bold d-flex align-items-center gap-1.5 text-nowrap" id="pills-income-tab" data-bs-toggle="pill" data-bs-target="#pills-income" type="button" role="tab" aria-controls="pills-income" aria-selected="{{ $active_tab === 'income' ? 'true' : 'false' }}">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+              <span>หมวดค่ารักษา</span>
+              <span class="badge {{ $active_tab === 'income' ? 'bg-white text-success' : 'bg-success bg-opacity-25 text-success' }} rounded-pill ms-1" style="font-size: 0.72rem; font-weight: 700;">฿{{ number_format($incomeCumulativeGrandTotal) }}</span>
+            </button>
+          </li>
         </ul>
       </div>
 
@@ -1191,6 +1198,322 @@
 
     </div>
 
+    {{-- ==================== 4. TAB INCOME (หมวดค่ารักษาพยาบาล 16 หมวด x 6 สิทธิ) ==================== --}}
+    <div class="tab-pane fade {{ $active_tab === 'income' ? 'show active' : '' }}" id="pills-income" role="tabpanel" aria-labelledby="pills-income-tab">
+      
+      {{-- 1. ส่วนหัวการเงิน และตัวกรองประเภทบริการ/รพ. --}}
+      <div class="opoh-glass-card p-4 mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="p-3 bg-success bg-opacity-10 text-success rounded-4">
+              <i class="fa-solid fa-file-invoice-dollar fs-3 text-success"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 fw-bold">OPOH • หมวดค่ารักษา 16 หมวด</span>
+                <span class="text-secondary small fw-semibold">สถิติด้านการเงินและกองทุนรักษาพยาบาล จังหวัดอำนาจเจริญ</span>
+              </div>
+              <h4 class="fw-bold mb-0 text-dark">
+                รายได้ตามหมวดค่ารักษาพยาบาล ปีงบประมาณ {{ $budget_year }}
+              </h4>
+              <p class="text-muted small mb-0 mt-1">
+                วิเคราะห์ข้อมูลจำแนกตามมาตรฐาน 16 หมวดค่ารักษาพยาบาล (<span class="font-monospace text-primary">drg_chrgitem</span>) และ 6 สิทธิมาตรฐาน สปสช.
+              </p>
+            </div>
+          </div>
+
+          {{-- ตัวเลือกประเภทบริการ (OPD / IPD / รวมทั้งหมด) และ โรงพยาบาล --}}
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Income Service Type">
+              <a href="{{ route('web.opoh', array_merge(request()->query(), ['active_tab' => 'income', 'income_service_type' => 'ALL'])) }}" class="btn {{ $income_service_type === 'ALL' ? 'btn-success fw-bold text-white' : 'btn-outline-secondary' }}">
+                <i class="fa-solid fa-layer-group me-1"></i>รวมทั้งหมด
+              </a>
+              <a href="{{ route('web.opoh', array_merge(request()->query(), ['active_tab' => 'income', 'income_service_type' => 'OPD'])) }}" class="btn {{ $income_service_type === 'OPD' ? 'btn-primary fw-bold text-white' : 'btn-outline-secondary' }}">
+                <i class="fa-solid fa-stethoscope me-1"></i>ผู้ป่วยนอก (OPD)
+              </a>
+              <a href="{{ route('web.opoh', array_merge(request()->query(), ['active_tab' => 'income', 'income_service_type' => 'IPD'])) }}" class="btn {{ $income_service_type === 'IPD' ? 'btn-danger fw-bold text-white' : 'btn-outline-secondary' }}">
+                <i class="fa-solid fa-bed-pulse me-1"></i>ผู้ป่วยใน (IPD)
+              </a>
+            </div>
+
+            <select class="form-select form-select-sm shadow-sm" id="incomeHospSelect" style="width: 170px;" onchange="location.href='{{ route('web.opoh', array_merge(request()->query(), ['active_tab' => 'income'])) }}&income_hospcode=' + this.value">
+              <option value="ALL" {{ $income_hospcode === 'ALL' ? 'selected' : '' }}>รพช. 6 แห่ง (ทั้งหมด)</option>
+              @foreach($hospitalsList as $hcode => $hname)
+                <option value="{{ $hcode }}" {{ $income_hospcode == $hcode ? 'selected' : '' }}>{{ $hname }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        {{-- 2. แถวการ์ดสรุปมูลค่าแยก 6 สิทธิมาตรฐาน (UC ในเขต, UC นอกเขต, ข้าราชการ, อปท, ประกันสังคม, อื่นๆ) --}}
+        <div class="border-top pt-3 mt-2">
+          <div class="d-flex justify-content-between align-items-center mb-2.5">
+            <span class="fw-bold text-dark small d-flex align-items-center gap-1.5">
+              <i class="fa-solid fa-wallet text-success"></i>
+              <span>มูลค่าการรักษาจำแนกตาม 6 สิทธิมาตรฐาน (ยอดรวมทั้งปีงบประมาณ {{ $budget_year }})</span>
+            </span>
+            <div class="text-end">
+              <span class="text-muted small">มูลค่ารวมทั้งสิ้น:</span>
+              <strong class="text-success fs-5 ms-1">฿{{ number_format($incomeSumsYearly['total'], 2) }}</strong>
+            </div>
+          </div>
+
+          <div class="row g-2">
+            @php
+              $rightsDisplay = [
+                'ucs_incup'   => ['name' => 'UC ในจังหวัด',   'color' => '#0284c7', 'icon' => 'fa-id-card',           'val' => $incomeSumsYearly['ucs_incup']],
+                'ucs_outprov' => ['name' => 'UC ต่างจังหวัด', 'color' => '#06b6d4', 'icon' => 'fa-plane-departure',   'val' => $incomeSumsYearly['ucs_outprov']],
+                'ofc'         => ['name' => 'ข้าราชการ (OFC)', 'color' => '#16a34a', 'icon' => 'fa-building-columns',   'val' => $incomeSumsYearly['ofc']],
+                'lgo'         => ['name' => 'อปท. (LGO)',     'color' => '#d97706', 'icon' => 'fa-landmark',           'val' => $incomeSumsYearly['lgo']],
+                'sss'         => ['name' => 'ประกันสังคม (SSS)', 'color' => '#9333ea', 'icon' => 'fa-shield-halved',   'val' => $incomeSumsYearly['sss']],
+                'other'       => ['name' => 'ชำระเงิน/อื่นๆ',  'color' => '#64748b', 'icon' => 'fa-money-bill-wave',    'val' => $incomeSumsYearly['other']],
+              ];
+            @endphp
+            @foreach($rightsDisplay as $rKey => $rConf)
+            @php
+              $pct = $incomeSumsYearly['total'] > 0 ? ($rConf['val'] / $incomeSumsYearly['total']) * 100 : 0;
+            @endphp
+            <div class="col-6 col-md-4 col-xl-2">
+              <div class="card h-100 border rounded-3 p-2.5 shadow-sm bg-white" style="border-left: 4px solid {{ $rConf['color'] }} !important;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge rounded-pill fw-bold" style="background-color: {{ $rConf['color'] }}15; color: {{ $rConf['color'] }}; font-size: 0.70rem;">
+                    <i class="fa-solid {{ $rConf['icon'] }} me-1"></i>{{ $rConf['name'] }}
+                  </span>
+                  <span class="text-muted fw-bold" style="font-size: 0.72rem;">{{ number_format($pct, 1) }}%</span>
+                </div>
+                <div class="mt-1">
+                  <h5 class="fw-bold mb-0 text-dark" style="font-size: 1rem;">฿{{ number_format($rConf['val'], 2) }}</h5>
+                </div>
+              </div>
+            </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+
+      {{-- 3. Monthly Trend Line Chart Card (เหมือน RIMS) --}}
+      <div class="card border rounded-4 shadow-sm mb-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <span class="p-2 bg-primary bg-opacity-10 text-primary rounded-3">
+              <i class="fa-solid fa-chart-line fs-5"></i>
+            </span>
+            <div>
+              <h6 class="mb-0 fw-bold text-dark">กราฟแสดงแนวโน้มรายเดือนของรายได้ค่ารักษา</h6>
+              <span class="text-muted small">เส้นแนวโน้ม 12 เดือน (ต.ค. - ก.ย.) ของปีงบประมาณ {{ $budget_year }}</span>
+            </div>
+          </div>
+
+          {{-- Category Dropdown Selector --}}
+          <div class="d-flex align-items-center gap-2">
+            <label for="incomeCategorySelector" class="small fw-semibold text-secondary text-nowrap mb-0">เลือกหมวด:</label>
+            <select id="incomeCategorySelector" class="form-select form-select-sm shadow-sm" style="min-width: 280px; max-width: 380px;">
+              <option value="all">ทั้งหมด (รายได้รวมทุกหมวด)</option>
+              @foreach($incomeYearlyData as $catId => $cat)
+                <option value="{{ $catId }}">{{ $cat->group_name }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        <div class="card-body p-3">
+          <div id="incomeMonthlyTrendChart" style="min-height: 290px;"></div>
+        </div>
+      </div>
+
+      {{-- 4. Month Tabs Navigation (เหมือน RIMS: รวมทั้งปี, ต.ค., พ.ย., ..., ก.ย.) --}}
+      <div class="card border rounded-4 shadow-sm bg-white overflow-hidden mb-4">
+        <div class="card-header bg-light py-2.5 px-3 border-bottom">
+          <ul class="nav nav-pills gap-1.5 flex-nowrap overflow-auto" id="incomeMonthTabs" role="tablist" style="padding-bottom: 2px;">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active px-3 py-1.5 rounded-pill fw-bold text-nowrap" id="tab-inc-yearly" data-bs-toggle="pill" data-bs-target="#pane-inc-yearly" type="button" role="tab" aria-selected="true" style="font-size: 0.85rem;">
+                <i class="fa-solid fa-calendar-check me-1"></i> รวมทั้งปี
+              </button>
+            </li>
+            @foreach($incomeMonthsList as $m)
+            <li class="nav-item" role="presentation">
+              <button class="nav-link px-3 py-1.5 rounded-pill fw-semibold text-nowrap" id="tab-inc-{{ $m }}" data-bs-toggle="pill" data-bs-target="#pane-inc-{{ $m }}" type="button" role="tab" aria-selected="false" style="font-size: 0.85rem;">
+                {{ $incomeMonthsNames[$m] }}
+              </button>
+            </li>
+            @endforeach
+          </ul>
+        </div>
+
+        {{-- 5. Tab Panes: ตาราง Matrix 16 หมวด x 6 สิทธิ สำหรับแต่ละเดือนและรวมทั้งปี --}}
+        <div class="tab-content" id="incomeMonthTabsContent">
+          
+          {{-- PANE 1: รวมทั้งปี --}}
+          <div class="tab-pane fade show active" id="pane-inc-yearly" role="tabpanel" aria-labelledby="tab-inc-yearly">
+            <div class="d-flex flex-wrap justify-content-between align-items-center py-2.5 px-3 bg-white border-bottom gap-2">
+              <span class="fw-bold text-primary small d-flex align-items-center gap-1.5">
+                <i class="fa-solid fa-table-cells fs-6"></i>
+                <span>รายได้ตามหมวดค่ารักษา ({{ $income_service_type === 'ALL' ? 'OPD+IPD' : $income_service_type }}) ยอดรวมทั้งปีงบประมาณ {{ $budget_year }}</span>
+              </span>
+              <button type="button" onclick="exportTableToExcel('incomeTable-yearly', 'รายงาน16หมวดค่ารักษา_{{ $income_service_type }}_{{ $income_hospcode === 'ALL' ? 'รพช_6แห่ง' : ($hospitalsList[$income_hospcode] ?? $income_hospcode) }}_ทั้งปีงบ_{{ $budget_year }}', 'รวมทั้งปี_{{ $budget_year }}')" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" style="font-size: 0.78rem;" title="ส่งออกตารางรวมทั้งปีเป็น Excel">
+                <i class="fa-solid fa-file-excel me-1"></i> Excel
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover table-opoh align-middle mb-0 w-100" id="incomeTable-yearly" style="font-size: 0.88rem;">
+                <thead class="table-light">
+                  <tr class="text-center align-middle">
+                    <th class="text-start" style="min-width: 260px;">กลุ่มหมวดค่ารักษา (drg_chrgitem)</th>
+                    <th style="min-width: 120px;" class="text-end">UC ในจังหวัด</th>
+                    <th style="min-width: 120px;" class="text-end">UC ต่างจังหวัด</th>
+                    <th style="min-width: 120px;" class="text-end">ข้าราชการ</th>
+                    <th style="min-width: 110px;" class="text-end">อปท.</th>
+                    <th style="min-width: 120px;" class="text-end">ประกันสังคม</th>
+                    <th style="min-width: 110px;" class="text-end">อื่นๆ/ชำระเงิน</th>
+                    <th style="min-width: 130px;" class="text-end bg-primary bg-opacity-10 text-primary fw-bold">ยอดรวม (บาท)</th>
+                    <th style="min-width: 80px;" class="text-end">สัดส่วน (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @php
+                    $grandTotalYearly = $incomeSumsYearly['total'] > 0 ? $incomeSumsYearly['total'] : 1;
+                  @endphp
+                  @foreach($incomeYearlyData as $catId => $row)
+                  @php
+                    $rowPct = ($row->total / $grandTotalYearly) * 100;
+                  @endphp
+                  <tr>
+                    <td class="fw-bold text-dark text-start">
+                      {{ $row->group_name }}
+                    </td>
+                    <td class="text-end {{ $row->ucs_incup > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->ucs_incup > 0 ? number_format($row->ucs_incup, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->ucs_outprov > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->ucs_outprov > 0 ? number_format($row->ucs_outprov, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->ofc > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->ofc > 0 ? number_format($row->ofc, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->lgo > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->lgo > 0 ? number_format($row->lgo, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->sss > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->sss > 0 ? number_format($row->sss, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->other > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->other > 0 ? number_format($row->other, 2) : '-' }}
+                    </td>
+                    <td class="text-end fw-bold text-primary bg-primary bg-opacity-10">
+                      {{ number_format($row->total, 2) }}
+                    </td>
+                    <td class="text-end small text-secondary">
+                      {{ number_format($rowPct, 1) }}%
+                    </td>
+                  </tr>
+                  @endforeach
+                </tbody>
+                <tfoot>
+                  <tr class="fw-bold tr-opoh-total text-end align-middle">
+                    <td class="text-center">รวมทั้งหมด</td>
+                    <td>{{ number_format($incomeSumsYearly['ucs_incup'], 2) }}</td>
+                    <td>{{ number_format($incomeSumsYearly['ucs_outprov'], 2) }}</td>
+                    <td>{{ number_format($incomeSumsYearly['ofc'], 2) }}</td>
+                    <td>{{ number_format($incomeSumsYearly['lgo'], 2) }}</td>
+                    <td>{{ number_format($incomeSumsYearly['sss'], 2) }}</td>
+                    <td>{{ number_format($incomeSumsYearly['other'], 2) }}</td>
+                    <td class="text-primary fs-6">{{ number_format($incomeSumsYearly['total'], 2) }}</td>
+                    <td>100.0%</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          {{-- PANE 2..13: ประจำแต่ละเดือน (ต.ค. 68 .. ก.ย. 69) --}}
+          @foreach($incomeMonthsList as $m)
+          @php
+            $mSums = $incomeSumsMonthly[$m] ?? ['ucs_incup'=>0,'ucs_outprov'=>0,'ofc'=>0,'lgo'=>0,'sss'=>0,'other'=>0,'total'=>0];
+            $mGrandTotal = $mSums['total'] > 0 ? $mSums['total'] : 1;
+          @endphp
+          <div class="tab-pane fade" id="pane-inc-{{ $m }}" role="tabpanel" aria-labelledby="tab-inc-{{ $m }}">
+            <div class="d-flex flex-wrap justify-content-between align-items-center py-2.5 px-3 bg-white border-bottom gap-2">
+              <span class="fw-bold text-success small d-flex align-items-center gap-1.5">
+                <i class="fa-solid fa-table-cells fs-6"></i>
+                <span>รายได้ตามหมวดค่ารักษา ({{ $income_service_type === 'ALL' ? 'OPD+IPD' : $income_service_type }}) ประจำเดือน {{ $incomeMonthsNames[$m] }}</span>
+              </span>
+              <button type="button" onclick="exportTableToExcel('incomeTable-{{ $m }}', 'รายงาน16หมวดค่ารักษา_{{ $income_service_type }}_{{ $income_hospcode === 'ALL' ? 'รพช_6แห่ง' : ($hospitalsList[$income_hospcode] ?? $income_hospcode) }}_เดือน_{{ str_replace(' ', '_', $incomeMonthsNames[$m]) }}', '{{ str_replace(' ', '_', $incomeMonthsNames[$m]) }}')" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" style="font-size: 0.78rem;" title="ส่งออกตารางประจำเดือนเป็น Excel">
+                <i class="fa-solid fa-file-excel me-1"></i> Excel
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover table-opoh align-middle mb-0 w-100" id="incomeTable-{{ $m }}" style="font-size: 0.88rem;">
+                <thead class="table-light">
+                  <tr class="text-center align-middle">
+                    <th class="text-start" style="min-width: 260px;">กลุ่มหมวดค่ารักษา (drg_chrgitem)</th>
+                    <th style="min-width: 120px;" class="text-end">UC ในจังหวัด</th>
+                    <th style="min-width: 120px;" class="text-end">UC ต่างจังหวัด</th>
+                    <th style="min-width: 120px;" class="text-end">ข้าราชการ</th>
+                    <th style="min-width: 110px;" class="text-end">อปท.</th>
+                    <th style="min-width: 120px;" class="text-end">ประกันสังคม</th>
+                    <th style="min-width: 110px;" class="text-end">อื่นๆ/ชำระเงิน</th>
+                    <th style="min-width: 130px;" class="text-end bg-success bg-opacity-10 text-success fw-bold">ยอดรวม (บาท)</th>
+                    <th style="min-width: 80px;" class="text-end">สัดส่วน (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach($incomeMonthlyData[$m] as $catId => $row)
+                  @php
+                    $rowPct = ($row->total / $mGrandTotal) * 100;
+                  @endphp
+                  <tr>
+                    <td class="fw-bold text-dark text-start">
+                      {{ $row->group_name }}
+                    </td>
+                    <td class="text-end {{ $row->ucs_incup > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->ucs_incup > 0 ? number_format($row->ucs_incup, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->ucs_outprov > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->ucs_outprov > 0 ? number_format($row->ucs_outprov, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->ofc > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->ofc > 0 ? number_format($row->ofc, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->lgo > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->lgo > 0 ? number_format($row->lgo, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->sss > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->sss > 0 ? number_format($row->sss, 2) : '-' }}
+                    </td>
+                    <td class="text-end {{ $row->other > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
+                      {{ $row->other > 0 ? number_format($row->other, 2) : '-' }}
+                    </td>
+                    <td class="text-end fw-bold text-success bg-success bg-opacity-10">
+                      {{ number_format($row->total, 2) }}
+                    </td>
+                    <td class="text-end small text-secondary">
+                      {{ number_format($rowPct, 1) }}%
+                    </td>
+                  </tr>
+                  @endforeach
+                </tbody>
+                <tfoot>
+                  <tr class="fw-bold tr-opoh-total text-end align-middle">
+                    <td class="text-center">รวมประจำเดือน</td>
+                    <td>{{ number_format($mSums['ucs_incup'], 2) }}</td>
+                    <td>{{ number_format($mSums['ucs_outprov'], 2) }}</td>
+                    <td>{{ number_format($mSums['ofc'], 2) }}</td>
+                    <td>{{ number_format($mSums['lgo'], 2) }}</td>
+                    <td>{{ number_format($mSums['sss'], 2) }}</td>
+                    <td>{{ number_format($mSums['other'], 2) }}</td>
+                    <td class="text-success fs-6">{{ number_format($mSums['total'], 2) }}</td>
+                    <td>100.0%</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          @endforeach
+
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
@@ -1284,6 +1607,8 @@
 <script src="{{ asset('assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/flatpickr/th.js') }}"></script>
 <script src="{{ asset('assets/vendor/flatpickr/flatpickr-th-buddhist.js') }}"></script>
+<script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/xlsx.full.min.js') }}"></script>
 <script>
   $(document).ready(function() {
     // 1. กำหนด Flatpickr ปฏิทิน พ.ศ. (Thai Buddhist Calendar)
@@ -1307,6 +1632,9 @@
       } else if (target === '#pills-op') {
         $('#active_tab').val('operation');
         initOpChart();
+      } else if (target === '#pills-income') {
+        $('#active_tab').val('income');
+        initIncomeChart();
       }
     });
 
@@ -1491,12 +1819,139 @@
       });
     }
 
+    // ==================== กราฟแนวโน้มรายได้ 16 หมวด (ApexCharts) ====================
+    let incomeChartInstance = null;
+    const incomeChartData = @json($incomeChartData);
+    const incomeMonthsLabels = @json(array_values($incomeMonthsNames));
+    const masterCatsNames = @json($masterCategories);
+
+    function initIncomeChart() {
+      const chartEl = document.querySelector("#incomeMonthlyTrendChart");
+      if (!chartEl) return;
+      if (incomeChartInstance) {
+        incomeChartInstance.destroy();
+      }
+
+      const initialCatId = 'all';
+      const initialCatName = 'ทั้งหมด (รายได้รวมทุกหมวด)';
+
+      const chartOptions = {
+        series: [{
+          name: 'ยอดรวม (บาท)',
+          data: incomeChartData[initialCatId] || []
+        }],
+        chart: {
+          height: 310,
+          type: 'area',
+          toolbar: { show: false },
+          fontFamily: 'Inter, Noto Sans Thai, sans-serif'
+        },
+        colors: ['#0284c7'],
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.35,
+            opacityTo: 0.05,
+            stops: [0, 90, 100]
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return Number(val).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          },
+          style: {
+            fontSize: '11px',
+            fontWeight: 600,
+            colors: ['#0369a1']
+          },
+          background: {
+            enabled: true,
+            foreColor: '#ffffff',
+            borderRadius: 4,
+            padding: 4,
+            opacity: 0.9,
+            borderWidth: 1,
+            borderColor: '#38bdf8'
+          }
+        },
+        yaxis: {
+          labels: {
+            formatter: function (val) {
+              return Number(val).toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
+          }
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return '฿' + Number(val).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+          }
+        },
+        stroke: { curve: 'smooth', width: 3 },
+        markers: { size: 5, strokeWidth: 2, strokeColors: '#ffffff', hover: { size: 7 } },
+        xaxis: {
+          categories: incomeMonthsLabels,
+          labels: {
+            style: { fontWeight: 600 }
+          }
+        },
+        title: {
+          text: initialCatName,
+          align: 'left',
+          style: {
+            fontSize: '14px',
+            fontWeight: 'bold',
+            color: '#334155'
+          }
+        }
+      };
+
+      incomeChartInstance = new ApexCharts(chartEl, chartOptions);
+      incomeChartInstance.render();
+
+      $('#incomeCategorySelector').off('change').on('change', function() {
+        const selectedCatId = this.value;
+        const selectedCatName = selectedCatId === 'all' 
+          ? 'ทั้งหมด (รายได้รวมทุกหมวด)' 
+          : (masterCatsNames[selectedCatId] || ('หมวด ' + selectedCatId));
+
+        incomeChartInstance.updateOptions({
+          title: { text: selectedCatName }
+        });
+
+        incomeChartInstance.updateSeries([{
+          name: 'ยอดรวม (บาท)',
+          data: incomeChartData[selectedCatId] || []
+        }]);
+      });
+    }
+
+    // Export Table to Excel
+    window.exportTableToExcel = function(tableId, filename, sheetName) {
+      if (typeof XLSX === 'undefined') {
+        alert('กรุณารอไลบรารี XLSX โหลดสักครู่');
+        return;
+      }
+      const tableSelect = document.getElementById(tableId);
+      if (!tableSelect) return;
+      let cleanSheet = (sheetName || 'Sheet1').replace(/[:\\/?*\[\]]/g, '').substring(0, 31);
+      const wb = XLSX.utils.table_to_book(tableSelect, { sheet: cleanSheet });
+      let cleanFilename = (filename ? filename : 'opoh_income_data').replace(/[\/\\:\*\?"<>\|]+/g, '_');
+      const fname = cleanFilename + '.xlsx';
+      XLSX.writeFile(wb, fname);
+    };
+
     // เริ่มต้นแสดงกราฟตามแท็บที่ active อยู่
     const currentTab = '{{ $active_tab }}';
     if (currentTab === 'ipd') {
       initIpdChart();
     } else if (currentTab === 'operation') {
       initOpChart();
+    } else if (currentTab === 'income') {
+      initIncomeChart();
     } else {
       initOpdChart();
     }
