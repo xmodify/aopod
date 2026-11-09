@@ -125,4 +125,5 @@ Route::middleware(['auth:web'])->group(function () {
     // รายเคสของแพทย์ (ข้อมูลระบุตัวผู้ป่วย - เฉพาะ allow_opoh, ดึงสดผ่าน agent)
     Route::get('/manage/opoh/doctor-records', [\App\Http\Controllers\Web\DashboardOpohController::class, 'getDoctorRecords'])->name('manage.opoh.doctor-records');
     Route::get('/manage/opoh/doctor-records/export', [\App\Http\Controllers\Web\DashboardOpohController::class, 'exportDoctorRecords'])->name('manage.opoh.doctor-records.export');
+    Route::get('/manage/opoh/indiv-export', [\App\Http\Controllers\Web\DashboardOpohController::class, 'exportIndiv'])->name('manage.opoh.indiv-export');
 });

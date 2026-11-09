@@ -228,7 +228,7 @@
                         สถิติการออกตรวจของแพทย์เฉพาะทางจาก รพ.อำนาจเจริญ ณ โรงพยาบาลชุมชน 6 แห่ง (ช่วงที่เลือก: <strong class="text-primary">{{ $thaiDateRangeText }}</strong>)
                     </span>
                 </div>
-                <div>
+                <div class="d-flex flex-wrap gap-2">
                     <button type="button" class="btn btn-primary px-3 py-2 fw-bold text-white shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#doctorListManageModal" style="border-radius: 12px; background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%); border: none;">
                         <i class="fa-solid fa-users-gear"></i>
                         <span>จัดการรายชื่อแพทย์</span>
@@ -300,9 +300,10 @@
                             <i class="fa-solid fa-magnifying-glass"></i>
                             <span>ค้นหา</span>
                         </button>
-                        <a href="{{ route('manage.opoh.index') }}" class="btn btn-sm btn-outline-secondary px-2.5 py-1.5 rounded-2 shadow-sm" title="คืนค่าเริ่มต้น">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </a>
+                        <button type="button" class="btn btn-sm btn-success px-3 py-1.5 fw-semibold rounded-2 shadow-sm d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#indivExportModal" title="ดาวน์โหลดรายเคส (ตามช่วงเวลาที่ค้นหาล่าสุด)">
+                            <i class="fa-solid fa-file-csv"></i>
+                            <span>โหลด Indiv</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -1037,6 +1038,50 @@
         </div>
     </div>
 </div>
+{{-- 8. Modal ดาวน์โหลด Indiv ทั้งหมด (OPD / IPD / ทั้งหมด) พร้อมหมวด drg_chrgitem --}}
+<div class="modal fade" id="indivExportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-2 pt-4 px-4">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark mb-1"><i class="fa-solid fa-file-csv text-success me-2"></i>ดาวน์โหลด Indiv (รายเคส)</h5>
+                    <span class="badge rounded-pill bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 px-2.5 py-1 fw-semibold">
+                        <i class="fa-solid fa-user-shield me-1"></i>ข้อมูลผู้ป่วย (PDPA) - บันทึกการเข้าถึงทุกครั้ง
+                    </span>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <div id="indivAlert" class="alert alert-danger d-none py-2 small"></div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">โรงพยาบาล</label>
+                    <select id="indivHosp" class="form-select">
+                        @foreach($hospitalsList as $hcode => $hname)
+                            <option value="{{ $hcode }}">{{ $hname }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">ประเภทบริการ</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check"><input class="form-check-input" type="radio" name="indivType" id="indivTypeAll" value="all" checked><label class="form-check-label" for="indivTypeAll">ทั้งหมด (OPD + IPD)</label></div>
+                        <div class="form-check"><input class="form-check-input" type="radio" name="indivType" id="indivTypeOpd" value="opd"><label class="form-check-label" for="indivTypeOpd">OPD</label></div>
+                        <div class="form-check"><input class="form-check-input" type="radio" name="indivType" id="indivTypeIpd" value="ipd"><label class="form-check-label" for="indivTypeIpd">IPD</label></div>
+                    </div>
+                </div>
+                <p class="text-muted small mb-0">
+                    ช่วงเวลา: <strong class="text-dark">{{ $thaiDateRangeText }}</strong><br>
+                    ไฟล์ประกอบด้วยชื่อแพทย์ ชื่อ รพ. และยอดแยกตามหมวด drg_chrgitem ทุกหมวด (ตามช่วงที่เลือกด้านบนของหน้า) การดึงข้อมูลจำนวนมากอาจใช้เวลาสักครู่
+                </p>
+            </div>
+            <div class="modal-footer border-0 pb-4 px-4">
+                <span class="text-muted small me-auto"><i class="fa-solid fa-circle-info text-info me-1"></i>ดึงสดจาก HOSxP ผ่าน AOPOD-Agent ไม่เก็บข้อมูลผู้ป่วยไว้บนเซิร์ฟเวอร์กลาง</span>
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">ปิด</button>
+                <button type="button" id="indivDownloadBtn" class="btn btn-success rounded-3 fw-bold"><i class="fa-solid fa-download me-1"></i>ดาวน์โหลด CSV</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -1466,6 +1511,40 @@ $(document).ready(function() {
         const $target = $('.doc-inc-type-btn[data-type="' + selectedType + '"]');
         $target.addClass('active active-' + selectedType.toLowerCase());
     }
+
+    // ==================== ดาวน์โหลด Indiv ทั้งหมด (CSV) ====================
+    $('#indivDownloadBtn').on('click', async function() {
+        const $btn = $(this), $alert = $('#indivAlert').addClass('d-none').text('');
+        const q = $.param({
+            hospcode: $('#indivHosp').val(),
+            type: $('input[name=indivType]:checked').val(),
+            start_date: '{{ $current_start }}',
+            end_date: '{{ $current_end }}'
+        });
+        const html = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>กำลังดึงข้อมูล...');
+        try {
+            const resp = await fetch('{{ route('manage.opoh.indiv-export') }}?' + q, { credentials: 'same-origin', headers: { 'Accept': 'text/csv,application/json' } });
+            const ctype = resp.headers.get('Content-Type') || '';
+            if (!resp.ok || ctype.indexOf('application/json') !== -1) {
+                let msg = 'ส่งออกไม่สำเร็จ (' + resp.status + ')';
+                try { msg = (await resp.json()).message || msg; } catch (e) {}
+                throw new Error(msg);
+            }
+            const blob = await resp.blob();
+            const cd = resp.headers.get('Content-Disposition') || '';
+            const m = /filename="?([^";]+)"?/.exec(cd);
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = m ? m[1] : 'opoh_indiv.csv';
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        } catch (e) {
+            $alert.removeClass('d-none').text(e.message);
+        } finally {
+            $btn.prop('disabled', false).html(html);
+        }
+    });
 
     // ==================== รายเคสของแพทย์ รายโรงพยาบาล (server-side DataTable ผ่าน agent) ====================
     const DOC_REC_URL = '{{ route('manage.opoh.doctor-records') }}';

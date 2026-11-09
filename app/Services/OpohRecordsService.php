@@ -18,16 +18,17 @@ class OpohRecordsService
      * @param array $params type, cid, licenseno, start_date, end_date, offset, limit, search, order_col, order_dir, summary
      * @return array ['success' => bool, 'message' => string, 'data' => array|null]
      */
-    public function fetch(string $hospcode, array $params, int $maxWaitMs = 25000): array
+    public function fetch(string $hospcode, array $params, int $maxWaitMs = 25000, string $taskType = 'opoh_doctor_records'): array
     {
         $taskId = 'opoh_rec_' . time() . '_' . Str::random(8);
 
         // งานเก่าที่ยังไม่มีใครรับ (เช่น agent ออฟไลน์) หมดอายุเอง
+        // opoh_indiv_export ส่งพารามิเตอร์ใต้คีย์ 'indiv' (ตรงกับ AemrTask.Indiv ของ agent)
         Cache::put("agent_aemr_task_{$hospcode}", [
             'task_id'       => $taskId,
-            'type'          => 'opoh_doctor_records',
+            'type'          => $taskType,
             'hospital_code' => $hospcode,
-            'params'        => $params,
+            ($taskType === 'opoh_indiv_export' ? 'indiv' : 'params') => $params,
             'timestamp'     => microtime(true),
         ], 30);
 

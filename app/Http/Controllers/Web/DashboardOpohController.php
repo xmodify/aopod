@@ -2422,6 +2422,123 @@ class DashboardOpohController extends Controller
     }
 
     /**
+     * ส่งออกรายเคส (Indiv) ของแพทย์ทุกคนใน รพ. 1 แห่ง เป็น CSV: เลือก OPD / IPD / ทั้งหมด
+     * มีคอลัมน์ชื่อแพทย์ ชื่อ รพ. และยอดแยกตามหมวด drg_chrgitem ทุกหมวด (ดึงสดผ่าน agent)
+     */
+    public function exportIndiv(Request $request, \App\Services\OpohRecordsService $svc)
+    {
+        if (!Auth::check() || !Auth::user()->canAccessOpoh()) {
+            return response()->json(['success' => false, 'message' => 'คุณไม่มีสิทธิ์ดูข้อมูลรายเคส (ต้องมีสิทธิ์ allow_opoh)'], 403);
+        }
+
+        $communityCodes = ['10985', '10986', '10987', '10988', '10989', '10990'];
+        $type     = (string)$request->input('type', 'all');
+        $hospcode = (string)$request->input('hospcode');
+        $start    = (string)$request->input('start_date');
+        $end      = (string)$request->input('end_date');
+
+        if (!in_array($type, ['opd', 'ipd', 'all'], true)) {
+            return response()->json(['success' => false, 'message' => 'ประเภทบริการไม่ถูกต้อง'], 422);
+        }
+        if (!in_array($hospcode, $communityCodes, true)) {
+            return response()->json(['success' => false, 'message' => 'รองรับเฉพาะ รพช. 6 แห่ง'], 422);
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $start) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $end)) {
+            return response()->json(['success' => false, 'message' => 'ช่วงวันที่ไม่ถูกต้อง'], 422);
+        }
+
+        $doctors = DB::table('opoh_doctors')->where('is_active', 'Y')->get(['cid', 'licenseno']);
+        $docList = [];
+        foreach ($doctors as $d) {
+            $cid = trim((string)$d->cid);
+            $lic = trim((string)$d->licenseno);
+            if ($cid !== '' || $lic !== '') {
+                $docList[] = ['cid' => $cid, 'licenseno' => $lic];
+            }
+        }
+        if (empty($docList)) {
+            return response()->json(['success' => false, 'message' => 'ไม่มีแพทย์ที่ใช้งานและมีเลขบัตรประชาชน/เลข ว.'], 422);
+        }
+
+        $hosp = Hospital::where('hospcode', $hospcode)->first();
+        $hospName = $hosp->name ?? $hospcode;
+        $types = $type === 'all' ? ['opd', 'ipd'] : [$type];
+        $chunk = 500;
+
+        $base = fn(string $t) => [
+            'type' => $t, 'start_date' => $start, 'end_date' => $end,
+            'hospital_name' => $hospName, 'doctors' => $docList,
+        ];
+
+        // ดึงก้อนแรกของประเภทแรกก่อนสตรีม เพื่อแจ้งข้อผิดพลาดเป็น JSON ได้ถ้า agent ไม่ตอบ
+        $first = $svc->fetch($hospcode, $base($types[0]) + ['offset' => 0, 'limit' => $chunk], 25000, 'opoh_indiv_export');
+        $ctx = ['type' => $type, 'hospcode' => $hospcode, 'start' => $start, 'end' => $end,
+                'doctor' => (object)['doctor_name' => 'ทุกท่าน', 'licenseno' => null]];
+        if (!$first['success']) {
+            $this->auditDoctorRecords($request, $ctx, 'OPOH_INDIV_EXPORT', 'ERROR', 0, $first['message']);
+            return response()->json(['success' => false, 'message' => $first['message']], 502);
+        }
+
+        $fileName = sprintf('opoh_indiv_%s_%s_%s-%s.csv', $type, $hospcode, $start, $end);
+
+        return response()->streamDownload(function () use ($svc, $hospcode, $types, $base, $first, $chunk, $request, $ctx) {
+            @set_time_limit(0);
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+
+            $cats = $first['data']['categories'] ?? [];
+            $head = ['ประเภท', 'โรงพยาบาล', 'แพทย์', 'VN/AN', 'HN', 'ชื่อ-สกุลผู้ป่วย', 'วันที่รับ', 'วันที่ (OPD=รับบริการ, IPD=จำหน่าย)', 'เวลา',
+                'สิทธิ', 'PDX', 'โรคหลัก', 'DX0', 'DX1', 'DX2', 'DX3', 'DX4', 'DX5', 'วันนอน', 'AdjRW'];
+            foreach ($cats as $c) {
+                $head[] = 'หมวด ' . $c['id'] . ' ' . ($c['name'] ?? '');
+            }
+            $head[] = 'ค่ารักษาทั้งหมด (บาท)';
+            fputcsv($out, $head);
+
+            $exported = 0;
+            foreach ($types as $idx => $t) {
+                $offset = 0;
+                $data = $idx === 0 ? $first['data'] : null;
+                while (true) {
+                    if ($data === null) {
+                        $next = $svc->fetch($hospcode, $base($t) + ['offset' => $offset, 'limit' => $chunk], 25000, 'opoh_indiv_export');
+                        if (!$next['success']) {
+                            fputcsv($out, ['!! ส่งออกไม่ครบ (' . strtoupper($t) . '): ' . $next['message']]);
+                            break;
+                        }
+                        $data = $next['data'];
+                    }
+                    $rows = $data['rows'] ?? [];
+                    foreach ($rows as $r) {
+                        $line = [
+                            strtoupper($t), $r['hospital_name'] ?? '', $r['doctor_name'] ?? '', $r['key'] ?? '', $r['hn'] ?? '',
+                            $r['patient_name'] ?? '', $r['adm_date'] ?? '', $r['date'] ?? '', $r['time'] ?? '',
+                            $r['pttype'] ?? '', $r['pdx'] ?? '', $r['diag_name'] ?? '',
+                            $r['dx0'] ?? '', $r['dx1'] ?? '', $r['dx2'] ?? '', $r['dx3'] ?? '', $r['dx4'] ?? '', $r['dx5'] ?? '',
+                            $r['los'] ?? '', $r['adjrw'] ?? '',
+                        ];
+                        $rc = $r['cats'] ?? [];
+                        foreach ($cats as $c) {
+                            $line[] = number_format((float)($rc[(string)$c['id']] ?? 0), 2, '.', '');
+                        }
+                        $line[] = number_format((float)($r['total'] ?? 0), 2, '.', '');
+                        fputcsv($out, $line);
+                        $exported++;
+                    }
+                    $offset += $chunk;
+                    $total = (int)($data['records_total'] ?? 0);
+                    $data = null;
+                    if (empty($rows) || $offset >= $total) {
+                        break;
+                    }
+                }
+            }
+            fclose($out);
+            $this->auditDoctorRecords($request, $ctx, 'OPOH_INDIV_EXPORT', 'SUCCESS', $exported);
+        }, $fileName, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /**
      * AJAX endpoint: Get 16 Income Categories breakdown for a specific doctor, or ALL doctors / entire hospital
      */
     public function getDoctorIncomeCategories(Request $request, $doctorId)

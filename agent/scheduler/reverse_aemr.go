@@ -24,6 +24,9 @@ type AemrTask struct {
 
 	// Params ใช้กับ task "opoh_doctor_records" (ดึงรายเคสของแพทย์ ตามช่วงวันที่ แบ่งหน้า)
 	Params *collector.DoctorRecordsParams `json:"params,omitempty"`
+
+	// Indiv ใช้กับ task "opoh_indiv_export" (รายเคสทุกแพทย์ + แยกหมวด drg_chrgitem)
+	Indiv *collector.IndivExportParams `json:"indiv,omitempty"`
 }
 
 type PollTaskResponse struct {
@@ -145,6 +148,21 @@ func handleAemrTask(task *AemrTask, cfg *config.Config) {
 		res, err := collector.CollectOpohDoctorRecords(db, *task.Params)
 		if err != nil {
 			AddLog("ERROR", fmt.Sprintf("[OPOH] ดึงรายเคสแพทย์ผิดพลาด: %v", err))
+			submitAemrResult(task.TaskID, false, false, err.Error(), nil, cfg)
+			return
+		}
+		submitAemrResult(task.TaskID, true, true, "", res, cfg)
+
+	case "opoh_indiv_export":
+		if task.Indiv == nil {
+			submitAemrResult(task.TaskID, false, false, "ไม่มีพารามิเตอร์ของงาน", nil, cfg)
+			return
+		}
+		AddLog("INFO", fmt.Sprintf("[OPOH] ได้รับคำร้องส่งออก Indiv (%s) %s ถึง %s offset=%d (Task: %s)",
+			task.Indiv.Type, task.Indiv.StartDate, task.Indiv.EndDate, task.Indiv.Offset, task.TaskID))
+		res, err := collector.CollectOpohIndivExport(db, *task.Indiv)
+		if err != nil {
+			AddLog("ERROR", fmt.Sprintf("[OPOH] ส่งออก Indiv ผิดพลาด: %v", err))
 			submitAemrResult(task.TaskID, false, false, err.Error(), nil, cfg)
 			return
 		}
