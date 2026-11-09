@@ -139,8 +139,8 @@
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
       
       {{-- ฝั่งซ้าย: 3 แท็บเรียงเป็นแถวเดียวกัน ไม่ตกบรรทัด --}}
-      <div class="d-flex align-items-center">
-        <ul class="nav nav-pills gap-2 flex-nowrap" id="opohServiceTabs" role="tablist">
+      <div class="d-flex align-items-center" style="min-width: 0; max-width: 100%;">
+        <ul class="nav nav-pills gap-2 flex-nowrap overflow-auto pb-1" style="max-width: 100%; scrollbar-width: thin;" id="opohServiceTabs" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link {{ $active_tab === 'opd' ? 'active' : '' }} px-3 py-1.5 rounded-pill fw-bold d-flex align-items-center gap-1.5 text-nowrap" id="pills-opd-tab" data-bs-toggle="pill" data-bs-target="#pills-opd" type="button" role="tab" aria-controls="pills-opd" aria-selected="{{ $active_tab === 'opd' ? 'true' : 'false' }}">
               <i class="fa-solid fa-stethoscope"></i>
@@ -178,7 +178,7 @@
         <input type="hidden" name="filter_type" id="filter_type" value="{{ $filter_type }}">
 
         {{-- เลือกปีงบ --}}
-        <div style="width: 140px;">
+        <div style="width: 170px; max-width: 100%;">
           <select name="budget_year" id="budget_year_select" class="form-select form-select-sm shadow-sm" title="ปีงบประมาณ">
             @foreach($budget_year_select as $by)
               <option value="{{ $by->LEAVE_YEAR_ID }}" {{ $budget_year == $by->LEAVE_YEAR_ID ? 'selected' : '' }}>
@@ -249,18 +249,18 @@
               <h4 class="fw-bold mb-0 text-dark">
                 One Province One Hospital (OPOH) - ผู้ป่วยนอก (OPD)
               </h4>
-              <p class="text-muted small mb-0 mt-1">
-                ยอดสะสมผู้รับบริการแยกรายสาขา - สถิติการหมุนเวียนแพทย์เฉพาะทางจากโรงพยาบาลอำนาจเจริญ ออกให้บริการ ณ โรงพยาบาลชุมชน
-              </p>
+              <div class="text-muted small mt-1">
+                <i class="fa-solid fa-circle-info text-primary me-1"></i>ยอดสะสม: นับตั้งแต่ ต.ค. 2568 ถึงปัจจุบัน
+              </div>
             </div>
           </div>
           {{-- Onsite vs Telemed Quick Badges --}}
           <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1.5 fw-bold">
-              <i class="fa-solid fa-user-doctor me-1"></i>Onsite: {{ number_format($sumOnsite) }} ครั้ง
+              <i class="fa-solid fa-user-doctor me-1"></i>Onsite: {{ number_format(max(0, ($fiscalSummary->visit_total ?? 0) - ($fiscalSummary->visit_telemed ?? 0))) }} ครั้ง
             </span>
             <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3 py-1.5 fw-bold">
-              <i class="fa-solid fa-headset me-1"></i>Telemed: {{ number_format($sumTelemed) }} ครั้ง
+              <i class="fa-solid fa-headset me-1"></i>Telemed: {{ number_format(($fiscalSummary->visit_telemed ?? 0)) }} ครั้ง
             </span>
           </div>
         </div>
@@ -274,13 +274,10 @@
           <div class="col-6 col-md-4 col-xl">
             <div class="opoh-stat-card p-3 h-100 position-relative overflow-hidden shadow-sm">
               <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="badge rounded-pill px-2.5 py-1" style="background-color: {{ $spec['color'] }}15; color: {{ $spec['color'] }}; font-weight: 700; font-size: 0.75rem;">
-                  {{ $code }}
+                <span class="fw-bold text-secondary text-truncate small" title="{{ $spec['name'] }}">
+                  {{ $spec['name'] }}
                 </span>
-                <i class="fa-solid {{ $spec['icon'] }} fs-4" style="color: {{ $spec['color'] }}; opacity: 0.85;"></i>
-              </div>
-              <div class="fw-bold text-secondary text-truncate small" title="{{ $spec['name'] }}">
-                {{ $spec['name'] }}
+                <i class="fa-solid {{ $spec['icon'] }} fs-4 ms-2" style="color: {{ $spec['color'] }}; opacity: 0.85;"></i>
               </div>
               <div class="d-flex align-items-baseline gap-1 mt-1">
                 <h3 class="fw-bolder mb-0 text-dark" style="color: {{ $spec['color'] }} !important;">
@@ -308,7 +305,6 @@
                   <i class="fa-solid fa-chart-column text-primary"></i>
                   <span>แนวโน้มการจัดบริการแพทย์เฉพาะทางรายเดือน (ปีงบ {{ $budget_year }})</span>
                 </h5>
-                <span class="text-muted small">สถิติจำนวนผู้รับบริการสะสม 12 เดือนของปีงบประมาณ จำแนกตามโรงพยาบาลชุมชน 6 แห่ง</span>
               </div>
               <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill small fw-semibold">
                 <i class="fa-solid fa-chart-column me-1"></i>รายเดือน
@@ -329,7 +325,6 @@
                   <i class="fa-solid fa-ranking-star text-warning"></i>
                   <span>5 อันดับโรคผู้ป่วยนอก</span>
                 </h5>
-                <span class="text-muted small">วินิจฉัยหลัก (ICD-10) ในช่วงเวลาที่เลือก</span>
               </div>
               <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 px-2.5 py-1 rounded-pill small fw-semibold">
                 5 อันดับ
@@ -387,15 +382,18 @@
               ช่วงวันที่เลือก: <strong class="text-primary">{{ $thaiDateRangeText }}</strong> | รวมทั้งจังหวัด: <strong class="text-primary">{{ number_format($sumCumulative) }}</strong> ครั้ง
             </span>
           </div>
+          <button type="button" onclick="exportTableToExcel('opohOpdSpecTable', 'OPOH_OPD_แยกรายสาขา_{{ $current_start }}_ถึง_{{ $current_end }}', 'OPD')" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm align-self-start" style="font-size: 0.78rem;" title="ส่งออกตารางนี้เป็น Excel (.xlsx)">
+            <i class="fa-solid fa-file-excel me-1"></i> Excel
+          </button>
         </div>
 
         {{-- ตารางสถิติแยกรายสาขาเฉพาะทาง (OPD) --}}
         <div class="table-responsive rounded-4 border">
-          <table class="table table-hover table-opoh align-middle mb-0">
+          <table id="opohOpdSpecTable" class="table table-hover table-opoh align-middle mb-0">
             <thead>
               <tr>
                 <th class="text-start" style="min-width: 220px;">สาขาเฉพาะทาง (7 สาขาหลัก)</th>
-                <th style="min-width: 110px;" class="text-end">ยอดสะสม</th>
+                <th style="min-width: 110px;" class="text-end" title="นับตั้งแต่ ต.ค. 2568 ถึงปัจจุบัน">ยอดสะสม<div class="fw-normal text-muted" style="font-size: 0.68rem;">ต.ค. 68 – ปัจจุบัน</div></th>
                 <th style="min-width: 110px;" class="text-end bg-primary bg-opacity-10 text-primary">ช่วงวันที่เลือก</th>
                 @foreach($hospitalsList as $hcode => $hname)
                 <th style="min-width: 110px;" class="text-end">{{ $hname }}</th>
@@ -466,7 +464,6 @@
               <i class="fa-solid fa-id-card-clip text-primary"></i>
               <span>ข้อมูลการให้บริการและมูลค่าการรักษาจำแนกตามสิทธิการรักษา (OPD)</span>
             </h5>
-            <span class="text-muted small">ยอดผู้รับบริการและมูลค่าค่ารักษาพยาบาลแยกตาม 6 สิทธิมาตรฐาน รพช. 6 แห่ง ในช่วงเวลาที่เลือก</span>
           </div>
           <div class="d-flex align-items-center gap-3">
             <div class="text-end">
@@ -537,9 +534,9 @@
               <h4 class="fw-bold mb-0 text-dark">
                 One Province One Hospital (OPOH) - ผู้ป่วยใน (IPD)
               </h4>
-              <p class="text-muted small mb-0 mt-1">
-                ยอดสะสมผู้ป่วยใน (Admit) แยกรายสาขา - สถิติการดูแลผู้ป่วยในและการทำหัตถการ/ผ่าตัด ณ โรงพยาบาลชุมชน
-              </p>
+              <div class="text-muted small mt-1">
+                <i class="fa-solid fa-circle-info text-danger me-1"></i>ยอดสะสม: นับตั้งแต่ ต.ค. 2568 ถึงปัจจุบัน
+              </div>
             </div>
           </div>
         </div>
@@ -553,13 +550,10 @@
           <div class="col-6 col-md-4 col-xl">
             <div class="opoh-stat-card p-3 h-100 position-relative overflow-hidden shadow-sm">
               <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="badge rounded-pill px-2.5 py-1" style="background-color: {{ $spec['color'] }}15; color: {{ $spec['color'] }}; font-weight: 700; font-size: 0.75rem;">
-                  {{ $code }}
+                <span class="fw-bold text-secondary text-truncate small" title="{{ $spec['name'] }}">
+                  {{ $spec['name'] }}
                 </span>
-                <i class="fa-solid {{ $spec['icon'] }} fs-4" style="color: {{ $spec['color'] }}; opacity: 0.85;"></i>
-              </div>
-              <div class="fw-bold text-secondary text-truncate small" title="{{ $spec['name'] }}">
-                {{ $spec['name'] }}
+                <i class="fa-solid {{ $spec['icon'] }} fs-4 ms-2" style="color: {{ $spec['color'] }}; opacity: 0.85;"></i>
               </div>
               <div class="d-flex align-items-baseline gap-1 mt-1">
                 <h3 class="fw-bolder mb-0 text-dark" style="color: {{ $spec['color'] }} !important;">
@@ -587,7 +581,6 @@
                   <i class="fa-solid fa-chart-column text-danger"></i>
                   <span>แนวโน้มผู้ป่วยใน (IPD) แพทย์เฉพาะทางรายเดือน (ปีงบ {{ $budget_year }})</span>
                 </h5>
-                <span class="text-muted small">สถิติจำนวนรับไว้รักษา (AN) 12 เดือนของปีงบประมาณ จำแนกตามโรงพยาบาลชุมชน 6 แห่ง</span>
               </div>
               <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1 rounded-pill small fw-semibold">
                 <i class="fa-solid fa-chart-column me-1"></i>รายเดือน
@@ -608,7 +601,6 @@
                   <i class="fa-solid fa-ranking-star text-danger"></i>
                   <span>5 อันดับโรคผู้ป่วยใน</span>
                 </h5>
-                <span class="text-muted small">วินิจฉัยหลักตอนจำหน่าย (ICD-10) ในช่วงเวลาที่เลือก</span>
               </div>
               <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 rounded-pill small fw-semibold">
                 5 อันดับ
@@ -677,15 +669,18 @@
               </span>
             </div>
           </div>
+          <button type="button" onclick="exportTableToExcel('opohIpdSpecTable', 'OPOH_IPD_แยกรายสาขา_{{ $current_start }}_ถึง_{{ $current_end }}', 'IPD')" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm align-self-start" style="font-size: 0.78rem;" title="ส่งออกตารางนี้เป็น Excel (.xlsx)">
+            <i class="fa-solid fa-file-excel me-1"></i> Excel
+          </button>
         </div>
 
         {{-- ตารางสถิติ IPD Matrix --}}
         <div class="table-responsive rounded-4 border">
-          <table class="table table-hover table-opoh align-middle mb-0">
+          <table id="opohIpdSpecTable" class="table table-hover table-opoh align-middle mb-0">
             <thead>
               <tr>
                 <th class="text-start" style="min-width: 220px;">สาขาเฉพาะทาง (7 สาขาหลัก)</th>
-                <th style="min-width: 90px;" class="text-end">สะสมรวม</th>
+                <th style="min-width: 90px;" class="text-end" title="นับตั้งแต่ ต.ค. 2568 ถึงปัจจุบัน">สะสมรวม<div class="fw-normal text-muted" style="font-size: 0.68rem;">ต.ค. 68 – ปัจจุบัน</div></th>
                 <th style="min-width: 90px;" class="text-end bg-danger bg-opacity-10 text-danger">ช่วงที่เลือก</th>
                 <th style="min-width: 85px;" class="text-end">วันนอน</th>
                 <th style="min-width: 95px;" class="text-end">AdjRW</th>
@@ -767,7 +762,6 @@
               <i class="fa-solid fa-scale-balanced text-danger"></i>
               <span>ข้อมูลการจัดสรรและชดเชยค่าบริการผู้ป่วยในตามสิทธิการรักษา (IPD DRG & AdjRW Matrix)</span>
             </h5>
-            <span class="text-muted small">สถิติผู้ป่วยใน วันนอน (LOS) ค่าน้ำหนักสัมพัทธ์ (AdjRW) ดัชนีความรุนแรง (CMI) และประมาณการจัดสรรเงินชดเชย 6 สิทธิมาตรฐาน</span>
           </div>
           <div class="d-flex align-items-center gap-2">
             <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1 rounded-pill small fw-semibold">
@@ -912,7 +906,7 @@
       <div class="opoh-glass-card p-4 mb-4">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
           <div class="d-flex align-items-center gap-3">
-            <div class="p-3 bg-opacity-10 text-white rounded-4" style="background-color: #8b5cf6;">
+            <div class="p-3 rounded-4" style="background-color: rgba(139, 92, 246, 0.1);">
               <i class="fa-solid fa-hand-holding-medical fs-3" style="color: #8b5cf6;"></i>
             </div>
             <div>
@@ -923,18 +917,18 @@
               <h4 class="fw-bold mb-0 text-dark">
                 One Province One Hospital (OPOH) - การผ่าตัดและหัตถการ
               </h4>
-              <p class="text-muted small mb-0 mt-1">
-                สถิติการให้บริการผ่าตัดและหัตถการ ณ โรงพยาบาลชุมชน
-              </p>
+              <div class="text-muted small mt-1">
+                <i class="fa-solid fa-circle-info me-1" style="color: #8b5cf6;"></i>ยอดสะสม: นับตั้งแต่ ต.ค. 2568 ถึงปัจจุบัน
+              </div>
             </div>
           </div>
           {{-- IPD vs OPD Badges --}}
           <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-1.5 fw-bold">
-              <i class="fa-solid fa-bed me-1"></i>ผู้ป่วยใน: {{ number_format($opSummary->total_ipd ?? 0) }} เคส
+              <i class="fa-solid fa-bed me-1"></i>ผู้ป่วยใน: {{ number_format($opCumSummary->total_ipd ?? 0) }} เคส
             </span>
             <span class="badge bg-purple bg-opacity-10 border rounded-pill px-3 py-1.5 fw-bold" style="color: #8b5cf6; border-color: rgba(139, 92, 246, 0.25) !important;">
-              <i class="fa-solid fa-person-walking me-1"></i>ผู้ป่วยนอก: {{ number_format($opSummary->total_ods ?? 0) }} เคส
+              <i class="fa-solid fa-person-walking me-1"></i>ผู้ป่วยนอก: {{ number_format($opCumSummary->total_ods ?? 0) }} เคส
             </span>
           </div>
         </div>
@@ -944,18 +938,15 @@
           @foreach($surgicalSpecialties as $code => $spec)
           @php
             $specRow = collect($opSpecialtyRows)->firstWhere('code', $code);
-            $opVal = $specRow['period'] ?? 0;
+            $opVal = $specRow['cumulative'] ?? 0;
           @endphp
-          <div class="col-6 col-md-3">
+          <div class="col-6 col-md-4 col-xl">
             <div class="opoh-stat-card p-3 h-100 position-relative overflow-hidden shadow-sm">
               <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="badge rounded-pill px-2.5 py-1" style="background-color: {{ $spec['color'] }}15; color: {{ $spec['color'] }}; font-weight: 700; font-size: 0.75rem;">
-                  {{ $code }}
+                <span class="fw-bold text-secondary text-truncate small" title="{{ $spec['name'] }}">
+                  {{ $spec['name'] }}
                 </span>
-                <i class="fa-solid {{ $spec['icon'] }} fs-4" style="color: {{ $spec['color'] }}; opacity: 0.85;"></i>
-              </div>
-              <div class="fw-bold text-secondary text-truncate small" title="{{ $spec['name'] }}">
-                {{ $spec['name'] }}
+                <i class="fa-solid {{ $spec['icon'] }} fs-4 ms-2" style="color: {{ $spec['color'] }}; opacity: 0.85;"></i>
               </div>
               <div class="d-flex align-items-baseline gap-1 mt-1">
                 <h3 class="fw-bolder mb-0 text-dark" style="color: {{ $spec['color'] }} !important;">
@@ -964,7 +955,7 @@
                 <span class="text-muted" style="font-size: 0.75rem;">เคส</span>
               </div>
               <div class="progress mt-2" style="height: 4px;">
-                <div class="progress-bar" role="progressbar" style="width: {{ ($opSummary->total ?? 0) > 0 ? ($opVal / $opSummary->total) * 100 : 0 }}%; background-color: {{ $spec['color'] }};"></div>
+                <div class="progress-bar" role="progressbar" style="width: {{ ($opCumSummary->total ?? 0) > 0 ? ($opVal / $opCumSummary->total) * 100 : 0 }}%; background-color: {{ $spec['color'] }};"></div>
               </div>
             </div>
           </div>
@@ -983,7 +974,6 @@
                   <i class="fa-solid fa-chart-column text-purple" style="color: #8b5cf6;"></i>
                   <span>แนวโน้มการผ่าตัดและหัตถการรายเดือน (ปีงบ {{ $budget_year }})</span>
                 </h5>
-                <span class="text-muted small">สถิติจำนวนเคสผ่าตัด 12 เดือนของปีงบประมาณ จำแนกตามโรงพยาบาลชุมชน 6 แห่ง</span>
               </div>
               <span class="badge text-white px-2.5 py-1 rounded-pill small fw-semibold" style="background-color: #8b5cf6;">
                 <i class="fa-solid fa-chart-column me-1"></i>รายเดือน
@@ -1073,11 +1063,14 @@
               </span>
             </div>
           </div>
+          <button type="button" onclick="exportTableToExcel('opohOpSpecTable', 'OPOH_ผ่าตัด_แยกรายสาขา_{{ $current_start }}_ถึง_{{ $current_end }}', 'ผ่าตัด')" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm align-self-start" style="font-size: 0.78rem;" title="ส่งออกตารางนี้เป็น Excel (.xlsx)">
+            <i class="fa-solid fa-file-excel me-1"></i> Excel
+          </button>
         </div>
 
         {{-- ตารางสถิติ Surgery Matrix --}}
         <div class="table-responsive rounded-4 border">
-          <table class="table table-hover table-opoh align-middle mb-0">
+          <table id="opohOpSpecTable" class="table table-hover table-opoh align-middle mb-0">
             <thead>
               <tr>
                 <th class="text-start" style="min-width: 220px;">สาขา</th>
@@ -1146,7 +1139,6 @@
               <i class="fa-solid fa-hand-holding-medical" style="color: #8b5cf6;"></i>
               <span>ข้อมูลการผ่าตัดและหัตถการจำแนกตามสิทธิการรักษา (Surgery)</span>
             </h5>
-            <span class="text-muted small">สถิติจำนวนเคสผ่าตัด สัดส่วน และมูลค่าค่าบริการแยกตาม 6 สิทธิมาตรฐาน รพช. 6 แห่ง</span>
           </div>
           <div class="d-flex align-items-center gap-3">
             <div class="text-end">
@@ -1216,9 +1208,6 @@
               <h4 class="fw-bold mb-0 text-dark">
                 รายได้ตามหมวดค่ารักษาพยาบาล ปีงบประมาณ {{ $budget_year }}
               </h4>
-              <p class="text-muted small mb-0 mt-1">
-                วิเคราะห์ข้อมูลจำแนกตามมาตรฐาน 16 หมวดค่ารักษาพยาบาล (<span class="font-monospace text-primary">drg_chrgitem</span>) และ 6 สิทธิมาตรฐาน สปสช.
-              </p>
             </div>
           </div>
 
@@ -1274,15 +1263,19 @@
               $pct = $incomeSumsYearly['total'] > 0 ? ($rConf['val'] / $incomeSumsYearly['total']) * 100 : 0;
             @endphp
             <div class="col-6 col-md-4 col-xl-2">
-              <div class="card h-100 border rounded-3 p-2.5 shadow-sm bg-white" style="border-left: 4px solid {{ $rConf['color'] }} !important;">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <span class="badge rounded-pill fw-bold" style="background-color: {{ $rConf['color'] }}15; color: {{ $rConf['color'] }}; font-size: 0.70rem;">
-                    <i class="fa-solid {{ $rConf['icon'] }} me-1"></i>{{ $rConf['name'] }}
-                  </span>
-                  <span class="text-muted fw-bold" style="font-size: 0.72rem;">{{ number_format($pct, 1) }}%</span>
+              <div class="opoh-stat-card p-3 h-100 position-relative overflow-hidden shadow-sm">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="fw-bold text-secondary text-truncate small" title="{{ $rConf['name'] }}">{{ $rConf['name'] }}</span>
+                  <i class="fa-solid {{ $rConf['icon'] }} fs-4 ms-2" style="color: {{ $rConf['color'] }}; opacity: 0.85;"></i>
                 </div>
-                <div class="mt-1">
-                  <h5 class="fw-bold mb-0 text-dark" style="font-size: 1rem;">฿{{ number_format($rConf['val'], 2) }}</h5>
+                <div class="d-flex align-items-baseline gap-1 mt-1">
+                  <h4 class="fw-bolder mb-0" style="color: {{ $rConf['color'] }};">฿{{ number_format($rConf['val'], 2) }}</h4>
+                </div>
+                <div class="d-flex justify-content-between text-muted mt-1" style="font-size: 0.72rem;">
+                  <span>สัดส่วน</span><span class="fw-bold">{{ number_format($pct, 1) }}%</span>
+                </div>
+                <div class="progress mt-1" style="height: 4px;">
+                  <div class="progress-bar" role="progressbar" style="width: {{ $pct }}%; background-color: {{ $rConf['color'] }};"></div>
                 </div>
               </div>
             </div>
@@ -1376,9 +1369,14 @@
                   @php
                     $rowPct = ($row->total / $grandTotalYearly) * 100;
                   @endphp
-                  <tr>
+                  <tr class="opoh-right-row" role="button" title="คลิกเพื่อดูข้อมูลแยกรายโรงพยาบาล" onclick="openIncomeHospModal('yearly', {{ $catId }}, 'รวมทั้งปีงบประมาณ {{ $budget_year }}')">
                     <td class="fw-bold text-dark text-start">
-                      {{ $row->group_name }}
+                      <div class="d-flex align-items-center justify-content-between gap-2">
+                        <span>{{ $row->group_name }}</span>
+                        <span class="badge bg-light text-primary border rounded-pill px-2 py-1 opoh-view-pill text-nowrap" style="font-size: 0.7rem;">
+                          <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>แยกราย รพ.
+                        </span>
+                      </div>
                     </td>
                     <td class="text-end {{ $row->ucs_incup > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
                       {{ $row->ucs_incup > 0 ? number_format($row->ucs_incup, 2) : '-' }}
@@ -1460,9 +1458,14 @@
                   @php
                     $rowPct = ($row->total / $mGrandTotal) * 100;
                   @endphp
-                  <tr>
+                  <tr class="opoh-right-row" role="button" title="คลิกเพื่อดูข้อมูลแยกรายโรงพยาบาล" onclick="openIncomeHospModal({{ $m }}, {{ $catId }}, 'ประจำเดือน {{ $incomeMonthsNames[$m] }}')">
                     <td class="fw-bold text-dark text-start">
-                      {{ $row->group_name }}
+                      <div class="d-flex align-items-center justify-content-between gap-2">
+                        <span>{{ $row->group_name }}</span>
+                        <span class="badge bg-light text-primary border rounded-pill px-2 py-1 opoh-view-pill text-nowrap" style="font-size: 0.7rem;">
+                          <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>แยกราย รพ.
+                        </span>
+                      </div>
                     </td>
                     <td class="text-end {{ $row->ucs_incup > 0 ? 'text-dark' : 'text-muted opacity-50' }}">
                       {{ $row->ucs_incup > 0 ? number_format($row->ucs_incup, 2) : '-' }}
@@ -1516,6 +1519,48 @@
 
   </div>
 
+</div>
+
+{{-- ==================== MODAL: หมวดค่ารักษา แยกรายโรงพยาบาล ==================== --}}
+<div class="modal fade" id="incomeHospModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header border-0 pb-2 px-4 pt-4 align-items-start">
+        <div>
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+            <span class="badge bg-success rounded-pill px-2.5 py-1 fw-bold">หมวดค่ารักษา</span>
+            <span id="incHospPeriod" class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fw-semibold"></span>
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fw-semibold">
+              {{ $income_service_type === 'ALL' ? 'OPD+IPD' : $income_service_type }}
+            </span>
+          </div>
+          <h5 class="modal-title fw-bold text-dark mb-0" id="incHospTitle"></h5>
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4 py-3">
+        <div class="table-responsive rounded-4 border">
+          <table class="table table-hover table-opoh align-middle mb-0" style="font-size: 0.88rem;">
+            <thead>
+              <tr>
+                <th class="text-start" style="min-width: 160px;">โรงพยาบาล</th>
+                <th class="text-end" style="min-width: 110px;">UC ในจังหวัด</th>
+                <th class="text-end" style="min-width: 110px;">UC ต่างจังหวัด</th>
+                <th class="text-end" style="min-width: 110px;">ข้าราชการ</th>
+                <th class="text-end" style="min-width: 100px;">อปท.</th>
+                <th class="text-end" style="min-width: 110px;">ประกันสังคม</th>
+                <th class="text-end" style="min-width: 100px;">อื่นๆ</th>
+                <th class="text-end bg-success bg-opacity-10 text-success" style="min-width: 120px;">ยอดรวม (บาท)</th>
+                <th class="text-end" style="min-width: 80px;">สัดส่วน</th>
+              </tr>
+            </thead>
+            <tbody id="incHospBody"></tbody>
+            <tfoot id="incHospFoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 {{-- ==================== MODAL: ข้อมูลจำแนกรายโรงพยาบาลตามสิทธิการรักษา ==================== --}}
@@ -1974,6 +2019,59 @@
       maximumFractionDigits: decimals
     });
   }
+
+  // ==================== Modal หมวดค่ารักษา แยกรายโรงพยาบาล ====================
+  const incomeHospData = {
+    byHosp: @json($incomeByHosp),
+    hospitals: @json($allModalHospitals),
+    categories: @json(collect($incomeYearlyData)->map(fn($c) => $c->group_name)),
+    selectedHosp: @json($income_hospcode)
+  };
+
+  window.openIncomeHospModal = function(period, catId, periodLabel) {
+    const byCat = (incomeHospData.byHosp[period] || {})[catId] || {};
+    const hospitals = incomeHospData.hospitals;
+    const codes = Object.keys(hospitals).filter(function(c) {
+      return c in byCat || (c !== '10703' && (incomeHospData.selectedHosp === 'ALL' || incomeHospData.selectedHosp === c));
+    });
+
+    document.getElementById('incHospTitle').textContent = incomeHospData.categories[catId] || ('หมวด ' + catId);
+    document.getElementById('incHospPeriod').textContent = periodLabel;
+
+    const sum = [0, 0, 0, 0, 0, 0, 0];
+    codes.forEach(function(c) {
+      const v = byCat[c] || [0, 0, 0, 0, 0, 0, 0];
+      v.forEach(function(x, i) { sum[i] += x; });
+    });
+
+    let html = '';
+    codes.forEach(function(c) {
+      const v = byCat[c] || [0, 0, 0, 0, 0, 0, 0];
+      const pct = sum[6] > 0 ? (v[6] / sum[6] * 100).toFixed(1) : '0.0';
+      html += '<tr><td class="text-start"><strong class="text-dark">' + hospitals[c].name + '</strong>' +
+              '<span class="text-muted small ms-1">(' + c + ')</span></td>';
+      for (let i = 0; i < 6; i++) {
+        html += '<td class="text-end ' + (v[i] > 0 ? 'text-dark' : 'text-muted opacity-50') + '">' +
+                (v[i] > 0 ? formatModalNumber(v[i], 2) : '-') + '</td>';
+      }
+      html += '<td class="text-end fw-bold text-success bg-success bg-opacity-10">' + formatModalNumber(v[6], 2) + '</td>' +
+              '<td class="text-end small text-secondary">' + pct + '%</td></tr>';
+    });
+    if (!codes.length) {
+      html = '<tr><td colspan="9" class="text-center text-muted py-4">ไม่พบข้อมูล</td></tr>';
+    }
+    document.getElementById('incHospBody').innerHTML = html;
+
+    let foot = '<tr class="tr-opoh-total text-end"><td class="text-center">รวม</td>';
+    for (let i = 0; i < 7; i++) {
+      foot += '<td>' + formatModalNumber(sum[i], 2) + '</td>';
+    }
+    foot += '<td>100.0%</td></tr>';
+    document.getElementById('incHospFoot').innerHTML = foot;
+
+    const el = document.getElementById('incomeHospModal');
+    (bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el)).show();
+  };
 
   window.openRightBreakdownModal = function(serviceType, schemeKey) {
     const cfg = rightsBreakdownData.configs[schemeKey];

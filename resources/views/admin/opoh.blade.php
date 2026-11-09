@@ -135,6 +135,24 @@
     min-width: 155px !important;
     padding-right: 18px !important;
   }
+
+  /* ตัวเลขต่อ รพ. ที่กดดูรายเคสได้ */
+  .btn-rec-cell {
+    background: transparent;
+    border: 0;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    color: #0369a1;
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-rec-cell:hover { background: #0284c7; color: #fff; text-decoration: none; }
+  .btn-rec-cell-ipd { color: #be123c; }
+  .btn-rec-cell-ipd:hover { background: #e11d48; color: #fff; }
+  #docRecTable th, #docRecTable td { white-space: nowrap; vertical-align: middle; font-size: 0.85rem; }
 </style>
 @endpush
 
@@ -376,7 +394,11 @@
                                              $hv = $row['hosp_visits'][$hcode] ?? 0;
                                         @endphp
                                         <td class="text-end {{ $hv > 0 ? 'fw-bold text-dark' : 'text-muted opacity-50' }}">
-                                            {{ $hv > 0 ? number_format($hv) : '-' }}
+                                            @if($hv > 0)
+                                                <button type="button" class="btn-rec-cell" onclick="openDoctorRecordsModal({{ $doc->id }}, '{{ addslashes($doc->doctor_name) }}', 'opd', '{{ $hcode }}', '{{ addslashes($hname) }}')" title="ดูรายเคสของแพทย์ท่านนี้ที่ {{ $hname }}">{{ number_format($hv) }}</button>
+                                            @else
+                                                -
+                                            @endif
                                         </td>
                                     @endforeach
                                     <td class="text-end">
@@ -506,7 +528,11 @@
                                             $ha = $row['hosp_ans'][$hcode] ?? 0;
                                         @endphp
                                         <td class="text-end {{ $ha > 0 ? 'fw-bold text-danger' : 'text-muted opacity-50' }}">
-                                            {{ $ha > 0 ? number_format($ha) : '-' }}
+                                            @if($ha > 0)
+                                                <button type="button" class="btn-rec-cell btn-rec-cell-ipd" onclick="openDoctorRecordsModal({{ $doc->id }}, '{{ addslashes($doc->doctor_name) }}', 'ipd', '{{ $hcode }}', '{{ addslashes($hname) }}')" title="ดูรายเคสของแพทย์ท่านนี้ที่ {{ $hname }}">{{ number_format($ha) }}</button>
+                                            @else
+                                                -
+                                            @endif
                                         </td>
                                     @endforeach
                                     <td class="text-end">
@@ -970,6 +996,47 @@
         </div>
     </div>
 </div>
+
+{{-- 7. Modal รายเคส (ข้อมูลระบุตัวผู้ป่วย - เฉพาะ allow_opoh) ดึงสดผ่าน agent ของ รพ. --}}
+<div class="modal fade" id="doctorRecordsModal" tabindex="-1" aria-labelledby="doctorRecordsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" style="max-width: 96vw;">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-2 pt-4 px-4 align-items-start">
+                <div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                        <span id="docRecTypeBadge" class="badge rounded-pill px-2.5 py-1 fw-bold">รายเคส</span>
+                        <span id="docRecHospBadge" class="badge rounded-pill bg-light text-dark border px-2.5 py-1 fw-semibold">-</span>
+                        <span class="badge rounded-pill bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 px-2.5 py-1 fw-semibold">
+                            <i class="fa-solid fa-user-shield me-1"></i>ข้อมูลผู้ป่วย (PDPA) - บันทึกการเข้าถึงทุกครั้ง
+                        </span>
+                    </div>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="docRecDoctorName">ชื่อแพทย์</h5>
+                    <p class="text-muted small mb-0 mt-1">ช่วงเวลา: <strong class="text-dark" id="docRecRange">{{ $thaiDateRangeText }}</strong></p>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <div id="docRecAlert" class="alert alert-danger d-none py-2 small"></div>
+                <div id="docRecWarn" class="alert alert-warning d-none py-2 small"></div>
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                    <div id="docRecKpis" class="d-flex flex-wrap gap-2"></div>
+                    <a id="docRecExportBtn" href="#" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm">
+                        <i class="fa-solid fa-file-csv me-1"></i>ส่งออกทุกเคส (CSV)
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm align-middle mb-0 w-100" id="docRecTable"></table>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pb-4 px-4 d-flex justify-content-between align-items-center">
+                <span class="text-muted small">
+                    <i class="fa-solid fa-circle-info text-info me-1"></i>ดึงสดจาก HOSxP ของ รพ. ผ่าน AOPOD-Agent ไม่เก็บข้อมูลผู้ป่วยไว้บนเซิร์ฟเวอร์กลาง
+                </span>
+                <button type="button" class="btn btn-secondary px-4 rounded-3" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -1398,6 +1465,144 @@ $(document).ready(function() {
         $('.doc-inc-type-btn').removeClass('active active-all active-opd active-ipd');
         const $target = $('.doc-inc-type-btn[data-type="' + selectedType + '"]');
         $target.addClass('active active-' + selectedType.toLowerCase());
+    }
+
+    // ==================== รายเคสของแพทย์ รายโรงพยาบาล (server-side DataTable ผ่าน agent) ====================
+    const DOC_REC_URL = '{{ route('manage.opoh.doctor-records') }}';
+    const DOC_REC_EXPORT_URL = '{{ route('manage.opoh.doctor-records.export') }}';
+    let docRecDT = null;
+    let docRecCtx = null;
+
+    function docRecThaiDate(iso) {
+        if (!iso || iso.length < 10) return iso || '';
+        return iso.substr(8, 2) + '/' + iso.substr(5, 2) + '/' + (parseInt(iso.substr(0, 4), 10) + 543);
+    }
+    function docRecFmt(n, d) {
+        n = Number(n || 0);
+        return n.toLocaleString('th-TH', { minimumFractionDigits: d, maximumFractionDigits: d });
+    }
+    function docRecEsc(s) {
+        return $('<div>').text(s == null ? '' : s).html();
+    }
+
+    window.openDoctorRecordsModal = function(doctorId, doctorName, type, hcode, hname) {
+        const isIpd = (type === 'ipd');
+        docRecCtx = { doctor_id: doctorId, type: type, hospcode: hcode,
+                      start_date: '{{ $current_start }}', end_date: '{{ $current_end }}' };
+
+        $('#docRecDoctorName').text(doctorName);
+        $('#docRecHospBadge').html('<i class="fa-solid fa-hospital me-1"></i>' + docRecEsc(hname));
+        $('#docRecRange').text(docRecThaiDate(docRecCtx.start_date) + ' ถึง ' + docRecThaiDate(docRecCtx.end_date));
+        $('#docRecTypeBadge')
+            .attr('class', 'badge rounded-pill px-2.5 py-1 fw-bold ' + (isIpd ? 'bg-danger' : 'bg-primary'))
+            .text(isIpd ? 'ผู้ป่วยใน (IPD) รายเคส' : 'ผู้ป่วยนอก (OPD) รายเคส');
+        $('#docRecAlert, #docRecWarn').addClass('d-none').text('');
+        $('#docRecKpis').html('<span class="text-muted small"><span class="spinner-border spinner-border-sm me-1"></span>กำลังดึงข้อมูลจาก HOSxP ของ ' + docRecEsc(hname) + '...</span>');
+
+        // คอลัมน์ (ที่ agent เรียงได้: date, key, hn, patient, pttype, pdx, adm, los, adjrw)
+        const cols = [];
+        if (isIpd) {
+            cols.push({ data: 'key', name: 'key', title: 'AN' });
+            cols.push({ data: 'hn', name: 'hn', title: 'HN' });
+            cols.push({ data: 'patient_name', name: 'patient', title: 'ชื่อ-สกุล' });
+            cols.push({ data: 'adm_date', name: 'adm', title: 'วันที่รับ', render: function(v) { return docRecThaiDate(v); } });
+            cols.push({ data: 'date', name: 'date', title: 'วันที่จำหน่าย', render: function(v, t, r) { return docRecThaiDate(v) + (r.time ? ' ' + String(r.time).substr(0, 5) : ''); } });
+        } else {
+            cols.push({ data: 'date', name: 'date', title: 'วันที่-เวลา', render: function(v, t, r) { return docRecThaiDate(v) + (r.time ? ' ' + String(r.time).substr(0, 5) : ''); } });
+            cols.push({ data: 'key', name: 'key', title: 'VN' });
+            cols.push({ data: 'hn', name: 'hn', title: 'HN' });
+            cols.push({ data: 'patient_name', name: 'patient', title: 'ชื่อ-สกุล' });
+        }
+        cols.push({ data: 'pttype', name: 'pttype', title: 'สิทธิ' });
+        cols.push({ data: 'pdx', name: 'pdx', title: 'PDX', render: function(v, t, r) {
+            return '<span class="font-monospace fw-bold" title="' + docRecEsc(r.diag_name) + '">' + docRecEsc(v) + '</span>';
+        } });
+        ['dx0', 'dx1', 'dx2', 'dx3', 'dx4', 'dx5'].forEach(function(k) {
+            cols.push({ data: k, orderable: false, title: k.toUpperCase(), render: function(v) {
+                return v ? '<span class="font-monospace">' + docRecEsc(v) + '</span>' : '<span class="text-muted opacity-50">-</span>';
+            } });
+        });
+        if (isIpd) {
+            cols.push({ data: 'los', name: 'los', title: 'วันนอน', className: 'text-end' });
+            cols.push({ data: 'adjrw', name: 'adjrw', title: 'AdjRW', className: 'text-end', render: function(v) { return docRecFmt(v, 4); } });
+        }
+        cols.push({ data: 'total', name: 'total', className: 'text-end fw-bold text-success', title: 'ค่ารักษาทั้งหมด (บาท)', render: function(v) { return docRecFmt(v, 2); } });
+        const totalColIdx = cols.length - 1;
+
+        const dateColIdx = isIpd ? 4 : 0;
+
+        if (docRecDT) { docRecDT.destroy(); docRecDT = null; }
+        $('#docRecTable').empty();
+        $('#docRecTable').append('<tfoot><tr class="table-light fw-bold" id="docRecFootRow"></tr></tfoot>');
+
+        let needSummary = true;
+        docRecDT = $('#docRecTable').DataTable({
+            serverSide: true,
+            processing: true,
+            searchDelay: 600,
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100, 250], [10, 25, 50, 100, 250]],
+            order: [[dateColIdx, 'desc']],
+            columns: cols,
+            language: { url: "{{ asset('assets/vendor/datatables/th.json') }}" },
+            ajax: {
+                url: DOC_REC_URL,
+                type: 'GET',
+                timeout: 90000,
+                data: function(d) {
+                    if (needSummary) { d.summary = 1; }
+                    return $.extend(d, docRecCtx, { hospcode: hcode });
+                },
+                dataSrc: function(json) {
+                    needSummary = false;
+                    if (json.success === false) {
+                        $('#docRecAlert').removeClass('d-none').text(json.message || 'ดึงข้อมูลไม่สำเร็จ');
+                        $('#docRecKpis').empty();
+                        needSummary = true;
+                        return [];
+                    }
+                    $('#docRecAlert').addClass('d-none');
+                    if (json.summary) { docRecRenderSummary(json, totalColIdx); }
+                    return json.data || [];
+                }
+            }
+        }).on('error.dt', function(e, settings, techNote, message) {
+            needSummary = true;
+            $('#docRecAlert').removeClass('d-none').text('ติดต่อเซิร์ฟเวอร์ไม่สำเร็จ หรือไม่มีสิทธิ์เข้าถึง (' + message + ')');
+        });
+
+        // ปุ่มส่งออก: ส่งคำค้นปัจจุบันไปด้วย
+        const buildExport = function() {
+            const q = $.param($.extend({}, docRecCtx, { hospcode: hcode, search: docRecDT ? docRecDT.search() : '' }));
+            $('#docRecExportBtn').attr('href', DOC_REC_EXPORT_URL + '?' + q);
+        };
+        buildExport();
+        $('#docRecTable').off('search.dt.rec').on('search.dt.rec', buildExport);
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('doctorRecordsModal')).show();
+    };
+
+    function docRecRenderSummary(json, totalColIdx) {
+        const s = json.summary || { cases: 0, total: 0 };
+        $('#docRecKpis').html(
+            '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2">จำนวนเคส: <strong>' + docRecFmt(s.cases, 0) + '</strong></span>' +
+            '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2">ค่ารักษารวม: <strong>฿' + docRecFmt(s.total, 2) + '</strong></span>'
+        );
+
+        // เทียบกระทบยอดกับตารางสรุปที่ agent ส่งมา
+        if (json.expected_total !== undefined && Number(json.expected_total) !== Number(json.recordsTotal)) {
+            $('#docRecWarn').removeClass('d-none').html(
+                '<i class="fa-solid fa-triangle-exclamation me-1"></i>จำนวนเคสจาก HOSxP สด (<strong>' + docRecFmt(json.recordsTotal, 0) +
+                '</strong>) ไม่ตรงกับตารางสรุป (<strong>' + docRecFmt(json.expected_total, 0) + '</strong>) - ข้อมูลที่ agent ส่งล่าสุดอาจยังไม่อัปเดต');
+        } else {
+            $('#docRecWarn').addClass('d-none');
+        }
+
+        // แถวรวมทั้งช่วง (ทุกเคส ไม่ใช่เฉพาะหน้าที่เห็น)
+        $('#docRecFootRow').html(
+            '<th colspan="' + totalColIdx + '" class="text-end">รวมทั้งช่วง (ทุกเคส ' + docRecFmt(s.cases, 0) + ')</th>' +
+            '<th class="text-end text-success">' + docRecFmt(s.total, 2) + '</th>'
+        );
     }
 
     window.openDoctorIncomeModal = function(doctorId, doctorName, defaultType = 'ALL') {

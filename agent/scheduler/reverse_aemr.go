@@ -16,15 +16,18 @@ import (
 
 type AemrTask struct {
 	TaskID       string  `json:"task_id"`
-	Type         string  `json:"type"` // "patient_search" or "visit_detail"
+	Type         string  `json:"type"` // "patient_search", "visit_detail" or "opoh_doctor_records"
 	CID          string  `json:"cid"`
 	VN           string  `json:"vn"`
 	HospitalCode string  `json:"hospital_code"`
 	Timestamp    float64 `json:"timestamp"`
+
+	// Params ใช้กับ task "opoh_doctor_records" (ดึงรายเคสของแพทย์ ตามช่วงวันที่ แบ่งหน้า)
+	Params *collector.DoctorRecordsParams `json:"params,omitempty"`
 }
 
 type PollTaskResponse struct {
-	Status string   `json:"status"` // "has_task" or "no_task"
+	Status string    `json:"status"` // "has_task" or "no_task"
 	Task   *AemrTask `json:"task"`
 }
 
@@ -131,6 +134,21 @@ func handleAemrTask(task *AemrTask, cfg *config.Config) {
 			return
 		}
 		submitAemrResult(task.TaskID, true, true, "", detail, cfg)
+
+	case "opoh_doctor_records":
+		if task.Params == nil {
+			submitAemrResult(task.TaskID, false, false, "ไม่มีพารามิเตอร์ของงาน", nil, cfg)
+			return
+		}
+		AddLog("INFO", fmt.Sprintf("[OPOH] ได้รับคำร้องขอรายเคสแพทย์ (%s) %s ถึง %s หน้า offset=%d (Task: %s)",
+			task.Params.Type, task.Params.StartDate, task.Params.EndDate, task.Params.Offset, task.TaskID))
+		res, err := collector.CollectOpohDoctorRecords(db, *task.Params)
+		if err != nil {
+			AddLog("ERROR", fmt.Sprintf("[OPOH] ดึงรายเคสแพทย์ผิดพลาด: %v", err))
+			submitAemrResult(task.TaskID, false, false, err.Error(), nil, cfg)
+			return
+		}
+		submitAemrResult(task.TaskID, true, true, "", res, cfg)
 	}
 }
 

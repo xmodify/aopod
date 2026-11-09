@@ -122,4 +122,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::delete('/manage/opoh/doctors/{id}', [\App\Http\Controllers\Web\DashboardOpohController::class, 'deleteDoctor'])->name('manage.opoh.doctors.delete');
     Route::post('/manage/opoh/doctors/{id}/toggle', [\App\Http\Controllers\Web\DashboardOpohController::class, 'toggleDoctorStatus'])->name('manage.opoh.doctors.toggle');
     Route::get('/manage/opoh/doctors/{id}/income-categories', [\App\Http\Controllers\Web\DashboardOpohController::class, 'getDoctorIncomeCategories'])->name('manage.opoh.doctors.income-categories');
+    // รายเคสของแพทย์ (ข้อมูลระบุตัวผู้ป่วย - เฉพาะ allow_opoh, ดึงสดผ่าน agent)
+    Route::get('/manage/opoh/doctor-records', [\App\Http\Controllers\Web\DashboardOpohController::class, 'getDoctorRecords'])->name('manage.opoh.doctor-records');
+    Route::get('/manage/opoh/doctor-records/export', [\App\Http\Controllers\Web\DashboardOpohController::class, 'exportDoctorRecords'])->name('manage.opoh.doctor-records.export');
 });

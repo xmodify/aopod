@@ -82,13 +82,14 @@ class DashboardOpohController extends Controller
         ];
 
         // 5. Query Aggregations
-        // ยอดสะสม fix เริ่มต้นจาก ต.ค. 68 (2025-10-01) ถึง $current_end
+        // ยอดสะสม fix เริ่มต้นจาก ต.ค. 68 (2025-10-01) ถึงวันปัจจุบัน ($cumulative_end)
         $cumulative_start = '2025-10-01';
+        $cumulative_end   = Carbon::now()->toDateString(); // ถึงปัจจุบัน
 
         // 5.1 Cumulative total cards by specialty (รพช. 6 แห่ง ตั้งแต่ ต.ค. 68)
         $specialtyStats = DB::table('opoh_opd_service')
             ->where('vstdate', '>=', $cumulative_start)
-            ->where('vstdate', '<=', $current_end)
+            ->where('vstdate', '<=', $cumulative_end)
             ->whereIn('hospcode', $communityCodes)
             ->groupBy('spclty_code')
             ->pluck(DB::raw('COALESCE(SUM(visit_total), 0)'), 'spclty_code')
@@ -210,7 +211,7 @@ class DashboardOpohController extends Controller
 
         $fiscalSummary = DB::table('opoh_opd_service')
             ->where('vstdate', '>=', $cumulative_start)
-            ->where('vstdate', '<=', $current_end)
+            ->where('vstdate', '<=', $cumulative_end)
             ->whereIn('hospcode', $communityCodes)
             ->selectRaw("
                 COALESCE(SUM(visit_total), 0)     AS visit_total,
@@ -223,7 +224,7 @@ class DashboardOpohController extends Controller
         $opdCumulativeIncSum = DB::table('opoh_income_categories')
             ->where('service_type', 'OPD')
             ->where('vstdate', '>=', $cumulative_start)
-            ->where('vstdate', '<=', $current_end)
+            ->where('vstdate', '<=', $cumulative_end)
             ->whereIn('hospcode', $communityCodes)
             ->selectRaw("
                 COALESCE(SUM(inc_total), 0) AS inc_total,
@@ -240,7 +241,8 @@ class DashboardOpohController extends Controller
 
         // 5.5 IPD Aggregations (ผู้ป่วยใน - 7 สาขาเป็นแถว และ รพ.เป็นคอลัมน์)
         $ipdSpecialtyStats = DB::table('opoh_ipd_service')
-            ->where('dchdate', '<=', $current_end)
+            ->where('dchdate', '>=', $cumulative_start)
+            ->where('dchdate', '<=', $cumulative_end)
             ->whereIn('hospcode', $communityCodes)
             ->groupBy('spclty_code')
             ->pluck(DB::raw('COALESCE(SUM(an_total), 0)'), 'spclty_code')
@@ -495,9 +497,31 @@ class DashboardOpohController extends Controller
             ->first();
 
         $opSumCumulative = (int)DB::table('opoh_operation_service')
-            ->where('operation_date', '<=', $current_end)
+            ->where('operation_date', '>=', $cumulative_start)
+            ->where('operation_date', '<=', $cumulative_end)
             ->whereIn('hospcode', $communityCodes)
             ->sum('case_total');
+
+        // ยอดสะสมผ่าตัด แยก IPD/ODS (ต.ค. 68 ถึงปัจจุบัน) สำหรับ badge หัวการ์ด
+        $opCumSummary = DB::table('opoh_operation_service')
+            ->where('operation_date', '>=', $cumulative_start)
+            ->where('operation_date', '<=', $cumulative_end)
+            ->whereIn('hospcode', $communityCodes)
+            ->selectRaw("
+                COALESCE(SUM(case_total), 0) as total,
+                COALESCE(SUM(CASE WHEN op_type = 'IPD' THEN case_total ELSE 0 END), 0) as total_ipd,
+                COALESCE(SUM(CASE WHEN op_type = 'ODS' THEN case_total ELSE 0 END), 0) as total_ods
+            ")
+            ->first();
+
+        // ยอดสะสมผ่าตัดแยกสาขา (ต.ค. 68 ถึงปัจจุบัน) สำหรับการ์ดสาขา
+        $opSpecCumulative = DB::table('opoh_operation_service')
+            ->where('operation_date', '>=', $cumulative_start)
+            ->where('operation_date', '<=', $cumulative_end)
+            ->whereIn('hospcode', $communityCodes)
+            ->groupBy('spclty_code')
+            ->pluck(DB::raw('COALESCE(SUM(case_total), 0)'), 'spclty_code')
+            ->toArray();
 
         // Top 5 Diagnoses & Operations for Right-Hand (5-Col) Cards
         $topOpdDiagnoses = DB::table('opoh_opd_diagnoses')
@@ -638,6 +662,7 @@ class DashboardOpohController extends Controller
                 'color'       => $spec['color'],
                 'icon'        => $spec['icon'],
                 'period'      => $period,
+                'cumulative'  => (int)($opSpecCumulative[$code] ?? 0),
                 'hosp_cases'  => $hospCases,
                 'amnat_cases' => $amnatCases,
             ];
@@ -1279,6 +1304,43 @@ class DashboardOpohController extends Controller
         ->groupBy(DB::raw("MONTH(vstdate)"), 'drg_chrgitem_id')
         ->get();
 
+        // Breakdown รายโรงพยาบาล: $incomeByHosp[period('yearly'|เดือน)][catId][hospcode] = [uIn,uOut,ofc,lgo,sss,other,total]
+        $hospIncomeQuery = DB::table('opoh_income_categories')
+            ->whereBetween('vstdate', [$fiscal_start, $fiscal_end])
+            ->whereIn('hospcode', $targetIncomeHosps);
+        if ($income_service_type !== 'ALL') {
+            $hospIncomeQuery->where('service_type', $income_service_type);
+        }
+        $rawIncomeByHosp = $hospIncomeQuery->selectRaw("
+            hospcode,
+            MONTH(vstdate) as month_num,
+            drg_chrgitem_id,
+            COALESCE(SUM(inc_ucs_incup), 0)   AS ucs_incup,
+            COALESCE(SUM(inc_ucs_outprov), 0) AS ucs_outprov,
+            COALESCE(SUM(inc_ofc), 0)         AS ofc,
+            COALESCE(SUM(inc_lgo), 0)         AS lgo,
+            COALESCE(SUM(inc_sss), 0)         AS sss,
+            COALESCE(SUM(inc_other), 0)       AS other,
+            COALESCE(SUM(inc_total), 0)       AS total
+        ")
+        ->groupBy('hospcode', DB::raw("MONTH(vstdate)"), 'drg_chrgitem_id')
+        ->get();
+
+        $incomeByHosp = [];
+        foreach ($rawIncomeByHosp as $r) {
+            $vals = [
+                (float)$r->ucs_incup, (float)$r->ucs_outprov, (float)$r->ofc,
+                (float)$r->lgo, (float)$r->sss, (float)$r->other, (float)$r->total,
+            ];
+            foreach (['yearly', (int)$r->month_num] as $period) {
+                $cur = $incomeByHosp[$period][(int)$r->drg_chrgitem_id][$r->hospcode] ?? array_fill(0, 7, 0.0);
+                foreach ($vals as $i => $v) {
+                    $cur[$i] += $v;
+                }
+                $incomeByHosp[$period][(int)$r->drg_chrgitem_id][$r->hospcode] = $cur;
+            }
+        }
+
         $incomeYearlyData = [];
         foreach ($masterCategories as $catId => $catName) {
             $incomeYearlyData[$catId] = (object)[
@@ -1423,7 +1485,8 @@ class DashboardOpohController extends Controller
 
         // Summary Cards for Income Tab
         $incomeCumulativeGrandTotal = (float)DB::table('opoh_income_categories')
-            ->where('vstdate', '<=', $current_end)
+            ->where('vstdate', '>=', $cumulative_start)
+            ->where('vstdate', '<=', $cumulative_end)
             ->whereIn('hospcode', $communityCodes)
             ->sum('inc_total');
 
@@ -1466,6 +1529,7 @@ class DashboardOpohController extends Controller
             'opdMonthlyChart',
             'ipdMonthlyChart',
             'opSummary',
+            'opCumSummary',
             'opSumCumulative',
             'topOpdDiagnoses',
             'topIpdDiagnoses',
@@ -1499,6 +1563,7 @@ class DashboardOpohController extends Controller
             'incomeYearlyData',
             'incomeMonthlyData',
             'incomeChartData',
+            'incomeByHosp',
             'incomeSumsYearly',
             'incomeSumsMonthly',
             'incomeCumulativeGrandTotal',
@@ -2113,6 +2178,247 @@ class DashboardOpohController extends Controller
             'total'   => $doctors->count(),
             'active'  => $doctors->where('is_active', 'Y')->count(),
         ]);
+    }
+
+    /**
+     * ตรวจสิทธิ์ + ตรวจพารามิเตอร์ของรายเคสแพทย์ (ใช้ร่วมกันทั้ง modal และ export)
+     * คืน [array $ctx, null] เมื่อผ่าน หรือ [null, JsonResponse] เมื่อไม่ผ่าน
+     */
+    private function resolveDoctorRecordsContext(Request $request): array
+    {
+        if (!Auth::check() || !Auth::user()->canAccessOpoh()) {
+            return [null, response()->json(['success' => false, 'message' => 'คุณไม่มีสิทธิ์ดูข้อมูลรายเคส (ต้องมีสิทธิ์ allow_opoh)'], 403)];
+        }
+
+        $communityCodes = ['10985', '10986', '10987', '10988', '10989', '10990'];
+        $type     = $request->input('type');
+        $hospcode = (string)$request->input('hospcode');
+        $start    = (string)$request->input('start_date');
+        $end      = (string)$request->input('end_date');
+
+        if (!in_array($type, ['opd', 'ipd'], true)) {
+            return [null, response()->json(['success' => false, 'message' => 'ประเภทบริการไม่ถูกต้อง'], 422)];
+        }
+        if (!in_array($hospcode, $communityCodes, true)) {
+            return [null, response()->json(['success' => false, 'message' => 'รองรับเฉพาะ รพช. 6 แห่ง'], 422)];
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $start) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $end)) {
+            return [null, response()->json(['success' => false, 'message' => 'ช่วงวันที่ไม่ถูกต้อง'], 422)];
+        }
+
+        // ดึงเลขบัตร/เลข ว. จากฐานข้อมูลเอง ไม่เชื่อค่าจากฝั่ง client
+        $doctor = DB::table('opoh_doctors')->where('id', (int)$request->input('doctor_id'))->first();
+        if (!$doctor) {
+            return [null, response()->json(['success' => false, 'message' => 'ไม่พบข้อมูลแพทย์'], 404)];
+        }
+        if (empty(trim((string)$doctor->cid)) && empty(trim((string)$doctor->licenseno))) {
+            return [null, response()->json(['success' => false, 'message' => 'แพทย์ท่านนี้ไม่มีเลขบัตรประชาชนหรือเลข ว. จึงจับคู่กับ HOSxP ไม่ได้'], 422)];
+        }
+
+        $hosp = Hospital::where('hospcode', $hospcode)->first();
+
+        return [[
+            'type'          => $type,
+            'hospcode'      => $hospcode,
+            'hospital_name' => $hosp->name ?? $hospcode,
+            'start'         => $start,
+            'end'           => $end,
+            'doctor'        => $doctor,
+        ], null];
+    }
+
+    /**
+     * บันทึก audit ทุกครั้งที่เปิดดู/ส่งออกรายเคส (มีข้อมูลระบุตัวผู้ป่วย - PDPA)
+     */
+    private function auditDoctorRecords(Request $request, array $ctx, string $action, string $status, int $count, ?string $error = null): void
+    {
+        try {
+            $u = Auth::user();
+            \App\Models\AemrAccessLog::create([
+                'user_id'          => $u->id,
+                'username'         => $u->email ?? $u->name,
+                'user_name'        => $u->name ?? 'User',
+                'user_role'        => $u->role ?? 'staff',
+                'user_hospcode'    => $u->hospcode ?? null,
+                'provider_id'      => $u->provider_id ?? null,
+                'action'           => $action,
+                'target_hospcode'  => $ctx['hospcode'],
+                'reason'           => mb_substr(sprintf(
+                    'OPOH รายเคส %s แพทย์ %s (ว.%s) %s ถึง %s',
+                    strtoupper($ctx['type']),
+                    $ctx['doctor']->doctor_name,
+                    $ctx['doctor']->licenseno ?: '-',
+                    $ctx['start'],
+                    $ctx['end']
+                ), 0, 255),
+                'ip_address'       => $request->ip() ?: '127.0.0.1',
+                'user_agent'       => substr($request->userAgent() ?? '', 0, 500),
+                'request_url'      => substr($request->fullUrl(), 0, 500),
+                'http_method'      => $request->method(),
+                'status'           => $status,
+                'http_status_code' => 200,
+                'response_time_ms' => 0,
+                'record_count'     => $count,
+                'error_message'    => $error,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to write OPOH records audit log: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * ยอดที่ server มีอยู่ (จากตารางสรุปที่ agent ส่งมา) ใช้เทียบกระทบยอดกับจำนวนเคสที่ได้จาก agent สด
+     */
+    private function expectedDoctorCases(array $ctx): int
+    {
+        if ($ctx['type'] === 'opd') {
+            return (int)DB::table('opoh_opd_service')
+                ->where('doctor_id', $ctx['doctor']->id)
+                ->where('hospcode', $ctx['hospcode'])
+                ->whereBetween('vstdate', [$ctx['start'], $ctx['end']])
+                ->sum('visit_total');
+        }
+        return (int)DB::table('opoh_ipd_service')
+            ->where('doctor_id', $ctx['doctor']->id)
+            ->where('hospcode', $ctx['hospcode'])
+            ->whereBetween('dchdate', [$ctx['start'], $ctx['end']])
+            ->sum('an_total');
+    }
+
+    /**
+     * AJAX (DataTables server-side): รายเคสของแพทย์ 1 คน ใน รพ. 1 แห่ง ดึงสดผ่าน agent
+     * เฉพาะผู้มีสิทธิ์ allow_opoh
+     */
+    public function getDoctorRecords(Request $request, \App\Services\OpohRecordsService $svc)
+    {
+        [$ctx, $err] = $this->resolveDoctorRecordsContext($request);
+        if ($err) {
+            return $err;
+        }
+        @set_time_limit(60);
+
+        $length = (int)$request->input('length', 25);
+        $length = ($length < 1 || $length > 500) ? 25 : $length;
+        $orderIdx = $request->input('order.0.column');
+        $orderCol = $orderIdx !== null ? $request->input("columns.{$orderIdx}.name") : null;
+        $orderDir = $request->input('order.0.dir', 'asc') === 'desc' ? 'desc' : 'asc';
+        $wantSummary = $request->boolean('summary');
+
+        $res = $svc->fetch($ctx['hospcode'], [
+            'type'       => $ctx['type'],
+            'cid'        => trim((string)$ctx['doctor']->cid),
+            'licenseno'  => trim((string)$ctx['doctor']->licenseno),
+            'start_date' => $ctx['start'],
+            'end_date'   => $ctx['end'],
+            'offset'     => max(0, (int)$request->input('start', 0)),
+            'limit'      => $length,
+            'search'     => (string)$request->input('search.value', ''),
+            'order_col'  => is_string($orderCol) ? $orderCol : '',
+            'order_dir'  => $orderDir,
+            'summary'    => $wantSummary,
+        ]);
+
+        if (!$res['success']) {
+            $this->auditDoctorRecords($request, $ctx, 'OPOH_DOCTOR_RECORDS', 'ERROR', 0, $res['message']);
+            return response()->json([
+                'draw' => (int)$request->input('draw'), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => [],
+                'success' => false, 'message' => $res['message'],
+            ]);
+        }
+
+        $data = $res['data'] ?? [];
+        $rows = $data['rows'] ?? [];
+        $this->auditDoctorRecords($request, $ctx, 'OPOH_DOCTOR_RECORDS', 'SUCCESS', count($rows));
+
+        $payload = [
+            'success'         => true,
+            'draw'            => (int)$request->input('draw'),
+            'recordsTotal'    => (int)($data['records_total'] ?? 0),
+            'recordsFiltered' => (int)($data['records_filtered'] ?? 0),
+            'data'            => $rows,
+        ];
+        if ($wantSummary) {
+            $payload['summary']        = $data['summary'] ?? null;
+            $payload['expected_total'] = $this->expectedDoctorCases($ctx);
+            $payload['doctor_name']    = $ctx['doctor']->doctor_name;
+            $payload['hospital_name']  = $ctx['hospital_name'];
+        }
+        return response()->json($payload);
+    }
+
+    /**
+     * ส่งออกรายเคส "ทุกเคส" (หลัง search ถ้ามี) เป็น CSV (เปิดด้วย Excel ได้)
+     * เซิร์ฟเวอร์ขอทีละก้อนจาก agent แล้วสตรีมออก ไม่เก็บค้าง
+     */
+    public function exportDoctorRecords(Request $request, \App\Services\OpohRecordsService $svc)
+    {
+        [$ctx, $err] = $this->resolveDoctorRecordsContext($request);
+        if ($err) {
+            return $err;
+        }
+
+        $base = [
+            'type'       => $ctx['type'],
+            'cid'        => trim((string)$ctx['doctor']->cid),
+            'licenseno'  => trim((string)$ctx['doctor']->licenseno),
+            'start_date' => $ctx['start'],
+            'end_date'   => $ctx['end'],
+            'search'     => (string)$request->input('search', ''),
+            'order_col'  => 'date',
+            'order_dir'  => 'asc',
+            'summary'    => false,
+        ];
+
+        // ลองดึงก้อนแรกก่อนเริ่มสตรีม เพื่อแจ้งข้อผิดพลาดเป็น JSON ได้ถ้า agent ไม่ตอบ
+        $chunk = 500;
+        $first = $svc->fetch($ctx['hospcode'], $base + ['offset' => 0, 'limit' => $chunk]);
+        if (!$first['success']) {
+            $this->auditDoctorRecords($request, $ctx, 'OPOH_DOCTOR_EXPORT', 'ERROR', 0, $first['message']);
+            return response()->json(['success' => false, 'message' => $first['message']], 502);
+        }
+
+        $isIpd = $ctx['type'] === 'ipd';
+        $fileName = sprintf('opoh_%s_%s_%s_%s-%s.csv', $ctx['type'], $ctx['hospcode'], $ctx['doctor']->licenseno ?: $ctx['doctor']->id, $ctx['start'], $ctx['end']);
+
+        return response()->streamDownload(function () use ($svc, $ctx, $base, $first, $chunk, $isIpd, $request) {
+            @set_time_limit(0);
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM สำหรับ Excel
+
+            $head = $isIpd
+                ? ['AN', 'HN', 'ชื่อ-สกุลผู้ป่วย', 'วันที่รับ', 'วันที่จำหน่าย', 'เวลาจำหน่าย', 'สิทธิ', 'PDX', 'โรคหลัก', 'DX0', 'DX1', 'DX2', 'DX3', 'DX4', 'DX5', 'วันนอน', 'AdjRW', 'ค่ารักษาทั้งหมด (บาท)']
+                : ['VN', 'HN', 'ชื่อ-สกุลผู้ป่วย', 'วันที่', 'เวลา', 'สิทธิ', 'PDX', 'โรคหลัก', 'DX0', 'DX1', 'DX2', 'DX3', 'DX4', 'DX5', 'ค่ารักษาทั้งหมด (บาท)'];
+            fputcsv($out, $head);
+
+            $offset = 0;
+            $exported = 0;
+            $data = $first['data'];
+            while (true) {
+                $rows = $data['rows'] ?? [];
+                foreach ($rows as $r) {
+                    $dx = [$r['dx0'] ?? '', $r['dx1'] ?? '', $r['dx2'] ?? '', $r['dx3'] ?? '', $r['dx4'] ?? '', $r['dx5'] ?? ''];
+                    $total = number_format((float)($r['total'] ?? 0), 2, '.', '');
+                    $line = $isIpd
+                        ? array_merge([$r['key'] ?? '', $r['hn'] ?? '', $r['patient_name'] ?? '', $r['adm_date'] ?? '', $r['date'] ?? '', $r['time'] ?? '', $r['pttype'] ?? '', $r['pdx'] ?? '', $r['diag_name'] ?? ''], $dx, [$r['los'] ?? '', $r['adjrw'] ?? '', $total])
+                        : array_merge([$r['key'] ?? '', $r['hn'] ?? '', $r['patient_name'] ?? '', $r['date'] ?? '', $r['time'] ?? '', $r['pttype'] ?? '', $r['pdx'] ?? '', $r['diag_name'] ?? ''], $dx, [$total]);
+                    fputcsv($out, $line);
+                    $exported++;
+                }
+                $offset += $chunk;
+                $filtered = (int)($data['records_filtered'] ?? 0);
+                if (empty($rows) || $offset >= $filtered) {
+                    break;
+                }
+                $next = $svc->fetch($ctx['hospcode'], $base + ['offset' => $offset, 'limit' => $chunk]);
+                if (!$next['success']) {
+                    fputcsv($out, ['!! ส่งออกไม่ครบ: ' . $next['message']]);
+                    break;
+                }
+                $data = $next['data'];
+            }
+            fclose($out);
+            $this->auditDoctorRecords($request, $ctx, 'OPOH_DOCTOR_EXPORT', 'SUCCESS', $exported);
+        }, $fileName, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     /**

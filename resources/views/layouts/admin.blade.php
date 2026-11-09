@@ -23,7 +23,7 @@
   <style>
     :root {
       --admin-primary: #0f172a;
-      --admin-sidebar-bg: rgba(15, 23, 42, 0.95);
+      --admin-sidebar-bg: rgba(255, 255, 255, 0.88);
       --green: #18a573;
       --green-2: #21c08b;
       --blue: #0d6efd;
@@ -55,9 +55,9 @@
       padding: 1.5rem 1rem;
       background: var(--admin-sidebar-bg);
       backdrop-filter: blur(15px);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-right: 1px solid rgba(33, 192, 139, 0.18);
       transition: all 0.3s ease-in-out;
-      box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+      box-shadow: 10px 0 30px rgba(15, 23, 42, 0.06);
     }
 
     .sidebar-brand {
@@ -84,7 +84,7 @@
       align-items: center;
       gap: 12px;
       padding: 0.8rem 1.2rem;
-      color: #94a3b8;
+      color: #475569;
       font-weight: 500;
       text-decoration: none;
       border-radius: 12px;
@@ -92,8 +92,8 @@
     }
 
     .sidebar-link:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.08);
+      color: #0f766e;
+      background: rgba(33, 192, 139, 0.12);
       transform: translateX(4px);
     }
 
@@ -226,7 +226,7 @@
   {{-- SIDEBAR --}}
   <aside class="sidebar" id="sidebar">
     <!-- Close button for mobile -->
-    <button class="btn d-lg-none text-white border-0 p-0 fs-4 position-absolute" id="sidebarClose" style="top: 20px; right: 20px; z-index: 101;" aria-label="Close Sidebar">
+    <button class="btn d-lg-none text-dark border-0 p-0 fs-4 position-absolute" id="sidebarClose" style="top: 20px; right: 20px; z-index: 101;" aria-label="Close Sidebar">
       <i class="fa-solid fa-xmark"></i>
     </button>
 
@@ -243,8 +243,8 @@
         <path d="M55 100 L80 100 L93 65 L107 135 L120 85 L128 100 L145 100" stroke="#21c08b" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <div class="d-flex flex-column">
-        <span class="fs-5 fw-bold text-white leading-tight">AOPOD</span>
-        <span class="text-muted" style="font-size: 0.65rem; font-weight: 600;">MANAGE PANEL</span>
+        <span class="fs-5 fw-bold leading-tight" style="background: linear-gradient(135deg, #0d6efd 0%, #21c08b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; line-height: 1.1;">AOPOD</span>
+        <span class="text-secondary" style="font-size: 0.65rem; font-weight: 600; letter-spacing: 0.2px; line-height: 1;">One Province One Data</span>
       </div>
     </a>
 
