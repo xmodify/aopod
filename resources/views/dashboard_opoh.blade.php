@@ -400,7 +400,7 @@
                 @endforeach
                 <th style="min-width: 120px;" class="text-end">ค่าบริการรวม</th>
                 <th style="min-width: 115px;" class="text-end bg-light border-start text-secondary">
-                  รพ.อำนาจเจริญ
+                  {{ $hubHospitalName }}
                 </th>
               </tr>
             </thead>
@@ -440,7 +440,7 @@
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
+                <td class="text-end fw-bold">ยอดรวม OPOH (รพช. {{ count($hospitalsList) }} แห่ง)</td>
                 <td class="text-end fw-bolder text-dark fs-5">{{ number_format($specColTotals['cumulative']) }}</td>
                 <td class="text-end fw-bolder bg-primary bg-opacity-10 text-primary fs-6">{{ number_format($specColTotals['period']) }}</td>
                 @foreach($hospitalsList as $hcode => $hname)
@@ -690,7 +690,7 @@
                 @endforeach
                 <th style="min-width: 120px;" class="text-end">ค่ารักษาพยาบาล</th>
                 <th style="min-width: 110px;" class="text-end bg-light border-start text-secondary">
-                  รพ.อำนาจเจริญ
+                  {{ $hubHospitalName }}
                 </th>
               </tr>
             </thead>
@@ -733,7 +733,7 @@
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td class="text-end fw-bold">ยอดรวม OPOH (รพช. 6 แห่ง)</td>
+                <td class="text-end fw-bold">ยอดรวม OPOH (รพช. {{ count($hospitalsList) }} แห่ง)</td>
                 <td class="text-end fw-bolder text-dark fs-5">{{ number_format($ipdSpecColTotals['cumulative']) }}</td>
                 <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger fs-6">{{ number_format($ipdSpecColTotals['period']) }}</td>
                 <td class="text-end fw-bolder">{{ number_format($ipdSpecColTotals['los']) }}</td>
@@ -770,26 +770,26 @@
           </div>
         </div>
 
-        {{-- 5 KPI Mini Summary Cards --}}
+        {{-- 5 KPI Mini Summary Cards (ยอดไม่นับซ้ำราย AN และกรอง รพ.ต้นสังกัด) --}}
         <div class="row g-3 mb-3">
           <div class="col-6 col-md-4 col-xl">
             <div class="p-3 rounded-4 border bg-white shadow-sm text-center h-100">
-              <span class="text-muted small fw-bold">ผู้ป่วยในสะสม (ANs)</span>
-              <h3 class="fw-bold text-danger mb-0 mt-1">{{ number_format($ipdSumCumulative) }}</h3>
+              <span class="text-muted small fw-bold">ผู้ป่วยใน (ANs)</span>
+              <h3 class="fw-bold text-danger mb-0 mt-1">{{ number_format($ipdAnsTotal) }}</h3>
               <span class="text-muted" style="font-size: 0.72rem;">ราย</span>
             </div>
           </div>
           <div class="col-6 col-md-4 col-xl">
             <div class="p-3 rounded-4 border bg-white shadow-sm text-center h-100">
-              <span class="text-muted small fw-bold">วันนอนสะสม (LOS)</span>
-              <h3 class="fw-bold text-info mb-0 mt-1">{{ number_format($ipdSumLos) }}</h3>
+              <span class="text-muted small fw-bold">วันนอน (LOS)</span>
+              <h3 class="fw-bold text-info mb-0 mt-1">{{ number_format($ipdLosTotal) }}</h3>
               <span class="text-muted" style="font-size: 0.72rem;">วัน</span>
             </div>
           </div>
           <div class="col-6 col-md-4 col-xl">
             <div class="p-3 rounded-4 border bg-white shadow-sm text-center h-100">
               <span class="text-muted small fw-bold">AdjRW รวม</span>
-              <h3 class="fw-bold text-primary mb-0 mt-1">{{ number_format($ipdSumRw, 4) }}</h3>
+              <h3 class="fw-bold text-primary mb-0 mt-1">{{ number_format($ipdRwTotal, 4) }}</h3>
               <span class="text-muted" style="font-size: 0.72rem;">AdjRW</span>
             </div>
           </div>
@@ -797,7 +797,7 @@
             <div class="p-3 rounded-4 border bg-white shadow-sm text-center h-100">
               <span class="text-muted small fw-bold">CMI เฉลี่ยรวม</span>
               <h3 class="fw-bold mb-0 mt-1" style="color: #8b5cf6;">
-                {{ $ipdSumCumulative > 0 ? number_format($ipdSumRw / $ipdSumCumulative, 4) : '0.0000' }}
+                {{ $ipdAnsTotal > 0 ? number_format($ipdRwTotal / $ipdAnsTotal, 4) : '0.0000' }}
               </h3>
               <span class="text-muted" style="font-size: 0.72rem;">AdjRW ÷ AN</span>
             </div>
@@ -805,7 +805,7 @@
           <div class="col-12 col-md-4 col-xl">
             <div class="p-3 rounded-4 border bg-white shadow-sm text-center h-100">
               <span class="text-muted small fw-bold">มูลค่าค่ารักษารวม</span>
-              <h3 class="fw-bold text-success mb-0 mt-1">฿{{ number_format($ipdSumInc, 2) }}</h3>
+              <h3 class="fw-bold text-success mb-0 mt-1">฿{{ number_format($ipdIncTotal, 2) }}</h3>
               <span class="text-muted" style="font-size: 0.72rem;">บาท</span>
             </div>
           </div>
@@ -880,16 +880,16 @@
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td class="text-end fw-bold">ยอดรวมช่วงเวลาที่เลือก (รพช. 6 แห่ง)</td>
-                <td class="text-end fw-bolder text-dark fs-6">{{ number_format($ipdSpecColTotals['period']) }}</td>
-                <td class="text-end fw-bolder text-dark">{{ number_format($ipdSpecColTotals['los']) }}</td>
-                <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger fs-6">{{ number_format($ipdSpecColTotals['rw'], 4) }}</td>
+                <td class="text-end fw-bold">ยอดรวมช่วงเวลาที่เลือก (รพช. {{ count($hospitalsList) }} แห่ง)</td>
+                <td class="text-end fw-bolder text-dark fs-6">{{ number_format($ipdAnsTotal) }}</td>
+                <td class="text-end fw-bolder text-dark">{{ number_format($ipdLosTotal) }}</td>
+                <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger fs-6">{{ number_format($ipdRwTotal, 4) }}</td>
                 <td class="text-end fw-bolder text-dark font-monospace">
-                  {{ $ipdSpecColTotals['period'] > 0 ? number_format($ipdSpecColTotals['rw'] / $ipdSpecColTotals['period'], 4) : '0.0000' }}
+                  {{ $ipdAnsTotal > 0 ? number_format($ipdRwTotal / $ipdAnsTotal, 4) : '0.0000' }}
                 </td>
                 <td class="text-end text-muted small">-</td>
                 <td class="text-end fw-bolder bg-success bg-opacity-10 text-success">฿{{ number_format($totEstComp, 2) }}</td>
-                <td class="text-end fw-bolder text-dark">฿{{ number_format($ipdSpecColTotals['inc'], 2) }}</td>
+                <td class="text-end fw-bolder text-dark">฿{{ number_format($ipdIncTotal, 2) }}</td>
               </tr>
             </tfoot>
           </table>
@@ -1079,7 +1079,7 @@
                 <th style="min-width: 110px;" class="text-end">{{ $hname }}</th>
                 @endforeach
                 <th style="min-width: 120px;" class="text-end bg-light border-start text-secondary">
-                  รพ.อำนาจเจริญ
+                  {{ $hubHospitalName }}
                 </th>
               </tr>
             </thead>
@@ -1117,7 +1117,7 @@
             </tbody>
             <tfoot>
               <tr class="tr-opoh-total">
-                <td class="text-end fw-bold">ยอดรวมผ่าตัด OPOH (รพช. 6 แห่ง)</td>
+                <td class="text-end fw-bold">ยอดรวมผ่าตัด OPOH (รพช. {{ count($hospitalsList) }} แห่ง)</td>
                 <td class="text-end fw-bolder fs-6" style="color: #8b5cf6;">{{ number_format($opSpecColTotals['period']) }}</td>
                 @foreach($hospitalsList as $hcode => $hname)
                 <td class="text-end fw-bolder">{{ number_format($opSpecColTotals[$hcode]) }}</td>
@@ -1226,7 +1226,7 @@
             </div>
 
             <select class="form-select form-select-sm shadow-sm" id="incomeHospSelect" style="width: 170px;" onchange="location.href='{{ route('web.opoh', array_merge(request()->query(), ['active_tab' => 'income'])) }}&income_hospcode=' + this.value">
-              <option value="ALL" {{ $income_hospcode === 'ALL' ? 'selected' : '' }}>รพช. 6 แห่ง (ทั้งหมด)</option>
+              <option value="ALL" {{ $income_hospcode === 'ALL' ? 'selected' : '' }}>รพช. {{ count($hospitalsList) }} แห่ง (ทั้งหมด)</option>
               @foreach($hospitalsList as $hcode => $hname)
                 <option value="{{ $hcode }}" {{ $income_hospcode == $hcode ? 'selected' : '' }}>{{ $hname }}</option>
               @endforeach
@@ -1589,7 +1589,7 @@
             <h4 class="modal-title fw-bold text-dark mb-1" id="modalRightTitle">ชื่อสิทธิการรักษา</h4>
             <div class="text-muted small d-flex flex-wrap align-items-center gap-3">
               <span><i class="fa-regular fa-calendar text-primary me-1"></i>ช่วงเวลา: <strong id="modalDateRangeText" class="text-dark">{{ $thaiDateRangeText }}</strong></span>
-              <span><i class="fa-solid fa-hospital text-info me-1"></i>ครอบคลุม: <strong class="text-dark">รพช. 6 แห่ง + รพ.อำนาจเจริญ แม่ข่าย (7 รพ.)</strong></span>
+              <span><i class="fa-solid fa-hospital text-info me-1"></i>ครอบคลุม: <strong class="text-dark">รพช. {{ count($hospitalsList) }} แห่ง + {{ $hubHospitalName }} แม่ข่าย ({{ count($allModalHospitals) }} รพ.)</strong></span>
             </div>
           </div>
         </div>
@@ -1609,7 +1609,7 @@
           <div class="card-header bg-light py-2.5 px-3 border-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <span class="fw-bold text-dark small d-flex align-items-center gap-2">
               <i class="fa-solid fa-table-list text-primary"></i>
-              <span>ตารางเปรียบเทียบข้อมูลจำแนกรายโรงพยาบาล (รพช. 6 แห่ง และ รพ.อำนาจเจริญ แม่ข่าย)</span>
+              <span>ตารางเปรียบเทียบข้อมูลจำแนกรายโรงพยาบาล (รพช. {{ count($hospitalsList) }} แห่ง และ {{ $hubHospitalName }} แม่ข่าย)</span>
             </span>
             <span class="text-muted small" style="font-size: 0.75rem;">
               <i class="fa-solid fa-circle-info text-info me-1"></i>แสดงข้อมูลสถิติและมูลค่าค่าบริการแยกตามโรงพยาบาล
@@ -1635,7 +1635,7 @@
       {{-- Modal Footer --}}
       <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
         <span class="text-muted small">
-          <i class="fa-solid fa-shield-halved text-success me-1"></i>ระบบข้อมูลบริการสุขภาพ One Province One Hospital (OPOH) จังหวัดอำนาจเจริญ
+          <i class="fa-solid fa-shield-halved text-success me-1"></i>ระบบข้อมูลบริการสุขภาพ One Province One Hospital (OPOH) เครือข่าย {{ $hubHospitalName }}
         </span>
         <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">
           <i class="fa-solid fa-xmark me-1"></i>ปิดหน้าต่าง
@@ -2008,6 +2008,10 @@
     ipd: @json($ipdRightsByHosp),
     op: @json($opRightsByHosp),
     hospitals: @json($allModalHospitals),
+    hubCode: @json($hubHospitalCode),
+    hubName: @json($hubHospitalName),
+    commCount: {{ count($hospitalsList) }},
+    allHospCount: {{ count($allModalHospitals) }},
     configs: @json($rightsConfig),
     dateRange: @json($thaiDateRangeText)
   };
@@ -2024,6 +2028,7 @@
   const incomeHospData = {
     byHosp: @json($incomeByHosp),
     hospitals: @json($allModalHospitals),
+    hubCode: @json($hubHospitalCode),
     categories: @json(collect($incomeYearlyData)->map(fn($c) => $c->group_name)),
     selectedHosp: @json($income_hospcode)
   };
@@ -2032,7 +2037,7 @@
     const byCat = (incomeHospData.byHosp[period] || {})[catId] || {};
     const hospitals = incomeHospData.hospitals;
     const codes = Object.keys(hospitals).filter(function(c) {
-      return c in byCat || (c !== '10703' && (incomeHospData.selectedHosp === 'ALL' || incomeHospData.selectedHosp === c));
+      return c in byCat || (c !== incomeHospData.hubCode && (incomeHospData.selectedHosp === 'ALL' || incomeHospData.selectedHosp === c));
     });
 
     document.getElementById('incHospTitle').textContent = incomeHospData.categories[catId] || ('หมวด ' + catId);
@@ -2079,6 +2084,10 @@
 
     const dataMap = (rightsBreakdownData[serviceType] && rightsBreakdownData[serviceType][schemeKey]) ? rightsBreakdownData[serviceType][schemeKey] : {};
     const hospitals = rightsBreakdownData.hospitals;
+    const hubCode = rightsBreakdownData.hubCode;
+    const hubName = rightsBreakdownData.hubName;
+    const commCount = rightsBreakdownData.commCount;
+    const allHospCount = rightsBreakdownData.allHospCount;
 
     // 1. ตั้งค่าหัวข้อ Modal
     const iconBox = document.getElementById('modalRightIconBox');
@@ -2149,7 +2158,7 @@
     Object.keys(hospitals).forEach(function(code) {
       const hInfo = hospitals[code];
       const row = dataMap[code] || {};
-      const isHub = (code === '10703');
+      const isHub = (code === hubCode);
 
       if (serviceType === 'opd') {
         const v = Number(row.visits || 0);
@@ -2217,7 +2226,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-info bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-secondary small fw-bold">ยอดรวม รพช. 6 แห่ง</span>
+                <span class="text-secondary small fw-bold">ยอดรวม รพช. ${commCount} แห่ง</span>
                 <span class="badge bg-info text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">${commPct}%</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2233,7 +2242,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-primary bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-secondary small fw-bold">รพ.อำนาจเจริญ (แม่ข่าย)</span>
+                <span class="text-secondary small fw-bold">${hubName} (แม่ข่าย)</span>
                 <span class="badge bg-primary text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">${amnatPct}%</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2249,7 +2258,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-success bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-secondary small fw-bold">ยอดรวมทั้งจังหวัด (7 รพ.)</span>
+                <span class="text-secondary small fw-bold">ยอดรวมทั้งจังหวัด (${allHospCount} รพ.)</span>
                 <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">100%</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2275,7 +2284,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-info bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-1">
-                <span class="text-secondary small fw-bold">ยอดรวม รพช. 6 แห่ง</span>
+                <span class="text-secondary small fw-bold">ยอดรวม รพช. ${commCount} แห่ง</span>
                 <span class="badge bg-info text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">ALOS: ${commAlos} วัน</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2297,7 +2306,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-primary bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-1">
-                <span class="text-secondary small fw-bold">รพ.อำนาจเจริญ (แม่ข่าย)</span>
+                <span class="text-secondary small fw-bold">${hubName} (แม่ข่าย)</span>
                 <span class="badge bg-primary text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">ALOS: ${amnatAlos} วัน</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2319,7 +2328,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-success bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-1">
-                <span class="text-secondary small fw-bold">ยอดรวมทั้งจังหวัด (7 รพ.)</span>
+                <span class="text-secondary small fw-bold">ยอดรวมทั้งจังหวัด (${allHospCount} รพ.)</span>
                 <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">ALOS: ${totAlos} วัน</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2350,7 +2359,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-info bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-secondary small fw-bold">ยอดรวม รพช. 6 แห่ง</span>
+                <span class="text-secondary small fw-bold">ยอดรวม รพช. ${commCount} แห่ง</span>
                 <span class="badge bg-info text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">${commPct}%</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2366,7 +2375,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-primary bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-secondary small fw-bold">รพ.อำนาจเจริญ (แม่ข่าย)</span>
+                <span class="text-secondary small fw-bold">${hubName} (แม่ข่าย)</span>
                 <span class="badge bg-primary text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">${amnatPct}%</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2382,7 +2391,7 @@
           <div class="col-12 col-md-4">
             <div class="p-3 rounded-4 border bg-success bg-opacity-10 h-100 shadow-sm">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-secondary small fw-bold">ยอดรวมทั้งจังหวัด (7 รพ.)</span>
+                <span class="text-secondary small fw-bold">ยอดรวมทั้งจังหวัด (${allHospCount} รพ.)</span>
                 <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">100%</span>
               </div>
               <div class="d-flex align-items-baseline gap-1">
@@ -2453,7 +2462,7 @@
       Object.keys(hospitals).forEach(function(code) {
         const hInfo = hospitals[code];
         const row = dataMap[code] || {};
-        const isHub = (code === '10703');
+        const isHub = (code === hubCode);
         const badgeClass = isHub ? 'bg-primary text-primary' : 'bg-info text-info';
 
         if (serviceType === 'opd') {
@@ -2546,21 +2555,21 @@
 
         footHtml = `
           <tr class="tr-modal-community-total">
-            <td colspan="3" class="text-end fw-bold">ยอดรวม รพช. 6 แห่ง</td>
+            <td colspan="3" class="text-end fw-bold">ยอดรวม รพช. ${commCount} แห่ง</td>
             <td class="text-end fw-bolder fs-6">${formatModalNumber(commVisits)}</td>
             <td class="text-end fw-bold">${commPct}%</td>
             <td class="text-end fw-bolder">฿${formatModalNumber(commOpdInc, 2)}</td>
             <td class="text-end fw-bold">฿${formatModalNumber(commAvg, 2)}</td>
           </tr>
           <tr class="tr-modal-amnat-total">
-            <td colspan="3" class="text-end fw-bold">รพ.อำนาจเจริญ (แม่ข่าย)</td>
+            <td colspan="3" class="text-end fw-bold">${hubName} (แม่ข่าย)</td>
             <td class="text-end fw-bolder fs-6">${formatModalNumber(amnatVisits)}</td>
             <td class="text-end fw-bold">${amnatPct}%</td>
             <td class="text-end fw-bolder">฿${formatModalNumber(amnatOpdInc, 2)}</td>
             <td class="text-end fw-bold">฿${formatModalNumber(amnatAvg, 2)}</td>
           </tr>
           <tr class="tr-modal-grand-total">
-            <td colspan="3" class="text-end fw-bolder fs-6">ยอดรวมทั้งจังหวัด (7 รพ.)</td>
+            <td colspan="3" class="text-end fw-bolder fs-6">ยอดรวมทั้งจังหวัด (${allHospCount} รพ.)</td>
             <td class="text-end fw-bolder fs-6 text-success">${formatModalNumber(totVisits)}</td>
             <td class="text-end fw-bolder text-success">100%</td>
             <td class="text-end fw-bolder text-success">฿${formatModalNumber(totOpdInc, 2)}</td>
@@ -2577,7 +2586,7 @@
 
         footHtml = `
           <tr class="tr-modal-community-total">
-            <td colspan="3" class="text-end fw-bold">ยอดรวม รพช. 6 แห่ง</td>
+            <td colspan="3" class="text-end fw-bold">ยอดรวม รพช. ${commCount} แห่ง</td>
             <td class="text-end fw-bolder fs-6">${formatModalNumber(commAns)}</td>
             <td class="text-end fw-bold">${formatModalNumber(commLos)}</td>
             <td class="text-end font-monospace small">${commAlos}</td>
@@ -2587,7 +2596,7 @@
             <td class="text-end fw-bolder">฿${formatModalNumber(commIpdInc, 2)}</td>
           </tr>
           <tr class="tr-modal-amnat-total">
-            <td colspan="3" class="text-end fw-bold">รพ.อำนาจเจริญ (แม่ข่าย)</td>
+            <td colspan="3" class="text-end fw-bold">${hubName} (แม่ข่าย)</td>
             <td class="text-end fw-bolder fs-6">${formatModalNumber(amnatAns)}</td>
             <td class="text-end fw-bold">${formatModalNumber(amnatLos)}</td>
             <td class="text-end font-monospace small">${amnatAlos}</td>
@@ -2597,7 +2606,7 @@
             <td class="text-end fw-bolder">฿${formatModalNumber(amnatIpdInc, 2)}</td>
           </tr>
           <tr class="tr-modal-grand-total">
-            <td colspan="3" class="text-end fw-bolder fs-6">ยอดรวมทั้งจังหวัด (7 รพ.)</td>
+            <td colspan="3" class="text-end fw-bolder fs-6">ยอดรวมทั้งจังหวัด (${allHospCount} รพ.)</td>
             <td class="text-end fw-bolder fs-6 text-success">${formatModalNumber(totAns)}</td>
             <td class="text-end fw-bolder text-success">${formatModalNumber(totLos)}</td>
             <td class="text-end font-monospace small fw-bold">${totAlos}</td>
@@ -2616,21 +2625,21 @@
 
         footHtml = `
           <tr class="tr-modal-community-total">
-            <td colspan="3" class="text-end fw-bold">ยอดรวม รพช. 6 แห่ง</td>
+            <td colspan="3" class="text-end fw-bold">ยอดรวม รพช. ${commCount} แห่ง</td>
             <td class="text-end fw-bolder fs-6">${formatModalNumber(commCases)}</td>
             <td class="text-end fw-bold">${commPct}%</td>
             <td class="text-end fw-bolder">฿${formatModalNumber(commOpInc, 2)}</td>
             <td class="text-end fw-bold">฿${formatModalNumber(commAvg, 2)}</td>
           </tr>
           <tr class="tr-modal-amnat-total">
-            <td colspan="3" class="text-end fw-bold">รพ.อำนาจเจริญ (แม่ข่าย)</td>
+            <td colspan="3" class="text-end fw-bold">${hubName} (แม่ข่าย)</td>
             <td class="text-end fw-bolder fs-6">${formatModalNumber(amnatCases)}</td>
             <td class="text-end fw-bold">${amnatPct}%</td>
             <td class="text-end fw-bolder">฿${formatModalNumber(amnatOpInc, 2)}</td>
             <td class="text-end fw-bold">฿${formatModalNumber(amnatAvg, 2)}</td>
           </tr>
           <tr class="tr-modal-grand-total">
-            <td colspan="3" class="text-end fw-bolder fs-6">ยอดรวมทั้งจังหวัด (7 รพ.)</td>
+            <td colspan="3" class="text-end fw-bolder fs-6">ยอดรวมทั้งจังหวัด (${allHospCount} รพ.)</td>
             <td class="text-end fw-bolder fs-6 text-success">${formatModalNumber(totCases)}</td>
             <td class="text-end fw-bolder text-success">100%</td>
             <td class="text-end fw-bolder text-success">฿${formatModalNumber(totOpInc, 2)}</td>

@@ -67,7 +67,7 @@ class AgentApiController extends Controller
                 'sync_days_back' => (int)($schedule->sync_days_back ?? 10),
                 'chunk_size' => 200,
                 'province_hospcodes' => $provinceHospitals,
-                'main_sss_hospcode' => '10703',
+                'main_sss_hospcode' => MainSetting::get('opoh_hub_hospcode', '10703'),
                 'latest_agent_version' => $latestAgentVersion,
                 'agent_download_url' => url('/api/agent/download-latest'),
             ],

@@ -252,5 +252,15 @@
             "updated_at": "2024-09-11 15:22:35",
             "created_at": "2024-09-11 15:22:32"
         }
+    ],
+    "main_setting": [
+        {
+            "name": "opoh_hub_hospcode",
+            "value": "10703"
+        },
+        {
+            "name": "opoh_exclude_hospcodes",
+            "value": "00025"
+        }
     ]
 }

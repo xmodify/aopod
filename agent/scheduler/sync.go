@@ -232,6 +232,15 @@ func PerformSyncSelectiveWithRanges(startDate, endDate string, modules []string,
 				AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยใน (%s ถึง %s): %d รายการสำเร็จ (ล้มเหลว: %d)", sDate, eDate, opohIpdResult.TotalSent, opohIpdResult.TotalFailed))
 			}
 
+			// 8.2.1 สรุปผู้ป่วยในระดับโรงพยาบาลต่อวัน (ไม่นับซ้ำราย AN)
+			opohIpdSummaries, sumErr := collector.CollectOpohIPDHospitalSummary(db, doctors, cfg.Hospital.Code, sDate, eDate)
+			if sumErr != nil {
+				AddLog("ERROR", fmt.Sprintf("เกิดข้อผิดพลาดในการ Query สรุป IPD ระดับ รพ. (%s ถึง %s): %s", sDate, eDate, sumErr.Error()))
+			} else if len(opohIpdSummaries) > 0 {
+				sumRes, _ := sender.SendWrappedChunks(opohIpdSummaries, "hospital_summaries", "/api/opoh/ipd", func(r collector.OpohIpdHospitalSummaryRecord) string { return r.Dchdate }, "OPOH_IPD_SUM")
+				AddLog("INFO", fmt.Sprintf("ส่งสรุป OPOH IPD ระดับ รพ. (%s ถึง %s): %d วันสำเร็จ (ล้มเหลว: %d)", sDate, eDate, sumRes.TotalSent, sumRes.TotalFailed))
+			}
+
 			// 8.3 Surgery & Operation OPOH (Tab 3: Surgery)
 			opohOperRecords, err := collector.CollectOpohOperations(db, doctors, sDate, eDate)
 			if err != nil {
@@ -357,6 +366,11 @@ func PerformHourlySync(opdDaysBack, ipdDaysBack int) (*sender.SyncSummary, error
 			opohIpdResult, _ := sender.SendChunks(opohIpdRecords, "/api/opoh/ipd", func(r collector.OpohIpdRecord) string { return r.Dchdate }, "OPOH_IPD")
 			summary.OpohIPD = opohIpdResult
 			AddLog("INFO", fmt.Sprintf("ส่งข้อมูล OPOH ผู้ป่วยใน: %d รายการ สำเร็จ", len(opohIpdRecords)))
+		}
+
+		// 7.2.1 สรุปผู้ป่วยในระดับโรงพยาบาลต่อวัน (ไม่นับซ้ำราย AN)
+		if opohIpdSummaries, sumErr := collector.CollectOpohIPDHospitalSummary(db, doctors, cfg.Hospital.Code, ipdStart, today); sumErr == nil && len(opohIpdSummaries) > 0 {
+			_, _ = sender.SendWrappedChunks(opohIpdSummaries, "hospital_summaries", "/api/opoh/ipd", func(r collector.OpohIpdHospitalSummaryRecord) string { return r.Dchdate }, "OPOH_IPD_SUM")
 		}
 
 		// 7.3 Surgery & Operation OPOH (opdStart to today)

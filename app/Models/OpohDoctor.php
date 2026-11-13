@@ -21,6 +21,7 @@ class OpohDoctor extends Model
         'spclty_code',
         'specialty_name',
         'position',
+        'origin_hospcode',
         'is_active',
         'created_by',
     ];
@@ -45,6 +46,14 @@ class OpohDoctor extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * รพ.ต้นสังกัดของแพทย์
+     */
+    public function originHospital()
+    {
+        return $this->belongsTo(Hospital::class, 'origin_hospcode', 'hospcode');
     }
 }
 

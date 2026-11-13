@@ -252,7 +252,7 @@ func collectDoctorRecordsIPD(db *sql.DB, p DoctorRecordsParams) (*DoctorRecordsR
 		return nil, err
 	}
 
-	// จับคู่แพทย์เหมือน CollectOpohIPD (admdoctor / dch_doctor / incharge_doctor) แต่ใช้ EXISTS กันนับซ้ำ
+	// จับคู่แพทย์เหมือน CollectOpohIPD (admdoctor / dch_doctor / incharge_doctor + ipt_doctor_list) แต่ใช้ EXISTS กันนับซ้ำ
 	baseFrom := `FROM ipt i
 		JOIN an_stat a ON a.an = i.an
 		JOIN patient pt ON pt.hn = i.hn
@@ -260,7 +260,7 @@ func collectDoctorRecordsIPD(db *sql.DB, p DoctorRecordsParams) (*DoctorRecordsR
 		LEFT JOIN icd101 ic ON ic.code = a.pdx`
 	baseWhere := `WHERE i.dchdate BETWEEN ? AND ?
 		AND EXISTS (SELECT 1 FROM doctor d
-			WHERE (d.code = i.admdoctor OR d.code = i.dch_doctor OR d.code = i.incharge_doctor)
+			WHERE ` + ipdDoctorMatchCond("i", "d") + `
 			  AND ` + docWhere + `)`
 	baseArgs := append([]interface{}{p.StartDate, p.EndDate}, docArgs...)
 

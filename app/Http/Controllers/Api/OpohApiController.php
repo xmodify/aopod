@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\OpohDoctor;
 use App\Models\OpohIpdService;
+use App\Models\OpohIpdHospitalSummary;
+use App\Models\OpohIpdIncomeSummary;
 use App\Models\OpohOpdService;
 use App\Models\OpohOperationService;
 use App\Models\OpohOpdDiagnosis;
@@ -45,10 +47,11 @@ class OpohApiController extends Controller
                     'doctor_name'    => $d->doctor_name,
                     'fname'          => $d->fname,
                     'lname'          => $d->lname,
-                    'cid'            => $d->cid,
-                    'licenseno'      => $d->licenseno,
-                    'spclty_code'    => $d->spclty_code,
-                    'specialty_name' => $d->specialty_name,
+                    'cid'             => $d->cid,
+                    'licenseno'       => $d->licenseno,
+                    'spclty_code'     => $d->spclty_code,
+                    'specialty_name'  => $d->specialty_name,
+                    'origin_hospcode' => $d->origin_hospcode,
                 ];
             }),
         ]);
@@ -233,9 +236,9 @@ class OpohApiController extends Controller
         }
 
         $validated = $request->validate([
-            'records'                     => ['required', 'array', 'min:1'],
-            'records.*.dchdate'           => ['required', 'date_format:Y-m-d'],
-            'records.*.spclty_code'       => ['required', 'string'],
+            'records'                     => ['nullable', 'array'],
+            'records.*.dchdate'           => ['required_with:records', 'date_format:Y-m-d'],
+            'records.*.spclty_code'       => ['required_with:records', 'string'],
             'records.*.doctor_id'         => ['nullable', 'integer'],
             'records.*.licenseno'         => ['nullable', 'string'],
             'records.*.specialty_name'    => ['nullable', 'string'],
@@ -267,12 +270,48 @@ class OpohApiController extends Controller
 
             'records.*.diagnoses'         => ['nullable', 'array'],
             'records.*.income_categories' => ['nullable', 'array'],
+
+            // สรุปรวมระดับโรงพยาบาลแบบไม่นับซ้ำราย AN
+            'hospital_summaries'                     => ['nullable', 'array'],
+            'hospital_summaries.*.dchdate'           => ['required_with:hospital_summaries', 'date_format:Y-m-d'],
+            'hospital_summaries.*.an_total'          => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.admdate_total'     => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.adjrw_total'       => ['nullable', 'numeric', 'min:0'],
+            'hospital_summaries.*.operation_total'   => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.an_ucs_incup'      => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.an_ucs_outprov'    => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.an_ofc'            => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.an_lgo'            => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.an_sss'            => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.an_other'          => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.admdate_ucs_incup' => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.admdate_ucs_outprov'=> ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.admdate_ofc'       => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.admdate_lgo'       => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.admdate_sss'       => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.admdate_other'     => ['nullable', 'integer', 'min:0'],
+            'hospital_summaries.*.adjrw_ucs_incup'   => ['nullable', 'numeric', 'min:0'],
+            'hospital_summaries.*.adjrw_ucs_outprov' => ['nullable', 'numeric', 'min:0'],
+            'hospital_summaries.*.adjrw_ofc'         => ['nullable', 'numeric', 'min:0'],
+            'hospital_summaries.*.adjrw_lgo'         => ['nullable', 'numeric', 'min:0'],
+            'hospital_summaries.*.adjrw_sss'         => ['nullable', 'numeric', 'min:0'],
+            'hospital_summaries.*.adjrw_other'       => ['nullable', 'numeric', 'min:0'],
+            'hospital_summaries.*.income_categories' => ['nullable', 'array'],
         ]);
+
+        $records = $validated['records'] ?? [];
+        $hospitalSummaries = $validated['hospital_summaries'] ?? [];
+        if (empty($records) && empty($hospitalSummaries)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'The records field is required.',
+            ], 422);
+        }
 
         $inserted = 0;
         DB::beginTransaction();
         try {
-            foreach ($validated['records'] as $record) {
+            foreach ($records as $record) {
                 $docId = $record['doctor_id'] ?? null;
                 $license = $record['licenseno'] ?? null;
                 if (!$docId && $license) {
@@ -372,6 +411,76 @@ class OpohApiController extends Controller
                                 'inc_total'         => (float)($cat['inc_total'] ?? 0.00),
                             ]
                         );
+                    }
+                }
+            }
+
+            foreach ($hospitalSummaries as $hSum) {
+                $dchdate = $hSum['dchdate'];
+                if ((int)($hSum['an_total'] ?? 0) === 0) {
+                    OpohIpdHospitalSummary::where('hospcode', $hospcode)->where('dchdate', $dchdate)->delete();
+                    OpohIpdIncomeSummary::where('hospcode', $hospcode)->where('dchdate', $dchdate)->delete();
+                    continue;
+                }
+
+                OpohIpdHospitalSummary::updateOrCreate(
+                    ['hospcode' => $hospcode, 'dchdate' => $dchdate],
+                    [
+                        'an_total'            => (int)($hSum['an_total'] ?? 0),
+                        'admdate_total'       => (int)($hSum['admdate_total'] ?? 0),
+                        'adjrw_total'         => (float)($hSum['adjrw_total'] ?? 0.0000),
+                        'operation_total'     => (int)($hSum['operation_total'] ?? 0),
+                        'an_ucs_incup'        => (int)($hSum['an_ucs_incup'] ?? 0),
+                        'an_ucs_outprov'      => (int)($hSum['an_ucs_outprov'] ?? 0),
+                        'an_ofc'              => (int)($hSum['an_ofc'] ?? 0),
+                        'an_lgo'              => (int)($hSum['an_lgo'] ?? 0),
+                        'an_sss'              => (int)($hSum['an_sss'] ?? 0),
+                        'an_other'            => (int)($hSum['an_other'] ?? 0),
+                        'admdate_ucs_incup'   => (int)($hSum['admdate_ucs_incup'] ?? 0),
+                        'admdate_ucs_outprov' => (int)($hSum['admdate_ucs_outprov'] ?? 0),
+                        'admdate_ofc'         => (int)($hSum['admdate_ofc'] ?? 0),
+                        'admdate_lgo'         => (int)($hSum['admdate_lgo'] ?? 0),
+                        'admdate_sss'         => (int)($hSum['admdate_sss'] ?? 0),
+                        'admdate_other'       => (int)($hSum['admdate_other'] ?? 0),
+                        'adjrw_ucs_incup'     => (float)($hSum['adjrw_ucs_incup'] ?? 0.0000),
+                        'adjrw_ucs_outprov'   => (float)($hSum['adjrw_ucs_outprov'] ?? 0.0000),
+                        'adjrw_ofc'           => (float)($hSum['adjrw_ofc'] ?? 0.0000),
+                        'adjrw_lgo'           => (float)($hSum['adjrw_lgo'] ?? 0.0000),
+                        'adjrw_sss'           => (float)($hSum['adjrw_sss'] ?? 0.0000),
+                        'adjrw_other'         => (float)($hSum['adjrw_other'] ?? 0.0000),
+                    ]
+                );
+
+                if (!empty($hSum['income_categories']) && is_array($hSum['income_categories'])) {
+                    $seenIds = [];
+                    foreach ($hSum['income_categories'] as $cat) {
+                        $drgId = (int)($cat['drg_chrgitem_id'] ?? 0);
+                        if ($drgId <= 0) continue;
+                        $seenIds[] = $drgId;
+
+                        OpohIpdIncomeSummary::updateOrCreate(
+                            [
+                                'hospcode'        => $hospcode,
+                                'dchdate'         => $dchdate,
+                                'drg_chrgitem_id' => $drgId,
+                            ],
+                            [
+                                'drg_chrgitem_name' => $cat['drg_chrgitem_name'] ?? 'หมวดที่ ' . $drgId,
+                                'inc_ucs_incup'     => (float)($cat['inc_ucs_incup'] ?? 0.00),
+                                'inc_ucs_outprov'   => (float)($cat['inc_ucs_outprov'] ?? 0.00),
+                                'inc_ofc'           => (float)($cat['inc_ofc'] ?? 0.00),
+                                'inc_lgo'           => (float)($cat['inc_lgo'] ?? 0.00),
+                                'inc_sss'           => (float)($cat['inc_sss'] ?? 0.00),
+                                'inc_other'         => (float)($cat['inc_other'] ?? 0.00),
+                                'inc_total'         => (float)($cat['inc_total'] ?? 0.00),
+                            ]
+                        );
+                    }
+                    if (!empty($seenIds)) {
+                        OpohIpdIncomeSummary::where('hospcode', $hospcode)
+                            ->where('dchdate', $dchdate)
+                            ->whereNotIn('drg_chrgitem_id', $seenIds)
+                            ->delete();
                     }
                 }
             }

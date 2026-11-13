@@ -225,7 +225,7 @@
                         <i class="fa-solid fa-stethoscope text-primary me-2"></i>จำนวนที่แพทย์แต่ละคนไปตรวจ
                     </h5>
                     <span class="text-secondary small">
-                        สถิติการออกตรวจของแพทย์เฉพาะทางจาก รพ.อำนาจเจริญ ณ โรงพยาบาลชุมชน 6 แห่ง (ช่วงที่เลือก: <strong class="text-primary">{{ $thaiDateRangeText }}</strong>)
+                        สถิติการออกตรวจของแพทย์เฉพาะทาง ณ โรงพยาบาลชุมชน {{ count($hospitalsList) }} แห่ง ไม่รวมตรวจที่ รพ.ต้นสังกัดและ {{ $hubHospitalName }} (ช่วงที่เลือก: <strong class="text-primary">{{ $thaiDateRangeText }}</strong>)
                     </span>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
@@ -334,7 +334,7 @@
                     </button>
                     <div class="text-muted small d-none d-lg-inline">
                         <i class="fa-solid fa-circle-info text-info me-1"></i>
-                        แพทย์เฉพาะทาง รพช. 6 แห่ง
+                        แพทย์เฉพาะทาง รพช. {{ count($hospitalsList) }} แห่ง
                     </div>
                 </div>
             </div>
@@ -355,7 +355,7 @@
                                     @endforeach
                                     <th style="min-width: 130px;" class="text-end">ค่ารักษารวม (บาท)</th>
                                     <th style="min-width: 130px;" class="text-end bg-light border-start text-secondary">
-                                        รพ.อำนาจเจริญ
+                                        {{ $hubHospitalName }}
                                         <div class="small fw-normal text-muted" style="font-size: 0.70rem;">(ตรวจ ณ แม่ข่าย)</div>
                                     </th>
                                 </tr>
@@ -366,6 +366,7 @@
                                     $doc = $row['doctor'];
                                     $specColor = $specialties[$doc->spclty_code]['color'] ?? '#0284c7';
                                     $specIcon = $specialties[$doc->spclty_code]['icon'] ?? 'fa-user-doctor';
+                                    $docOriginName = !empty($doc->origin_hospcode) ? ($originHospitals[$doc->origin_hospcode] ?? $doc->origin_hospcode) : null;
                                 @endphp
                                 <tr>
                                     <td>
@@ -375,11 +376,16 @@
                                             </div>
                                             <div>
                                                 <div class="fw-bold text-dark leading-tight">{{ $doc->doctor_name }}</div>
-                                                <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                                                <div class="d-flex flex-wrap align-items-center gap-1 mt-0.5">
                                                     <span class="badge px-1.5 py-0.5 rounded-pill fw-semibold" style="background-color: {{ $specColor }}15; color: {{ $specColor }}; font-size: 0.72rem;">
                                                         {{ $doc->specialty_name }}
                                                     </span>
                                                     <small class="text-muted font-monospace">({{ $doc->licenseno ?: '-' }})</small>
+                                                    @if($docOriginName)
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-1.5 py-0" style="font-size: 0.66rem;">
+                                                            <i class="fa-solid fa-hospital me-1"></i>{{ $docOriginName }}
+                                                        </span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -392,10 +398,16 @@
                                     </td>
                                     @foreach($hospitalsList as $hcode => $hname)
                                         @php
-                                             $hv = $row['hosp_visits'][$hcode] ?? 0;
+                                            $hv = $row['hosp_visits'][$hcode] ?? 0;
+                                            $isOriginCell = ((string)$doc->origin_hospcode === (string)$hcode);
                                         @endphp
-                                        <td class="text-end {{ $hv > 0 ? 'fw-bold text-dark' : 'text-muted opacity-50' }}">
-                                            @if($hv > 0)
+                                        <td class="text-end {{ (!$isOriginCell && $hv > 0) ? 'fw-bold text-dark' : 'text-muted opacity-75' }}">
+                                            @if($isOriginCell)
+                                                <span class="small text-muted" title="รพ.ต้นสังกัดของแพทย์ (ไม่นับรวมยอด OPOH)">
+                                                    {{ $hv > 0 ? number_format($hv) : '-' }}
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 ms-1" style="font-size: 0.62rem;">ต้นสังกัด</span>
+                                                </span>
+                                            @elseif($hv > 0)
                                                 <button type="button" class="btn-rec-cell" onclick="openDoctorRecordsModal({{ $doc->id }}, '{{ addslashes($doc->doctor_name) }}', 'opd', '{{ $hcode }}', '{{ addslashes($hname) }}')" title="ดูรายเคสของแพทย์ท่านนี้ที่ {{ $hname }}">{{ number_format($hv) }}</button>
                                             @else
                                                 -
@@ -422,10 +434,10 @@
                                 @endforelse
                             </tbody>
                             <tfoot>
-                                {{-- แถวรวมที่ 1: รวมเฉพาะแพทย์ AOPH (22 ท่าน) --}}
+                                {{-- แถวรวมที่ 1: รวมเฉพาะแพทย์ OPOH --}}
                                 <tr class="tr-aoph align-middle">
                                     <td class="text-start fw-bold">
-                                        <i class="fa-solid fa-user-doctor me-1 text-primary"></i> รวมแพทย์ AOPH (22 ท่าน)
+                                        <i class="fa-solid fa-user-doctor me-1 text-primary"></i> รวมแพทย์ OPOH ({{ $activeDoctors }} ท่าน)
                                     </td>
                                     <td class="text-end fw-bolder text-secondary">{{ number_format($colTotals['cumulative']) }}</td>
                                     <td class="text-end fw-bolder bg-primary bg-opacity-10 text-primary">{{ number_format($colTotals['period']) }}</td>
@@ -434,7 +446,7 @@
                                     @endforeach
                                     <td class="text-end">
                                         <div class="fw-bolder text-success">฿{{ number_format($colTotals['inc'] ?? 0, 2) }}</div>
-                                        <button type="button" class="btn btn-outline-primary btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('AOPH', 'รวมแพทย์ AOPH (22 ท่าน)', 'OPD')" title="ดู 16 หมวดค่ารักษาเฉพาะแพทย์ AOPH">
+                                        <button type="button" class="btn btn-outline-primary btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('AOPH', 'รวมแพทย์ OPOH ({{ $activeDoctors }} ท่าน)', 'OPD')" title="ดู 16 หมวดค่ารักษาเฉพาะแพทย์ OPOH">
                                             <i class="fa-solid fa-list-check me-1"></i>16 หมวด
                                         </button>
                                     </td>
@@ -442,7 +454,7 @@
                                         {{ number_format($colTotals['amnat']) }}
                                     </td>
                                 </tr>
-                                {{-- แถวรวมที่ 2: รวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์) --}}
+                                {{-- แถวรวมที่ 2: รวมทั้งหมด รพช. (ไม่แยกแพทย์) --}}
                                 <tr class="tr-grand align-middle">
                                     <td class="text-start fw-bolder text-success">
                                         <i class="fa-solid fa-hospital me-1 text-success"></i> รวมทั้งหมด รพช. (ไม่แยกแพทย์)
@@ -454,7 +466,7 @@
                                     @endforeach
                                     <td class="text-end">
                                         <div class="fw-bolder text-success fs-6">฿{{ number_format($grandOpdTotals['inc'] ?? 0, 2) }}</div>
-                                        <button type="button" class="btn btn-success btn-xs rounded-pill px-2.5 py-0.5 mt-0.5 text-white shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('ALL', 'ยอดรวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์)', 'OPD')" title="ดู 16 หมวดค่ารักษาภาพรวมทั้งหมด (ไม่แยกแพทย์)">
+                                        <button type="button" class="btn btn-success btn-xs rounded-pill px-2.5 py-0.5 mt-0.5 text-white shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('ALL', 'ยอดรวมทั้งหมด รพช. {{ count($hospitalsList) }} แห่ง (ไม่แยกแพทย์)', 'OPD')" title="ดู 16 หมวดค่ารักษาภาพรวมทั้งหมด (ไม่แยกแพทย์)">
                                             <i class="fa-solid fa-layer-group me-1"></i>16 หมวด (ภาพรวม)
                                         </button>
                                     </td>
@@ -483,7 +495,7 @@
                                     @endforeach
                                     <th style="min-width: 120px;" class="text-end">ค่ารักษารวม (บาท)</th>
                                     <th style="min-width: 130px;" class="text-end bg-light border-start text-secondary">
-                                        รพ.อำนาจเจริญ
+                                        {{ $hubHospitalName }}
                                         <div class="small fw-normal text-muted" style="font-size: 0.70rem;">(ตรวจ ณ แม่ข่าย)</div>
                                     </th>
                                 </tr>
@@ -494,6 +506,7 @@
                                     $doc = $row['doctor'];
                                     $specColor = $specialties[$doc->spclty_code]['color'] ?? '#e11d48';
                                     $specIcon = $specialties[$doc->spclty_code]['icon'] ?? 'fa-user-doctor';
+                                    $docOriginName = !empty($doc->origin_hospcode) ? ($originHospitals[$doc->origin_hospcode] ?? $doc->origin_hospcode) : null;
                                 @endphp
                                 <tr>
                                     <td>
@@ -503,11 +516,16 @@
                                             </div>
                                             <div>
                                                 <div class="fw-bold text-dark leading-tight">{{ $doc->doctor_name }}</div>
-                                                <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                                                <div class="d-flex flex-wrap align-items-center gap-1 mt-0.5">
                                                     <span class="badge px-1.5 py-0.5 rounded-pill fw-semibold" style="background-color: {{ $specColor }}15; color: {{ $specColor }}; font-size: 0.72rem;">
                                                         {{ $doc->specialty_name }}
                                                     </span>
                                                     <small class="text-muted font-monospace">({{ $doc->licenseno ?: '-' }})</small>
+                                                    @if($docOriginName)
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-1.5 py-0" style="font-size: 0.66rem;">
+                                                            <i class="fa-solid fa-hospital me-1"></i>{{ $docOriginName }}
+                                                        </span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -527,9 +545,15 @@
                                     @foreach($hospitalsList as $hcode => $hname)
                                         @php
                                             $ha = $row['hosp_ans'][$hcode] ?? 0;
+                                            $isOriginCell = ((string)$doc->origin_hospcode === (string)$hcode);
                                         @endphp
-                                        <td class="text-end {{ $ha > 0 ? 'fw-bold text-danger' : 'text-muted opacity-50' }}">
-                                            @if($ha > 0)
+                                        <td class="text-end {{ (!$isOriginCell && $ha > 0) ? 'fw-bold text-danger' : 'text-muted opacity-75' }}">
+                                            @if($isOriginCell)
+                                                <span class="small text-muted" title="รพ.ต้นสังกัดของแพทย์ (ไม่นับรวมยอด OPOH)">
+                                                    {{ $ha > 0 ? number_format($ha) : '-' }}
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 ms-1" style="font-size: 0.62rem;">ต้นสังกัด</span>
+                                                </span>
+                                            @elseif($ha > 0)
                                                 <button type="button" class="btn-rec-cell btn-rec-cell-ipd" onclick="openDoctorRecordsModal({{ $doc->id }}, '{{ addslashes($doc->doctor_name) }}', 'ipd', '{{ $hcode }}', '{{ addslashes($hname) }}')" title="ดูรายเคสของแพทย์ท่านนี้ที่ {{ $hname }}">{{ number_format($ha) }}</button>
                                             @else
                                                 -
@@ -556,10 +580,10 @@
                                 @endforelse
                             </tbody>
                             <tfoot>
-                                {{-- แถวรวมที่ 1: รวมเฉพาะแพทย์ AOPH (22 ท่าน) --}}
+                                {{-- แถวรวมที่ 1: รวมเฉพาะแพทย์ OPOH (หมายเหตุ: ยอดรวมตามแพทย์อาจนับ AN ซ้ำได้หากแพทย์ร่วมดูแลคนไข้คนเดียวกัน ให้ดูยอด AN จริงที่แถวรวมทั้งหมด) --}}
                                 <tr class="tr-aoph align-middle">
                                     <td class="text-start fw-bold">
-                                        <i class="fa-solid fa-user-doctor me-1 text-danger"></i> รวมแพทย์ AOPH (22 ท่าน)
+                                        <i class="fa-solid fa-user-doctor me-1 text-danger"></i> รวมแพทย์ OPOH ({{ $activeDoctors }} ท่าน)
                                     </td>
                                     <td class="text-end fw-bolder">{{ number_format($colIpdTotals['cumulative']) }}</td>
                                     <td class="text-end fw-bolder bg-danger bg-opacity-10 text-danger">{{ number_format($colIpdTotals['period']) }}</td>
@@ -570,7 +594,7 @@
                                     @endforeach
                                     <td class="text-end">
                                         <div class="fw-bolder text-danger">฿{{ number_format($colIpdTotals['inc'] ?? 0, 2) }}</div>
-                                        <button type="button" class="btn btn-outline-danger btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('AOPH', 'รวมแพทย์ AOPH (22 ท่าน)', 'IPD')" title="ดู 16 หมวดค่ารักษาเฉพาะแพทย์ AOPH">
+                                        <button type="button" class="btn btn-outline-danger btn-xs rounded-pill px-2 py-0 mt-0.5 shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('AOPH', 'รวมแพทย์ OPOH ({{ $activeDoctors }} ท่าน)', 'IPD')" title="ดู 16 หมวดค่ารักษาเฉพาะแพทย์ OPOH">
                                             <i class="fa-solid fa-list-check me-1"></i>16 หมวด
                                         </button>
                                     </td>
@@ -578,10 +602,10 @@
                                         {{ number_format($colIpdTotals['amnat']) }}
                                     </td>
                                 </tr>
-                                {{-- แถวรวมที่ 2: รวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์) --}}
+                                {{-- แถวรวมที่ 2: รวมทั้งหมด รพช. (ไม่แยกแพทย์ / ไม่นับซ้ำราย AN) --}}
                                 <tr class="tr-grand align-middle">
                                     <td class="text-start fw-bolder text-success">
-                                        <i class="fa-solid fa-hospital me-1 text-success"></i> รวมทั้งหมด รพช. (ไม่แยกแพทย์)
+                                        <i class="fa-solid fa-hospital me-1 text-success"></i> รวมทั้งหมด รพช. (ไม่แยกแพทย์ / ไม่นับซ้ำ AN)
                                     </td>
                                     <td class="text-end fw-bolder">{{ number_format($grandIpdTotals['cumulative']) }}</td>
                                     <td class="text-end fw-bolder bg-success bg-opacity-10 text-success">{{ number_format($grandIpdTotals['period']) }}</td>
@@ -592,7 +616,7 @@
                                     @endforeach
                                     <td class="text-end">
                                         <div class="fw-bolder text-success fs-6">฿{{ number_format($grandIpdTotals['inc'] ?? 0, 2) }}</div>
-                                        <button type="button" class="btn btn-success btn-xs rounded-pill px-2.5 py-0.5 mt-0.5 text-white shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('ALL', 'ยอดรวมทั้งหมด รพช. 6 แห่ง (ไม่แยกแพทย์)', 'IPD')" title="ดู 16 หมวดค่ารักษาภาพรวมทั้งหมด (ไม่แยกแพทย์)">
+                                        <button type="button" class="btn btn-success btn-xs rounded-pill px-2.5 py-0.5 mt-0.5 text-white shadow-sm" style="font-size: 0.68rem;" onclick="openDoctorIncomeModal('ALL', 'ยอดรวมทั้งหมด รพช. {{ count($hospitalsList) }} แห่ง (ไม่แยกแพทย์)', 'IPD')" title="ดู 16 หมวดค่ารักษาภาพรวมทั้งหมด (ไม่แยกแพทย์)">
                                             <i class="fa-solid fa-layer-group me-1"></i>16 หมวด (ภาพรวม)
                                         </button>
                                     </td>
@@ -671,12 +695,20 @@
                             @php
                                 $specColor = $specialties[$doc->spclty_code]['color'] ?? '#0284c7';
                                 $specIcon = $specialties[$doc->spclty_code]['icon'] ?? 'fa-user-doctor';
+                                $docOriginName = !empty($doc->origin_hospcode) ? ($originHospitals[$doc->origin_hospcode] ?? $doc->origin_hospcode) : null;
                             @endphp
-                            <tr id="doctor-row-{{ $doc->id }}" data-search="{{ mb_strtolower($doc->doctor_name . ' ' . $doc->licenseno . ' ' . $doc->cid . ' ' . $doc->specialty_name) }}">
+                            <tr id="doctor-row-{{ $doc->id }}" data-search="{{ mb_strtolower($doc->doctor_name . ' ' . $doc->licenseno . ' ' . $doc->cid . ' ' . $doc->specialty_name . ' ' . ($docOriginName ?? '')) }}">
                                 <td class="text-center text-muted fw-bold">{{ $index + 1 }}</td>
                                 <td>
                                     <div class="fw-bold text-dark">{{ $doc->doctor_name }}</div>
-                                    <small class="text-muted">รหัสสาขา: {{ $doc->spclty_code }}</small>
+                                    <div class="d-flex flex-wrap align-items-center gap-1">
+                                        <small class="text-muted">รหัสสาขา: {{ $doc->spclty_code }}</small>
+                                        @if($docOriginName)
+                                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-1.5 py-0" style="font-size: 0.68rem;">
+                                                <i class="fa-solid fa-hospital me-1"></i>ต้นสังกัด: {{ $docOriginName }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
                                     <span class="badge px-2 py-1 rounded-pill fw-semibold" style="background-color: {{ $specColor }}15; color: {{ $specColor }}; font-size: 0.8rem;">
@@ -708,6 +740,7 @@
                                                 data-licenseno="{{ $doc->licenseno }}"
                                                 data-cid="{{ $doc->cid }}"
                                                 data-position="{{ $doc->position }}"
+                                                data-origin-hospcode="{{ $doc->origin_hospcode }}"
                                                 data-is-active="{{ $doc->is_active }}"
                                                 title="แก้ไขข้อมูล">
                                             <i class="fa-solid fa-pen-to-square"></i>
@@ -786,16 +819,26 @@
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <label class="form-label small fw-bold text-secondary mb-1">ตำแหน่ง</label>
-                            <input type="text" name="position" class="form-control form-control-sm" placeholder="เช่น นายแพทย์ชำนาญการ, อายุรแพทย์">
+                            <label class="form-label small fw-bold text-secondary mb-1">รพ.ต้นสังกัด (ไม่นับยอดเมื่อตรวจที่ รพ.นี้)</label>
+                            <select name="origin_hospcode" id="addDoctorOriginHospcode" class="form-select form-select-sm">
+                                <option value="">-- ไม่ระบุ (นับทุก รพช.) --</option>
+                                @foreach($originHospitals as $ocode => $oname)
+                                    <option value="{{ $ocode }}">{{ $oname }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small fw-bold text-secondary mb-1">ตำแหน่ง</label>
+                            <input type="text" name="position" class="form-control form-control-sm" placeholder="เช่น นายแพทย์ชำนาญการ">
+                        </div>
+
+                        <div class="col-12 col-md-4">
                             <label class="form-label small fw-bold text-secondary mb-1">เลขที่ใบอนุญาต (เลข ว.)</label>
                             <input type="text" name="licenseno" class="form-control form-control-sm" placeholder="เช่น ว29520">
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-4">
                             <label class="form-label small fw-bold text-secondary mb-1">เลขประจำตัวประชาชน (13 หลัก)</label>
                             <input type="text" name="cid" class="form-control form-control-sm" maxlength="13" placeholder="ตัวเลข 13 หลัก">
                         </div>
@@ -867,16 +910,26 @@
                         </div>
 
                         <div class="col-12 col-md-6">
+                            <label class="form-label small fw-bold text-secondary mb-1">รพ.ต้นสังกัด (ไม่นับยอดเมื่อตรวจที่ รพ.นี้)</label>
+                            <select name="origin_hospcode" id="editDoctorOriginHospcode" class="form-select form-select-sm">
+                                <option value="">-- ไม่ระบุ (นับทุก รพช.) --</option>
+                                @foreach($originHospitals as $ocode => $oname)
+                                    <option value="{{ $ocode }}">{{ $oname }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-4">
                             <label class="form-label small fw-bold text-secondary mb-1">ตำแหน่ง</label>
                             <input type="text" name="position" id="editDoctorPosition" class="form-control form-control-sm">
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-4">
                             <label class="form-label small fw-bold text-secondary mb-1">เลขที่ใบอนุญาต (เลข ว.)</label>
                             <input type="text" name="licenseno" id="editDoctorLicenseno" class="form-control form-control-sm">
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-4">
                             <label class="form-label small fw-bold text-secondary mb-1">เลขประจำตัวประชาชน (13 หลัก)</label>
                             <input type="text" name="cid" id="editDoctorCid" class="form-control form-control-sm" maxlength="13">
                         </div>
@@ -1220,11 +1273,17 @@ $(document).ready(function() {
                     rosterTable.clear();
 
                     res.doctors.forEach(function(doc, idx) {
+                        const originBadge = doc.origin_hospital_name
+                            ? `<span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-1.5 py-0" style="font-size: 0.68rem;"><i class="fa-solid fa-hospital me-1"></i>ต้นสังกัด: ${escapeHtml(doc.origin_hospital_name)}</span>`
+                            : '';
                         const rowNode = rosterTable.row.add([
                             `<div class="text-center text-muted fw-bold">${idx + 1}</div>`,
                             `<div>
                                 <div class="fw-bold text-dark">${escapeHtml(doc.doctor_name)}</div>
-                                <small class="text-muted">รหัสสาขา: ${escapeHtml(doc.spclty_code)}</small>
+                                <div class="d-flex flex-wrap align-items-center gap-1">
+                                    <small class="text-muted">รหัสสาขา: ${escapeHtml(doc.spclty_code)}</small>
+                                    ${originBadge}
+                                </div>
                             </div>`,
                             `<span class="badge px-2 py-1 rounded-pill fw-semibold" style="background-color: ${doc.spec_color}15; color: ${doc.spec_color}; font-size: 0.8rem;">
                                 <i class="fa-solid ${doc.spec_icon} me-1"></i> ${escapeHtml(doc.specialty_name)}
@@ -1250,6 +1309,7 @@ $(document).ready(function() {
                                             data-licenseno="${escapeHtml(doc.licenseno || '')}"
                                             data-cid="${escapeHtml(doc.cid || '')}"
                                             data-position="${escapeHtml(doc.position || '')}"
+                                            data-origin-hospcode="${escapeHtml(doc.origin_hospcode || '')}"
                                             data-is-active="${doc.is_active || 'Y'}"
                                             title="แก้ไขข้อมูล">
                                         <i class="fa-solid fa-pen-to-square"></i>
@@ -1264,7 +1324,7 @@ $(document).ready(function() {
                             </div>`
                         ]).node();
                         $(rowNode).attr('id', 'doctor-row-' + doc.id);
-                        $(rowNode).attr('data-search', `${doc.doctor_name} ${doc.licenseno || ''} ${doc.cid || ''} ${doc.specialty_name}`.toLowerCase());
+                        $(rowNode).attr('data-search', `${doc.doctor_name} ${doc.licenseno || ''} ${doc.cid || ''} ${doc.specialty_name} ${doc.origin_hospital_name || ''}`.toLowerCase());
                     });
 
                     rosterTable.draw(false);
@@ -1364,6 +1424,7 @@ $(document).ready(function() {
         const licenseno = btn.data('licenseno');
         const cid = btn.data('cid');
         const position = btn.data('position');
+        const originHospcode = btn.data('origin-hospcode');
         const isActive = btn.data('is-active');
 
         $('#editDoctorId').val(id);
@@ -1375,6 +1436,7 @@ $(document).ready(function() {
         $('#editDoctorLicenseno').val(licenseno);
         $('#editDoctorCid').val(cid);
         $('#editDoctorPosition').val(position);
+        $('#editDoctorOriginHospcode').val(originHospcode || '');
         $('#editDoctorActive').prop('checked', isActive === 'Y');
 
         $('#editDoctorModal').modal('show');

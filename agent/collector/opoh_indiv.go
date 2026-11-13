@@ -206,9 +206,11 @@ func collectIndivIPD(db *sql.DB, p IndivExportParams, res *IndivExportResult) er
 	if err != nil {
 		return err
 	}
-	// ชื่อแพทย์: เลือกแพทย์ในรายชื่อคนแรกที่ตรงกับ admdoctor / dch_doctor / incharge_doctor
-	docNameSub := `(SELECT d.name FROM doctor d
-			WHERE d.code IN (i.dch_doctor, i.incharge_doctor, i.admdoctor) AND ` + docWhere + ` LIMIT 1)`
+	// ชื่อแพทย์: รวมแพทย์ OPOH ทุกท่านที่ดูแล AN นี้ (เรียงแพทย์หลักจาก ipt ขึ้นก่อน) เพื่อไม่ให้ซ้ำซ้อนและไม่ตกหล่น
+	ipdDocCond := ipdDoctorMatchCond("i", "d")
+	docNameSub := `COALESCE((SELECT GROUP_CONCAT(DISTINCT d.name ORDER BY CASE WHEN d.code IN (i.dch_doctor, i.incharge_doctor, i.admdoctor) THEN 0 ELSE 1 END, d.name SEPARATOR ', ')
+			FROM doctor d
+			WHERE ` + ipdDocCond + ` AND ` + docWhere + `), '')`
 	from := `FROM ipt i
 		JOIN an_stat a ON a.an = i.an
 		JOIN patient pt ON pt.hn = i.hn
@@ -216,7 +218,7 @@ func collectIndivIPD(db *sql.DB, p IndivExportParams, res *IndivExportResult) er
 		LEFT JOIN icd101 ic ON ic.code = a.pdx`
 	where := `WHERE i.dchdate BETWEEN ? AND ?
 		AND EXISTS (SELECT 1 FROM doctor d
-			WHERE (d.code = i.admdoctor OR d.code = i.dch_doctor OR d.code = i.incharge_doctor)
+			WHERE ` + ipdDocCond + `
 			  AND ` + docWhere + `)`
 	whereArgs := append([]interface{}{p.StartDate, p.EndDate}, docArgs...)
 

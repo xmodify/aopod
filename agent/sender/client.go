@@ -62,6 +62,11 @@ func GetOptimalChunkSize() int {
 
 // SendChunks sends any slice of records in batches of chunkSize to target URL.
 func SendChunks[T any](records []T, endpoint string, dateGetter func(item T) string, prefix string) (BatchResult, error) {
+	return SendWrappedChunks(records, "records", endpoint, dateGetter, prefix)
+}
+
+// SendWrappedChunks sends any slice of records wrapped under payloadKey in batches of chunkSize to target URL.
+func SendWrappedChunks[T any](records []T, payloadKey, endpoint string, dateGetter func(item T) string, prefix string) (BatchResult, error) {
 	cfg := config.Get()
 	serverURL := stringsTrimRight(cfg.Hospital.ServerURL, "/")
 	fullURL := fmt.Sprintf("%s%s", serverURL, endpoint)
@@ -104,7 +109,7 @@ func SendChunks[T any](records []T, endpoint string, dateGetter func(item T) str
 		idempotencyKey := hex.EncodeToString(hash[:])
 
 		payload := map[string]interface{}{
-			"records": chunk,
+			payloadKey: chunk,
 		}
 
 		err := postWithRetry(fullURL, token, idempotencyKey, payload, 3)

@@ -18,14 +18,15 @@ import (
 
 // OpohDoctor represents an active specialist doctor from central roster
 type OpohDoctor struct {
-	ID            int64  `json:"id"`
-	DoctorName    string `json:"doctor_name"`
-	Fname         string `json:"fname"`
-	Lname         string `json:"lname"`
-	CID           string `json:"cid"`
-	Licenseno     string `json:"licenseno"`
-	SpcltyCode    string `json:"spclty_code"`
-	SpecialtyName string `json:"specialty_name"`
+	ID             int64  `json:"id"`
+	DoctorName     string `json:"doctor_name"`
+	Fname          string `json:"fname"`
+	Lname          string `json:"lname"`
+	CID            string `json:"cid"`
+	Licenseno      string `json:"licenseno"`
+	SpcltyCode     string `json:"spclty_code"`
+	SpecialtyName  string `json:"specialty_name"`
+	OriginHospcode string `json:"origin_hospcode,omitempty"`
 }
 
 type OpohDoctorsApiResponse struct {
@@ -173,6 +174,34 @@ type OpohIpdRecord struct {
 	AdjrwSSS          float64                  `json:"adjrw_sss"`
 	AdjrwOther        float64                  `json:"adjrw_other"`
 	Diagnoses         []OpohDiagnosisItem      `json:"diagnoses,omitempty"`
+	IncomeCategories  []OpohIncomeCategoryItem `json:"income_categories,omitempty"`
+}
+
+// OpohIpdHospitalSummaryRecord สรุปผู้ป่วยในระดับโรงพยาบาลต่อวัน (ไม่นับซ้ำราย AN แม้มีแพทย์ OPOH ร่วมดูแลหลายคน)
+type OpohIpdHospitalSummaryRecord struct {
+	Dchdate           string                   `json:"dchdate"`
+	AnTotal           int                      `json:"an_total"`
+	AdmdateTotal      int                      `json:"admdate_total"`
+	AdjrwTotal        float64                  `json:"adjrw_total"`
+	OperationTotal    int                      `json:"operation_total"`
+	AnUCSIncup        int                      `json:"an_ucs_incup"`
+	AnUCSOutprov      int                      `json:"an_ucs_outprov"`
+	AnOFC             int                      `json:"an_ofc"`
+	AnLGO             int                      `json:"an_lgo"`
+	AnSSS             int                      `json:"an_sss"`
+	AnOther           int                      `json:"an_other"`
+	AdmdateUCSIncup   int                      `json:"admdate_ucs_incup"`
+	AdmdateUCSOutprov int                      `json:"admdate_ucs_outprov"`
+	AdmdateOFC        int                      `json:"admdate_ofc"`
+	AdmdateLGO        int                      `json:"admdate_lgo"`
+	AdmdateSSS        int                      `json:"admdate_sss"`
+	AdmdateOther      int                      `json:"admdate_other"`
+	AdjrwUCSIncup     float64                  `json:"adjrw_ucs_incup"`
+	AdjrwUCSOutprov   float64                  `json:"adjrw_ucs_outprov"`
+	AdjrwOFC          float64                  `json:"adjrw_ofc"`
+	AdjrwLGO          float64                  `json:"adjrw_lgo"`
+	AdjrwSSS          float64                  `json:"adjrw_sss"`
+	AdjrwOther        float64                  `json:"adjrw_other"`
 	IncomeCategories  []OpohIncomeCategoryItem `json:"income_categories,omitempty"`
 }
 
@@ -551,6 +580,18 @@ func CollectOpohOPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	return records, nil
 }
 
+// ipdDoctorMatchCond คืนเงื่อนไข SQL จับคู่แพทย์ IPD ระหว่างตาราง ipt กับ doctor
+// ครอบคลุมทั้ง admdoctor / dch_doctor / incharge_doctor และ ipt_doctor_list (ทุกประเภท: เจ้าของไข้/ร่วมรักษา/ที่ปรึกษา)
+// กรอง active_doctor != 'N' เพื่อรองรับทั้ง 'Y' และข้อมูลเก่าก่อนเพิ่มคอลัมน์ที่เป็นค่าว่าง/NULL โดยตัดแถวที่ปิดใช้งาน ('N')
+func ipdDoctorMatchCond(iptAlias, docAlias string) string {
+	return fmt.Sprintf(`(%[2]s.code = %[1]s.admdoctor OR %[2]s.code = %[1]s.dch_doctor OR %[2]s.code = %[1]s.incharge_doctor OR EXISTS (
+		SELECT 1 FROM ipt_doctor_list idl
+		WHERE idl.an = %[1]s.an
+		  AND idl.doctor = %[2]s.code
+		  AND COALESCE(idl.active_doctor, '') != 'N'
+	))`, iptAlias, docAlias)
+}
+
 // CollectOpohIPD queries HOSxP for inpatient admissions/discharges under OPOH specialist doctors
 func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string) ([]OpohIpdRecord, error) {
 	if len(doctors) == 0 {
@@ -558,6 +599,7 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	}
 
 	matchWhere, cidMap, licMap := buildDoctorMatchClause(doctors)
+	ipdDocCond := ipdDoctorMatchCond("i", "d")
 
 	// 1. Collect IPD Diagnoses
 	diagQuery := fmt.Sprintf(`SELECT 
@@ -569,13 +611,13 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		COUNT(DISTINCT i.an) AS case_total
 	FROM ipt i
 	JOIN an_stat a ON a.an = i.an
-	JOIN doctor d ON (d.code = i.admdoctor OR d.code = i.dch_doctor OR d.code = i.incharge_doctor)
+	JOIN doctor d ON %s
 	LEFT JOIN icd101 ic ON ic.code = a.pdx
 	WHERE i.dchdate BETWEEN ? AND ?
 	  AND a.pdx IS NOT NULL AND a.pdx != ''
 	  AND (%s)
 	GROUP BY i.dchdate, d.cid, d.licenseno, a.pdx, ic.name
-	ORDER BY i.dchdate ASC, case_total DESC`, matchWhere)
+	ORDER BY i.dchdate ASC, case_total DESC`, ipdDocCond, matchWhere)
 
 	diagRows, err := db.Query(diagQuery, startDate, endDate)
 	diagMap := make(map[string][]OpohDiagnosisItem)
@@ -598,11 +640,11 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		diagRows.Close()
 	}
 
-	// 2. Collect IPD Income Categories from opitemrece join ipt join drg_chrgitem
+	// 2. Collect IPD Income Categories from opitemrece join distinct (an, doctor cid/lic) join drg_chrgitem
 	incCatQuery := fmt.Sprintf(`SELECT 
-		i.dchdate,
-		COALESCE(d.cid, '') AS cid,
-		COALESCE(d.licenseno, '') AS licenseno,
+		t.dchdate,
+		t.cid,
+		t.licenseno,
 		COALESCE(inc.drg_chrgitem_id, 19) AS drg_chrgitem_id,
 		COALESCE(dc.drg_chrgitem_name, inc.name) AS drg_chrgitem_name,
 		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ucs_incup,
@@ -613,18 +655,23 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		COALESCE(SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR opr.paidst IN ('01','03') OR p.hipdata_code IS NULL) THEN opr.sum_price ELSE 0 END), 0) AS inc_other,
 		COALESCE(SUM(opr.sum_price), 0) AS inc_total
 	FROM opitemrece opr
-	JOIN ipt i ON i.an = opr.an
-	JOIN doctor d ON (d.code = i.admdoctor OR d.code = i.dch_doctor OR d.code = i.incharge_doctor)
+	JOIN (
+		SELECT DISTINCT i.an, i.dchdate, i.pttype,
+			COALESCE(d.cid, '') AS cid,
+			COALESCE(d.licenseno, '') AS licenseno
+		FROM ipt i
+		JOIN doctor d ON %s
+		WHERE i.dchdate BETWEEN ? AND ?
+		  AND (%s)
+	) t ON t.an = opr.an
 	JOIN income inc ON inc.income = opr.income
 	LEFT JOIN drg_chrgitem dc ON dc.drg_chrgitem_id = inc.drg_chrgitem_id
-	LEFT JOIN pttype p ON p.pttype = i.pttype
-	LEFT JOIN ipt_pttype ip ON ip.an = i.an AND ip.pttype_number = 1
+	LEFT JOIN pttype p ON p.pttype = t.pttype
+	LEFT JOIN (SELECT an, MAX(hospmain) AS hospmain FROM ipt_pttype WHERE pttype_number = 1 GROUP BY an) ip ON ip.an = t.an
 	LEFT JOIN hospcode hc ON hc.hospcode = ip.hospmain
-	WHERE i.dchdate BETWEEN ? AND ?
-	  AND opr.an IS NOT NULL AND opr.an != ''
-	  AND (%s)
-	GROUP BY i.dchdate, d.cid, d.licenseno, inc.drg_chrgitem_id, dc.drg_chrgitem_name
-	ORDER BY i.dchdate ASC, drg_chrgitem_id ASC`, matchWhere)
+	WHERE opr.an IS NOT NULL AND opr.an != ''
+	GROUP BY t.dchdate, t.cid, t.licenseno, inc.drg_chrgitem_id, dc.drg_chrgitem_name
+	ORDER BY t.dchdate ASC, drg_chrgitem_id ASC`, ipdDocCond, matchWhere)
 
 	incCatRows, err := db.Query(incCatQuery, startDate, endDate)
 	incCatMap := make(map[string][]OpohIncomeCategoryItem)
@@ -656,15 +703,15 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		incCatRows.Close()
 	}
 
-	// 3. Query IPD Summary
+	// 3. Query IPD Summary (ห่อ DISTINCT (an, cid, licenseno) และ aggregate operation_list ราย an ก่อน เพื่อไม่ให้จำนวนผ่าตัดหรือรหัสแพทย์ซ้ำมาคูณ admdate/adjrw)
 	query := fmt.Sprintf(`SELECT 
-		i.dchdate,
-		COALESCE(d.cid, '') AS cid,
-		COALESCE(d.licenseno, '') AS licenseno,
-		COUNT(DISTINCT i.an) AS an_total,
+		t.dchdate,
+		t.cid,
+		t.licenseno,
+		COUNT(t.an) AS an_total,
 		SUM(COALESCE(a.admdate, a.los, 1)) AS admdate_total,
-		SUM(COALESCE(a.rw, i.adjrw, 0)) AS adjrw_total,
-		COUNT(DISTINCT op.operation_id) AS operation_total,
+		SUM(COALESCE(a.rw, t.adjrw, 0)) AS adjrw_total,
+		COALESCE(SUM(op.op_cnt), 0) AS operation_total,
 
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS an_ucs_incup,
 		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS an_ucs_outprov,
@@ -680,23 +727,28 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_sss,
 		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_other,
 
-		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_ucs_incup,
-		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_ucs_outprov,
-		SUM(CASE WHEN p.hipdata_code = 'OFC' THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_ofc,
-		SUM(CASE WHEN p.hipdata_code = 'LGO' THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_lgo,
-		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_sss,
-		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_other
-	FROM ipt i
-	JOIN an_stat a ON a.an = i.an
-	JOIN doctor d ON (d.code = i.admdoctor OR d.code = i.dch_doctor OR d.code = i.incharge_doctor)
-	LEFT JOIN pttype p ON p.pttype = i.pttype
-	LEFT JOIN ipt_pttype ip ON ip.an = i.an AND ip.pttype_number = 1
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.rw, t.adjrw, 0) ELSE 0 END) AS adjrw_ucs_incup,
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.rw, t.adjrw, 0) ELSE 0 END) AS adjrw_ucs_outprov,
+		SUM(CASE WHEN p.hipdata_code = 'OFC' THEN COALESCE(a.rw, t.adjrw, 0) ELSE 0 END) AS adjrw_ofc,
+		SUM(CASE WHEN p.hipdata_code = 'LGO' THEN COALESCE(a.rw, t.adjrw, 0) ELSE 0 END) AS adjrw_lgo,
+		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN COALESCE(a.rw, t.adjrw, 0) ELSE 0 END) AS adjrw_sss,
+		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN COALESCE(a.rw, t.adjrw, 0) ELSE 0 END) AS adjrw_other
+	FROM (
+		SELECT DISTINCT i.an, i.dchdate, i.pttype, i.adjrw,
+			COALESCE(d.cid, '') AS cid,
+			COALESCE(d.licenseno, '') AS licenseno
+		FROM ipt i
+		JOIN doctor d ON %s
+		WHERE i.dchdate BETWEEN ? AND ?
+		  AND (%s)
+	) t
+	JOIN an_stat a ON a.an = t.an
+	LEFT JOIN pttype p ON p.pttype = t.pttype
+	LEFT JOIN (SELECT an, MAX(hospmain) AS hospmain FROM ipt_pttype WHERE pttype_number = 1 GROUP BY an) ip ON ip.an = t.an
 	LEFT JOIN hospcode hc ON hc.hospcode = ip.hospmain
-	LEFT JOIN operation_list op ON op.an = i.an
-	WHERE i.dchdate BETWEEN ? AND ?
-	  AND (%s)
-	GROUP BY i.dchdate, d.cid, d.licenseno
-	ORDER BY i.dchdate ASC`, matchWhere)
+	LEFT JOIN (SELECT an, COUNT(DISTINCT operation_id) AS op_cnt FROM operation_list GROUP BY an) op ON op.an = t.an
+	GROUP BY t.dchdate, t.cid, t.licenseno
+	ORDER BY t.dchdate ASC`, ipdDocCond, matchWhere)
 
 	rows, err := db.Query(query, startDate, endDate)
 	if err != nil {
@@ -774,6 +826,177 @@ func CollectOpohIPD(db *sql.DB, doctors []OpohDoctor, startDate, endDate string)
 	}
 
 	return records, nil
+}
+
+// CollectOpohIPDHospitalSummary สรุปยอด IPD ระดับโรงพยาบาลต่อวันแบบไม่นับซ้ำราย AN (กรองแพทย์ต้นสังกัดเดียวกับ hospcode ออก)
+func CollectOpohIPDHospitalSummary(db *sql.DB, doctors []OpohDoctor, hospcode, startDate, endDate string) ([]OpohIpdHospitalSummaryRecord, error) {
+	if len(doctors) == 0 {
+		return nil, nil
+	}
+
+	cleanHosp := strings.TrimSpace(hospcode)
+	var eligible []OpohDoctor
+	for _, d := range doctors {
+		orig := strings.TrimSpace(d.OriginHospcode)
+		if orig == "" || cleanHosp == "" || orig != cleanHosp {
+			eligible = append(eligible, d)
+		}
+	}
+	if len(eligible) == 0 {
+		return nil, nil
+	}
+
+	matchWhere, _, _ := buildDoctorMatchClause(eligible)
+	ipdDocCond := ipdDoctorMatchCond("i", "d")
+
+	// 1. ค่ารักษา 16 หมวดแบบไม่นับซ้ำราย AN
+	incCatQuery := fmt.Sprintf(`SELECT 
+		i.dchdate,
+		COALESCE(inc.drg_chrgitem_id, 19) AS drg_chrgitem_id,
+		COALESCE(dc.drg_chrgitem_name, inc.name) AS drg_chrgitem_name,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ucs_incup,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ucs_outprov,
+		COALESCE(SUM(CASE WHEN p.hipdata_code = 'OFC' AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_ofc,
+		COALESCE(SUM(CASE WHEN p.hipdata_code = 'LGO' AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_lgo,
+		COALESCE(SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') AND opr.paidst NOT IN ('01','03') THEN opr.sum_price ELSE 0 END), 0) AS inc_sss,
+		COALESCE(SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR opr.paidst IN ('01','03') OR p.hipdata_code IS NULL) THEN opr.sum_price ELSE 0 END), 0) AS inc_other,
+		COALESCE(SUM(opr.sum_price), 0) AS inc_total
+	FROM opitemrece opr
+	JOIN ipt i ON i.an = opr.an
+	JOIN income inc ON inc.income = opr.income
+	LEFT JOIN drg_chrgitem dc ON dc.drg_chrgitem_id = inc.drg_chrgitem_id
+	LEFT JOIN pttype p ON p.pttype = i.pttype
+	LEFT JOIN (SELECT an, MAX(hospmain) AS hospmain FROM ipt_pttype WHERE pttype_number = 1 GROUP BY an) ip ON ip.an = i.an
+	LEFT JOIN hospcode hc ON hc.hospcode = ip.hospmain
+	WHERE i.dchdate BETWEEN ? AND ?
+	  AND opr.an IS NOT NULL AND opr.an != ''
+	  AND EXISTS (
+		SELECT 1 FROM doctor d
+		WHERE %s AND (%s)
+	  )
+	GROUP BY i.dchdate, inc.drg_chrgitem_id, dc.drg_chrgitem_name
+	ORDER BY i.dchdate ASC, drg_chrgitem_id ASC`, ipdDocCond, matchWhere)
+
+	incCatMap := make(map[string][]OpohIncomeCategoryItem)
+	if incRows, err := db.Query(incCatQuery, startDate, endDate); err == nil {
+		for incRows.Next() {
+			var catDate, catName string
+			var catDrgId int
+			var incIncup, incOutprov, incOfc, incLgo, incSss, incOther, incTotal float64
+			if scanErr := incRows.Scan(&catDate, &catDrgId, &catName, &incIncup, &incOutprov, &incOfc, &incLgo, &incSss, &incOther, &incTotal); scanErr == nil {
+				if len(catDate) >= 10 {
+					catDate = catDate[:10]
+				}
+				incCatMap[catDate] = append(incCatMap[catDate], OpohIncomeCategoryItem{
+					ServiceType:     "IPD",
+					Vstdate:         catDate,
+					DrgChrgitemID:   catDrgId,
+					DrgChrgitemName: catName,
+					IncUCSIncup:     incIncup,
+					IncUCSOutprov:   incOutprov,
+					IncOFC:          incOfc,
+					IncLGO:          incLgo,
+					IncSSS:          incSss,
+					IncOther:        incOther,
+					IncTotal:        incTotal,
+				})
+			}
+		}
+		incRows.Close()
+	}
+
+	// 2. สรุป AN / วันนอน / AdjRW แยกราย 6 สิทธิ ระดับโรงพยาบาลต่อวัน (ไม่นับซ้ำราย AN)
+	sumQuery := fmt.Sprintf(`SELECT 
+		i.dchdate,
+		COUNT(i.an) AS an_total,
+		SUM(COALESCE(a.admdate, a.los, 1)) AS admdate_total,
+		SUM(COALESCE(a.rw, i.adjrw, 0)) AS adjrw_total,
+		COALESCE(SUM(op.op_cnt), 0) AS operation_total,
+
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS an_ucs_incup,
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN 1 ELSE 0 END) AS an_ucs_outprov,
+		SUM(CASE WHEN p.hipdata_code = 'OFC' THEN 1 ELSE 0 END) AS an_ofc,
+		SUM(CASE WHEN p.hipdata_code = 'LGO' THEN 1 ELSE 0 END) AS an_lgo,
+		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN 1 ELSE 0 END) AS an_sss,
+		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN 1 ELSE 0 END) AS an_other,
+
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_ucs_incup,
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_ucs_outprov,
+		SUM(CASE WHEN p.hipdata_code = 'OFC' THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_ofc,
+		SUM(CASE WHEN p.hipdata_code = 'LGO' THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_lgo,
+		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_sss,
+		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN COALESCE(a.admdate, a.los, 1) ELSE 0 END) AS admdate_other,
+
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_ucs_incup,
+		SUM(CASE WHEN p.hipdata_code IN ('UCS','WEL','DIS') AND NOT (hc.chwpart = '37' OR ip.hospmain IN ('10703','10985','10986','10987','10988','10989','10990')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_ucs_outprov,
+		SUM(CASE WHEN p.hipdata_code = 'OFC' THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_ofc,
+		SUM(CASE WHEN p.hipdata_code = 'LGO' THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_lgo,
+		SUM(CASE WHEN p.hipdata_code IN ('SSS','SSI') THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_sss,
+		SUM(CASE WHEN (p.hipdata_code NOT IN ('UCS','WEL','DIS','OFC','LGO','SSS','SSI') OR p.paidst IN ('01','03')) THEN COALESCE(a.rw, i.adjrw, 0) ELSE 0 END) AS adjrw_other
+	FROM ipt i
+	JOIN an_stat a ON a.an = i.an
+	LEFT JOIN pttype p ON p.pttype = i.pttype
+	LEFT JOIN (SELECT an, MAX(hospmain) AS hospmain FROM ipt_pttype WHERE pttype_number = 1 GROUP BY an) ip ON ip.an = i.an
+	LEFT JOIN hospcode hc ON hc.hospcode = ip.hospmain
+	LEFT JOIN (SELECT an, COUNT(DISTINCT operation_id) AS op_cnt FROM operation_list GROUP BY an) op ON op.an = i.an
+	WHERE i.dchdate BETWEEN ? AND ?
+	  AND EXISTS (
+		SELECT 1 FROM doctor d
+		WHERE %s AND (%s)
+	  )
+	GROUP BY i.dchdate
+	ORDER BY i.dchdate ASC`, ipdDocCond, matchWhere)
+
+	rows, err := db.Query(sumQuery, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("error querying OPOH IPD hospital summary: %w", err)
+	}
+	defer rows.Close()
+
+	var results []OpohIpdHospitalSummaryRecord
+	for rows.Next() {
+		var r OpohIpdHospitalSummaryRecord
+		var dchDateRaw string
+		err := rows.Scan(
+			&dchDateRaw,
+			&r.AnTotal,
+			&r.AdmdateTotal,
+			&r.AdjrwTotal,
+			&r.OperationTotal,
+			&r.AnUCSIncup,
+			&r.AnUCSOutprov,
+			&r.AnOFC,
+			&r.AnLGO,
+			&r.AnSSS,
+			&r.AnOther,
+			&r.AdmdateUCSIncup,
+			&r.AdmdateUCSOutprov,
+			&r.AdmdateOFC,
+			&r.AdmdateLGO,
+			&r.AdmdateSSS,
+			&r.AdmdateOther,
+			&r.AdjrwUCSIncup,
+			&r.AdjrwUCSOutprov,
+			&r.AdjrwOFC,
+			&r.AdjrwLGO,
+			&r.AdjrwSSS,
+			&r.AdjrwOther,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning OPOH IPD hospital summary row: %w", err)
+		}
+		if len(dchDateRaw) >= 10 {
+			r.Dchdate = dchDateRaw[:10]
+		} else {
+			r.Dchdate = dchDateRaw
+		}
+		if items, ok := incCatMap[r.Dchdate]; ok {
+			r.IncomeCategories = items
+		}
+		results = append(results, r)
+	}
+
+	return results, nil
 }
 
 // CollectOpohOperations queries HOSxP for surgical operations & procedures (Tab 3: Surgery)

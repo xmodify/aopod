@@ -1929,6 +1929,13 @@
                 "default": null,
                 "extra": ""
             },
+            "origin_hospcode": {
+                "type": "varchar(10)",
+                "null": "YES",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
             "is_active": {
                 "type": "enum('Y','N')",
                 "null": "NO",
@@ -1971,6 +1978,12 @@
                     "cid",
                     "licenseno",
                     "is_active"
+                ]
+            },
+            "idx_doctor_origin": {
+                "unique": false,
+                "columns": [
+                    "origin_hospcode"
                 ]
             }
         }
@@ -2253,6 +2266,344 @@
                 "unique": false,
                 "columns": [
                     "icd10"
+                ]
+            }
+        }
+    },
+    "opoh_ipd_hospital_summaries": {
+        "columns": {
+            "id": {
+                "type": "bigint(20) unsigned",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": "auto_increment"
+            },
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "dchdate": {
+                "type": "date",
+                "null": "NO",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "an_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "adjrw_total": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "operation_total": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "an_ucs_incup": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "an_ucs_outprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "an_ofc": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "an_lgo": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "an_sss": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "an_other": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_ucs_incup": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_ucs_outprov": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_ofc": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_lgo": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_sss": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "admdate_other": {
+                "type": "int(10) unsigned",
+                "null": "NO",
+                "key": "",
+                "default": "0",
+                "extra": ""
+            },
+            "adjrw_ucs_incup": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "adjrw_ucs_outprov": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "adjrw_ofc": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "adjrw_lgo": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "adjrw_sss": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "adjrw_other": {
+                "type": "decimal(10,4)",
+                "null": "NO",
+                "key": "",
+                "default": "0.0000",
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "id"
+                ]
+            },
+            "uk_opoh_ipd_hosp_sum": {
+                "unique": true,
+                "columns": [
+                    "hospcode",
+                    "dchdate"
+                ]
+            },
+            "idx_opoh_ipd_hosp_sum_dchdate": {
+                "unique": false,
+                "columns": [
+                    "dchdate"
+                ]
+            }
+        }
+    },
+    "opoh_ipd_income_summaries": {
+        "columns": {
+            "id": {
+                "type": "bigint(20) unsigned",
+                "null": "NO",
+                "key": "PRI",
+                "default": null,
+                "extra": "auto_increment"
+            },
+            "hospcode": {
+                "type": "varchar(10)",
+                "null": "NO",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "dchdate": {
+                "type": "date",
+                "null": "NO",
+                "key": "MUL",
+                "default": null,
+                "extra": ""
+            },
+            "drg_chrgitem_id": {
+                "type": "int(11)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "drg_chrgitem_name": {
+                "type": "varchar(150)",
+                "null": "NO",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "inc_ucs_incup": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_ucs_outprov": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_ofc": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_lgo": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_sss": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_other": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "inc_total": {
+                "type": "decimal(12,2)",
+                "null": "NO",
+                "key": "",
+                "default": "0.00",
+                "extra": ""
+            },
+            "created_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            },
+            "updated_at": {
+                "type": "timestamp",
+                "null": "YES",
+                "key": "",
+                "default": null,
+                "extra": ""
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "unique": true,
+                "columns": [
+                    "id"
+                ]
+            },
+            "uk_opoh_ipd_inc_sum": {
+                "unique": true,
+                "columns": [
+                    "hospcode",
+                    "dchdate",
+                    "drg_chrgitem_id"
+                ]
+            },
+            "idx_opoh_ipd_inc_sum_dchdate": {
+                "unique": false,
+                "columns": [
+                    "dchdate"
                 ]
             }
         }
