@@ -40,3 +40,5 @@ Stack trace:
   thrown in C:\Users\LENOVO\.gemini\antigravity\brain\9da0c62b-028a-4f83-aeef-d935c31b1c27\scratch\smoke_opoh.php on line 2
 [12-Nov-2026 08:46:17 UTC] PHP Parse error:  syntax error, unexpected token "\" in Command line code on line 1
 [12-Nov-2026 08:46:24 UTC] PHP Parse error:  Unclosed '{' in Command line code on line 1
+[13-Nov-2026 03:18:30 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 1
+[13-Nov-2026 03:18:38 UTC] PHP Parse error:  syntax error, unexpected end of file, expecting "," or ";" in Command line code on line 1
